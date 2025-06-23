@@ -1,11 +1,12 @@
 package com.permitseoul.permit_server.ticket.entity;
 
+import com.permitseoul.permit_server.global.domain.BaseTimeEntity;
 import com.permitseoul.permit_server.reservation.entity.Reservation;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "tickets")
-public class Ticket {
+public class Ticket extends BaseTimeEntity {
     @Id
     @Column(name = "ticket_id", nullable = false)
     private Long ticketId;

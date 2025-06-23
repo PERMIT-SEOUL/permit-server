@@ -1,5 +1,7 @@
 package com.permitseoul.permit_server.payment.entity;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
+import com.permitseoul.permit_server.global.domain.BaseTimeEntity;
 import com.permitseoul.permit_server.reservation.entity.Reservation;
 import jakarta.persistence.*;
 
@@ -7,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "payments")
-public class Payment {
+public class Payment  extends BaseTimeEntity {
     @Id
     @Column(name = "payments_id", nullable = false)
     private Long paymentsId;
@@ -32,9 +34,6 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_type", nullable = false)
     private PaymentType paymentType;
-
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
 
     @Column(name = "refunded_at")
     private LocalDateTime refundedAt;

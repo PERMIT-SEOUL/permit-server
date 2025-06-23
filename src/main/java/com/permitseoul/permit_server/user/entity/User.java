@@ -1,11 +1,12 @@
 package com.permitseoul.permit_server.user.entity;
 
 
+import com.permitseoul.permit_server.global.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User extends BaseTimeEntity {
     @Id
     @Column(name = "user_id", nullable = false)
     private Long userId;

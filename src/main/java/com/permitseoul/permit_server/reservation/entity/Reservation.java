@@ -1,12 +1,13 @@
 package com.permitseoul.permit_server.reservation.entity;
 
+import com.permitseoul.permit_server.global.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reservations")
-public class Reservation {
+public class Reservation extends BaseTimeEntity {
     @Id
     @Column(name = "reservation_id", nullable = false)
     private Long reservationId;
@@ -29,9 +30,5 @@ public class Reservation {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ReservationStatus status;
-
-    @Column(name = "create_at", nullable = false)
-    private LocalDateTime createAt;
-
 }
 
