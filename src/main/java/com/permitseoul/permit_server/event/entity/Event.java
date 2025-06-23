@@ -1,12 +1,13 @@
 package com.permitseoul.permit_server.event.entity;
 
+import com.permitseoul.permit_server.global.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "events")
-public class Event {
+public class Event extends BaseTimeEntity {
     @Id
     @Column(name = "event_id", nullable = false)
     private Long eventId;

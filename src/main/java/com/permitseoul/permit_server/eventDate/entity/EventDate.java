@@ -1,5 +1,6 @@
 package com.permitseoul.permit_server.eventDate.entity;
 
+import com.permitseoul.permit_server.global.domain.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -11,7 +12,7 @@ import java.time.LocalTime;
 
 @Entity
 @Table(name = "event_dates")
-public class EventDate {
+public class EventDate  {
     @Id
     @Column(name = "event_dates_id", nullable = false)
     private Long eventDatesId;
