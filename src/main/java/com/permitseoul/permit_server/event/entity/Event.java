@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Table(name = "events")
 public class Event extends BaseTimeEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_id", nullable = false)
     private Long eventId;
 
@@ -28,10 +29,10 @@ public class Event extends BaseTimeEntity {
     @Column(name = "location")
     private String location;
 
-    @Column(name = "line_up")
+    @Column(name = "line_up", columnDefinition = "TEXT")
     private String lineUp;
 
-    @Column(name = "introduction")
+    @Column(name = "introduction", columnDefinition = "TEXT") ///255보다 더 길어질 수 있기 때문
     private String introduction;
 
     @Column(name = "min_age", nullable = false)
@@ -46,7 +47,7 @@ public class Event extends BaseTimeEntity {
     @Column(name = "remain_ticket_count")
     private int remainTicketCount;
 
-    @Column(name = "ticket_check_code")
+    @Column(name = "ticket_check_code", length = 10)
     private String ticketCheckCode;
 
 }
