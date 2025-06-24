@@ -1,14 +1,12 @@
 package com.permitseoul.permit_server.eventImage.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "event_images")
 public class EventImage {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "image_id", nullable = false)
     private Long imageId;
 

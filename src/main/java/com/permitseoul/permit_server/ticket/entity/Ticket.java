@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 @Table(name = "tickets")
 public class Ticket extends BaseTimeEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ticket_id", nullable = false)
     private Long ticketId;
 

@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Table(name = "reservations")
 public class Reservation extends BaseTimeEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "reservation_id", nullable = false)
     private Long reservationId;
 
@@ -18,7 +19,7 @@ public class Reservation extends BaseTimeEntity {
     @Column(name = "event_id", nullable = false)
     private long eventId;
 
-    @Column(name = "order_id", nullable = false)
+    @Column(name = "order_id", nullable = false, unique = true, length = 64)
     private String orderId;
 
     @Column(name = "total_amount", nullable = false)

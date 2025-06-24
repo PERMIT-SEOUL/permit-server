@@ -1,10 +1,7 @@
 package com.permitseoul.permit_server.eventDate.entity;
 
 import com.permitseoul.permit_server.global.domain.BaseTimeEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,8 +9,9 @@ import java.time.LocalTime;
 
 @Entity
 @Table(name = "event_dates")
-public class EventDate  {
+public class EventDate {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_dates_id", nullable = false)
     private Long eventDatesId;
 
