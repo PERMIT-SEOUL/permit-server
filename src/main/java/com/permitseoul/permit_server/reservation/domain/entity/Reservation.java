@@ -1,9 +1,8 @@
-package com.permitseoul.permit_server.reservation.entity;
+package com.permitseoul.permit_server.reservation.domain.entity;
 
 import com.permitseoul.permit_server.global.domain.BaseTimeEntity;
+import com.permitseoul.permit_server.reservation.domain.ReservationStatus;
 import jakarta.persistence.*;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reservations")

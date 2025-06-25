@@ -1,4 +1,4 @@
-package com.permitseoul.permit_server.eventDate.entity;
+package com.permitseoul.permit_server.eventDate.domain.entity;
 
 import com.permitseoul.permit_server.global.domain.BaseTimeEntity;
 import jakarta.persistence.*;

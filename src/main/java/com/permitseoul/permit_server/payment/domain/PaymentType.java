@@ -1,4 +1,4 @@
-package com.permitseoul.permit_server.payment.entity;
+package com.permitseoul.permit_server.payment.domain;
 
 public enum PaymentType {
     CARD, //카드

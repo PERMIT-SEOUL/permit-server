@@ -1,8 +1,9 @@
-package com.permitseoul.permit_server.payment.entity;
+package com.permitseoul.permit_server.payment.domain.entity;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
 import com.permitseoul.permit_server.global.domain.BaseTimeEntity;
-import com.permitseoul.permit_server.reservation.entity.Reservation;
+import com.permitseoul.permit_server.payment.domain.PaymentStatus;
+import com.permitseoul.permit_server.payment.domain.PaymentType;
+import com.permitseoul.permit_server.reservation.domain.entity.Reservation;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
