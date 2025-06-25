@@ -16,9 +16,8 @@ public class Payment  extends BaseTimeEntity {
     @Column(name = "payments_id", nullable = false)
     private Long paymentId;
 
-    @OneToOne
     @JoinColumn(name = "reservation_id", nullable = false)
-    private Reservation reservation;
+    private long reservationId;
 
     @Column(name = "order_id", nullable = false, length = 64, unique = true)
     private String orderId;

@@ -4,8 +4,8 @@ package com.permitseoul.permit_server.user.domain.entity;
 import com.permitseoul.permit_server.global.domain.BaseTimeEntity;
 import com.permitseoul.permit_server.user.domain.Sex;
 import com.permitseoul.permit_server.user.domain.SocialType;
+import com.permitseoul.permit_server.user.domain.UserType;
 import jakarta.persistence.*;
-import org.hibernate.usertype.UserType;
 
 @Entity
 @Table(name = "users")
@@ -35,7 +35,7 @@ public class User extends BaseTimeEntity {
     @Column(name = "social_type", nullable = false)
     private SocialType socialType;
 
-    @Column(name = "user_type")
+    @Column(name = "user_type", nullable = false)
     private UserType userType;
 }
 
