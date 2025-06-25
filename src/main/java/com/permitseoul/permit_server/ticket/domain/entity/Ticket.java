@@ -1,13 +1,14 @@
-package com.permitseoul.permit_server.ticket.entity;
+package com.permitseoul.permit_server.ticket.domain.entity;
 
 import com.permitseoul.permit_server.global.domain.BaseTimeEntity;
-import com.permitseoul.permit_server.reservation.entity.Reservation;
+import com.permitseoul.permit_server.ticket.domain.TicketStatus;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "tickets")
 public class Ticket extends BaseTimeEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ticket_id", nullable = false)
     private Long ticketId;
 
