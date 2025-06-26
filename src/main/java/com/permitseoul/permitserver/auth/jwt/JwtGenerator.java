@@ -7,6 +7,7 @@ import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -45,7 +46,7 @@ public class JwtGenerator {
     }
 
     //RT 생성 후 캐싱
-    @CachePut(value = Constants.REFRESH_TOKEN, key = "#userId") ///없으면 추가하고, 이미 있으면 업데이트
+    @CachePut(value = Constants.REFRESH_TOKEN, key = "#p0") ///p0은 첫번째 파라미터를 의미함, userId를 써주니까 안됨(왤까...)
     public String generateRefreshToken(final long userId, final UserRole userRole) {
         final Date now = new Date();
         final Date expireDate = generateExpirationDate(now, TokenType.REFRESH_TOKEN);

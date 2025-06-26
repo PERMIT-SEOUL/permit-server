@@ -3,9 +3,12 @@ package com.permitseoul.permitserver.auth.jwt;
 import com.permitseoul.permitserver.auth.domain.Token;
 import com.permitseoul.permitserver.auth.exception.AuthExpiredJwtException;
 import com.permitseoul.permitserver.auth.exception.AuthWrongJwtException;
+import com.permitseoul.permitserver.global.Constants;
 import com.permitseoul.permitserver.user.domain.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -14,6 +17,8 @@ class JwtProviderTest {
 
     private JwtGenerator jwtGenerator;
     private JwtProvider jwtProvider;
+
+
 
     @BeforeEach
     void setUp() {
@@ -67,4 +72,5 @@ class JwtProviderTest {
         assertThatThrownBy(() -> shortProvider.extractUserIdFromSubject(token))
                 .isInstanceOf(AuthExpiredJwtException.class);
     }
+
 }

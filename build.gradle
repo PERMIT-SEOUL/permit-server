@@ -12,7 +12,9 @@ java {
 		languageVersion = JavaLanguageVersion.of(17)
 	}
 }
-
+tasks.withType(JavaCompile) {
+	options.compilerArgs += ["-parameters"]
+}
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
@@ -43,7 +45,7 @@ dependencies {
 
 	//cache
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
-	implementation 'com.github.ben-manes.caffeine:caffeine:3.1.1'
+	implementation 'com.github.ben-manes.caffeine:caffeine'
 
 	//jwt
 	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
