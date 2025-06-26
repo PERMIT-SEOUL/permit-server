@@ -1,7 +1,6 @@
 package com.permitseoul.permit_server.user.domain;
 
-public enum UserType {
+public enum UserRole {
     USER,
     ADMIN,
-
 }

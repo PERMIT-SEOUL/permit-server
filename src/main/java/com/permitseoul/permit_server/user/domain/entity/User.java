@@ -4,7 +4,7 @@ package com.permitseoul.permit_server.user.domain.entity;
 import com.permitseoul.permit_server.global.domain.BaseTimeEntity;
 import com.permitseoul.permit_server.user.domain.Sex;
 import com.permitseoul.permit_server.user.domain.SocialType;
-import com.permitseoul.permit_server.user.domain.UserType;
+import com.permitseoul.permit_server.user.domain.UserRole;
 import jakarta.persistence.*;
 
 @Entity
@@ -36,6 +36,6 @@ public class User extends BaseTimeEntity {
     private SocialType socialType;
 
     @Column(name = "user_type", nullable = false)
-    private UserType userType;
+    private UserRole userType;
 }
 
