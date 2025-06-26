@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.auth.jwt;
 
+import com.permitseoul.permitserver.auth.domain.TokenType;
 import com.permitseoul.permitserver.global.Constants;
 import com.permitseoul.permitserver.user.domain.UserRole;
 import io.jsonwebtoken.*;
@@ -7,7 +8,6 @@ import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.CachePut;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -20,6 +20,7 @@ public class JwtGenerator {
     private static final String USER_ROLE = "userRole";
 
     private final JwtProperties jwtProperties;
+
     @Getter
     private final Key secretKey;
 
@@ -46,7 +47,7 @@ public class JwtGenerator {
     }
 
     //RT 생성 후 캐싱
-    @CachePut(value = Constants.REFRESH_TOKEN, key = "#p0") ///p0은 첫번째 파라미터를 의미함, userId를 써주니까 안됨(왤까...)
+    @CachePut(value = TokenType.REFRESH_TOKEN, key = "#p0") ///p0은 첫번째 파라미터를 의미함
     public String generateRefreshToken(final long userId, final UserRole userRole) {
         final Date now = new Date();
         final Date expireDate = generateExpirationDate(now, TokenType.REFRESH_TOKEN);

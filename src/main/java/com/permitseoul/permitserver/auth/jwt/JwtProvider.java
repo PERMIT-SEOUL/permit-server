@@ -29,7 +29,7 @@ public class JwtProvider {
     }
 
     //jwtSubject에서 userId추출
-    public long extractUserIdFromSubject(final String token) {
+    public long extractUserIdFromToken(final String token) {
         final String subject = parseToken(token)
                 .getBody()
                 .getSubject();
@@ -40,6 +40,11 @@ public class JwtProvider {
         } catch (NumberFormatException e) {
             throw new AuthWrongJwtException();
         }
+    }
+
+    public String extractUserRoleFromToken(final String token) {
+        final Jws<Claims> claims = parseToken(token);
+        return claims.getBody().get("role", String.class);
     }
 
     //토큰 파싱

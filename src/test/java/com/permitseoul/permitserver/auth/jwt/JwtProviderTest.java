@@ -3,16 +3,13 @@ package com.permitseoul.permitserver.auth.jwt;
 import com.permitseoul.permitserver.auth.domain.Token;
 import com.permitseoul.permitserver.auth.exception.AuthExpiredJwtException;
 import com.permitseoul.permitserver.auth.exception.AuthWrongJwtException;
-import com.permitseoul.permitserver.global.Constants;
 import com.permitseoul.permitserver.user.domain.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+
 class JwtProviderTest {
 
     private JwtGenerator jwtGenerator;
@@ -36,7 +33,7 @@ class JwtProviderTest {
 
         // when
         Token token = jwtProvider.issueToken(userId, userRole);
-        long extractedUserId = jwtProvider.extractUserIdFromSubject(token.getAccessToken());
+        long extractedUserId = jwtProvider.extractUserIdFromToken(token.getAccessToken());
 
         // then
         assertThat(extractedUserId).isEqualTo(userId);
@@ -48,7 +45,7 @@ class JwtProviderTest {
         String invalidToken = "abc.def.ghi";
 
         // expect
-        assertThatThrownBy(() -> jwtProvider.extractUserIdFromSubject(invalidToken))
+        assertThatThrownBy(() -> jwtProvider.extractUserIdFromToken(invalidToken))
                 .isInstanceOf(AuthWrongJwtException.class);
     }
 
@@ -69,7 +66,7 @@ class JwtProviderTest {
         Thread.sleep(1500);
 
         // expect: 만료 예외 발생
-        assertThatThrownBy(() -> shortProvider.extractUserIdFromSubject(token))
+        assertThatThrownBy(() -> shortProvider.extractUserIdFromToken(token))
                 .isInstanceOf(AuthExpiredJwtException.class);
     }
 
