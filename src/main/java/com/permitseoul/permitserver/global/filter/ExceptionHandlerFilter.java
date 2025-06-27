@@ -1,15 +1,11 @@
 package com.permitseoul.permitserver.global.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.permitseoul.permitserver.auth.exception.AuthExpiredJwtException;
-import com.permitseoul.permitserver.auth.exception.AuthWrongJwtException;
 import com.permitseoul.permitserver.global.Constants;
 import com.permitseoul.permitserver.global.exception.PermitUnAuthorizedException;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
-import feign.FeignException;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

@@ -4,7 +4,6 @@ import com.permitseoul.permitserver.auth.exception.AuthExpiredJwtException;
 import com.permitseoul.permitserver.auth.exception.AuthWrongJwtException;
 import com.permitseoul.permitserver.auth.jwt.CookieExtractor;
 import com.permitseoul.permitserver.auth.jwt.JwtProvider;
-import com.permitseoul.permitserver.global.exception.PermitBaseException;
 import com.permitseoul.permitserver.global.exception.PermitUnAuthorizedException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import jakarta.servlet.FilterChain;
