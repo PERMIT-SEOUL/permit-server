@@ -18,30 +18,42 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.util.List;
 
+
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private static final String ROLE = "ROLE_";
     private final JwtProvider jwtProvider;
+    private final List<String> whiteURIList;
+
+    private static final String ROLE = "ROLE_";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
         try {
-            final String token = CookieExtractor.getTokenCookie(request).getValue();
-            final long userId = jwtProvider.extractUserIdFromToken(token);
-            final String userRole = jwtProvider.extractUserRoleFromToken(token);
-            final List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(ROLE + userRole));
-
-            SecurityContextHolder.getContext().setAuthentication(new UserAuthentication(userId, null, authorities));
+            setAuthentication(request);
             filterChain.doFilter(request, response);
+        } catch (AuthCookieException e) {
+            if(!isWhiteListUrl(request.getRequestURI())) {
+                throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_COOKIE);
+            }
         } catch (AuthExpiredJwtException e) {
             throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_AT_EXPIRED);
         } catch (AuthWrongJwtException e) {
             throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED);
-        }catch (AuthCookieException e) {
-            throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_COOKIE);
         } catch (Exception e) {
             throw new PermitUnAuthorizedException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private void setAuthentication(final HttpServletRequest request) {
+        final String token = CookieExtractor.getTokenCookie(request).getValue();
+        long userId = jwtProvider.extractUserIdFromToken(token);
+        String userRole = jwtProvider.extractUserRoleFromToken(token);
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(ROLE + userRole));
+        SecurityContextHolder.getContext().setAuthentication(new UserAuthentication(userId, null, authorities));
+    }
+
+    private boolean isWhiteListUrl(final String requestURI) {
+        return whiteURIList.stream().anyMatch(requestURI::startsWith);
     }
 }
 
