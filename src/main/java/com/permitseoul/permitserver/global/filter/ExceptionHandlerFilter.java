@@ -27,28 +27,28 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter { //필터 내�
     private final ObjectMapper objectMapper;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException {
         try {
             filterChain.doFilter(request, response);
         } catch (PermitUnAuthorizedException e) {
             handleUnauthorizedException(response, e);
         }
         catch (Exception e) {
-            handleException(response, e);
+            handleException(response);
         }
     }
 
-    private void handleUnauthorizedException(HttpServletResponse response, PermitUnAuthorizedException e) throws IOException {
+    private void handleUnauthorizedException(final HttpServletResponse response, final PermitUnAuthorizedException e) throws IOException {
         final ErrorCode errorCode = e.getErrorCode();
-        HttpStatus httpStatus = errorCode.getHttpStatus();
+        final HttpStatus httpStatus = errorCode.getHttpStatus();
         setResponse(response, httpStatus, errorCode);
     }
 
-    private void handleException(HttpServletResponse response, Exception e) throws IOException {
+    private void handleException(final HttpServletResponse response) throws IOException {
         setResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR);
     }
 
-    private void setResponse(HttpServletResponse response, HttpStatus httpStatus, ErrorCode errorCode) throws IOException {
+    private void setResponse(final HttpServletResponse response, final HttpStatus httpStatus, final ErrorCode errorCode) throws IOException {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(Constants.CHARACTER_TYPE);
         response.setStatus(httpStatus.value());

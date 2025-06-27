@@ -23,8 +23,16 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final ExceptionHandlerFilter exceptionHandlerFilter;
 
-    private static final String[] whiteList = {
+    private static final String[] whiteUrlList = {
             "/actuator/health",
+    };
+
+    private static final String[] adminUrlList = {
+            "/admin/**"
+    };
+
+    private static final String[] authRequiredUrlList = {
+
     };
 
     @Bean
@@ -39,9 +47,9 @@ public class SecurityConfig {
                 .exceptionHandling(exceptionHandlingConfigurer ->
                         exceptionHandlingConfigurer.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(whiteList).permitAll() //로그인 상관 X
-                        .requestMatchers("/admin/**").hasRole("ADMIN")   // ADMIN 권한 필요
-                        .requestMatchers("/test").authenticated()     // 로그인 필수
+                        .requestMatchers(whiteUrlList).permitAll() //로그인 상관 X
+                        .requestMatchers(adminUrlList).hasRole("ADMIN")   // ADMIN 권한 필요
+                        .requestMatchers(authRequiredUrlList).authenticated()     // 로그인 필수
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(exceptionHandlerFilter, JwtAuthenticationFilter.class)

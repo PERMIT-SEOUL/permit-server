@@ -7,7 +7,6 @@ import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -21,22 +20,21 @@ import java.io.PrintWriter;
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     private final ObjectMapper objectMapper;
-    private final View error;
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
         handleException(response);
     }
 
-    private void handleException(HttpServletResponse response) throws IOException {
-        setResponse(response, HttpStatus.UNAUTHORIZED, ErrorCode.UNAUTHORIZED);
+    private void handleException(final HttpServletResponse response) throws IOException {
+        setResponse(response);
     }
 
-    private void setResponse(HttpServletResponse response, HttpStatus httpStatus, ErrorCode errorCode) throws IOException {
+    private void setResponse(final HttpServletResponse response) throws IOException {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(Constants.CHARACTER_TYPE);
-        response.setStatus(httpStatus.value());
-        PrintWriter writer = response.getWriter();
-        writer.write(objectMapper.writeValueAsString(BaseResponse.of(errorCode)));
+        response.setStatus(ErrorCode.UNAUTHORIZED_SECURITY_ENTRY.getHttpStatus().value());
+        final PrintWriter writer = response.getWriter();
+        writer.write(objectMapper.writeValueAsString(BaseResponse.of(ErrorCode.UNAUTHORIZED_SECURITY_ENTRY)));
     }
 }

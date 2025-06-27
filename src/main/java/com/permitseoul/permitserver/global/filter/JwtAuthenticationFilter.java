@@ -21,7 +21,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String ROLE = "ROLE_";
-
     private final JwtProvider jwtProvider;
 
     @Override
@@ -31,6 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             final long userId = jwtProvider.extractUserIdFromToken(token);
             final String userRole = jwtProvider.extractUserRoleFromToken(token);
             final List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(ROLE + userRole));
+
             SecurityContextHolder.getContext().setAuthentication(new UserAuthentication(userId, null, authorities));
             filterChain.doFilter(request, response);
         } catch (AuthExpiredJwtException e) {
