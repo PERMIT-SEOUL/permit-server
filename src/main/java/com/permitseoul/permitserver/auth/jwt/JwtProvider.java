@@ -4,8 +4,6 @@ import com.permitseoul.permitserver.auth.domain.Token;
 import com.permitseoul.permitserver.auth.exception.AuthExpiredJwtException;
 import com.permitseoul.permitserver.auth.exception.AuthWrongJwtException;
 import com.permitseoul.permitserver.global.Constants;
-import com.permitseoul.permitserver.global.exception.PermitUnAuthorizedException;
-import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import com.permitseoul.permitserver.user.domain.UserRole;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;

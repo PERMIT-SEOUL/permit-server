@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.global.filter;
 
+import com.permitseoul.permitserver.auth.exception.AuthCookieException;
 import com.permitseoul.permitserver.auth.exception.AuthExpiredJwtException;
 import com.permitseoul.permitserver.auth.exception.AuthWrongJwtException;
 import com.permitseoul.permitserver.auth.jwt.CookieExtractor;
@@ -36,6 +37,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_AT_EXPIRED);
         } catch (AuthWrongJwtException e) {
             throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED);
+        }catch (AuthCookieException e) {
+            throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_COOKIE);
         } catch (Exception e) {
             throw new PermitUnAuthorizedException(ErrorCode.INTERNAL_SERVER_ERROR);
         }

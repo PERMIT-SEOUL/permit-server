@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.auth.jwt;
 
+import com.permitseoul.permitserver.auth.exception.AuthCookieException;
 import com.permitseoul.permitserver.global.Constants;
 import com.permitseoul.permitserver.global.exception.PermitUnAuthorizedException;
 import jakarta.servlet.http.Cookie;
@@ -14,7 +15,7 @@ import java.util.Optional;
 public class CookieExtractor {
 
     public static Cookie getTokenCookie(final HttpServletRequest request) {
-        return getCookie(request).orElseThrow(PermitUnAuthorizedException::new);
+        return getCookie(request).orElseThrow(AuthCookieException::new);
     }
 
     private static Optional<Cookie> getCookie(final HttpServletRequest request) {
