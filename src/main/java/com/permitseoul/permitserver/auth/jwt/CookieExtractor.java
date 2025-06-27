@@ -2,7 +2,6 @@ package com.permitseoul.permitserver.auth.jwt;
 
 import com.permitseoul.permitserver.auth.exception.AuthCookieException;
 import com.permitseoul.permitserver.global.Constants;
-import com.permitseoul.permitserver.global.exception.PermitUnAuthorizedException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
