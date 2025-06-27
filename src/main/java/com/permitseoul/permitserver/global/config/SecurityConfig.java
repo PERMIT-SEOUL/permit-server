@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.global.config;
 
+import com.permitseoul.permitserver.global.filter.ExceptionHandlerFilter;
 import com.permitseoul.permitserver.global.filter.JwtAuthenticationEntryPoint;
 import com.permitseoul.permitserver.auth.jwt.JwtProvider;
 import com.permitseoul.permitserver.global.filter.JwtAuthenticationFilter;

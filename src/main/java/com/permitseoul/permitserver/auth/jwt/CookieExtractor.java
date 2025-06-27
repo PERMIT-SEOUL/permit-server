@@ -1,10 +1,11 @@
 package com.permitseoul.permitserver.auth.jwt;
 
+import com.permitseoul.permitserver.global.Constants;
+import com.permitseoul.permitserver.global.exception.PermitUnAuthorizedException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.springframework.security.oauth2.jwt.BadJwtException;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -13,9 +14,7 @@ import java.util.Optional;
 public class CookieExtractor {
 
     public static Cookie getTokenCookie(final HttpServletRequest request) {
-        return getCookie(request).orElseThrow(
-                () -> new BadJwtException("Invalid JWT token") //todo: Exception 변경해야함
-        );
+        return getCookie(request).orElseThrow(PermitUnAuthorizedException::new);
     }
 
     private static Optional<Cookie> getCookie(final HttpServletRequest request) {
@@ -24,7 +23,7 @@ public class CookieExtractor {
             return Optional.empty();
         }
         return Arrays.stream(cookies)
-                .filter(cookie -> cookie.getName().equals("accessToken"))
+                .filter(cookie -> cookie.getName().equals(Constants.ACCESS_TOKEN))
                 .findFirst();
     }
 }

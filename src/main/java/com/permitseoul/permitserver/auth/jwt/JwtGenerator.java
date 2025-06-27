@@ -17,8 +17,6 @@ import java.util.Date;
 @Component
 public class JwtGenerator {
 
-    private static final String USER_ROLE = "userRole";
-
     private final JwtProperties jwtProperties;
 
     @Getter
@@ -35,11 +33,12 @@ public class JwtGenerator {
         final Date expireDate = generateExpirationDate(now, TokenType.ACCESS_TOKEN);
 
         final Claims claims = Jwts.claims();
-        claims.put(USER_ROLE, userRole);
+        claims.put(Constants.USER_ROLE, userRole.name());
 
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setSubject(String.valueOf(userId))
+                .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(expireDate)
                 .signWith(secretKey, SignatureAlgorithm.HS256)
@@ -47,17 +46,18 @@ public class JwtGenerator {
     }
 
     //RT 생성 후 캐싱
-    @CachePut(value = TokenType.REFRESH_TOKEN, key = "#p0") ///p0은 첫번째 파라미터를 의미함
+    @CachePut(value = Constants.REFRESH_TOKEN, key = "#p0") ///p0은 첫번째 파라미터를 의미함
     public String generateRefreshToken(final long userId, final UserRole userRole) {
         final Date now = new Date();
         final Date expireDate = generateExpirationDate(now, TokenType.REFRESH_TOKEN);
 
         final Claims claims = Jwts.claims();
-        claims.put(USER_ROLE, userRole);
+        claims.put(Constants.USER_ROLE, userRole);
 
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setSubject(String.valueOf(userId))
+                .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(expireDate)
                 .signWith(secretKey, SignatureAlgorithm.HS256)

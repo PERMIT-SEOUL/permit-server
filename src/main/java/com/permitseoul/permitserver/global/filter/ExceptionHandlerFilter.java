@@ -1,7 +1,13 @@
 package com.permitseoul.permitserver.global.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.permitseoul.permitserver.auth.exception.AuthExpiredJwtException;
+import com.permitseoul.permitserver.auth.exception.AuthWrongJwtException;
 import com.permitseoul.permitserver.global.Constants;
+import com.permitseoul.permitserver.global.exception.PermitUnAuthorizedException;
+import com.permitseoul.permitserver.global.response.BaseResponse;
+import com.permitseoul.permitserver.global.response.code.ErrorCode;
+import feign.FeignException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,28 +30,29 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter { //필터 내�
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             filterChain.doFilter(request, response);
-        } catch (UnauthorizedException e) {
+        } catch (PermitUnAuthorizedException e) {
             handleUnauthorizedException(response, e);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             handleException(response, e);
         }
     }
 
-    private void handleUnauthorizedException(HttpServletResponse response, UnauthorizedException e) throws IOException {
-        FailureCode errorMessage = e.getFailureCode();
-        HttpStatus httpStatus = errorMessage.getHttpStatus();
-        setResponse(response, httpStatus, errorMessage);
+    private void handleUnauthorizedException(HttpServletResponse response, PermitUnAuthorizedException e) throws IOException {
+        final ErrorCode errorCode = e.getErrorCode();
+        HttpStatus httpStatus = errorCode.getHttpStatus();
+        setResponse(response, httpStatus, errorCode);
     }
 
     private void handleException(HttpServletResponse response, Exception e) throws IOException {
-        setResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, FailureCode.INTERNAL_SERVER_ERROR);
+        setResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR);
     }
 
-    private void setResponse(HttpServletResponse response, HttpStatus httpStatus, FailureCode errorMessage) throws IOException {
+    private void setResponse(HttpServletResponse response, HttpStatus httpStatus, ErrorCode errorCode) throws IOException {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(Constants.CHARACTER_TYPE);
         response.setStatus(httpStatus.value());
         PrintWriter writer = response.getWriter();
-        writer.write(objectMapper.writeValueAsString(FailureResponse.of(errorMessage)));
+        writer.write(objectMapper.writeValueAsString(BaseResponse.of(errorCode)));
     }
 }

@@ -3,6 +3,9 @@ package com.permitseoul.permitserver.auth.jwt;
 import com.permitseoul.permitserver.auth.domain.Token;
 import com.permitseoul.permitserver.auth.exception.AuthExpiredJwtException;
 import com.permitseoul.permitserver.auth.exception.AuthWrongJwtException;
+import com.permitseoul.permitserver.global.Constants;
+import com.permitseoul.permitserver.global.exception.PermitUnAuthorizedException;
+import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import com.permitseoul.permitserver.user.domain.UserRole;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +36,9 @@ public class JwtProvider {
         final String subject = parseToken(token)
                 .getBody()
                 .getSubject();
+        if (subject == null) {
+            throw new AuthWrongJwtException();
+        }
 
         //subject가 숫자 문자열이어야 정상 변환됨
         try {
@@ -44,7 +50,7 @@ public class JwtProvider {
 
     public String extractUserRoleFromToken(final String token) {
         final Jws<Claims> claims = parseToken(token);
-        return claims.getBody().get("role", String.class);
+        return claims.getBody().get(Constants.USER_ROLE, String.class);
     }
 
     //토큰 파싱
@@ -54,7 +60,7 @@ public class JwtProvider {
             return jwtParser.parseClaimsJws(token);
         } catch (ExpiredJwtException e) { ///만료된 jwt 예외처리
             throw new AuthExpiredJwtException();
-        } catch (JwtException | IllegalArgumentException e) { ///잘못된 jwt 예외처리
+        } catch (Exception e) {
             throw new AuthWrongJwtException();
         }
     }
