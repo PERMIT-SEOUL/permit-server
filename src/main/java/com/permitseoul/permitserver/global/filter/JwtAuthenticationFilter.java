@@ -8,6 +8,7 @@ import com.permitseoul.permitserver.auth.jwt.JwtProvider;
 import com.permitseoul.permitserver.global.exception.PermitUnAuthorizedException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -27,10 +29,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String ROLE = "ROLE_";
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             setAuthentication(request);
-            filterChain.doFilter(request, response);
         } catch (AuthCookieException e) {
             if(!isWhiteListUrl(request.getRequestURI())) {
                 throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_COOKIE);
@@ -42,6 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             throw new PermitUnAuthorizedException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
+        filterChain.doFilter(request, response);
     }
 
     private void setAuthentication(final HttpServletRequest request) {
@@ -53,7 +55,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private boolean isWhiteListUrl(final String requestURI) {
-        return whiteURIList.stream().anyMatch(requestURI::startsWith);
+        return whiteURIList.stream().anyMatch(requestURI::equals);
     }
 }
 
