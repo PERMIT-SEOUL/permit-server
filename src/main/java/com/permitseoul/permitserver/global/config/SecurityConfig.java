@@ -14,6 +14,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -23,15 +25,15 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final ExceptionHandlerFilter exceptionHandlerFilter;
 
-    private static final String[] whiteUrlList = {
+    private static final String[] whiteURIList = {
             "/actuator/health",
     };
 
-    private static final String[] adminUrlList = {
+    private static final String[] adminURIList = {
             "/admin/**"
     };
 
-    private static final String[] authRequiredUrlList = {
+    private static final String[] authRequiredURIList = {
 
     };
 
@@ -47,11 +49,11 @@ public class SecurityConfig {
                 .exceptionHandling(exceptionHandlingConfigurer ->
                         exceptionHandlingConfigurer.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(whiteUrlList).permitAll() //로그인 상관 X
-                        .requestMatchers(adminUrlList).hasRole("ADMIN")  // ADMIN 권한 필요
+                        .requestMatchers(whiteURIList).permitAll() //로그인 상관 X
+                        .requestMatchers(adminURIList).hasRole("ADMIN")  // ADMIN 권한 필요
 //                        .requestMatchers(authRequiredUrlList).authenticated() // 로그인 필수(todo: 추후에 생기면 주석풀기)
                 )
-                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, List.of(whiteURIList)), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(exceptionHandlerFilter, JwtAuthenticationFilter.class)
                 .build();
     }
