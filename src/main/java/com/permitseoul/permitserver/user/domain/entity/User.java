@@ -7,16 +7,18 @@ import com.permitseoul.permitserver.user.domain.SocialType;
 import com.permitseoul.permitserver.user.domain.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.web.service.annotation.GetExchange;
 
 @Entity
 @Table(name = "users")
-@Builder(access =  AccessLevel.PRIVATE)
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access =  AccessLevel.PRIVATE)
+@Getter
+@AllArgsConstructor
 public class User extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
