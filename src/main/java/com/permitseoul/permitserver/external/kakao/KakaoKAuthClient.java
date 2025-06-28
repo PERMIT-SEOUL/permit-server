@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @EnableConfigurationProperties(KakaoProperties.class)
-@FeignClient(name = "kakaoAccessTokenClient", url = "https://kauth.kakao.com")
+@FeignClient(name = "KakaoKAuthClient", url = "https://kauth.kakao.com")
 public interface KakaoKAuthClient {
 
     @PostMapping("/oauth/token")

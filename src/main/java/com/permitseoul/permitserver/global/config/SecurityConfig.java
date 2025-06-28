@@ -4,6 +4,7 @@ import com.permitseoul.permitserver.global.filter.ExceptionHandlerFilter;
 import com.permitseoul.permitserver.global.filter.JwtAuthenticationEntryPoint;
 import com.permitseoul.permitserver.auth.jwt.JwtProvider;
 import com.permitseoul.permitserver.global.filter.JwtAuthenticationFilter;
+import com.permitseoul.permitserver.user.domain.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +28,7 @@ public class SecurityConfig {
 
     private static final String[] whiteURIList = {
             "/actuator/health",
+            "/api/users/signup"
     };
 
     private static final String[] adminURIList = {
@@ -50,7 +52,7 @@ public class SecurityConfig {
                         exceptionHandlingConfigurer.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(whiteURIList).permitAll() //로그인 상관 X
-                        .requestMatchers(adminURIList).hasRole("ADMIN")  // ADMIN 권한 필요
+                        .requestMatchers(adminURIList).hasRole(UserRole.ROLE_ADMIN.name())  // ADMIN 권한 필요
 //                        .requestMatchers(authRequiredUrlList).authenticated() // 로그인 필수(todo: 추후에 생기면 주석풀기)
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, List.of(whiteURIList)), UsernamePasswordAuthenticationFilter.class)

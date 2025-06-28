@@ -4,9 +4,9 @@ import com.permitseoul.permitserver.user.domain.SocialType;
 
 public record UserSocialInfoDto(
         SocialType socialType,
-        Long userSocialId
+        String userSocialId
 ) {
-    public static UserSocialInfoDto of(final SocialType socialType, final Long userSocialId) {
+    public static UserSocialInfoDto of(final SocialType socialType, final String userSocialId) {
         return new UserSocialInfoDto(socialType, userSocialId);
     }
 }

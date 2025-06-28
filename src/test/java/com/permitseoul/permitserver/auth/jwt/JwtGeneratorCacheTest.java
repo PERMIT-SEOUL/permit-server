@@ -31,7 +31,7 @@ class JwtGeneratorCacheTest {
         long userId = 1L;
 
         // when
-        String token = jwtGenerator.generateRefreshToken(userId, UserRole.USER);
+        String token = jwtGenerator.generateRefreshToken(userId, UserRole.ROLE_USER);
 
         // then
         String cachedToken = cacheManager.getCache(Constants.REFRESH_TOKEN)

@@ -4,6 +4,7 @@ package com.permitseoul.permitserver.auth.service;
 import com.permitseoul.permitserver.auth.domain.Token;
 import com.permitseoul.permitserver.auth.dto.CookieDto;
 import com.permitseoul.permitserver.auth.dto.UserSocialInfoDto;
+import com.permitseoul.permitserver.auth.exception.AuthFeignException;
 import com.permitseoul.permitserver.auth.jwt.JwtProvider;
 import com.permitseoul.permitserver.auth.strategy.LoginStrategyManager;
 import com.permitseoul.permitserver.user.component.UserCreator;
@@ -30,9 +31,13 @@ public class AuthService {
                             final SocialType socialType,
                             final String authorizationCode,
                             final String redirectUrl) {
-        final UserSocialInfoDto userSocialInfoDto =  loginStrategyManager.getStrategy(socialType).getUserSocialInfo(authorizationCode, redirectUrl);
-        final User newUser = createUser(userName, userAge, userSex, userEmail, userSocialInfoDto);
-        final Token newToken = jwtProvider.issueToken(newUser.getUserId(), UserRole.USER);
+        try {
+            final UserSocialInfoDto userSocialInfoDto = loginStrategyManager.getStrategy(socialType).getUserSocialInfo(authorizationCode, redirectUrl);
+            final User newUser = createUser(userName, userAge, userSex, userEmail, userSocialInfoDto);
+            final Token newToken = jwtProvider.issueToken(newUser.getUserId(), UserRole.ROLE_USER);
+        } catch (AuthFeignException e) {
+            throw
+        }
         return CookieDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
     }
 
@@ -49,7 +54,7 @@ public class AuthService {
                 userEmail,
                 userSocialInfoDto.userSocialId(),
                 userSocialInfoDto.socialType(),
-                UserRole.USER);
+                UserRole.ROLE_USER);
         return userCreator.createUser(newUser);
     }
 }

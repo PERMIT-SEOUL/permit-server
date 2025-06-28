@@ -34,7 +34,7 @@ public class User extends BaseTimeEntity {
     private String email;
 
     @Column(name = "social_id", nullable = false)
-    private long socialId;
+    private String socialId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "social_type", nullable = false)
@@ -47,7 +47,7 @@ public class User extends BaseTimeEntity {
                               final Sex sex,
                               final int age,
                               final String email,
-                              final long socialId,
+                              final String socialId,
                               final SocialType socialType,
                               final UserRole userType) {
         return User.builder()
