@@ -2,7 +2,9 @@ package com.permitseoul.permitserver.global.handler;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.permitseoul.permitserver.global.exception.PermitApiBaseException;
+import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
+import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -33,17 +35,6 @@ public class GlobalExceptionHandler {
         return ApiResponseUtil.failure(e.getErrorCode());
     }
 
-    @ExceptionHandler(StoreApiBaseException.class)
-    public ResponseEntity<BaseResponse<?>> handleStoreApiBaseException(final StoreApiBaseException e) {
-        return ApiResponseUtil.failure(e.getErrorCode());
-    }
-
-
-    @ExceptionHandler(UserApiBaseException.class)
-    public ResponseEntity<BaseResponse<?>> handleUserApiBaseException(final UserApiBaseException e) {
-        return ApiResponseUtil.failure(e.getErrorCode());
-    }
-
     /**
      * 400 - MethodArgumentNotValidException
      * 발생 이유 : @Valid 검증 실패 (@Request Body)
@@ -55,7 +46,7 @@ public class GlobalExceptionHandler {
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.joining("\n")); // 메시지를 줄바꿈으로 연결
 
-        return ApiResponseUtil.failure(ErrorBaseCode.BAD_REQUEST_REQUEST_BODY_VALID, errorMessage);
+        return ApiResponseUtil.failure(ErrorCode.BAD_REQUEST_REQUEST_BODY_VALID, errorMessage);
     }
 
     /**
@@ -70,7 +61,7 @@ public class GlobalExceptionHandler {
                         violation.getMessage()
                 ))
                 .collect(Collectors.joining(", "));
-        return ApiResponseUtil.failure(ErrorBaseCode.BAD_REQUEST_REQUEST_BODY_VALID, errorMessage);
+        return ApiResponseUtil.failure(ErrorCode.BAD_REQUEST_REQUEST_BODY_VALID, errorMessage);
     }
 
     /**
@@ -85,7 +76,7 @@ public class GlobalExceptionHandler {
                 .map(MessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.joining("\n"));
 
-        return ApiResponseUtil.failure(ErrorBaseCode.BAD_REQUEST_REQUEST_PARAM_MODELATTRI, errorMessage);
+        return ApiResponseUtil.failure(ErrorCode.BAD_REQUEST_REQUEST_PARAM_MODELATTRI, errorMessage);
     }
 
     /**
@@ -95,7 +86,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<BaseResponse<?>> handleMissingServletRequestParameterException(final MissingServletRequestParameterException e) {
         final String errorMessage = "누락된 파라미터 : " + e.getParameterName();
-        return ApiResponseUtil.failure(ErrorBaseCode.BAD_REQUEST_MISSING_PARAM, errorMessage);
+        return ApiResponseUtil.failure(ErrorCode.BAD_REQUEST_MISSING_PARAM, errorMessage);
     }
 
     /**
@@ -105,7 +96,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<BaseResponse<?>> handleMethodArgumentTypeMismatchException(final MethodArgumentTypeMismatchException e) {
         final String errorMessage = "잘못된 인자값 : " + e.getParameter().getParameterName();
-        return ApiResponseUtil.failure(ErrorBaseCode.BAD_REQUEST_METHOD_ARGUMENT_TYPE, errorMessage);
+        return ApiResponseUtil.failure(ErrorCode.BAD_REQUEST_METHOD_ARGUMENT_TYPE, errorMessage);
     }
 
     /**
@@ -120,9 +111,9 @@ public class GlobalExceptionHandler {
                     .map(ref -> String.format("잘못된 필드 값 : '%s'", ref.getFieldName()))
                     .collect(Collectors.joining("\n"));
 
-            return ApiResponseUtil.failure(ErrorBaseCode.BAD_REQUEST_NOT_READABLE, errorMessage);
+            return ApiResponseUtil.failure(ErrorCode.BAD_REQUEST_NOT_READABLE, errorMessage);
         } else { //그 외의 경우들
-            return ApiResponseUtil.failure(ErrorBaseCode.BAD_REQUEST_NOT_READABLE);
+            return ApiResponseUtil.failure(ErrorCode.BAD_REQUEST_NOT_READABLE);
         }
     }
 
@@ -132,7 +123,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<BaseResponse<?>> handleException(IllegalArgumentException e) {
-        return ApiResponseUtil.failure(ErrorBaseCode.BAD_REQUEST, e.getMessage());
+        return ApiResponseUtil.failure(ErrorCode.BAD_REQUEST, e.getMessage());
     }
 
     /**
@@ -141,7 +132,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<BaseResponse<?>> handleEntityNotFoundException(final EntityNotFoundException e) {
-        return ApiResponseUtil.failure(ErrorBaseCode.NOT_FOUND_ENTITY);
+        return ApiResponseUtil.failure(ErrorCode.NOT_FOUND_ENTITY);
     }
 
     /**
@@ -150,7 +141,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<BaseResponse<?>> handleNoResourceFoundException(final NoResourceFoundException e) {
-        return ApiResponseUtil.failure(ErrorBaseCode.NOT_FOUND_API);
+        return ApiResponseUtil.failure(ErrorCode.NOT_FOUND_API);
     }
 
     /**
@@ -159,7 +150,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<BaseResponse<?>> handleNoHandlerFoundException(final NoHandlerFoundException e) {
-        return ApiResponseUtil.failure(ErrorBaseCode.NOT_FOUND_API);
+        return ApiResponseUtil.failure(ErrorCode.NOT_FOUND_API);
     }
 
     /**
@@ -168,7 +159,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<BaseResponse<?>> handleHttpRequestMethodNotSupportedException(final HttpRequestMethodNotSupportedException e) {
-        return ApiResponseUtil.failure(ErrorBaseCode.METHOD_NOT_ALLOWED);
+        return ApiResponseUtil.failure(ErrorCode.METHOD_NOT_ALLOWED);
     }
 
     /**
@@ -182,9 +173,9 @@ public class GlobalExceptionHandler {
             // 제약 조건 이름 추출
             String constraintName = constraintViolationException.getConstraintViolations().toString();
             String errorMessage = String.format("제약 조건 '%s' 위반이 발생했습니다.", constraintName);
-            return ApiResponseUtil.failure(ErrorBaseCode.INTEGRITY_CONFLICT, errorMessage);
+            return ApiResponseUtil.failure(ErrorCode.INTEGRITY_CONFLICT, errorMessage);
         } else {
-            return ApiResponseUtil.failure(ErrorBaseCode.INTEGRITY_CONFLICT);
+            return ApiResponseUtil.failure(ErrorCode.INTEGRITY_CONFLICT);
         }
     }
 
@@ -194,7 +185,7 @@ public class GlobalExceptionHandler {
         Throwable cause = e.getCause();
         System.out.println(cause.getMessage());
         log.error(cause.getMessage());
-        return ApiResponseUtil.failure(ErrorBaseCode.INTERNAL_SERVER_ERROR, cause.getMessage());
+        return ApiResponseUtil.failure(ErrorCode.INTERNAL_SERVER_ERROR, cause.getMessage());
     }
 
     /**
@@ -209,6 +200,6 @@ public class GlobalExceptionHandler {
             log.error(e.getMessage() + "\n" + e.getCause().getMessage());
             log.error("------------------------------------------------------------------------------------------");
         }
-        return ApiResponseUtil.failure(ErrorBaseCode.INTERNAL_SERVER_ERROR, e.getMessage());
+        return ApiResponseUtil.failure(ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public enum SuccessBaseCode implements ApiCode {
+public enum SuccessCode implements ApiCode {
     /**
      * 200 OK
      */

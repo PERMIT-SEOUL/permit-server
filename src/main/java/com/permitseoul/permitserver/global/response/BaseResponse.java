@@ -3,7 +3,7 @@ package com.permitseoul.permitserver.global.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.permitseoul.permitserver.global.response.code.ApiCode;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
-import com.permitseoul.permitserver.global.response.code.SuccessBaseCode;
+import com.permitseoul.permitserver.global.response.code.SuccessCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,7 +27,7 @@ public class BaseResponse<T> {
                 .build();
     }
 
-    public static <T> BaseResponse<?> of(final SuccessBaseCode successCode, final T data) {
+    public static <T> BaseResponse<?> of(final SuccessCode successCode, final T data) {
         return BaseResponse.builder()
                 .status(successCode.getStatus())
                 .message(successCode.getMessage())
