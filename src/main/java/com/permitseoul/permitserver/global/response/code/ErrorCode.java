@@ -29,7 +29,7 @@ public enum ErrorCode implements ApiCode {
     UNAUTHORIZED_DIFF_USER_ID(HttpStatus.UNAUTHORIZED, 40105, "리프레시 토큰 userId와 다른 userId 입니다"),
     UNAUTHORIZED_SECURITY_ENTRY(HttpStatus.UNAUTHORIZED, 40106, "시큐리티 필터 혹은 SecurityContext 오류입니다."),
     UNAUTHORIZED_COOKIE(HttpStatus.UNAUTHORIZED, 40107, "잘못된 쿠키값입니다."),
-
+    UNAUTHORIZED_FEIGN(HttpStatus.UNAUTHORIZED, 40108, "feign 오류입니다."),
 
     /**
      * 403 Forbidden

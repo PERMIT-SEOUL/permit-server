@@ -25,15 +25,19 @@ public class GoogleLoginStrategy implements LoginStrategy {
 
     @Override
     public UserSocialInfoDto getUserSocialInfo(final String authorizationCode, final String redirectUrl) {
-        final String googleIdToken = Optional.ofNullable(googleClient.getGoogleToken(
-                        authorizationCode,
-                        googleProperties.clientId(),
-                        googleProperties.clientSecretId(),
-                        redirectUrl,
-                        Constants.AUTHCODE).id_token())
-                .filter(token -> !token.isBlank())
-                .orElseThrow(AuthFeignException::new);
-        return UserSocialInfoDto.of(SocialType.GOOGLE, extractGoogleUid(googleIdToken));
+        try {
+            final String googleIdToken = Optional.ofNullable(googleClient.getGoogleToken(
+                            authorizationCode,
+                            googleProperties.clientId(),
+                            googleProperties.clientSecretId(),
+                            redirectUrl,
+                            Constants.AUTHCODE).id_token())
+                    .filter(token -> !token.isBlank())
+                    .orElseThrow(AuthFeignException::new);
+            return UserSocialInfoDto.of(SocialType.GOOGLE, extractGoogleUid(googleIdToken));
+        } catch (Exception e) {
+            throw new AuthFeignException();
+        }
     }
 
     @Override

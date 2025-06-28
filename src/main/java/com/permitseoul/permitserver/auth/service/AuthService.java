@@ -2,11 +2,13 @@ package com.permitseoul.permitserver.auth.service;
 
 
 import com.permitseoul.permitserver.auth.domain.Token;
-import com.permitseoul.permitserver.auth.dto.CookieDto;
+import com.permitseoul.permitserver.auth.dto.TokenDto;
 import com.permitseoul.permitserver.auth.dto.UserSocialInfoDto;
 import com.permitseoul.permitserver.auth.exception.AuthFeignException;
 import com.permitseoul.permitserver.auth.jwt.JwtProvider;
 import com.permitseoul.permitserver.auth.strategy.LoginStrategyManager;
+import com.permitseoul.permitserver.global.exception.PermitUnAuthorizedException;
+import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import com.permitseoul.permitserver.user.component.UserCreator;
 import com.permitseoul.permitserver.user.domain.Sex;
 import com.permitseoul.permitserver.user.domain.SocialType;
@@ -24,21 +26,23 @@ public class AuthService {
     private final JwtProvider jwtProvider;
 
     @Transactional
-    public CookieDto signUp(final String userName,
-                            final int userAge,
-                            final Sex userSex,
-                            final String userEmail,
-                            final SocialType socialType,
-                            final String authorizationCode,
-                            final String redirectUrl) {
+    public TokenDto signUp(final String userName,
+                           final int userAge,
+                           final Sex userSex,
+                           final String userEmail,
+                           final SocialType socialType,
+                           final String authorizationCode,
+                           final String redirectUrl) {
         try {
             final UserSocialInfoDto userSocialInfoDto = loginStrategyManager.getStrategy(socialType).getUserSocialInfo(authorizationCode, redirectUrl);
             final User newUser = createUser(userName, userAge, userSex, userEmail, userSocialInfoDto);
             final Token newToken = jwtProvider.issueToken(newUser.getUserId(), UserRole.ROLE_USER);
+            return TokenDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
         } catch (AuthFeignException e) {
-            throw
+            throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_FEIGN);
+        } catch (Exception e) {
+            throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED);
         }
-        return CookieDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
     }
 
     private User createUser(final String userName,

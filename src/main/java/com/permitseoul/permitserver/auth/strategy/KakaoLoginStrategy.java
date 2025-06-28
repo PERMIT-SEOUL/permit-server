@@ -7,7 +7,9 @@ import com.permitseoul.permitserver.external.kakao.KakaoKAuthClient;
 import com.permitseoul.permitserver.external.kakao.KakaoProperties;
 import com.permitseoul.permitserver.global.Constants;
 import com.permitseoul.permitserver.user.domain.SocialType;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -22,8 +24,12 @@ public class KakaoLoginStrategy implements LoginStrategy {
 
     @Override
     public UserSocialInfoDto getUserSocialInfo(final String authorizationCode, final String redirectUrl) {
-        final String kakaoAccessToken = getKakaoAccessToken(authorizationCode, redirectUrl);
-        return UserSocialInfoDto.of(SocialType.KAKAO, getKakaoSocialId(kakaoAccessToken));
+        try {
+            final String kakaoAccessToken = getKakaoAccessToken(authorizationCode, redirectUrl);
+            return UserSocialInfoDto.of(SocialType.KAKAO, getKakaoSocialId(kakaoAccessToken));
+        } catch (Exception e ) {
+            throw new AuthFeignException();
+        }
     }
 
     @Override
