@@ -59,7 +59,7 @@ public enum ErrorCode implements ApiCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50000, "서버 내부 오류입니다.");
 
     private final HttpStatus httpStatus;
-    private final int status;
+    private final int code;
     private final String message;
 
     @Override
@@ -68,8 +68,8 @@ public enum ErrorCode implements ApiCode {
     }
 
     @Override
-    public int getStatus() {
-        return status;
+    public int getCode() {
+        return code;
     }
 
     @Override

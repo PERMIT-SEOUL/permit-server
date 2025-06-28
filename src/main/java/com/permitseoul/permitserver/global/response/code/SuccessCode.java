@@ -19,7 +19,7 @@ public enum SuccessCode implements ApiCode {
     CREATED(HttpStatus.CREATED, 200100, "요청이 성공했습니다.");
 
     private final HttpStatus httpStatus;
-    private final int status;
+    private final int code;
     private final String message;
 
     @Override
@@ -28,8 +28,8 @@ public enum SuccessCode implements ApiCode {
     }
 
     @Override
-    public int getStatus() {
-        return status;
+    public int getCode() {
+        return code;
     }
 
     @Override
