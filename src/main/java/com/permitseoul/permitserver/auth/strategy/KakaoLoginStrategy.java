@@ -5,11 +5,10 @@ import com.permitseoul.permitserver.auth.exception.AuthFeignException;
 import com.permitseoul.permitserver.external.kakao.KakaoKApiClient;
 import com.permitseoul.permitserver.external.kakao.KakaoKAuthClient;
 import com.permitseoul.permitserver.external.kakao.KakaoProperties;
+import com.permitseoul.permitserver.external.kakao.dto.KakaoAccessTokenResponse;
 import com.permitseoul.permitserver.global.Constants;
 import com.permitseoul.permitserver.user.domain.SocialType;
-import feign.FeignException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -38,12 +37,14 @@ public class KakaoLoginStrategy implements LoginStrategy {
     }
 
     private String getKakaoAccessToken(final String authorizationCode, final String redirectUrl) {
-        return kakaoKAuthClient.getKakaoAccessToken(
-                Constants.AUTHCODE,
-                kakaoProperties.clientId(),
-                redirectUrl,
-                authorizationCode
-        ).accessToken();
+        return Optional.ofNullable(kakaoKAuthClient.getKakaoAccessToken(
+                        Constants.AUTHCODE,
+                        kakaoProperties.clientId(),
+                        redirectUrl,
+                        authorizationCode))
+                .map(KakaoAccessTokenResponse::accessToken)
+                .filter(token -> !token.isBlank())
+                .orElseThrow(AuthFeignException::new);
     }
 
     private String getKakaoSocialId(final String kakaoAccessToken) {
