@@ -8,15 +8,21 @@ import com.permitseoul.permitserver.auth.exception.AuthFeignException;
 import com.permitseoul.permitserver.auth.jwt.JwtProvider;
 import com.permitseoul.permitserver.auth.strategy.LoginStrategyManager;
 import com.permitseoul.permitserver.global.exception.PermitUnAuthorizedException;
+import com.permitseoul.permitserver.global.exception.PermitUserNotFoundException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import com.permitseoul.permitserver.user.component.UserCreator;
+import com.permitseoul.permitserver.user.component.UserRetriever;
 import com.permitseoul.permitserver.user.domain.Sex;
 import com.permitseoul.permitserver.user.domain.SocialType;
 import com.permitseoul.permitserver.user.domain.UserRole;
 import com.permitseoul.permitserver.user.domain.entity.User;
+import com.permitseoul.permitserver.user.exception.UserExistException;
+import com.permitseoul.permitserver.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +30,9 @@ public class AuthService {
     private final LoginStrategyManager loginStrategyManager;
     private final UserCreator userCreator;
     private final JwtProvider jwtProvider;
+    private final UserRetriever userRetriever;
 
+    //회원가입
     @Transactional
     public TokenDto signUp(final String userName,
                            final int userAge,
@@ -34,14 +42,38 @@ public class AuthService {
                            final String authorizationCode,
                            final String redirectUrl) {
         try {
-            final UserSocialInfoDto userSocialInfoDto = loginStrategyManager.getStrategy(socialType).getUserSocialInfo(authorizationCode, redirectUrl);
+            final UserSocialInfoDto userSocialInfoDto = getUserSocialInfo(socialType, authorizationCode, redirectUrl);
+            isUserExist(socialType, userSocialInfoDto.userSocialId());
             final User newUser = createUser(userName, userAge, userSex, userEmail, userSocialInfoDto);
-            final Token newToken = jwtProvider.issueToken(newUser.getUserId(), UserRole.USER);
+            final Token newToken = GetJwtToken(newUser.getUserId());
             return TokenDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
         } catch (AuthFeignException e) {
             throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_FEIGN);
+        } catch (UserExistException e ) {
+            throw new PermitUnAuthorizedException(ErrorCode.CONFLICT);
         } catch (Exception e) {
-            throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED);
+            throw new PermitUnAuthorizedException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public TokenDto login(final SocialType socialType, final String authorizationCode, final String redirectUrl) {
+        String socialAccessToken = "";
+        try {
+            final UserSocialInfoDto userSocialInfoDto = getUserSocialInfo(socialType, authorizationCode, redirectUrl);
+            socialAccessToken = Optional.ofNullable(
+                    userSocialInfoDto.socialAccessToken())
+                    .filter(token -> !token.isBlank())
+                    .orElseThrow(() -> new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_FEIGN)
+                    );
+            final long userId = getUserIdIfUserExist(socialType, userSocialInfoDto.userSocialId());
+            final Token newToken = GetJwtToken(userId);
+            return TokenDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
+        } catch (AuthFeignException e) {
+            throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_FEIGN);
+        } catch (UserNotFoundException e ) {
+            throw new PermitUserNotFoundException(ErrorCode.NOT_FOUND_USER, socialAccessToken);
+        } catch (Exception e) {
+            throw new PermitUnAuthorizedException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -50,7 +82,7 @@ public class AuthService {
                             final Sex userSex,
                             final String userEmail,
                             final UserSocialInfoDto userSocialInfoDto
-                            ) {
+    ) {
         final User newUser = User.create(
                 userName,
                 userSex,
@@ -60,5 +92,23 @@ public class AuthService {
                 userSocialInfoDto.socialType(),
                 UserRole.USER);
         return userCreator.createUser(newUser);
+    }
+
+    private UserSocialInfoDto getUserSocialInfo(final SocialType socialType,
+                                                final String authorizationCode,
+                                                final String redirectUrl) {
+        return loginStrategyManager.getStrategy(socialType).getUserSocialInfo(authorizationCode, redirectUrl);
+    }
+
+    private long getUserIdIfUserExist(final SocialType socialType, final String socialId) {
+        return userRetriever.getUserIdBySocialInfo(socialType, socialId);
+    }
+
+    private void isUserExist(final SocialType socialType, final String socialId) {
+        userRetriever.isExistUser(socialType, socialId);
+    }
+
+    private Token GetJwtToken(final long userId) {
+        return jwtProvider.issueToken(userId, UserRole.USER);
     }
 }

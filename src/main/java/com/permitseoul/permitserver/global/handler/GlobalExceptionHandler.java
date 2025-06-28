@@ -2,6 +2,7 @@ package com.permitseoul.permitserver.global.handler;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.permitseoul.permitserver.global.exception.PermitApiBaseException;
+import com.permitseoul.permitserver.global.exception.PermitUserNotFoundException;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
@@ -33,6 +34,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(PermitApiBaseException.class)
     public ResponseEntity<BaseResponse<?>> handleCakeApiBaseException(final PermitApiBaseException e) {
         return ApiResponseUtil.failure(e.getErrorCode());
+    }
+
+    @ExceptionHandler(PermitUserNotFoundException.class)
+    public ResponseEntity<BaseResponse<?>> handlePermitUserNotFoundException(final PermitUserNotFoundException e) {
+        return ApiResponseUtil.failure(e.getErrorCode(), e.getSocialAccessToken());
     }
 
     /**

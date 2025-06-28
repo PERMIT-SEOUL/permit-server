@@ -34,7 +34,7 @@ public class GoogleLoginStrategy implements LoginStrategy {
                             Constants.AUTHCODE).id_token())
                     .filter(token -> !token.isBlank())
                     .orElseThrow(AuthFeignException::new);
-            return UserSocialInfoDto.of(SocialType.GOOGLE, extractGoogleUid(googleIdToken));
+            return UserSocialInfoDto.of(SocialType.GOOGLE, extractGoogleUid(googleIdToken), googleIdToken);
         } catch (Exception e) {
             throw new AuthFeignException();
         }
