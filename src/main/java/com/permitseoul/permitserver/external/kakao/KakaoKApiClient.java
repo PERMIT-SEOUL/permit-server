@@ -6,9 +6,9 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-@FeignClient(name = "KakaoKApiClient", url = "https://kapi.kakao.com/v1")
+@FeignClient(name = "KakaoKApiClient", url = "https://kapi.kakao.com")
 public interface KakaoKApiClient {
-    @GetMapping("/access_token_info")
+    @GetMapping("/v1/user/access_token_info")
     KakaoATInfoResponse getKakaoSocialId(@RequestHeader(Constants.AUTHORIZATION) final String accessTokenWithBearer);
 
 }
