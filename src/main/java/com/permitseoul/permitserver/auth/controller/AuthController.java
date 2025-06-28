@@ -4,6 +4,7 @@ import com.permitseoul.permitserver.auth.dto.TokenDto;
 import com.permitseoul.permitserver.auth.dto.SignUpRequest;
 import com.permitseoul.permitserver.auth.service.AuthService;
 import com.permitseoul.permitserver.global.Constants;
+import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.SuccessCode;
 import jakarta.servlet.http.HttpServletResponse;
@@ -53,8 +54,6 @@ public class AuthController {
         response.setHeader("Set-Cookie", accessTokenCookie.toString());
         response.addHeader("Set-Cookie", refreshTokenCookie.toString());
 
-        return ResponseEntity
-                .status(SuccessCode.CREATED.getCode())
-                .build();
+        return ApiResponseUtil.success(SuccessCode.CREATED);
     }
 }
