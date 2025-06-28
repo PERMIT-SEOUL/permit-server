@@ -28,7 +28,8 @@ public class SecurityConfig {
 
     private static final String[] whiteURIList = {
             "/actuator/health",
-            "/api/users/signup"
+            "/api/users/signup",
+            "/api/users/login",
     };
 
     private static final String[] adminURIList = {
