@@ -25,10 +25,15 @@ public class KakaoLoginStrategy implements LoginStrategy {
     public UserSocialInfoDto getUserSocialInfo(final String authorizationCode, final String redirectUrl) {
         try {
             final String kakaoAccessToken = getKakaoAccessToken(authorizationCode, redirectUrl);
-            return UserSocialInfoDto.of(SocialType.KAKAO, getKakaoSocialId(kakaoAccessToken));
+            return UserSocialInfoDto.of(SocialType.KAKAO, getKakaoSocialId(kakaoAccessToken), kakaoAccessToken);
         } catch (Exception e ) {
             throw new AuthFeignException();
         }
+    }
+
+    @Override
+    public String getUserSocialId(String socialAccessToken) {
+        return getKakaoSocialId(socialAccessToken);
     }
 
     @Override

@@ -39,12 +39,11 @@ public class AuthService {
                            final Sex userSex,
                            final String userEmail,
                            final SocialType socialType,
-                           final String authorizationCode,
-                           final String redirectUrl) {
+                           final String socialAccessToken) {
         try {
-            final UserSocialInfoDto userSocialInfoDto = getUserSocialInfo(socialType, authorizationCode, redirectUrl);
-            isUserExist(socialType, userSocialInfoDto.userSocialId());
-            final User newUser = createUser(userName, userAge, userSex, userEmail, userSocialInfoDto);
+            final String userSocialId = getUserSocialId(socialType, socialAccessToken);
+            isUserExist(socialType, userSocialId);
+            final User newUser = createUser(userName, userAge, userSex, userEmail, userSocialId, socialType);
             final Token newToken = GetJwtToken(newUser.getUserId());
             return TokenDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
         } catch (AuthFeignException e) {
@@ -77,19 +76,24 @@ public class AuthService {
         }
     }
 
+    private String getUserSocialId(final SocialType socialType, final String socialAccessToken) {
+        return loginStrategyManager.getStrategy(socialType).getUserSocialId(socialAccessToken);
+    }
+
     private User createUser(final String userName,
                             final int userAge,
                             final Sex userSex,
                             final String userEmail,
-                            final UserSocialInfoDto userSocialInfoDto
+                            final String userSocialId,
+                            final SocialType socialType
     ) {
         final User newUser = User.create(
                 userName,
                 userSex,
                 userAge,
                 userEmail,
-                userSocialInfoDto.userSocialId(),
-                userSocialInfoDto.socialType(),
+                userSocialId,
+                socialType,
                 UserRole.USER);
         return userCreator.createUser(newUser);
     }

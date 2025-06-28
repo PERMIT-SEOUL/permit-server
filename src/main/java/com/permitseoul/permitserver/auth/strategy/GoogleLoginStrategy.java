@@ -41,8 +41,17 @@ public class GoogleLoginStrategy implements LoginStrategy {
     }
 
     @Override
+    public String getUserSocialId(String socialAccessToken) {
+        return getGoogleSocialId(socialAccessToken);
+    }
+
+    @Override
     public SocialType getSocialType() {
         return SocialType.GOOGLE;
+    }
+
+    private String getGoogleSocialId(String socialAccessToken) {
+        return extractGoogleUid(socialAccessToken);
     }
 
     private String extractGoogleUid(final String idToken) {

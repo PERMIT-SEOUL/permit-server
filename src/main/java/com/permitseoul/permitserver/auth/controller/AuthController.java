@@ -33,8 +33,7 @@ public class AuthController {
                 signUpRequest.userSex(),
                 signUpRequest.userEmail(),
                 signUpRequest.socialType(),
-                signUpRequest.authorizationCode(),
-                signUpRequest.redirectUrl()
+                signUpRequest.socialAccessToken()
         );
 
         final ResponseCookie accessTokenCookie = ResponseCookie.from(Constants.ACCESS_TOKEN, tokenDto.accessToken())
