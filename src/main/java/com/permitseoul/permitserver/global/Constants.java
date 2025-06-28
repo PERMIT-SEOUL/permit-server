@@ -9,5 +9,7 @@ public abstract class Constants {
     public static final String BEARER = "Bearer ";
     public static final String CHARACTER_TYPE = "utf-8";
     public static final String USER_ROLE = "userRole";
+    public static final String KAKAO_AUTHCODE = "authorization_code";
+
 
 }
