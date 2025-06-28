@@ -2,7 +2,8 @@ package com.permitseoul.permitserver.global.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.permitseoul.permitserver.global.response.code.ApiCode;
-import com.permitseoul.permitserver.global.response.code.SuccessBaseCode;
+import com.permitseoul.permitserver.global.response.code.ErrorCode;
+import com.permitseoul.permitserver.global.response.code.SuccessCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,23 +22,23 @@ public class BaseResponse<T> {
 
     public static BaseResponse<?> of(final ApiCode apiMessage) {
         return BaseResponse.builder()
-                .status(apiMessage.getStatus())
+                .status(apiMessage.getCode())
                 .message(apiMessage.getMessage())
                 .build();
     }
 
-    public static <T> BaseResponse<?> of(final SuccessBaseCode successCode, final T data) {
+    public static <T> BaseResponse<?> of(final SuccessCode successCode, final T data) {
         return BaseResponse.builder()
-                .status(successCode.getStatus())
+                .status(successCode.getCode())
                 .message(successCode.getMessage())
                 .data(data)
                 .build();
     }
 
     //error 메시지 따로 넣어줄 때, 사용
-    public static BaseResponse<?> of(final int code, final String message) {
+    public static BaseResponse<?> of(final ErrorCode errorCode, final String message) {
         return BaseResponse.builder()
-                .status(code)
+                .status(errorCode.getCode())
                 .message(message)
                 .build();
     }
