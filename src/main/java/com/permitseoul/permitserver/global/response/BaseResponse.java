@@ -22,14 +22,14 @@ public class BaseResponse<T> {
 
     public static BaseResponse<?> of(final ApiCode apiMessage) {
         return BaseResponse.builder()
-                .status(apiMessage.getStatus())
+                .status(apiMessage.getCode())
                 .message(apiMessage.getMessage())
                 .build();
     }
 
     public static <T> BaseResponse<?> of(final SuccessCode successCode, final T data) {
         return BaseResponse.builder()
-                .status(successCode.getStatus())
+                .status(successCode.getCode())
                 .message(successCode.getMessage())
                 .data(data)
                 .build();
@@ -38,7 +38,7 @@ public class BaseResponse<T> {
     //error 메시지 따로 넣어줄 때, 사용
     public static BaseResponse<?> of(final ErrorCode errorCode, final String message) {
         return BaseResponse.builder()
-                .status(errorCode.getStatus())
+                .status(errorCode.getCode())
                 .message(message)
                 .build();
     }

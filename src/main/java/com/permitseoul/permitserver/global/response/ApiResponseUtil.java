@@ -15,16 +15,16 @@ public class ApiResponseUtil {
                 .body(BaseResponse.of(successCode, data));
     }
 
-    public static ResponseEntity<BaseResponse<?>> failure(final ErrorCode errorBaseCode) {
-        return ResponseEntity.status(errorBaseCode.getHttpStatus())
-                .body(BaseResponse.of(errorBaseCode));
+    public static ResponseEntity<BaseResponse<?>> failure(final ErrorCode errorCode) {
+        return ResponseEntity.status(errorCode.getHttpStatus())
+                .body(BaseResponse.of(errorCode));
     }
 
     //따로 error message 넣어줄 때, 사용
-    public static ResponseEntity<BaseResponse<?>> failure(final ErrorCode errorBaseCode, final String message) {
+    public static ResponseEntity<BaseResponse<?>> failure(final ErrorCode errorCode, final String message) {
         return ResponseEntity
-                .status(errorBaseCode.getHttpStatus())
-                .body(BaseResponse.of(errorBaseCode.getCode(), message));
+                .status(errorCode.getHttpStatus())
+                .body(BaseResponse.of(errorCode, message));
     }
 }
 

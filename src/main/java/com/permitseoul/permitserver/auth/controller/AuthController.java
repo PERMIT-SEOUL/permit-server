@@ -54,7 +54,7 @@ public class AuthController {
         response.addHeader("Set-Cookie", refreshTokenCookie.toString());
 
         return ResponseEntity
-                .status(SuccessCode.CREATED.getStatus())
+                .status(SuccessCode.CREATED.getCode())
                 .build();
     }
 }
