@@ -31,7 +31,7 @@ public class GoogleLoginStrategy implements LoginStrategy {
                             googleProperties.clientId(),
                             googleProperties.clientSecretId(),
                             redirectUrl,
-                            Constants.AUTHCODE).id_token())
+                            Constants.AUTHCODE).idToken())
                     .filter(token -> !token.isBlank())
                     .orElseThrow(AuthFeignException::new);
             return UserSocialInfoDto.of(SocialType.GOOGLE, extractGoogleUid(googleIdToken), googleIdToken);
