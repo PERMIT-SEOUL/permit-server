@@ -24,10 +24,7 @@ public record SignUpRequest(
         @NotNull(message = "소셜 타입은 필수입니다.")
         SocialType socialType,
 
-        @NotBlank(message = "authorizationCode는 필수입니다.")
-        String authorizationCode,
-
-        @NotBlank(message = "redirectUrl은 필수입니다.")
-        String redirectUrl
+        @NotBlank(message = "socialAccessToken는 필수입니다.")
+        String socialAccessToken
 ) {
 }

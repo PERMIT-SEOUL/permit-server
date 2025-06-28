@@ -34,15 +34,24 @@ public class GoogleLoginStrategy implements LoginStrategy {
                             Constants.AUTHCODE).id_token())
                     .filter(token -> !token.isBlank())
                     .orElseThrow(AuthFeignException::new);
-            return UserSocialInfoDto.of(SocialType.GOOGLE, extractGoogleUid(googleIdToken));
+            return UserSocialInfoDto.of(SocialType.GOOGLE, extractGoogleUid(googleIdToken), googleIdToken);
         } catch (Exception e) {
             throw new AuthFeignException();
         }
     }
 
     @Override
+    public String getUserSocialId(String socialAccessToken) {
+        return getGoogleSocialId(socialAccessToken);
+    }
+
+    @Override
     public SocialType getSocialType() {
         return SocialType.GOOGLE;
+    }
+
+    private String getGoogleSocialId(String socialAccessToken) {
+        return extractGoogleUid(socialAccessToken);
     }
 
     private String extractGoogleUid(final String idToken) {
