@@ -18,7 +18,7 @@ public class UserRetriever {
     }
 
     public void isExistUser(final SocialType socialType, final String socialId) {
-        if (!userRepository.existsBySocialTypeAndSocialId(socialType, socialId)) {
+        if (userRepository.existsBySocialTypeAndSocialId(socialType, socialId)) {
             throw new UserExistException();
         }
     }
