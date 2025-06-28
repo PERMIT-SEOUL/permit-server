@@ -29,7 +29,7 @@ class JwtProviderTest {
     void 토큰_발급_및_userId_정상_추출() {
         // given
         long userId = 123L;
-        UserRole userRole = UserRole.ROLE_USER;
+        UserRole userRole = UserRole.USER;
 
         // when
         Token token = jwtProvider.issueToken(userId, userRole);
@@ -60,7 +60,7 @@ class JwtProviderTest {
         JwtGenerator shortGenerator = new JwtGenerator(shortExpireProps);
         JwtProvider shortProvider = new JwtProvider(shortGenerator);
 
-        String token = shortGenerator.generateAccessToken(1L, UserRole.ROLE_USER);
+        String token = shortGenerator.generateAccessToken(1L, UserRole.USER);
 
         // 1.5초 대기 후 만료 유도
         Thread.sleep(1500);

@@ -36,7 +36,7 @@ public class AuthService {
         try {
             final UserSocialInfoDto userSocialInfoDto = loginStrategyManager.getStrategy(socialType).getUserSocialInfo(authorizationCode, redirectUrl);
             final User newUser = createUser(userName, userAge, userSex, userEmail, userSocialInfoDto);
-            final Token newToken = jwtProvider.issueToken(newUser.getUserId(), UserRole.ROLE_USER);
+            final Token newToken = jwtProvider.issueToken(newUser.getUserId(), UserRole.USER);
             return TokenDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
         } catch (AuthFeignException e) {
             throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_FEIGN);
@@ -58,7 +58,7 @@ public class AuthService {
                 userEmail,
                 userSocialInfoDto.userSocialId(),
                 userSocialInfoDto.socialType(),
-                UserRole.ROLE_USER);
+                UserRole.USER);
         return userCreator.createUser(newUser);
     }
 }

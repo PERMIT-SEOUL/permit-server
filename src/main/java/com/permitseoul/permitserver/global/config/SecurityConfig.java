@@ -52,7 +52,7 @@ public class SecurityConfig {
                         exceptionHandlingConfigurer.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(whiteURIList).permitAll() //로그인 상관 X
-                        .requestMatchers(adminURIList).hasRole(UserRole.ROLE_ADMIN.name())  // ADMIN 권한 필요
+                        .requestMatchers(adminURIList).hasRole(UserRole.ADMIN.name())  // ADMIN 권한 필요
 //                        .requestMatchers(authRequiredUrlList).authenticated() // 로그인 필수(todo: 추후에 생기면 주석풀기)
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, List.of(whiteURIList)), UsernamePasswordAuthenticationFilter.class)
