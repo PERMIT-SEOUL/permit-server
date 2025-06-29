@@ -8,6 +8,7 @@ import com.permitseoul.permitserver.auth.exception.AuthFeignException;
 import com.permitseoul.permitserver.auth.exception.AuthRTCacheException;
 import com.permitseoul.permitserver.auth.exception.AuthWrongJwtException;
 import com.permitseoul.permitserver.auth.jwt.JwtProvider;
+import com.permitseoul.permitserver.auth.jwt.RTCacheManager;
 import com.permitseoul.permitserver.auth.strategy.LoginStrategyManager;
 import com.permitseoul.permitserver.global.exception.PermitUnAuthorizedException;
 import com.permitseoul.permitserver.global.exception.PermitUserNotFoundException;
@@ -34,6 +35,7 @@ public class AuthService {
     private final UserCreator userCreator;
     private final JwtProvider jwtProvider;
     private final UserRetriever userRetriever;
+    private final RTCacheManager rtCacheManager;
 
     //회원가입
     @Transactional
@@ -80,7 +82,7 @@ public class AuthService {
     public TokenDto reissue(final String refreshToken) {
         try {
             final long userId = jwtProvider.extractUserIdFromToken(refreshToken);
-            final String refreshTokenFromCache = jwtProvider.getRefreshTokenFromCache(userId);
+            final String refreshTokenFromCache = rtCacheManager.getRefreshTokenFromCache(userId);
             if (!refreshToken.equals(refreshTokenFromCache)) {
                 throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_WRONG_RT);
             }
@@ -93,6 +95,15 @@ public class AuthService {
         } catch (AuthRTCacheException e) {
             throw new PermitUnAuthorizedException(ErrorCode.INTERNAL_RT_CACHE_ERROR);
         }
+    }
+
+    //로그아웃
+    public void logout(final long userId, final String refreshTokenFromCookie) {
+        final String refreshTokenFromCache = rtCacheManager.getRefreshTokenFromCache(userId);
+        if (!refreshTokenFromCookie.equals(refreshTokenFromCache)) {
+            throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_WRONG_RT);
+        }
+        rtCacheManager.deleteRefreshTokenFromCache(userId);
     }
 
     private String getUserSocialId(final SocialType socialType, final String socialAccessToken) {

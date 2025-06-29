@@ -8,13 +8,16 @@ import com.permitseoul.permitserver.auth.dto.SignUpRequest;
 import com.permitseoul.permitserver.auth.jwt.CookieCreatorUtil;
 import com.permitseoul.permitserver.auth.service.AuthService;
 import com.permitseoul.permitserver.global.Constants;
+import com.permitseoul.permitserver.global.resolver.user.UserId;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.SuccessCode;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.bcel.Const;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,6 +63,25 @@ public class AuthController {
     ) {
         final TokenDto tokenDto = authService.reissue(refreshCookie.getValue());
         return getBaseResponseResponseEntity(response, tokenDto);
+    }
+
+
+
+    //로그아웃
+    @PostMapping("/logout")
+    public ResponseEntity<BaseResponse<?>> logout(
+            @UserId final Long userId,
+            @CookieValue(name = Constants.REFRESH_TOKEN) final Cookie refreshTokenCookie,
+            final HttpServletResponse response
+            ) {
+        authService.logout(userId, refreshTokenCookie.getValue());
+
+        // 쿠키 삭제
+        final ResponseCookie deleteAccessToken = CookieCreatorUtil.deleteAccessTokenCookie();
+        final ResponseCookie deleteRefreshToken = CookieCreatorUtil.deleteRefreshTokenCookie();
+        response.setHeader("Set-Cookie", deleteAccessToken.toString());
+        response.addHeader("Set-Cookie", deleteRefreshToken.toString());
+        return ApiResponseUtil.success(SuccessCode.OK);
     }
 
     private ResponseEntity<BaseResponse<?>> getBaseResponseResponseEntity(HttpServletResponse response, TokenDto tokenDto) {

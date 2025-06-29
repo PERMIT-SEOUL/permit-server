@@ -20,14 +20,13 @@ class JwtProviderTest {
 
     private JwtGenerator jwtGenerator;
     private JwtProvider jwtProvider;
-    private CacheManager cacheManager;
 
     @BeforeEach
     void setUp() {
         String secret = "ThisIsASecretKeyForJwtGeneration1234567890";
         JwtProperties jwtProperties = new JwtProperties(secret, 1000 * 60 * 15, 1000 * 60 * 60 * 24 * 7);
         jwtGenerator = new JwtGenerator(jwtProperties);
-        jwtProvider = new JwtProvider(jwtGenerator, cacheManager);
+        jwtProvider = new JwtProvider(jwtGenerator);
     }
 
     @Test

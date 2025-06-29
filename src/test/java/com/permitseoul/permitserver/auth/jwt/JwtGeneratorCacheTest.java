@@ -26,6 +26,9 @@ class JwtGeneratorCacheTest {
     @Autowired
     private JwtProvider jwtProvider;
 
+    @Autowired
+    private RTCacheManager rtCacheManager;
+
     //테스트 후 캐시 삭제
     @AfterEach
     void tearDown() {
@@ -41,7 +44,7 @@ class JwtGeneratorCacheTest {
         String token = jwtGenerator.generateRefreshToken(userId, UserRole.USER);
 
         // then
-        String cachedToken = jwtProvider.getRefreshTokenFromCache(userId);
+        String cachedToken = rtCacheManager.getRefreshTokenFromCache(userId);
 
         assertThat(cachedToken).isEqualTo(token);
     }
@@ -52,7 +55,7 @@ class JwtGeneratorCacheTest {
         long nonExistUserId = 999L;
 
         // when
-        String token = jwtProvider.getRefreshTokenFromCache(nonExistUserId);
+        String token = rtCacheManager.getRefreshTokenFromCache(nonExistUserId);
 
         // then
         Assertions.assertNull(token);

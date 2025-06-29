@@ -2,20 +2,33 @@ package com.permitseoul.permitserver.auth.jwt;
 
 import com.permitseoul.permitserver.auth.exception.AuthRTCacheException;
 import com.permitseoul.permitserver.global.Constants;
+import lombok.RequiredArgsConstructor;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class RTCacheManager {
+    private final CacheManager cacheManager;
 
     //RT 캐시에서 삭제
-    @CacheEvict(value = Constants.REFRESH_TOKEN, key = "#userId")
-    public void deleteRefreshToken(final long userId) { }
+    public void deleteRefreshTokenFromCache(final long userId) {
+        final Cache cache = cacheManager.getCache(Constants.REFRESH_TOKEN);
+        if (cache == null) {
+            throw new AuthRTCacheException();
+        }
+        cache.evict(userId);
+    }
 
     //RT 캐시에서 조회
-    @Cacheable(value = Constants.REFRESH_TOKEN, key = "#userId")
-    public String findRTFromCache(final long userId) {
-        throw new AuthRTCacheException(); ///아무 값이 안들어가있으면 예외
+    public String getRefreshTokenFromCache(final long userId) {
+        final Cache cache = cacheManager.getCache(Constants.REFRESH_TOKEN);
+        if (cache == null) {
+            throw new AuthRTCacheException();
+        }
+        return cache.get(userId, String.class);
     }
 }
