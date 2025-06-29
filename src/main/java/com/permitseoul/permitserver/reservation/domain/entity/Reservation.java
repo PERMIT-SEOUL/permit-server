@@ -3,9 +3,14 @@ package com.permitseoul.permitserver.reservation.domain.entity;
 import com.permitseoul.permitserver.global.domain.BaseTimeEntity;
 import com.permitseoul.permitserver.reservation.domain.ReservationStatus;
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "reservations")
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@AllArgsConstructor
 public class Reservation extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

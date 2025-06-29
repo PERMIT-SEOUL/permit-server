@@ -3,9 +3,14 @@ package com.permitseoul.permitserver.ticket.domain.entity;
 import com.permitseoul.permitserver.global.domain.BaseTimeEntity;
 import com.permitseoul.permitserver.ticket.domain.TicketStatus;
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "tickets")
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@AllArgsConstructor
 public class Ticket extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
