@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -166,6 +167,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<BaseResponse<?>> handleNoHandlerFoundException(final NoHandlerFoundException e) {
         return ApiResponseUtil.failure(ErrorCode.NOT_FOUND_API);
     }
+
+    /**
+     * 404 - MissingRequestCookieException
+     * 발생 이유 : 잘못된 api로 요청했을 때 발생
+     */
+    @ExceptionHandler(MissingRequestCookieException.class)
+    public ResponseEntity<BaseResponse<?>> handleMissingRequestCookieException(final MissingRequestCookieException e) {
+        return ApiResponseUtil.failure(ErrorCode.NOT_FOUND_API);
+    }
+
+
 
     /**
      * 405 - HttpRequestMethodNotSupportedException
