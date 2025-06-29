@@ -2,6 +2,8 @@ package com.permitseoul.permitserver.global.handler;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.permitseoul.permitserver.global.exception.PermitApiBaseException;
+import com.permitseoul.permitserver.global.exception.PermitBaseException;
+import com.permitseoul.permitserver.global.exception.PermitUnAuthorizedException;
 import com.permitseoul.permitserver.global.exception.PermitUserNotFoundException;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
@@ -30,6 +32,12 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(PermitUnAuthorizedException.class)
+    public ResponseEntity<BaseResponse<?>> handlePermitUnAuthorizedException(final PermitUnAuthorizedException e) {
+        return ApiResponseUtil.failure(e.getErrorCode());
+    }
+
 
     @ExceptionHandler(PermitApiBaseException.class)
     public ResponseEntity<BaseResponse<?>> handleCakeApiBaseException(final PermitApiBaseException e) {

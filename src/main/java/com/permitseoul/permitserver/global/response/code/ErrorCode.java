@@ -57,7 +57,11 @@ public enum ErrorCode implements ApiCode {
     /**
      * 500 Internal Server Error
      */
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50000, "서버 내부 오류입니다.");
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50000, "서버 내부 오류입니다."),
+    INTERNAL_RT_CACHE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50001, "RT가 캐시에 저장되어 있지 않습니다."),
+
+
+    ;
 
     private final HttpStatus httpStatus;
     private final int code;

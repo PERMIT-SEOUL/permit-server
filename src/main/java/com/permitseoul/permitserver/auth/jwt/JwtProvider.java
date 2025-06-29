@@ -2,11 +2,13 @@ package com.permitseoul.permitserver.auth.jwt;
 
 import com.permitseoul.permitserver.auth.domain.Token;
 import com.permitseoul.permitserver.auth.exception.AuthExpiredJwtException;
+import com.permitseoul.permitserver.auth.exception.AuthRTCacheException;
 import com.permitseoul.permitserver.auth.exception.AuthWrongJwtException;
 import com.permitseoul.permitserver.global.Constants;
 import com.permitseoul.permitserver.user.domain.UserRole;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 
@@ -54,8 +56,11 @@ public class JwtProvider {
     }
 
     public String getRefreshTokenFromCache(final long userId) {
-        return cacheManager.getCache(Constants.REFRESH_TOKEN)
-                .get(userId, String.class);
+        final Cache cache = cacheManager.getCache(Constants.REFRESH_TOKEN);
+        if (cache == null) {
+            throw new AuthRTCacheException();
+        }
+        return cache.get(userId, String.class);
     }
 
     //토큰 파싱

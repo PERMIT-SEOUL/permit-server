@@ -4,9 +4,14 @@ import com.permitseoul.permitserver.auth.domain.Token;
 import com.permitseoul.permitserver.auth.exception.AuthExpiredJwtException;
 import com.permitseoul.permitserver.auth.exception.AuthWrongJwtException;
 import com.permitseoul.permitserver.user.domain.UserRole;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.cache.CacheManager;
+
+import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -16,8 +21,6 @@ class JwtProviderTest {
     private JwtGenerator jwtGenerator;
     private JwtProvider jwtProvider;
     private CacheManager cacheManager;
-
-
 
     @BeforeEach
     void setUp() {
@@ -52,24 +55,20 @@ class JwtProviderTest {
     }
 
     @Test
-    void 엑세스_토큰_만료_테스트() throws InterruptedException {
+    void 만료된_토큰_파싱시_AuthExpiredJwtException_발생() {
         // given
-        String secret = "ThisIsASecretKeyForJwtGeneration1234567890";
+        long userId = 1L;
+        String expiredToken = Jwts.builder()
+                .setSubject(String.valueOf(userId))
+                .setIssuedAt(new Date(System.currentTimeMillis() - 10_000))
+                .setExpiration(new Date(System.currentTimeMillis() - 5_000))
+                .signWith(jwtGenerator.getSecretKey(), SignatureAlgorithm.HS256)
+                .compact();
 
-        // 만료시간 1초 설정
-        JwtProperties shortExpireProps = new JwtProperties(secret, 1000, 1000 * 60 * 60 * 24 * 7);
-
-        JwtGenerator shortGenerator = new JwtGenerator(shortExpireProps);
-        JwtProvider shortProvider = new JwtProvider(shortGenerator, cacheManager);
-
-        String token = shortGenerator.generateAccessToken(1L, UserRole.USER);
-
-        // 1.5초 대기 후 만료 유도
-        Thread.sleep(1500);
-
-        // expect: 만료 예외 발생
-        assertThatThrownBy(() -> shortProvider.extractUserIdFromToken(token))
-                .isInstanceOf(AuthExpiredJwtException.class);
+        // when & then
+        Assertions.assertThrows(AuthExpiredJwtException.class, () -> {
+            jwtProvider.extractUserIdFromToken(expiredToken);
+        });
     }
 
 }

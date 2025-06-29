@@ -5,6 +5,7 @@ import com.permitseoul.permitserver.auth.domain.Token;
 import com.permitseoul.permitserver.auth.dto.TokenDto;
 import com.permitseoul.permitserver.auth.dto.UserSocialInfoDto;
 import com.permitseoul.permitserver.auth.exception.AuthFeignException;
+import com.permitseoul.permitserver.auth.exception.AuthRTCacheException;
 import com.permitseoul.permitserver.auth.exception.AuthWrongJwtException;
 import com.permitseoul.permitserver.auth.jwt.JwtProvider;
 import com.permitseoul.permitserver.auth.strategy.LoginStrategyManager;
@@ -49,7 +50,7 @@ public class AuthService {
             final Token newToken = GetJwtToken(newUser.getUserId());
             return TokenDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
         } catch (AuthFeignException e) {
-            throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_FEIGN);
+            throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_FEIGN, e.getMessage());
         } catch (UserExistException e ) {
             throw new PermitUnAuthorizedException(ErrorCode.CONFLICT);
         }
@@ -69,7 +70,7 @@ public class AuthService {
             final Token newToken = GetJwtToken(userId);
             return TokenDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
         } catch (AuthFeignException e) {
-            throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_FEIGN);
+            throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_FEIGN, e.getMessage());
         } catch (UserNotFoundException e ) {
             throw new PermitUserNotFoundException(ErrorCode.NOT_FOUND_USER, socialAccessToken);
         }
@@ -79,7 +80,8 @@ public class AuthService {
     public TokenDto reissue(final String refreshToken) {
         try {
             final long userId = jwtProvider.extractUserIdFromToken(refreshToken);
-            if (!refreshToken.equals(jwtProvider.getRefreshTokenFromCache(userId))) {
+            final String refreshTokenFromCache = jwtProvider.getRefreshTokenFromCache(userId);
+            if (!refreshToken.equals(refreshTokenFromCache)) {
                 throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_WRONG_RT);
             }
             final Token newToken = jwtProvider.issueToken(userId, UserRole.USER);
@@ -88,6 +90,8 @@ public class AuthService {
             throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_WRONG_RT);
         } catch (ExpiredJwtException e) {
             throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_RT_EXPIRED);
+        } catch (AuthRTCacheException e) {
+            throw new PermitUnAuthorizedException(ErrorCode.INTERNAL_RT_CACHE_ERROR);
         }
     }
 
