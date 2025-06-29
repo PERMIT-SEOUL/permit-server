@@ -36,6 +36,7 @@ public class CookieCreatorUtil {
                 .maxAge(0)
                 .httpOnly(true)
                 .secure(true)
+                .sameSite("Strict")
                 .build();
     }
 
@@ -45,6 +46,7 @@ public class CookieCreatorUtil {
                 .maxAge(0)
                 .httpOnly(true)
                 .secure(true)
+                .sameSite("Strict")
                 .build();
     }
 }
