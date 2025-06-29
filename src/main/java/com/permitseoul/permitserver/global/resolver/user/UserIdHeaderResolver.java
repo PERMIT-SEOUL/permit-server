@@ -13,8 +13,8 @@ public class UserIdHeaderResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(UserId.class) && Long.class.equals(parameter.getParameterType());
-
+        return (parameter.getParameterType().equals(Long.class) || parameter.getParameterType().equals(long.class))
+                && parameter.hasParameterAnnotation(UserId.class);
     }
 
     @Override

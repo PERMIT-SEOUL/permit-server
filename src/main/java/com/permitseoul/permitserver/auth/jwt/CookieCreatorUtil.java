@@ -29,4 +29,22 @@ public class CookieCreatorUtil {
                 .sameSite("Strict")
                 .build();
     }
+
+    public static ResponseCookie deleteAccessTokenCookie() {
+        return ResponseCookie.from(Constants.ACCESS_TOKEN, "")
+                .path("/")
+                .maxAge(0)
+                .httpOnly(true)
+                .secure(true)
+                .build();
+    }
+
+    public static ResponseCookie deleteRefreshTokenCookie() {
+        return ResponseCookie.from(Constants.REFRESH_TOKEN, "")
+                .path("/")
+                .maxAge(0)
+                .httpOnly(true)
+                .secure(true)
+                .build();
+    }
 }

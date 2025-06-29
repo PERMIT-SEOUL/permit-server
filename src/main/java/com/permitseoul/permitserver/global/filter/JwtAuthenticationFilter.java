@@ -12,6 +12,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -49,7 +50,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final long userId = jwtProvider.extractUserIdFromToken(token);
         final String userRole = jwtProvider.extractUserRoleFromToken(token);
         final List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(userRole));
-        SecurityContextHolder.getContext().setAuthentication(new UserAuthentication(userId, null, authorities));
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(userId, null, authorities));
     }
 
     private boolean isWhiteListUrl(final String requestURI) {
