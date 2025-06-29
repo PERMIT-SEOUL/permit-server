@@ -33,11 +33,11 @@ public class JwtGenerator {
         final Date expireDate = generateExpirationDate(now, TokenType.ACCESS_TOKEN);
 
         final Claims claims = Jwts.claims();
+        claims.setSubject(String.valueOf(userId));
         claims.put(Constants.USER_ROLE, userRole.name());
 
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
-                .setSubject(String.valueOf(userId))
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(expireDate)
@@ -52,11 +52,11 @@ public class JwtGenerator {
         final Date expireDate = generateExpirationDate(now, TokenType.REFRESH_TOKEN);
 
         final Claims claims = Jwts.claims();
+        claims.setSubject(String.valueOf(userId));
         claims.put(Constants.USER_ROLE, userRole);
 
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
-                .setSubject(String.valueOf(userId))
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(expireDate)

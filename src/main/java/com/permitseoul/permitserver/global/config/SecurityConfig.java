@@ -30,6 +30,7 @@ public class SecurityConfig {
             "/actuator/health",
             "/api/users/signup",
             "/api/users/login",
+            "/api/users/reissue",
     };
 
     private static final String[] adminURIList = {

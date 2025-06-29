@@ -1,6 +1,7 @@
 package com.permitseoul.permitserver.auth.controller;
 
 import com.permitseoul.permitserver.auth.domain.Token;
+import com.permitseoul.permitserver.auth.domain.TokenType;
 import com.permitseoul.permitserver.auth.dto.LoginRequest;
 import com.permitseoul.permitserver.auth.dto.TokenDto;
 import com.permitseoul.permitserver.auth.dto.SignUpRequest;
@@ -38,12 +39,7 @@ public class AuthController {
                 signUpRequest.socialType(),
                 signUpRequest.socialAccessToken()
         );
-        final ResponseCookie accessTokenCookie = CookieCreatorUtil.createAccessTokenCookie(tokenDto.accessToken());
-        final ResponseCookie refreshTokenCookie = CookieCreatorUtil.createRefreshTokenCookie(tokenDto.refreshToken());
-        response.setHeader("Set-Cookie", accessTokenCookie.toString());
-        response.addHeader("Set-Cookie", refreshTokenCookie.toString());
-
-        return ApiResponseUtil.success(SuccessCode.CREATED);
+        return getBaseResponseResponseEntity(response, tokenDto);
     }
 
     //로그인
@@ -53,12 +49,7 @@ public class AuthController {
             final HttpServletResponse response
     ) {
         final TokenDto tokenDto = authService.login(loginRequest.socialType(), loginRequest.authorizationCode(), loginRequest.redirectUrl());
-        final ResponseCookie accessTokenCookie = CookieCreatorUtil.createAccessTokenCookie(tokenDto.accessToken());
-        final ResponseCookie refreshTokenCookie = CookieCreatorUtil.createRefreshTokenCookie(tokenDto.refreshToken());
-        response.setHeader("Set-Cookie", accessTokenCookie.toString());
-        response.addHeader("Set-Cookie", refreshTokenCookie.toString());
-
-        return ApiResponseUtil.success(SuccessCode.CREATED);
+        return getBaseResponseResponseEntity(response, tokenDto);
     }
 
     //jwt 재발급
@@ -68,6 +59,10 @@ public class AuthController {
             final HttpServletResponse response
     ) {
         final TokenDto tokenDto = authService.reissue(refreshCookie.getValue());
+        return getBaseResponseResponseEntity(response, tokenDto);
+    }
+
+    private ResponseEntity<BaseResponse<?>> getBaseResponseResponseEntity(HttpServletResponse response, TokenDto tokenDto) {
         final ResponseCookie accessTokenCookie = CookieCreatorUtil.createAccessTokenCookie(tokenDto.accessToken());
         final ResponseCookie refreshTokenCookie = CookieCreatorUtil.createRefreshTokenCookie(tokenDto.refreshToken());
         response.setHeader("Set-Cookie", accessTokenCookie.toString());
