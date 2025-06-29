@@ -70,4 +70,7 @@ public class AuthController {
 
         return ApiResponseUtil.success(SuccessCode.CREATED);
     }
+
+    //로그아웃
+    @PostMapping
 }
