@@ -1,12 +1,17 @@
 package com.permitseoul.permitserver.eventDate.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
 @Table(name = "event_dates")
+@Builder(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@AllArgsConstructor
 public class EventDate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

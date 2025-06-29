@@ -3,11 +3,16 @@ package com.permitseoul.permitserver.event.domain.entity;
 import com.permitseoul.permitserver.event.domain.EventType;
 import com.permitseoul.permitserver.global.domain.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "events")
+@Builder(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@AllArgsConstructor
 public class Event extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

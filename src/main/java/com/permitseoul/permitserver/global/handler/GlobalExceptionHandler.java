@@ -2,6 +2,8 @@ package com.permitseoul.permitserver.global.handler;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.permitseoul.permitserver.global.exception.PermitApiBaseException;
+import com.permitseoul.permitserver.global.exception.PermitBaseException;
+import com.permitseoul.permitserver.global.exception.PermitUnAuthorizedException;
 import com.permitseoul.permitserver.global.exception.PermitUserNotFoundException;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
@@ -16,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -30,6 +33,12 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(PermitUnAuthorizedException.class)
+    public ResponseEntity<BaseResponse<?>> handlePermitUnAuthorizedException(final PermitUnAuthorizedException e) {
+        return ApiResponseUtil.failure(e.getErrorCode());
+    }
+
 
     @ExceptionHandler(PermitApiBaseException.class)
     public ResponseEntity<BaseResponse<?>> handleCakeApiBaseException(final PermitApiBaseException e) {
@@ -158,6 +167,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<BaseResponse<?>> handleNoHandlerFoundException(final NoHandlerFoundException e) {
         return ApiResponseUtil.failure(ErrorCode.NOT_FOUND_API);
     }
+
+    /**
+     * 404 - MissingRequestCookieException
+     * 발생 이유 : 잘못된 api로 요청했을 때 발생
+     */
+    @ExceptionHandler(MissingRequestCookieException.class)
+    public ResponseEntity<BaseResponse<?>> handleMissingRequestCookieException(final MissingRequestCookieException e) {
+        return ApiResponseUtil.failure(ErrorCode.NOT_FOUND_API);
+    }
+
+
 
     /**
      * 405 - HttpRequestMethodNotSupportedException

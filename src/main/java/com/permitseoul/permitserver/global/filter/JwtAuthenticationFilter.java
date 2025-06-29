@@ -26,8 +26,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtProvider jwtProvider;
     private final List<String> whiteURIList;
 
-    private static final String ROLE = "ROLE_";
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
@@ -47,7 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void setAuthentication(final HttpServletRequest request) {
-        final String token = CookieExtractor.getTokenCookie(request).getValue();
+        final String token = CookieExtractor.getTokenCookie(request).getValue(); ///accessToken 쿠키 뽑음
         final long userId = jwtProvider.extractUserIdFromToken(token);
         final String userRole = jwtProvider.extractUserRoleFromToken(token);
         final List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(userRole));

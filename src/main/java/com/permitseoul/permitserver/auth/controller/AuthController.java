@@ -1,13 +1,17 @@
 package com.permitseoul.permitserver.auth.controller;
 
+import com.permitseoul.permitserver.auth.domain.Token;
+import com.permitseoul.permitserver.auth.domain.TokenType;
 import com.permitseoul.permitserver.auth.dto.LoginRequest;
 import com.permitseoul.permitserver.auth.dto.TokenDto;
 import com.permitseoul.permitserver.auth.dto.SignUpRequest;
+import com.permitseoul.permitserver.auth.jwt.CookieCreatorUtil;
 import com.permitseoul.permitserver.auth.service.AuthService;
 import com.permitseoul.permitserver.global.Constants;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.SuccessCode;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,26 +39,7 @@ public class AuthController {
                 signUpRequest.socialType(),
                 signUpRequest.socialAccessToken()
         );
-
-        final ResponseCookie accessTokenCookie = ResponseCookie.from(Constants.ACCESS_TOKEN, tokenDto.accessToken())
-                .maxAge(365L * 24 * 60 * 60) ///todo: 추후에 변경
-                .path("/")
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("Strict")
-                .build();
-        final ResponseCookie refreshTokenCookie = ResponseCookie.from(Constants.REFRESH_TOKEN, tokenDto.refreshToken())
-                .maxAge(365L * 24 * 60 * 60) ///todo: 추후에 변경
-                .path("/")
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("Strict")
-                .build();
-
-        response.setHeader("Set-Cookie", accessTokenCookie.toString());
-        response.addHeader("Set-Cookie", refreshTokenCookie.toString());
-
-        return ApiResponseUtil.success(SuccessCode.CREATED);
+        return getBaseResponseResponseEntity(response, tokenDto);
     }
 
     //로그인
@@ -64,22 +49,22 @@ public class AuthController {
             final HttpServletResponse response
     ) {
         final TokenDto tokenDto = authService.login(loginRequest.socialType(), loginRequest.authorizationCode(), loginRequest.redirectUrl());
+        return getBaseResponseResponseEntity(response, tokenDto);
+    }
 
-        final ResponseCookie accessTokenCookie = ResponseCookie.from(Constants.ACCESS_TOKEN, tokenDto.accessToken())
-                .maxAge(365L * 24 * 60 * 60) ///todo: 추후에 변경
-                .path("/")
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("Strict")
-                .build();
-        final ResponseCookie refreshTokenCookie = ResponseCookie.from(Constants.REFRESH_TOKEN, tokenDto.refreshToken())
-                .maxAge(365L * 24 * 60 * 60) ///todo: 추후에 변경
-                .path("/")
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("Strict")
-                .build();
+    //jwt 재발급
+    @PostMapping("/reissue")
+    public ResponseEntity<BaseResponse<?>> reissue(
+            @CookieValue(name = Constants.REFRESH_TOKEN) Cookie refreshCookie,
+            final HttpServletResponse response
+    ) {
+        final TokenDto tokenDto = authService.reissue(refreshCookie.getValue());
+        return getBaseResponseResponseEntity(response, tokenDto);
+    }
 
+    private ResponseEntity<BaseResponse<?>> getBaseResponseResponseEntity(HttpServletResponse response, TokenDto tokenDto) {
+        final ResponseCookie accessTokenCookie = CookieCreatorUtil.createAccessTokenCookie(tokenDto.accessToken());
+        final ResponseCookie refreshTokenCookie = CookieCreatorUtil.createRefreshTokenCookie(tokenDto.refreshToken());
         response.setHeader("Set-Cookie", accessTokenCookie.toString());
         response.addHeader("Set-Cookie", refreshTokenCookie.toString());
 

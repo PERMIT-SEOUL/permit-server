@@ -5,6 +5,8 @@ import com.permitseoul.permitserver.auth.domain.Token;
 import com.permitseoul.permitserver.auth.dto.TokenDto;
 import com.permitseoul.permitserver.auth.dto.UserSocialInfoDto;
 import com.permitseoul.permitserver.auth.exception.AuthFeignException;
+import com.permitseoul.permitserver.auth.exception.AuthRTCacheException;
+import com.permitseoul.permitserver.auth.exception.AuthWrongJwtException;
 import com.permitseoul.permitserver.auth.jwt.JwtProvider;
 import com.permitseoul.permitserver.auth.strategy.LoginStrategyManager;
 import com.permitseoul.permitserver.global.exception.PermitUnAuthorizedException;
@@ -18,6 +20,7 @@ import com.permitseoul.permitserver.user.domain.UserRole;
 import com.permitseoul.permitserver.user.domain.entity.User;
 import com.permitseoul.permitserver.user.exception.UserExistException;
 import com.permitseoul.permitserver.user.exception.UserNotFoundException;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,20 +50,19 @@ public class AuthService {
             final Token newToken = GetJwtToken(newUser.getUserId());
             return TokenDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
         } catch (AuthFeignException e) {
-            throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_FEIGN);
+            throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_FEIGN, e.getMessage());
         } catch (UserExistException e ) {
             throw new PermitUnAuthorizedException(ErrorCode.CONFLICT);
-        } catch (Exception e) {
-            throw new PermitUnAuthorizedException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 
+    //로그인
     public TokenDto login(final SocialType socialType, final String authorizationCode, final String redirectUrl) {
         String socialAccessToken = "";
         try {
             final UserSocialInfoDto userSocialInfoDto = getUserSocialInfo(socialType, authorizationCode, redirectUrl);
             socialAccessToken = Optional.ofNullable(
-                    userSocialInfoDto.socialAccessToken())
+                            userSocialInfoDto.socialAccessToken())
                     .filter(token -> !token.isBlank())
                     .orElseThrow(() -> new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_FEIGN)
                     );
@@ -68,11 +70,28 @@ public class AuthService {
             final Token newToken = GetJwtToken(userId);
             return TokenDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
         } catch (AuthFeignException e) {
-            throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_FEIGN);
+            throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_FEIGN, e.getMessage());
         } catch (UserNotFoundException e ) {
             throw new PermitUserNotFoundException(ErrorCode.NOT_FOUND_USER, socialAccessToken);
-        } catch (Exception e) {
-            throw new PermitUnAuthorizedException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //jwt 재발급
+    public TokenDto reissue(final String refreshToken) {
+        try {
+            final long userId = jwtProvider.extractUserIdFromToken(refreshToken);
+            final String refreshTokenFromCache = jwtProvider.getRefreshTokenFromCache(userId);
+            if (!refreshToken.equals(refreshTokenFromCache)) {
+                throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_WRONG_RT);
+            }
+            final Token newToken = GetJwtToken(userId);
+            return TokenDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
+        } catch (AuthWrongJwtException e) {
+            throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_WRONG_RT);
+        } catch (ExpiredJwtException e) {
+            throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_RT_EXPIRED);
+        } catch (AuthRTCacheException e) {
+            throw new PermitUnAuthorizedException(ErrorCode.INTERNAL_RT_CACHE_ERROR);
         }
     }
 

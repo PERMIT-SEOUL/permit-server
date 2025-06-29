@@ -42,6 +42,7 @@ public enum ErrorCode implements ApiCode {
     NOT_FOUND_ENTITY(HttpStatus.NOT_FOUND, 40400, "대상을 찾을 수 없습니다."),
     NOT_FOUND_API(HttpStatus.NOT_FOUND, 40401, "잘못된 API입니다."),
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, 40402, "없는 유저입니다."),
+    NOT_FOUND_COOKIE(HttpStatus.NOT_FOUND, 40403, "요청 쿠키가 없습니다."),
 
     /**
      * 405 Method Not Allowed
@@ -57,7 +58,11 @@ public enum ErrorCode implements ApiCode {
     /**
      * 500 Internal Server Error
      */
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50000, "서버 내부 오류입니다.");
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50000, "서버 내부 오류입니다."),
+    INTERNAL_RT_CACHE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50001, "RT가 캐시에 저장되어 있지 않습니다."),
+
+
+    ;
 
     private final HttpStatus httpStatus;
     private final int code;

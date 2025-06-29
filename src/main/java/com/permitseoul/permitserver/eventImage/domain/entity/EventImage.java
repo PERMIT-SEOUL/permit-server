@@ -1,9 +1,14 @@
 package com.permitseoul.permitserver.eventImage.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "event_images")
+@Builder(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@AllArgsConstructor
 public class EventImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

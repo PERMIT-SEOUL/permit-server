@@ -16,7 +16,7 @@ public enum SuccessCode implements ApiCode {
     /**
      * 201 Created
      */
-    CREATED(HttpStatus.CREATED, 200100, "요청이 성공했습니다.");
+    CREATED(HttpStatus.CREATED, 20100, "요청이 성공했습니다.");
 
     private final HttpStatus httpStatus;
     private final int code;

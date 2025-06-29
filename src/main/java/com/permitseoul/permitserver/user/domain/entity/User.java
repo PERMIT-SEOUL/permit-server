@@ -7,11 +7,10 @@ import com.permitseoul.permitserver.user.domain.SocialType;
 import com.permitseoul.permitserver.user.domain.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.web.service.annotation.GetExchange;
 
 @Entity
 @Table(name = "users")
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @AllArgsConstructor
