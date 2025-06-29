@@ -6,6 +6,7 @@ import com.permitseoul.permitserver.auth.exception.AuthWrongJwtException;
 import com.permitseoul.permitserver.user.domain.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.cache.CacheManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -14,6 +15,7 @@ class JwtProviderTest {
 
     private JwtGenerator jwtGenerator;
     private JwtProvider jwtProvider;
+    private CacheManager cacheManager;
 
 
 
@@ -22,7 +24,7 @@ class JwtProviderTest {
         String secret = "ThisIsASecretKeyForJwtGeneration1234567890";
         JwtProperties jwtProperties = new JwtProperties(secret, 1000 * 60 * 15, 1000 * 60 * 60 * 24 * 7);
         jwtGenerator = new JwtGenerator(jwtProperties);
-        jwtProvider = new JwtProvider(jwtGenerator);
+        jwtProvider = new JwtProvider(jwtGenerator, cacheManager);
     }
 
     @Test
@@ -58,7 +60,7 @@ class JwtProviderTest {
         JwtProperties shortExpireProps = new JwtProperties(secret, 1000, 1000 * 60 * 60 * 24 * 7);
 
         JwtGenerator shortGenerator = new JwtGenerator(shortExpireProps);
-        JwtProvider shortProvider = new JwtProvider(shortGenerator);
+        JwtProvider shortProvider = new JwtProvider(shortGenerator, cacheManager);
 
         String token = shortGenerator.generateAccessToken(1L, UserRole.USER);
 

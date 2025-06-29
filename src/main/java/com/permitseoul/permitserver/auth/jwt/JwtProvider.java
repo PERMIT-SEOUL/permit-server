@@ -7,12 +7,14 @@ import com.permitseoul.permitserver.global.Constants;
 import com.permitseoul.permitserver.user.domain.UserRole;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
 public class JwtProvider {
     private final JwtGenerator jwtGenerator;
+    private final CacheManager cacheManager;
 
     public Token issueToken(final long userId, final UserRole userRole) {
         return Token.of(
@@ -49,6 +51,11 @@ public class JwtProvider {
     public String extractUserRoleFromToken(final String token) {
         final Jws<Claims> claims = parseToken(token);
         return claims.getBody().get(Constants.USER_ROLE, String.class);
+    }
+
+    public String getRefreshTokenFromCache(final long userId) {
+        return cacheManager.getCache(Constants.REFRESH_TOKEN)
+                .get(userId, String.class);
     }
 
     //토큰 파싱
