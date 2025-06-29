@@ -7,7 +7,7 @@ import lombok.*;
 
 @Entity
 @Table(name = "tickets")
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @AllArgsConstructor

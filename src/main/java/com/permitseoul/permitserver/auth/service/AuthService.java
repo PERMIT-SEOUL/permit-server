@@ -84,7 +84,7 @@ public class AuthService {
             if (!refreshToken.equals(refreshTokenFromCache)) {
                 throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_WRONG_RT);
             }
-            final Token newToken = jwtProvider.issueToken(userId, UserRole.USER);
+            final Token newToken = GetJwtToken(userId);
             return TokenDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
         } catch (AuthWrongJwtException e) {
             throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_WRONG_RT);
