@@ -1,10 +1,9 @@
 package com.permitseoul.permitserver.global.handler;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.permitseoul.permitserver.global.exception.PermitApiBaseException;
-import com.permitseoul.permitserver.global.exception.PermitBaseException;
-import com.permitseoul.permitserver.global.exception.PermitUnAuthorizedException;
-import com.permitseoul.permitserver.global.exception.PermitUserNotFoundException;
+import com.permitseoul.permitserver.domain.auth.api.exception.AuthApiException;
+import com.permitseoul.permitserver.domain.user.api.exception.UserUnAuthorizedException;
+import com.permitseoul.permitserver.domain.user.api.exception.UserNotFoundApiException;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
@@ -34,19 +33,19 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(PermitUnAuthorizedException.class)
-    public ResponseEntity<BaseResponse<?>> handlePermitUnAuthorizedException(final PermitUnAuthorizedException e) {
+    @ExceptionHandler(UserUnAuthorizedException.class)
+    public ResponseEntity<BaseResponse<?>> handlePermitUnAuthorizedException(final UserUnAuthorizedException e) {
         return ApiResponseUtil.failure(e.getErrorCode());
     }
 
 
-    @ExceptionHandler(PermitApiBaseException.class)
-    public ResponseEntity<BaseResponse<?>> handleCakeApiBaseException(final PermitApiBaseException e) {
+    @ExceptionHandler(AuthApiException.class)
+    public ResponseEntity<BaseResponse<?>> handleCakeApiBaseException(final AuthApiException e) {
         return ApiResponseUtil.failure(e.getErrorCode());
     }
 
-    @ExceptionHandler(PermitUserNotFoundException.class)
-    public ResponseEntity<BaseResponse<?>> handlePermitUserNotFoundException(final PermitUserNotFoundException e) {
+    @ExceptionHandler(UserNotFoundApiException.class)
+    public ResponseEntity<BaseResponse<?>> handlePermitUserNotFoundException(final UserNotFoundApiException e) {
         return ApiResponseUtil.failure(e.getErrorCode(), e.getSocialAccessToken());
     }
 

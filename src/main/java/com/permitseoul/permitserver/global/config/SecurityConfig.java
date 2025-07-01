@@ -2,9 +2,9 @@ package com.permitseoul.permitserver.global.config;
 
 import com.permitseoul.permitserver.global.filter.ExceptionHandlerFilter;
 import com.permitseoul.permitserver.global.filter.JwtAuthenticationEntryPoint;
-import com.permitseoul.permitserver.auth.jwt.JwtProvider;
+import com.permitseoul.permitserver.domain.auth.core.jwt.JwtProvider;
 import com.permitseoul.permitserver.global.filter.JwtAuthenticationFilter;
-import com.permitseoul.permitserver.user.domain.UserRole;
+import com.permitseoul.permitserver.domain.user.core.domain.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

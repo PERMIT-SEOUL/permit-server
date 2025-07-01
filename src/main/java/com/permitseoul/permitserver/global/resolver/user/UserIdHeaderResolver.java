@@ -1,6 +1,6 @@
 package com.permitseoul.permitserver.global.resolver.user;
 
-import com.permitseoul.permitserver.global.exception.PermitUnAuthorizedException;
+import com.permitseoul.permitserver.domain.user.api.exception.UserUnAuthorizedException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
@@ -32,11 +32,11 @@ public class UserIdHeaderResolver implements HandlerMethodArgumentResolver {
         final Authentication authentication = Optional.ofNullable(SecurityContextHolder.getContext())
                 .map(SecurityContext::getAuthentication)
                 .filter(Authentication::isAuthenticated)
-                .orElseThrow(() -> new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_SECURITY_ENTRY));
+                .orElseThrow(() -> new UserUnAuthorizedException(ErrorCode.UNAUTHORIZED_SECURITY_ENTRY));
         final Object principal = authentication.getPrincipal();
 
         if (principal == null || principal.equals(ANONY_USER)) {
-            throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_SECURITY_ENTRY);
+            throw new UserUnAuthorizedException(ErrorCode.UNAUTHORIZED_SECURITY_ENTRY);
         }
         return principal;
     }
