@@ -7,8 +7,8 @@ import org.springframework.http.ResponseCookie;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CookieCreatorUtil {
-    private static final long AT_MAX_AGE = 365L * 24 * 60 * 60; // todo: 추후 변경
-    private static final long RT_MAX_AGE = 365L * 24 * 60 * 60; // todo: 추후 변경
+    private static final long AT_MAX_AGE = 10L; // todo: 추후 변경
+    private static final long RT_MAX_AGE = 20L; // todo: 추후 변경
 
     public static ResponseCookie createAccessTokenCookie(final String accessToken) {
         return ResponseCookie.from(Constants.ACCESS_TOKEN, accessToken)
@@ -16,7 +16,7 @@ public class CookieCreatorUtil {
                 .path("/")
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Strict")
+                .sameSite("None")
                 .build();
     }
 
@@ -26,7 +26,7 @@ public class CookieCreatorUtil {
                 .path("/")
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Strict")
+                .sameSite("None")
                 .build();
     }
 
