@@ -28,7 +28,6 @@ public enum ErrorCode implements ApiCode {
     UNAUTHORIZED_RT_EXPIRED(HttpStatus.UNAUTHORIZED, 40104, "만료된 리프레시 토큰입니다."),
     UNAUTHORIZED_DIFF_USER_ID(HttpStatus.UNAUTHORIZED, 40105, "리프레시 토큰 userId와 다른 userId 입니다"),
     UNAUTHORIZED_SECURITY_ENTRY(HttpStatus.UNAUTHORIZED, 40106, "시큐리티 필터 혹은 SecurityContext 오류입니다."),
-    UNAUTHORIZED_COOKIE(HttpStatus.UNAUTHORIZED, 40107, "잘못된 쿠키값입니다."),
     UNAUTHORIZED_FEIGN(HttpStatus.UNAUTHORIZED, 40108, "feign 오류입니다."),
 
     /**
@@ -42,7 +41,8 @@ public enum ErrorCode implements ApiCode {
     NOT_FOUND_ENTITY(HttpStatus.NOT_FOUND, 40400, "대상을 찾을 수 없습니다."),
     NOT_FOUND_API(HttpStatus.NOT_FOUND, 40401, "잘못된 API입니다."),
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, 40402, "없는 유저입니다."),
-    NOT_FOUND_COOKIE(HttpStatus.NOT_FOUND, 40403, "요청 쿠키가 없습니다."),
+    NOT_FOUND_AT_COOKIE(HttpStatus.NOT_FOUND, 40403, "요청 accessToken 쿠키가 없습니다."),
+    NOT_FOUND_RT_COOKIE(HttpStatus.NOT_FOUND, 40404, "요청 refresh 쿠키가 없습니다."),
 
     /**
      * 405 Method Not Allowed

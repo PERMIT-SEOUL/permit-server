@@ -10,5 +10,4 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public class AuthApiException extends AuthBaseException {
   private final ErrorCode errorCode;
-
 }

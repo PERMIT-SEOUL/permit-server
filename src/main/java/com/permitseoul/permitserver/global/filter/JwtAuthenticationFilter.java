@@ -5,7 +5,7 @@ import com.permitseoul.permitserver.domain.auth.core.exception.AuthExpiredJwtExc
 import com.permitseoul.permitserver.domain.auth.core.exception.AuthWrongJwtException;
 import com.permitseoul.permitserver.domain.auth.core.jwt.CookieExtractor;
 import com.permitseoul.permitserver.domain.auth.core.jwt.JwtProvider;
-import com.permitseoul.permitserver.domain.user.api.exception.UserUnAuthorizedException;
+import com.permitseoul.permitserver.global.exception.FilterException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -33,14 +33,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             setAuthentication(request);
         } catch (AuthCookieException e) {
             if(!isWhiteListUrl(request.getRequestURI())) {
-                throw new UserUnAuthorizedException(ErrorCode.UNAUTHORIZED_COOKIE);
+                throw new FilterException(ErrorCode.NOT_FOUND_AT_COOKIE);
             }
         } catch (AuthExpiredJwtException e) {
-            throw new UserUnAuthorizedException(ErrorCode.UNAUTHORIZED_AT_EXPIRED);
+            throw new FilterException(ErrorCode.UNAUTHORIZED_AT_EXPIRED);
         } catch (AuthWrongJwtException e) {
-            throw new UserUnAuthorizedException(ErrorCode.UNAUTHORIZED);
+            throw new FilterException(ErrorCode.UNAUTHORIZED);
         } catch (Exception e) {
-            throw new UserUnAuthorizedException(ErrorCode.INTERNAL_SERVER_ERROR);
+            throw new FilterException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
         filterChain.doFilter(request, response);
     }

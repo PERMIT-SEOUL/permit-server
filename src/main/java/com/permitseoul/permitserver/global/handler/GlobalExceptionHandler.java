@@ -1,9 +1,8 @@
 package com.permitseoul.permitserver.global.handler;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.permitseoul.permitserver.domain.auth.api.exception.AuthApiException;
-import com.permitseoul.permitserver.domain.user.api.exception.UserUnAuthorizedException;
-import com.permitseoul.permitserver.domain.user.api.exception.UserNotFoundApiException;
+import com.permitseoul.permitserver.global.exception.FilterException;
+import com.permitseoul.permitserver.global.exception.ResolverException;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
@@ -33,20 +32,14 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(UserUnAuthorizedException.class)
-    public ResponseEntity<BaseResponse<?>> handlePermitUnAuthorizedException(final UserUnAuthorizedException e) {
+    @ExceptionHandler(ResolverException.class)
+    public ResponseEntity<BaseResponse<?>> handleResolverException(final ResolverException e) {
         return ApiResponseUtil.failure(e.getErrorCode());
     }
 
-
-    @ExceptionHandler(AuthApiException.class)
-    public ResponseEntity<BaseResponse<?>> handleCakeApiBaseException(final AuthApiException e) {
+    @ExceptionHandler(FilterException.class)
+    public ResponseEntity<BaseResponse<?>> handleFilterException(final FilterException e) {
         return ApiResponseUtil.failure(e.getErrorCode());
-    }
-
-    @ExceptionHandler(UserNotFoundApiException.class)
-    public ResponseEntity<BaseResponse<?>> handlePermitUserNotFoundException(final UserNotFoundApiException e) {
-        return ApiResponseUtil.failure(e.getErrorCode(), e.getSocialAccessToken());
     }
 
     /**
@@ -169,11 +162,11 @@ public class GlobalExceptionHandler {
 
     /**
      * 404 - MissingRequestCookieException
-     * 발생 이유 : 잘못된 api로 요청했을 때 발생
+     * 발생 이유 : 쿠키 없이 요청보냈을떄
      */
     @ExceptionHandler(MissingRequestCookieException.class)
     public ResponseEntity<BaseResponse<?>> handleMissingRequestCookieException(final MissingRequestCookieException e) {
-        return ApiResponseUtil.failure(ErrorCode.NOT_FOUND_API);
+        return ApiResponseUtil.failure(ErrorCode.NOT_FOUND_RT_COOKIE);
     }
 
 

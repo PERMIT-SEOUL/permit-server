@@ -39,7 +39,6 @@ public class SecurityConfig {
 
     private static final String[] authRequiredURIList = {
             "/api/users/logout"
-
     };
 
     @Bean

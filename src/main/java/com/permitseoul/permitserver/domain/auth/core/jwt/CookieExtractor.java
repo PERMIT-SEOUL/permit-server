@@ -19,7 +19,7 @@ public class CookieExtractor {
 
     private static Optional<Cookie> getCookie(final HttpServletRequest request) {
         final Cookie[] cookies = request.getCookies();
-        if (cookies == null || cookies.length == 0) {
+        if (cookies == null || cookies.length == 0 ) {
             return Optional.empty();
         }
         return Arrays.stream(cookies)
