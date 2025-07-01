@@ -2,7 +2,7 @@ package com.permitseoul.permitserver.global.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.permitseoul.permitserver.global.Constants;
-import com.permitseoul.permitserver.global.exception.PermitUnAuthorizedException;
+import com.permitseoul.permitserver.global.exception.FilterException;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import jakarta.servlet.FilterChain;
@@ -26,7 +26,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter { //필터 내�
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException {
         try {
             filterChain.doFilter(request, response);
-        } catch (PermitUnAuthorizedException e) {
+        } catch (FilterException e) {
             handleUnauthorizedException(response, e);
         }
         catch (Exception e) {
@@ -34,7 +34,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter { //필터 내�
         }
     }
 
-    private void handleUnauthorizedException(final HttpServletResponse response, final PermitUnAuthorizedException e) throws IOException {
+    private void handleUnauthorizedException(final HttpServletResponse response, final FilterException e) throws IOException {
         final ErrorCode errorCode = e.getErrorCode();
         final HttpStatus httpStatus = errorCode.getHttpStatus();
         setResponse(response, httpStatus, errorCode);

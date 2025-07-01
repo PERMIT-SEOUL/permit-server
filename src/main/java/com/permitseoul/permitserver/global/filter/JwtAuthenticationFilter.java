@@ -1,11 +1,11 @@
 package com.permitseoul.permitserver.global.filter;
 
-import com.permitseoul.permitserver.auth.exception.AuthCookieException;
-import com.permitseoul.permitserver.auth.exception.AuthExpiredJwtException;
-import com.permitseoul.permitserver.auth.exception.AuthWrongJwtException;
-import com.permitseoul.permitserver.auth.jwt.CookieExtractor;
-import com.permitseoul.permitserver.auth.jwt.JwtProvider;
-import com.permitseoul.permitserver.global.exception.PermitUnAuthorizedException;
+import com.permitseoul.permitserver.domain.auth.core.exception.AuthCookieException;
+import com.permitseoul.permitserver.domain.auth.core.exception.AuthExpiredJwtException;
+import com.permitseoul.permitserver.domain.auth.core.exception.AuthWrongJwtException;
+import com.permitseoul.permitserver.domain.auth.core.jwt.CookieExtractor;
+import com.permitseoul.permitserver.domain.auth.core.jwt.JwtProvider;
+import com.permitseoul.permitserver.global.exception.FilterException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -33,14 +33,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             setAuthentication(request);
         } catch (AuthCookieException e) {
             if(!isWhiteListUrl(request.getRequestURI())) {
-                throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_COOKIE);
+                throw new FilterException(ErrorCode.NOT_FOUND_AT_COOKIE);
             }
         } catch (AuthExpiredJwtException e) {
-            throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED_AT_EXPIRED);
+            throw new FilterException(ErrorCode.UNAUTHORIZED_AT_EXPIRED);
         } catch (AuthWrongJwtException e) {
-            throw new PermitUnAuthorizedException(ErrorCode.UNAUTHORIZED);
+            throw new FilterException(ErrorCode.UNAUTHORIZED);
         } catch (Exception e) {
-            throw new PermitUnAuthorizedException(ErrorCode.INTERNAL_SERVER_ERROR);
+            throw new FilterException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
         filterChain.doFilter(request, response);
     }

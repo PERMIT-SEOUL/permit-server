@@ -1,15 +1,17 @@
 package com.permitseoul.permitserver.auth.jwt;
 
-import com.permitseoul.permitserver.auth.domain.Token;
-import com.permitseoul.permitserver.auth.exception.AuthExpiredJwtException;
-import com.permitseoul.permitserver.auth.exception.AuthWrongJwtException;
-import com.permitseoul.permitserver.user.domain.UserRole;
+import com.permitseoul.permitserver.domain.auth.core.domain.Token;
+import com.permitseoul.permitserver.domain.auth.core.exception.AuthExpiredJwtException;
+import com.permitseoul.permitserver.domain.auth.core.exception.AuthWrongJwtException;
+import com.permitseoul.permitserver.domain.auth.core.jwt.JwtGenerator;
+import com.permitseoul.permitserver.domain.auth.core.jwt.JwtProperties;
+import com.permitseoul.permitserver.domain.auth.core.jwt.JwtProvider;
+import com.permitseoul.permitserver.domain.user.core.domain.UserRole;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.cache.CacheManager;
 
 import java.util.Date;
 
