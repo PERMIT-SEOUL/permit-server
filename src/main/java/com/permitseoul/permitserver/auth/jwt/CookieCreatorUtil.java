@@ -16,7 +16,7 @@ public class CookieCreatorUtil {
                 .path("/")
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Strict")
+                .sameSite("None")
                 .build();
     }
 
@@ -26,7 +26,7 @@ public class CookieCreatorUtil {
                 .path("/")
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Strict")
+                .sameSite("None")
                 .build();
     }
 
