@@ -32,8 +32,8 @@ public class Event extends BaseTimeEntity {
     @Column(name = "end_date")
     private LocalDateTime endDate;
 
-    @Column(name = "location")
-    private String location;
+    @Column(name = "venue")
+    private String venue;
 
     @Column(name = "line_up", columnDefinition = "TEXT")
     private String lineUp;
@@ -42,7 +42,7 @@ public class Event extends BaseTimeEntity {
     private String introduction;
 
     @Column(name = "min_age", nullable = false)
-    private int minAge;
+    private Integer minAge;
 
     @Column(name = "ticket_count")
     private int ticketCount;

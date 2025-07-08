@@ -33,7 +33,7 @@ public class AuthController {
         final TokenDto tokenDto = authService.signUp(
                 signUpRequest.userName(),
                 signUpRequest.userAge(),
-                signUpRequest.userSex(),
+                signUpRequest.userGender(),
                 signUpRequest.userEmail(),
                 signUpRequest.socialType(),
                 signUpRequest.socialAccessToken()

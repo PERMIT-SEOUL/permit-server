@@ -1,6 +1,6 @@
 package com.permitseoul.permitserver.domain.user.core.domain;
 
-public enum Sex {
+public enum Gender {
     MALE,
     FEMALE,
 }

@@ -1,6 +1,6 @@
 package com.permitseoul.permitserver.domain.auth.api.dto;
 
-import com.permitseoul.permitserver.domain.user.core.domain.Sex;
+import com.permitseoul.permitserver.domain.user.core.domain.Gender;
 import com.permitseoul.permitserver.domain.user.core.domain.SocialType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -15,7 +15,7 @@ public record SignUpRequest(
         int userAge,
 
         @NotNull(message = "성별은 필수입니다.")
-        Sex userSex,
+        Gender userGender,
 
         @NotBlank(message = "이메일은 필수입니다.")
         @Email(message = "유효한 이메일 형식이 아닙니다.")
