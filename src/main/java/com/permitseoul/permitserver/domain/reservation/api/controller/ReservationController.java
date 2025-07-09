@@ -33,7 +33,7 @@ public class ReservationController {
                 signUpRequest.couponCode(),
                 signUpRequest.totalAmount(),
                 signUpRequest.orderId(),
-                signUpRequest.ticketTypeInfo()
+                signUpRequest.ticketTypeInfos()
         );
         return ApiResponseUtil.success(SuccessCode.OK, response);
     }

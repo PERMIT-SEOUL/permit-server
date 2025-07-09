@@ -22,7 +22,7 @@ public record PaymentReadyRequest(
         String orderId,
 
         @Valid
-        List<TicketTypeInfo> ticketTypeInfo
+        List<TicketTypeInfo> ticketTypeInfos
 ) {
     public record TicketTypeInfo(
 
