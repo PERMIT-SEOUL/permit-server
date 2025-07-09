@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @AllArgsConstructor
-public class EventImage {
+public class EventImageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "image_id", nullable = false)
@@ -23,5 +23,8 @@ public class EventImage {
 
     @Column(name = "sequence", nullable = false)
     private int sequence;
+
+    @Column(name = "is_thumbnail", nullable = false)
+    private boolean isThumbnail;
 }
 

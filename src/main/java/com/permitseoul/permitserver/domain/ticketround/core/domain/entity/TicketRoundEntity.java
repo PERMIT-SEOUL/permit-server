@@ -38,5 +38,4 @@ public class TicketRoundEntity {
 
     @Column(name = "is_active", nullable = false)
     private boolean isActive;
-
 }

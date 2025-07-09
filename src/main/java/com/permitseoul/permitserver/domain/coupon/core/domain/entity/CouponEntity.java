@@ -3,8 +3,6 @@ package com.permitseoul.permitserver.domain.coupon.core.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 
 @Entity
 @Table(name = "coupons")
@@ -27,7 +25,4 @@ public class CouponEntity {
 
     @Column(name = "discount_rates")
     private int discountRates;
-
-    @Column(name = "expired_at", nullable = false)
-    private LocalDateTime expiredAt;
 }

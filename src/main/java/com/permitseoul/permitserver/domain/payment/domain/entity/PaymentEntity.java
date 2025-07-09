@@ -14,17 +14,20 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @AllArgsConstructor
-public class Payment  extends BaseTimeEntity {
+public class PaymentEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "payments_id", nullable = false)
     private Long paymentId;
 
-    @JoinColumn(name = "reservation_id", nullable = false)
+    @Column(name = "reservation_id", nullable = false)
     private long reservationId;
 
     @Column(name = "order_id", nullable = false, length = 64, unique = true)
     private String orderId;
+
+    @Column(name = "event_id", nullable = false)
+    private long eventId;
 
     @Column(name = "payment_key", nullable = false, length = 200, unique = true)
     private String paymentKey;
@@ -40,8 +43,17 @@ public class Payment  extends BaseTimeEntity {
     @Column(name = "payment_type", nullable = false)
     private PaymentType paymentType;
 
-    @Column(name = "refunded_at")
-    private LocalDateTime refundedAt;
+    @Column(name = "canceled_at")
+    private LocalDateTime canceledAt;
+
+    @Column(name = "currency", nullable = false)
+    private LocalDateTime currency;
+
+    @Column(name = "canceled_error_message")
+    private String canceledErrorMessage;
+
+
+
 
 }
 

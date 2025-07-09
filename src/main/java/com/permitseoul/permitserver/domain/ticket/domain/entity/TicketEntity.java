@@ -11,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @AllArgsConstructor
-public class Ticket extends BaseTimeEntity {
+public class TicketEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ticket_id", nullable = false)
@@ -20,8 +20,14 @@ public class Ticket extends BaseTimeEntity {
     @Column(name = "user_id", nullable = false)
     private long userId;
 
-    @Column(name = "reservation_id", nullable = false)
-    private long reservationId;
+    @Column(name = "order_id", nullable = false)
+    private String orderId;
+
+    @Column(name = "ticket_type_id", nullable = false)
+    private long ticketTypeId;
+
+    @Column(name = "event_id", nullable = false)
+    private long eventId;
 
     @Column(name = "ticket_code", nullable = false)
     private String ticketCode;
@@ -30,8 +36,10 @@ public class Ticket extends BaseTimeEntity {
     @Column(nullable = false)
     private TicketStatus status;
 
+    @Column(name = "is_used", nullable = false)
+    private boolean isUsed;
+
     @Column(name = "ticket_seat", nullable = false)
     private String ticketSeat;
-
 }
 

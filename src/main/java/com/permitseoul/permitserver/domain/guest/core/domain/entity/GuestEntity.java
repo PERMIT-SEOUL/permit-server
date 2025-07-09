@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @AllArgsConstructor
-public class Guest {
+public class GuestEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "guest_id")
@@ -22,9 +22,9 @@ public class Guest {
     private String guestType;
 
     @Column(name = "affiliation", nullable = false)
-    private String affiliation;
+    private String affiliation; //소속
 
-    @Column(name = "phone_number", nullable = false)
+    @Column(name = "phone_number")
     private String phoneNumber;
 
     @Column(name = "email", nullable = false)

@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @AllArgsConstructor
-public class GuestTicket {
+public class GuestTicketEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "guest_ticket_id")
@@ -23,5 +23,4 @@ public class GuestTicket {
 
     @Column(name = "guest_ticket_code", nullable = false)
     private String guestTicketCode;
-
 }
