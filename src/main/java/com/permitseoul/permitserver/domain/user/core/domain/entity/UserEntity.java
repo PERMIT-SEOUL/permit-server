@@ -41,6 +41,7 @@ public class UserEntity extends BaseTimeEntity {
     @Column(name = "social_type", nullable = false)
     private SocialType socialType;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "user_type", nullable = false)
     private UserRole userType;
 

@@ -35,19 +35,20 @@ public class ReservationService {
                                                 final int totalAmount,
                                                 final String orderId,
                                                 final List<PaymentReadyRequest.TicketTypeInfo> ticketTypeInfos) {
-        final Reservation reservation = reservationSaver.saveReservation(userId, eventId, orderId, totalAmount, couponCode, ReservationStatus.PENDING);
-        ticketTypeInfos.stream()
-                .map(ticketTypeInfo -> reservationTicketSaver.saveReservationTicket(ticketTypeInfo.id(), reservation.getOrderId(), ticketTypeInfo.count()));
         final Event event;
         final User user;
         try {
-            event = eventRetriever.getEvent(reservation.getEventId());
-            user = userRetriever.findUserById(reservation.getUserId());
+            event = eventRetriever.getEvent(eventId);
+            user = userRetriever.findUserById(userId);
         } catch (EventNotfoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_EVENT);
         } catch (UserNotFoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_USER);
         }
+        final Reservation reservation = reservationSaver.saveReservation(userId, eventId, orderId, totalAmount, couponCode, ReservationStatus.PENDING);
+        ticketTypeInfos.forEach(
+                ticketTypeInfo -> reservationTicketSaver.saveReservationTicket(ticketTypeInfo.id(), reservation.getOrderId(), ticketTypeInfo.count())
+        );
 
         return PaymentReadyResponse.of(event.getName(), reservation.getOrderId(), user.getName(), user.getEmail(), reservation.getTotalAmount(), user.getSocialId());
     }

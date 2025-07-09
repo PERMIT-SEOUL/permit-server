@@ -26,7 +26,7 @@ public class AuthController {
 
     //회원가입
     @PostMapping("/signup")
-    public ResponseEntity<BaseResponse<?>> login(
+    public ResponseEntity<BaseResponse<?>> signUp(
             @RequestBody @Valid final SignUpRequest signUpRequest,
             final HttpServletResponse response
     ) {
