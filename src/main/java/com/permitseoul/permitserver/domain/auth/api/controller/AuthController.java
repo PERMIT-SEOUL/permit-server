@@ -26,14 +26,14 @@ public class AuthController {
 
     //회원가입
     @PostMapping("/signup")
-    public ResponseEntity<BaseResponse<?>> login(
+    public ResponseEntity<BaseResponse<?>> signUp(
             @RequestBody @Valid final SignUpRequest signUpRequest,
             final HttpServletResponse response
     ) {
         final TokenDto tokenDto = authService.signUp(
                 signUpRequest.userName(),
                 signUpRequest.userAge(),
-                signUpRequest.userSex(),
+                signUpRequest.userGender(),
                 signUpRequest.userEmail(),
                 signUpRequest.socialType(),
                 signUpRequest.socialAccessToken()

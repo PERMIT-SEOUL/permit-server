@@ -1,0 +1,30 @@
+package com.permitseoul.permitserver.domain.reservation.core.domain;
+
+import com.permitseoul.permitserver.domain.reservation.core.domain.entity.ReservationEntity;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
+public class Reservation {
+    private final long reservationId;
+    private final long userId;
+    private final long eventId;
+    private final String orderId;
+    private final int totalAmount;
+    private final String couponCode;
+    private final ReservationStatus status;
+    private final String payErrorCode;
+
+    public static Reservation fromEntity(final ReservationEntity reservationEntity) {
+        return new Reservation(
+                reservationEntity.getReservationId(),
+                reservationEntity.getUserId(),
+                reservationEntity.getEventId(),
+                reservationEntity.getOrderId(),
+                reservationEntity.getTotalAmount(),
+                reservationEntity.getCouponCode(),
+                reservationEntity.getStatus(),
+                reservationEntity.getPayErrorMessage());
+    }
+}

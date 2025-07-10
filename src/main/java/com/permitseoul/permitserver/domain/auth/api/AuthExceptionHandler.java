@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class AuthExceptionHandler {
 
     @ExceptionHandler(AuthApiException.class)
-    public ResponseEntity<BaseResponse<?>> handleCakeApiBaseException(final AuthApiException e) {
+    public ResponseEntity<BaseResponse<?>> handleAuthApiException(final AuthApiException e) {
         return ApiResponseUtil.failure(e.getErrorCode());
     }
 

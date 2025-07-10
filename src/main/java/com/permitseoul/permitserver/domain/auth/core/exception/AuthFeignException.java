@@ -1,4 +1,4 @@
 package com.permitseoul.permitserver.domain.auth.core.exception;
 
-public class AuthFeignException extends AuthBaseException {
+public class AuthFeignException extends AuthCoreException {
 }

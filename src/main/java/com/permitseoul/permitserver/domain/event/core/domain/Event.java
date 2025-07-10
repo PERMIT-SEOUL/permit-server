@@ -1,0 +1,45 @@
+package com.permitseoul.permitserver.domain.event.core.domain;
+
+import com.permitseoul.permitserver.domain.event.core.domain.entity.EventEntity;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.time.LocalDateTime;
+
+@Getter
+@RequiredArgsConstructor
+public class Event {
+    private final long eventId;
+    private final String name;
+    private final EventType eventType;
+    private final LocalDateTime startDate;
+    private final LocalDateTime endDate;
+    private final String venue;
+    private final String lineUp;
+    private final String details;
+    private final Integer minAge;
+    private final int ticketCount;
+    private final boolean isActive;
+    private final int remainTicketCount;
+    private final String ticketCheckCode;
+    private final LocalDateTime visibleStartDate;
+
+    public static Event fromEntity(final EventEntity entity) {
+        return new Event(
+                entity.getEventId(),
+                entity.getName(),
+                entity.getEventType(),
+                entity.getStartDate(),
+                entity.getEndDate(),
+                entity.getVenue(),
+                entity.getLineUp(),
+                entity.getDetails(),
+                entity.getMinAge(),
+                entity.getTicketCount(),
+                entity.isActive(),
+                entity.getRemainTicketCount(),
+                entity.getTicketCheckCode(),
+                entity.getVisibleStartDate()
+        );
+    }
+}

@@ -1,0 +1,23 @@
+package com.permitseoul.permitserver.domain.event.core.component;
+
+import com.permitseoul.permitserver.domain.event.core.domain.Event;
+import com.permitseoul.permitserver.domain.event.core.domain.entity.EventEntity;
+import com.permitseoul.permitserver.domain.event.core.exception.EventNotfoundException;
+import com.permitseoul.permitserver.domain.event.core.repository.EventRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+@Component
+@RequiredArgsConstructor
+public class EventRetriever {
+    private final EventRepository eventRepository;
+
+    public Event getEvent(final long eventId) {
+        final EventEntity eventEntity = eventRepository.findById(eventId).orElseThrow(
+                EventNotfoundException::new
+        );
+        return Event.fromEntity(eventEntity);
+    }
+
+
+}

@@ -43,6 +43,7 @@ public enum ErrorCode implements ApiCode {
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, 40402, "없는 유저입니다."),
     NOT_FOUND_AT_COOKIE(HttpStatus.NOT_FOUND, 40403, "요청 accessToken 쿠키가 없습니다."),
     NOT_FOUND_RT_COOKIE(HttpStatus.NOT_FOUND, 40404, "요청 refresh 쿠키가 없습니다."),
+    NOT_FOUND_EVENT(HttpStatus.NOT_FOUND, 40405, "해당 아이디 이벤트가 없습니다."),
 
     /**
      * 405 Method Not Allowed

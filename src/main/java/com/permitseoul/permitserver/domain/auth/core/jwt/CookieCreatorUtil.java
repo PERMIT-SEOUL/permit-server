@@ -15,7 +15,7 @@ public class CookieCreatorUtil {
                 .maxAge(AT_MAX_AGE)
                 .path("/")
                 .httpOnly(true)
-                .secure(true)
+                .secure(false)
                 .sameSite("None")
                 .build();
     }
@@ -25,7 +25,7 @@ public class CookieCreatorUtil {
                 .maxAge(RT_MAX_AGE)
                 .path("/")
                 .httpOnly(true)
-                .secure(true)
+                .secure(false)
                 .sameSite("None")
                 .build();
     }

@@ -16,7 +16,7 @@ import com.permitseoul.permitserver.domain.user.api.exception.UserNotFoundApiExc
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import com.permitseoul.permitserver.domain.user.core.component.UserCreator;
 import com.permitseoul.permitserver.domain.user.core.component.UserRetriever;
-import com.permitseoul.permitserver.domain.user.core.domain.Sex;
+import com.permitseoul.permitserver.domain.user.core.domain.Gender;
 import com.permitseoul.permitserver.domain.user.core.domain.SocialType;
 import com.permitseoul.permitserver.domain.user.core.domain.UserRole;
 import com.permitseoul.permitserver.domain.user.core.domain.entity.UserEntity;
@@ -42,14 +42,14 @@ public class AuthService {
     @Transactional
     public TokenDto signUp(final String userName,
                            final int userAge,
-                           final Sex userSex,
+                           final Gender userGender,
                            final String userEmail,
                            final SocialType socialType,
                            final String socialAccessToken) {
         try {
             final String userSocialId = getUserSocialId(socialType, socialAccessToken);
             isUserExist(socialType, userSocialId);
-            final UserEntity newUserEntity = createUser(userName, userAge, userSex, userEmail, userSocialId, socialType);
+            final UserEntity newUserEntity = createUser(userName, userAge, userGender, userEmail, userSocialId, socialType);
             final Token newToken = GetJwtToken(newUserEntity.getUserId());
             return TokenDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
         } catch (com.permitseoul.permitserver.domain.auth.core.exception.AuthFeignException e) {
@@ -113,14 +113,14 @@ public class AuthService {
 
     private UserEntity createUser(final String userName,
                                   final int userAge,
-                                  final Sex userSex,
+                                  final Gender userGender,
                                   final String userEmail,
                                   final String userSocialId,
                                   final SocialType socialType
     ) {
         final UserEntity newUserEntity = UserEntity.create(
                 userName,
-                userSex,
+                userGender,
                 userAge,
                 userEmail,
                 userSocialId,

@@ -2,7 +2,7 @@ package com.permitseoul.permitserver.domain.user.core.domain.entity;
 
 
 import com.permitseoul.permitserver.global.domain.BaseTimeEntity;
-import com.permitseoul.permitserver.domain.user.core.domain.Sex;
+import com.permitseoul.permitserver.domain.user.core.domain.Gender;
 import com.permitseoul.permitserver.domain.user.core.domain.SocialType;
 import com.permitseoul.permitserver.domain.user.core.domain.UserRole;
 import jakarta.persistence.*;
@@ -26,7 +26,7 @@ public class UserEntity extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Sex sex;
+    private Gender gender;
 
     @Column(nullable = false)
     private int age;
@@ -41,11 +41,12 @@ public class UserEntity extends BaseTimeEntity {
     @Column(name = "social_type", nullable = false)
     private SocialType socialType;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "user_type", nullable = false)
     private UserRole userType;
 
     public static UserEntity create(final String name,
-                                    final Sex sex,
+                                    final Gender gender,
                                     final int age,
                                     final String email,
                                     final String socialId,
@@ -53,7 +54,7 @@ public class UserEntity extends BaseTimeEntity {
                                     final UserRole userType) {
         return UserEntity.builder()
                 .name(name)
-                .sex(sex)
+                .gender(gender)
                 .age(age)
                 .email(email)
                 .socialId(socialId)
