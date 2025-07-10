@@ -39,18 +39,18 @@ public class ReservationEntity extends BaseTimeEntity {
     @Column(name = "pay_error_message")
     private String payErrorMessage;
 
-    public static ReservationEntity creat(final long userId,
-                                          final long eventId,
-                                          final String orderId,
-                                          final int totalAmount,
-                                          final String couponCode,
-                                          final ReservationStatus status,
-                                          final String payErrorMessage) {
+    public static ReservationEntity create(final long userId,
+                                           final long eventId,
+                                           final String orderId,
+                                           final int totalAmount,
+                                           final String couponCode,
+                                           final ReservationStatus status,
+                                           final String payErrorMessage) {
         return ReservationEntity.builder()
                 .userId(userId)
                 .eventId(eventId)
-                .orderId(orderId).
-                totalAmount(totalAmount)
+                .orderId(orderId)
+                .totalAmount(totalAmount)
                 .couponCode(couponCode)
                 .payErrorMessage(payErrorMessage)
                 .status(status).build();

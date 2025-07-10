@@ -45,6 +45,7 @@ public class ReservationService {
         } catch (UserNotFoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_USER);
         }
+
         final Reservation reservation = reservationSaver.saveReservation(userId, eventId, orderId, totalAmount, couponCode, ReservationStatus.PENDING);
         ticketTypeInfos.forEach(
                 ticketTypeInfo -> reservationTicketSaver.saveReservationTicket(ticketTypeInfo.id(), reservation.getOrderId(), ticketTypeInfo.count())

@@ -39,7 +39,7 @@ public class SecurityConfig {
 
     private static final String[] authRequiredURIList = {
             "/api/users/logout",
-            "api/reservations/ready"
+            "/api/reservations/ready"
     };
 
     @Bean

@@ -24,16 +24,16 @@ public class ReservationController {
     //결제 요청 준비
     @PostMapping("/ready")
     public ResponseEntity<BaseResponse<?>> getReadyToPayment(
-            @RequestBody @Valid final PaymentReadyRequest signUpRequest,
+            @RequestBody @Valid final PaymentReadyRequest paymentReadyRequest,
             @UserId final Long userId
     ) {
         final PaymentReadyResponse response = reservationService.getPaymentReady(
                 userId,
-                signUpRequest.eventId(),
-                signUpRequest.couponCode(),
-                signUpRequest.totalAmount(),
-                signUpRequest.orderId(),
-                signUpRequest.ticketTypeInfos()
+                paymentReadyRequest.eventId(),
+                paymentReadyRequest.couponCode(),
+                paymentReadyRequest.totalAmount(),
+                paymentReadyRequest.orderId(),
+                paymentReadyRequest.ticketTypeInfos()
         );
         return ApiResponseUtil.success(SuccessCode.OK, response);
     }

@@ -47,7 +47,7 @@ public class PaymentEntity extends BaseTimeEntity {
     private LocalDateTime canceledAt;
 
     @Column(name = "currency", nullable = false)
-    private LocalDateTime currency;
+    private String currency;
 
     @Column(name = "canceled_error_message")
     private String canceledErrorMessage;
