@@ -1,5 +1,8 @@
 package com.permitseoul.permitserver.domain.reservation.api.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentConfirmRequest;
+import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentConfirmResponse;
 import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentReadyRequest;
 import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentReadyResponse;
 import com.permitseoul.permitserver.domain.reservation.api.service.ReservationService;
@@ -21,13 +24,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReservationController {
     private final ReservationService reservationService;
 
-    //결제 요청 준비
+    //결제 요청 준비 api
     @PostMapping("/ready")
     public ResponseEntity<BaseResponse<?>> getReadyToPayment(
             @RequestBody @Valid final PaymentReadyRequest paymentReadyRequest,
             @UserId final Long userId
     ) {
-        final PaymentReadyResponse response = reservationService.getPaymentReady(
+        final PaymentReadyResponse paymentReadyResponse = reservationService.getPaymentReady(
                 userId,
                 paymentReadyRequest.eventId(),
                 paymentReadyRequest.couponCode(),
@@ -35,6 +38,21 @@ public class ReservationController {
                 paymentReadyRequest.orderId(),
                 paymentReadyRequest.ticketTypeInfos()
         );
-        return ApiResponseUtil.success(SuccessCode.OK, response);
+        return ApiResponseUtil.success(SuccessCode.OK, paymentReadyResponse);
+    }
+
+    //결제 승인 api
+    @PostMapping("/confirm")
+    public ResponseEntity<BaseResponse<?>> getConfirmToPayment(
+            @UserId final Long userId,
+            @RequestBody @Valid final PaymentConfirmRequest paymentConfirmRequest
+    ) throws JsonProcessingException {
+        final PaymentConfirmResponse paymentConfirmResponse = reservationService.getPaymentConfirm(
+                userId,
+                paymentConfirmRequest.orderId(),
+                paymentConfirmRequest.paymentKey(),
+                paymentConfirmRequest.totalAmount()
+        );
+        return ApiResponseUtil.success(SuccessCode.OK, paymentConfirmResponse);
     }
 }

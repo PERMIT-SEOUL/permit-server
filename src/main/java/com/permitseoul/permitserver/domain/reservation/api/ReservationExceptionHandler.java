@@ -1,6 +1,7 @@
 package com.permitseoul.permitserver.domain.reservation.api;
 
 import com.permitseoul.permitserver.domain.reservation.api.exception.ReservationApiException;
+import com.permitseoul.permitserver.domain.reservation.api.exception.TossPaymentConfirmException;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import org.springframework.http.ResponseEntity;
@@ -13,5 +14,10 @@ public class ReservationExceptionHandler {
     @ExceptionHandler(ReservationApiException.class)
     public ResponseEntity<BaseResponse<?>> handleReservationApiException(final ReservationApiException e) {
         return ApiResponseUtil.failure(e.getErrorCode());
+    }
+
+    @ExceptionHandler(TossPaymentConfirmException.class)
+    public ResponseEntity<BaseResponse<?>> handleTossPaymentConfirmException(final TossPaymentConfirmException e) {
+        return ApiResponseUtil.failure(e.getErrorCode(), e.getTossMessage());
     }
 }

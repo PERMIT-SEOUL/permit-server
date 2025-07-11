@@ -1,32 +1,74 @@
 package com.permitseoul.permitserver.domain.reservation.api.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.permitseoul.permitserver.domain.event.core.component.EventRetriever;
 import com.permitseoul.permitserver.domain.event.core.domain.Event;
 import com.permitseoul.permitserver.domain.event.core.exception.EventNotfoundException;
+import com.permitseoul.permitserver.domain.payment.api.client.TossPaymentClient;
+import com.permitseoul.permitserver.domain.payment.api.dto.PaymentRequest;
+import com.permitseoul.permitserver.domain.payment.api.dto.PaymentResponse;
+import com.permitseoul.permitserver.domain.payment.api.dto.TossConfirmErrorResponse;
+import com.permitseoul.permitserver.domain.payment.core.component.PaymentSaver;
+import com.permitseoul.permitserver.domain.payment.core.domain.Payment;
+import com.permitseoul.permitserver.domain.reservation.api.TossProperties;
+import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentConfirmResponse;
 import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentReadyRequest;
 import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentReadyResponse;
 import com.permitseoul.permitserver.domain.reservation.api.exception.NotfoundReservationException;
+import com.permitseoul.permitserver.domain.reservation.api.exception.TossPaymentConfirmException;
+import com.permitseoul.permitserver.domain.reservation.core.component.ReservationRetriever;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationSaver;
 import com.permitseoul.permitserver.domain.reservation.core.domain.Reservation;
 import com.permitseoul.permitserver.domain.reservation.core.domain.ReservationStatus;
+import com.permitseoul.permitserver.domain.reservation.core.exception.ReservationNotfoundException;
 import com.permitseoul.permitserver.domain.reservationticket.core.component.ReservationTicketSaver;
 import com.permitseoul.permitserver.domain.user.core.component.UserRetriever;
 import com.permitseoul.permitserver.domain.user.core.domain.User;
 import com.permitseoul.permitserver.domain.user.core.exception.UserNotFoundException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
-import lombok.RequiredArgsConstructor;
+import feign.FeignException;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Base64;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
+@EnableConfigurationProperties(TossProperties.class)
 public class ReservationService {
+    private static final String COLON = ":";
+    private static final String AUTH_TYPE_BASIC = "Basic ";
+
     private final ReservationSaver reservationSaver;
     private final ReservationTicketSaver reservationTicketSaver;
     private final EventRetriever eventRetriever;
     private final UserRetriever userRetriever;
+    private final TossPaymentClient tossPaymentClient;
+    private final ReservationRetriever reservationRetriever;
+    private final TossProperties tossProperties;
+    private final String authorizationHeader;
+    private final PaymentSaver paymentSaver;
+
+    public ReservationService(ReservationSaver reservationSaver,
+                              ReservationTicketSaver reservationTicketSaver,
+                              EventRetriever eventRetriever,
+                              UserRetriever userRetriever,
+                              TossPaymentClient tossPaymentClient,
+                              ReservationRetriever reservationRetriever,
+                              TossProperties tossProperties, PaymentSaver paymentSaver) {
+        this.reservationSaver = reservationSaver;
+        this.reservationTicketSaver = reservationTicketSaver;
+        this.eventRetriever = eventRetriever;
+        this.userRetriever = userRetriever;
+        this.tossPaymentClient = tossPaymentClient;
+        this.reservationRetriever = reservationRetriever;
+        this.tossProperties = tossProperties;
+
+        this.authorizationHeader = buildAuthHeader(tossProperties.apiSecretKey());
+        this.paymentSaver = paymentSaver;
+    }
 
     @Transactional
     public PaymentReadyResponse getPaymentReady(final long userId,
@@ -52,6 +94,44 @@ public class ReservationService {
         );
 
         return PaymentReadyResponse.of(event.getName(), reservation.getOrderId(), user.getName(), user.getEmail(), reservation.getTotalAmount(), user.getSocialId());
+    }
+
+    @Transactional
+    public PaymentConfirmResponse getPaymentConfirm(final long userId,
+                                                    final String orderId,
+                                                    final String paymentKey,
+                                                    final int totalAmount) throws JsonProcessingException {
+        try {
+            final Reservation reservation = reservationRetriever.getReservationByOrderIdAndAmount(orderId, totalAmount, userId);
+            final String authHeader = Base64.getEncoder().encodeToString((tossProperties.apiSecretKey() + COLON).getBytes());
+            final PaymentResponse paymentResponse = tossPaymentClient.purchaseConfirm(
+                    authorizationHeader,
+                    PaymentRequest.of(paymentKey, reservation.getOrderId(), reservation.getTotalAmount()));
+
+            final Payment savedPayment = paymentSaver.savePayment(
+                    reservation.getReservationId(),
+                    reservation.getOrderId(),
+                    reservation.getEventId(),
+                    paymentResponse.paymentKey(),
+                    reservation.getTotalAmount(),
+                    paymentResponse.currency());
+
+            final
+
+
+
+        } catch (ReservationNotfoundException e) {
+            throw new NotfoundReservationException(ErrorCode.NOT_FOUND_RESERVATION);
+        } catch (FeignException e) {
+            final String body = e.contentUTF8();
+            final ObjectMapper mapper = new ObjectMapper();
+            final TossConfirmErrorResponse tossError = mapper.readValue(body, TossConfirmErrorResponse.class);
+            throw new TossPaymentConfirmException(ErrorCode.UNAUTHORIZED, tossError.getMessage());
+        }
+    }
+
+    private String buildAuthHeader(final String secretKey) {
+        return AUTH_TYPE_BASIC + Base64.getEncoder().encodeToString((secretKey + COLON).getBytes());
     }
 
 }
