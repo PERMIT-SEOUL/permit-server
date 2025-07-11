@@ -1,7 +1,7 @@
-package com.permitseoul.permitserver.domain.ticket.domain.entity;
+package com.permitseoul.permitserver.domain.ticket.core.domain.entity;
 
 import com.permitseoul.permitserver.global.domain.BaseTimeEntity;
-import com.permitseoul.permitserver.domain.ticket.domain.TicketStatus;
+import com.permitseoul.permitserver.domain.ticket.core.domain.TicketStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,22 +37,18 @@ public class TicketEntity extends BaseTimeEntity {
     @Column(name = "is_used", nullable = false)
     private boolean isUsed;
 
-    @Column(name = "ticket_seat", nullable = false)
-    private String ticketSeat;
-
     @Builder
     public TicketEntity(final long userId,
                         final String orderId,
                         final long ticketTypeId,
                         final long eventId,
-                        final String ticketCode,
-                        final String ticketSeat) {
+                        final String ticketCode
+                        ) {
         this.userId = userId;
         this.orderId = orderId;
         this.ticketTypeId = ticketTypeId;
         this.eventId = eventId;
         this.ticketCode = ticketCode;
-        this.ticketSeat = ticketSeat;
         this.status = TicketStatus.RESERVED;
         this.isUsed = false;
     }

@@ -1,5 +1,5 @@
 package com.permitseoul.permitserver.domain.reservation;
 
-public class ReservationBaseException extends RuntimeException {
+public abstract class ReservationBaseException extends RuntimeException {
 
 }
