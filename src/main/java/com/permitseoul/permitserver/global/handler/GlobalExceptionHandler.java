@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.global.handler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.permitseoul.permitserver.global.exception.FilterException;
 import com.permitseoul.permitserver.global.exception.ResolverException;
@@ -40,6 +41,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(FilterException.class)
     public ResponseEntity<BaseResponse<?>> handleFilterException(final FilterException e) {
         return ApiResponseUtil.failure(e.getErrorCode());
+    }
+
+    @ExceptionHandler(JsonProcessingException.class)
+    public ResponseEntity<BaseResponse<?>> handleJsonProcessingException(final JsonProcessingException e) {
+        return ApiResponseUtil.failure(ErrorCode.INTERNAL_JSON_FORMAT_ERROR);
     }
 
     /**

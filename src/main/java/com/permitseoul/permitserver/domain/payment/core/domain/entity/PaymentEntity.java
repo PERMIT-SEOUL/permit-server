@@ -1,8 +1,8 @@
-package com.permitseoul.permitserver.domain.payment.domain.entity;
+package com.permitseoul.permitserver.domain.payment.core.domain.entity;
 
 import com.permitseoul.permitserver.global.domain.BaseTimeEntity;
-import com.permitseoul.permitserver.domain.payment.domain.PaymentStatus;
-import com.permitseoul.permitserver.domain.payment.domain.PaymentType;
+import com.permitseoul.permitserver.domain.payment.core.domain.PaymentStatus;
+import com.permitseoul.permitserver.domain.payment.core.domain.PaymentType;
 import jakarta.persistence.*;
 import lombok.*;
 

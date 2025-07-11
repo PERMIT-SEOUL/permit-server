@@ -44,6 +44,7 @@ public enum ErrorCode implements ApiCode {
     NOT_FOUND_AT_COOKIE(HttpStatus.NOT_FOUND, 40403, "요청 accessToken 쿠키가 없습니다."),
     NOT_FOUND_RT_COOKIE(HttpStatus.NOT_FOUND, 40404, "요청 refresh 쿠키가 없습니다."),
     NOT_FOUND_EVENT(HttpStatus.NOT_FOUND, 40405, "해당 아이디 이벤트가 없습니다."),
+    NOT_FOUND_RESERVATION(HttpStatus.NOT_FOUND, 40406, "해당 Reservation 이 없습니다."),
 
     /**
      * 405 Method Not Allowed
@@ -61,6 +62,8 @@ public enum ErrorCode implements ApiCode {
      */
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50000, "서버 내부 오류입니다."),
     INTERNAL_RT_CACHE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50001, "RT가 캐시에 저장되어 있지 않습니다."),
+    INTERNAL_JSON_FORMAT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50001, "RT가 캐시에 저장되어 있지 않습니다."),
+
 
 
     ;
