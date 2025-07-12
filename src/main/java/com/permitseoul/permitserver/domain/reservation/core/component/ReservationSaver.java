@@ -7,6 +7,8 @@ import com.permitseoul.permitserver.domain.reservation.core.repository.Reservati
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+
 @Component
 @RequiredArgsConstructor
 public class ReservationSaver {
@@ -15,7 +17,7 @@ public class ReservationSaver {
     public Reservation saveReservation(final long userId,
                                        final long eventId,
                                        final String orderId,
-                                       final int totalAmount,
+                                       final BigDecimal totalAmount,
                                        final String couponCode,
                                        final ReservationStatus status) {
         final ReservationEntity reservationEntity = reservationRepository.save(ReservationEntity.create(userId, eventId, orderId, totalAmount, couponCode, status,null));

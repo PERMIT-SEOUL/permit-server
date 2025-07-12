@@ -4,6 +4,7 @@ import com.permitseoul.permitserver.domain.payment.core.domain.entity.PaymentEnt
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -14,7 +15,7 @@ public class Payment {
     private final String orderId;
     private final long eventId;
     private final String paymentKey;
-    private final int totalAmount;
+    private final BigDecimal totalAmount;
     private final PaymentStatus status;
     private final LocalDateTime canceledAt;
     private final String currency;

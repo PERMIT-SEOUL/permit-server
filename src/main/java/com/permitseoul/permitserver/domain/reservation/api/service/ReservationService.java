@@ -20,7 +20,7 @@ import com.permitseoul.permitserver.domain.reservation.core.component.Reservatio
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationSaver;
 import com.permitseoul.permitserver.domain.reservation.core.domain.Reservation;
 import com.permitseoul.permitserver.domain.reservation.core.domain.ReservationStatus;
-import com.permitseoul.permitserver.domain.reservation.core.exception.ReservationNotfoundException;
+import com.permitseoul.permitserver.domain.reservation.core.exception.ReservationNotFoundException;
 import com.permitseoul.permitserver.domain.reservationticket.core.component.ReservationTicketRetriever;
 import com.permitseoul.permitserver.domain.reservationticket.core.component.ReservationTicketSaver;
 import com.permitseoul.permitserver.domain.reservationticket.core.domain.ReservationTicket;
@@ -44,6 +44,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -97,7 +98,7 @@ public class ReservationService {
     public PaymentReadyResponse getPaymentReady(final long userId,
                                                 final long eventId,
                                                 final String couponCode,
-                                                final int totalAmount,
+                                                final BigDecimal totalAmount,
                                                 final String orderId,
                                                 final List<PaymentReadyRequest.TicketTypeInfo> ticketTypeInfos) {
         final Event event;
@@ -124,7 +125,7 @@ public class ReservationService {
     public PaymentConfirmResponse getPaymentConfirm(final long userId,
                                                     final String orderId,
                                                     final String paymentKey,
-                                                    final int totalAmount) {
+                                                    final BigDecimal totalAmount) {
         try {
             final Reservation reservation = reservationRetriever.findReservationByOrderIdAndAmount(orderId, totalAmount, userId);
             final Event event = eventRetriever.findEventById(reservation.getEventId());
@@ -170,7 +171,7 @@ public class ReservationService {
                     event.getName(),
                     EventDateFormatterUtil.formatEventDate(event.getStartDate(), event.getEndDate())
             );
-        } catch (ReservationNotfoundException e) {
+        } catch (ReservationNotFoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_RESERVATION);
         } catch(EventNotfoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_EVENT);

@@ -2,11 +2,10 @@ package com.permitseoul.permitserver.domain.payment.core.domain.entity;
 
 import com.permitseoul.permitserver.global.domain.BaseTimeEntity;
 import com.permitseoul.permitserver.domain.payment.core.domain.PaymentStatus;
-import com.permitseoul.permitserver.domain.payment.core.domain.PaymentType;
 import jakarta.persistence.*;
-import jdk.jshell.Snippet;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -31,8 +30,8 @@ public class PaymentEntity extends BaseTimeEntity {
     @Column(name = "payment_key", nullable = false, length = 200, unique = true)
     private String paymentKey;
 
-    @Column(name = "total_amount", nullable = false)
-    private int totalAmount;
+    @Column(name = "total_amount", nullable = false, precision = 15, scale = 2)
+    private BigDecimal totalAmount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -55,7 +54,7 @@ public class PaymentEntity extends BaseTimeEntity {
                          String orderId,
                          long eventId,
                          String paymentKey,
-                         int totalAmount,
+                         BigDecimal totalAmount,
                          String currency
                       ) {
         this.reservationId = reservationId;

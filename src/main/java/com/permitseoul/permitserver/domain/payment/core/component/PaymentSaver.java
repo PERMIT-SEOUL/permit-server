@@ -6,6 +6,8 @@ import com.permitseoul.permitserver.domain.payment.core.repository.PaymentReposi
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+
 @Component
 @RequiredArgsConstructor
 public class PaymentSaver {
@@ -15,7 +17,7 @@ public class PaymentSaver {
                                final String orderId,
                                final long eventId,
                                String paymentKey,
-                               int totalAmount,
+                               BigDecimal totalAmount,
                                String currency) {
         final PaymentEntity paymentEntity = paymentRepository.save(new PaymentEntity(reservationId, orderId, eventId, paymentKey, totalAmount, currency));
         return Payment.fromEntity(paymentEntity);

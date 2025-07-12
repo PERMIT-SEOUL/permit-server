@@ -17,7 +17,7 @@ import com.permitseoul.permitserver.domain.reservation.api.exception.TossPayment
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationRetriever;
 import com.permitseoul.permitserver.domain.reservation.core.domain.Reservation;
 import com.permitseoul.permitserver.domain.reservation.core.domain.ReservationStatus;
-import com.permitseoul.permitserver.domain.reservation.core.exception.ReservationNotfoundException;
+import com.permitseoul.permitserver.domain.reservation.core.exception.ReservationNotFoundException;
 import com.permitseoul.permitserver.domain.reservationticket.core.component.ReservationTicketRetriever;
 import com.permitseoul.permitserver.domain.reservationticket.core.domain.ReservationTicket;
 import com.permitseoul.permitserver.domain.ticket.core.component.TicketSaver;
@@ -37,6 +37,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -77,7 +78,7 @@ class ReservationServiceTest {
     private static final long USER_ID = 1L;
     private static final String ORDER_ID = "order123";
     private static final String PAYMENT_KEY = "paymentKey123";
-    private static final int TOTAL_AMOUNT = 50000;
+    private static final BigDecimal TOTAL_AMOUNT = new BigDecimal("50000");
     private static final long EVENT_ID = 1L;
     private static final long RESERVATION_ID = 1L;
     private static final long TICKET_TYPE_ID = 1L;
@@ -114,7 +115,7 @@ class ReservationServiceTest {
         void should_ThrowException_When_ReservationNotFound() {
             // given
             given(reservationRetriever.findReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID))
-                    .willThrow(new ReservationNotfoundException());
+                    .willThrow(new ReservationNotFoundException());
 
             // when & then
             assertThatThrownBy(() -> reservationService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT))
@@ -203,7 +204,7 @@ class ReservationServiceTest {
             // given
             setupMinimalMocksForSuccess();
             Payment savedPayment = createPayment();
-            given(paymentSaver.savePayment(anyLong(), anyString(), anyLong(), anyString(), anyInt(), anyString()))
+            given(paymentSaver.savePayment(anyLong(), anyString(), anyLong(), anyString(), any(BigDecimal.class), anyString()))
                     .willReturn(savedPayment);
 
             // when
@@ -397,7 +398,7 @@ class ReservationServiceTest {
                 .willReturn(createReservation());
         given(eventRetriever.findEventById(EVENT_ID)).willReturn(createEvent());
         given(tossPaymentClient.purchaseConfirm(anyString(), any())).willReturn(createPaymentResponse());
-        given(paymentSaver.savePayment(anyLong(), anyString(), anyLong(), anyString(), anyInt(), anyString()))
+        given(paymentSaver.savePayment(anyLong(), anyString(), anyLong(), anyString(), any(BigDecimal.class), anyString()))
                 .willReturn(createPayment());
         given(reservationTicketRetriever.findAllByOrderId(ORDER_ID)).willReturn(createReservationTickets());
         given(ticketTypeRetriever.findTicketTypeEntityById(TICKET_TYPE_ID)).willReturn(createTicketTypeEntity());
@@ -408,7 +409,7 @@ class ReservationServiceTest {
                 .willReturn(createReservation());
         given(eventRetriever.findEventById(EVENT_ID)).willReturn(createEvent());
         given(tossPaymentClient.purchaseConfirm(anyString(), any())).willReturn(createPaymentResponse());
-        given(paymentSaver.savePayment(anyLong(), anyString(), anyLong(), anyString(), anyInt(), anyString()))
+        given(paymentSaver.savePayment(anyLong(), anyString(), anyLong(), anyString(), any(BigDecimal.class), anyString()))
                 .willReturn(createPayment());
         given(reservationTicketRetriever.findAllByOrderId(ORDER_ID)).willReturn(createReservationTickets());
     }
@@ -423,7 +424,7 @@ class ReservationServiceTest {
                 .willReturn(createReservation());
         given(eventRetriever.findEventById(EVENT_ID)).willReturn(createEvent());
         given(tossPaymentClient.purchaseConfirm(anyString(), any())).willReturn(createPaymentResponse());
-        given(paymentSaver.savePayment(anyLong(), anyString(), anyLong(), anyString(), anyInt(), anyString()))
+        given(paymentSaver.savePayment(anyLong(), anyString(), anyLong(), anyString(), any(BigDecimal.class), anyString()))
                 .willReturn(createPayment());
         
         List<ReservationTicket> multipleTickets = Arrays.asList(
