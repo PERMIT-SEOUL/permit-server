@@ -202,10 +202,21 @@ class ReservationServiceTest {
         @DisplayName("결제 정보 저장 성공")
         void should_SavePayment_When_ValidPaymentResponse() throws JsonProcessingException {
             // given
-            setupMinimalMocksForSuccess();
+            Reservation reservation = createReservation();
+            Event event = createEvent();
+            PaymentResponse paymentResponse = createPaymentResponse();
             Payment savedPayment = createPayment();
+            List<ReservationTicket> reservationTickets = createReservationTickets();
+            TicketTypeEntity ticketTypeEntity = createTicketTypeEntity();
+
+            given(reservationRetriever.findReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID))
+                    .willReturn(reservation);
+            given(eventRetriever.findEventById(EVENT_ID)).willReturn(event);
+            given(tossPaymentClient.purchaseConfirm(anyString(), any())).willReturn(paymentResponse);
             given(paymentSaver.savePayment(anyLong(), anyString(), anyLong(), anyString(), any(BigDecimal.class), anyString()))
                     .willReturn(savedPayment);
+            given(reservationTicketRetriever.findAllByOrderId(ORDER_ID)).willReturn(reservationTickets);
+            given(ticketTypeRetriever.findTicketTypeEntityById(TICKET_TYPE_ID)).willReturn(ticketTypeEntity);
 
             // when
             reservationService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT);

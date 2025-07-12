@@ -46,7 +46,7 @@ public class ReservationController {
     public ResponseEntity<BaseResponse<?>> getConfirmToPayment(
             @UserId final Long userId,
             @RequestBody @Valid final PaymentConfirmRequest paymentConfirmRequest
-    ) throws JsonProcessingException {
+    ) {
         final PaymentConfirmResponse paymentConfirmResponse = reservationService.getPaymentConfirm(
                 userId,
                 paymentConfirmRequest.orderId(),

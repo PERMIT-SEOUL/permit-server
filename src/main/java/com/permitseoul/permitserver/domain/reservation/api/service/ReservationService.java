@@ -129,43 +129,14 @@ public class ReservationService {
         try {
             final Reservation reservation = reservationRetriever.findReservationByOrderIdAndAmount(orderId, totalAmount, userId);
             final Event event = eventRetriever.findEventById(reservation.getEventId());
-            final PaymentResponse paymentResponse = tossPaymentClient.purchaseConfirm(
-                    authorizationHeader,
-                    PaymentRequest.of(paymentKey, reservation.getOrderId(), reservation.getTotalAmount()));
+            final PaymentResponse paymentResponse = getTossPaymentConfirm(authorizationHeader, paymentKey, reservation.getOrderId(), reservation.getTotalAmount());
+            final Payment savedPayment = savePaymentInfo(reservation, paymentResponse);
 
-            //결제정보저장
-            final Payment savedPayment = paymentSaver.savePayment(
-                    reservation.getReservationId(),
-                    reservation.getOrderId(),
-                    reservation.getEventId(),
-                    paymentResponse.paymentKey(),
-                    reservation.getTotalAmount(),
-                    paymentResponse.currency());
-            final List<ReservationTicket> findReservationTicket = reservationTicketRetriever.findAllByOrderId(savedPayment.getOrderId());
+            final List<ReservationTicket> findReservationTicketList = reservationTicketRetriever.findAllByOrderId(savedPayment.getOrderId());
 
-            //티켓개수차감
-            findReservationTicket.forEach(reservationTicket -> {
-                final TicketTypeEntity ticketTypeEntity = ticketTypeRetriever.findTicketTypeEntityById(reservationTicket.getTicketTypeId());
-                ticketTypeEntity.decreaseRemainCount(reservationTicket.getCount());
-            });
-
-            //티켓생성
-            final List<Ticket> newTickets = findReservationTicket.stream()
-                    .flatMap(reservationTicket ->
-                            IntStream.range(0, reservationTicket.getCount())
-                                    .mapToObj(i -> Ticket.builder()
-                                            .userId(userId)
-                                            .orderId(reservationTicket.getOrderId())
-                                            .ticketTypeId(reservationTicket.getTicketTypeId())
-                                            .eventId(reservation.getEventId())
-                                            .ticketCode(TicketCodeGenerator.generateTicketCode())
-                                            .isUsed(false)
-                                            .status(TicketStatus.RESERVED)
-                                            .build()
-                                    )
-                    )
-                    .toList();
-            ticketSaver.saveTickets(newTickets);
+            checkTicketCountAndDecrease(findReservationTicketList);
+            final List<Ticket> newTicketList = generateTickets(findReservationTicketList, userId, reservation);
+            ticketSaver.saveTickets(newTicketList);
 
             return PaymentConfirmResponse.of(
                     event.getName(),
@@ -185,10 +156,10 @@ public class ReservationService {
                     final TossConfirmErrorResponse tossError = mapper.readValue(body, TossConfirmErrorResponse.class);
                     throw new TossPaymentConfirmException(ErrorCode.INTERNAL_PAYMENT_FEIGN_ERROR, tossError.getMessage());
                 } catch (JsonProcessingException jsonException) {
-                    throw new PaymentFeignException(ErrorCode.INTERNAL_JSON_FORMAT_ERROR, e.getCause().getMessage());
+                    throw new PaymentFeignException(ErrorCode.INTERNAL_JSON_FORMAT_ERROR, e.getCause() != null ? e.getCause().getMessage() : "JSON 파싱 실패");
                 }
             } else {
-                throw new PaymentFeignException(ErrorCode.INTERNAL_PAYMENT_FEIGN_ERROR, e.getCause().getMessage());
+                throw new PaymentFeignException(ErrorCode.INTERNAL_PAYMENT_FEIGN_ERROR, e.getCause() != null ? e.getCause().getMessage() : "결제 Feign 통신 오류");
             }
         } catch (AlgorithmException e) {
             throw new TicketAlgorithmException(ErrorCode.INTERNAL_TICKET_ALGORITHM_ERROR);
@@ -199,5 +170,50 @@ public class ReservationService {
 
     private String buildAuthHeader(final String secretKey) {
         return AUTH_TYPE_BASIC + Base64.getEncoder().encodeToString((secretKey + COLON).getBytes());
+    }
+
+    private PaymentResponse getTossPaymentConfirm(final String authorizationHeader,
+                                                  final String paymentKey,
+                                                  final String orderId,
+                                                  final BigDecimal totalAmount) {
+        return  tossPaymentClient.purchaseConfirm(
+                authorizationHeader,
+                PaymentRequest.of(paymentKey, orderId, totalAmount)
+        );
+    }
+
+    private void checkTicketCountAndDecrease(final List<ReservationTicket> reservationTicketList) {
+        reservationTicketList.forEach(reservationTicket -> {
+            final TicketTypeEntity ticketTypeEntity = ticketTypeRetriever.findTicketTypeEntityById(reservationTicket.getTicketTypeId());
+            ticketTypeEntity.decreaseRemainCount(reservationTicket.getCount());
+        });
+    }
+
+    private Payment savePaymentInfo(final Reservation reservation, final PaymentResponse paymentResponse) {
+        return  paymentSaver.savePayment(
+                reservation.getReservationId(),
+                reservation.getOrderId(),
+                reservation.getEventId(),
+                paymentResponse.paymentKey(),
+                reservation.getTotalAmount(),
+                paymentResponse.currency());
+    }
+
+    private List<Ticket> generateTickets(final List<ReservationTicket> reservationTicketList, final long userId, final Reservation reservation) {
+        return reservationTicketList.stream()
+                .flatMap(reservationTicket ->
+                        IntStream.range(0, reservationTicket.getCount())
+                                .mapToObj(i -> Ticket.builder()
+                                        .userId(userId)
+                                        .orderId(reservationTicket.getOrderId())
+                                        .ticketTypeId(reservationTicket.getTicketTypeId())
+                                        .eventId(reservation.getEventId())
+                                        .ticketCode(TicketCodeGenerator.generateTicketCode())
+                                        .isUsed(false)
+                                        .status(TicketStatus.RESERVED)
+                                        .build()
+                                )
+                )
+                .toList();
     }
 }
