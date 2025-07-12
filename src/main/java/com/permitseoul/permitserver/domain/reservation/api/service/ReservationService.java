@@ -67,7 +67,6 @@ public class ReservationService {
     private final PaymentSaver paymentSaver;
     private final TicketSaver ticketSaver;
     private final TicketTypeRetriever ticketTypeRetriever;
-    private final TicketTypeRepository ticketTypeRepository;
 
 
     public ReservationService(ReservationSaver reservationSaver,
@@ -93,7 +92,6 @@ public class ReservationService {
         this.paymentSaver = paymentSaver;
         this.ticketSaver = ticketSaver;
         this.ticketTypeRetriever = ticketTypeRetriever;
-        this.ticketTypeRepository = ticketTypeRepository;
     }
 
     @Transactional
