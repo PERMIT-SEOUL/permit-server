@@ -15,10 +15,7 @@ import com.permitseoul.permitserver.domain.reservation.api.TossProperties;
 import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentConfirmResponse;
 import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentReadyRequest;
 import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentReadyResponse;
-import com.permitseoul.permitserver.domain.reservation.api.exception.ConflictReservationException;
-import com.permitseoul.permitserver.domain.reservation.api.exception.NotfoundReservationException;
-import com.permitseoul.permitserver.domain.reservation.api.exception.TicketAlgorithmException;
-import com.permitseoul.permitserver.domain.reservation.api.exception.TossPaymentConfirmException;
+import com.permitseoul.permitserver.domain.reservation.api.exception.*;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationRetriever;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationSaver;
 import com.permitseoul.permitserver.domain.reservation.core.domain.Reservation;
@@ -148,7 +145,6 @@ public class ReservationService {
                     paymentResponse.currency());
             final List<ReservationTicket> findReservationTicket = reservationTicketRetriever.findAllByOrderId(savedPayment.getOrderId());
 
-
             //티켓개수차감
             findReservationTicket.forEach(reservationTicket -> {
                 final TicketTypeEntity ticketTypeEntity = ticketTypeRetriever.findTicketTypeEntityById(reservationTicket.getTicketTypeId());
@@ -185,9 +181,17 @@ public class ReservationService {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_TICKET_TYPE);
         } catch(FeignException e) {
             final String body = e.contentUTF8();
-            final ObjectMapper mapper = new ObjectMapper();
-            final TossConfirmErrorResponse tossError = mapper.readValue(body, TossConfirmErrorResponse.class);
-            throw new TossPaymentConfirmException(ErrorCode.UNAUTHORIZED, tossError.getMessage());
+            if (body != null && !body.isBlank()) {
+                try {
+                    final ObjectMapper mapper = new ObjectMapper();
+                    final TossConfirmErrorResponse tossError = mapper.readValue(body, TossConfirmErrorResponse.class);
+                    throw new TossPaymentConfirmException(ErrorCode.UNAUTHORIZED, tossError.getMessage());
+                } catch (JsonProcessingException jsonException) {
+                    throw new PaymentFeignException(ErrorCode.INTERNAL_JSON_FORMAT_ERROR, e.getCause().getMessage());
+                }
+            } else {
+                throw new PaymentFeignException(ErrorCode.INTERNAL_FEIGN_ERROR, e.getCause().getMessage());
+            }
         } catch (AlgorithmException e) {
             throw new TicketAlgorithmException(ErrorCode.INTERNAL_TICKET_ALGORITHM_ERROR);
         } catch (TicketTypeInsufficientCountException e) {
