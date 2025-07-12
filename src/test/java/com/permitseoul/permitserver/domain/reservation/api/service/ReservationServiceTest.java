@@ -1,17 +1,13 @@
 package com.permitseoul.permitserver.domain.reservation.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.permitseoul.permitserver.domain.event.core.component.EventRetriever;
 import com.permitseoul.permitserver.domain.event.core.domain.Event;
-import com.permitseoul.permitserver.domain.event.core.exception.EventNotfoundException;
 import com.permitseoul.permitserver.domain.payment.api.client.TossPaymentClient;
 import com.permitseoul.permitserver.domain.payment.api.dto.PaymentResponse;
-import com.permitseoul.permitserver.domain.payment.api.dto.TossConfirmErrorResponse;
 import com.permitseoul.permitserver.domain.payment.core.component.PaymentSaver;
 import com.permitseoul.permitserver.domain.payment.core.domain.Payment;
 import com.permitseoul.permitserver.domain.payment.core.domain.PaymentStatus;
-import com.permitseoul.permitserver.domain.payment.core.domain.PaymentType;
 import com.permitseoul.permitserver.domain.reservation.api.TossProperties;
 import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentConfirmResponse;
 import com.permitseoul.permitserver.domain.reservation.api.exception.ConflictReservationException;
@@ -29,11 +25,7 @@ import com.permitseoul.permitserver.domain.ticket.core.domain.Ticket;
 import com.permitseoul.permitserver.domain.ticket.core.domain.TicketStatus;
 import com.permitseoul.permitserver.domain.tickettype.core.component.TicketTypeRetriever;
 import com.permitseoul.permitserver.domain.tickettype.core.domain.entity.TicketTypeEntity;
-import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeInsufficientCountException;
-import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeNotfoundException;
 import com.permitseoul.permitserver.domain.tickettype.core.repository.TicketTypeRepository;
-import com.permitseoul.permitserver.global.exception.AlgorithmException;
-import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import feign.FeignException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -104,7 +96,7 @@ class ReservationServiceTest {
         void should_RetrieveReservation_When_ValidOrderIdAndAmount() throws JsonProcessingException {
             // given
             Reservation reservation = createReservation();
-            given(reservationRetriever.getReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID))
+            given(reservationRetriever.findReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID))
                     .willReturn(reservation);
             
             // 나머지 의존성들을 최소한으로 Mock 설정
@@ -114,14 +106,14 @@ class ReservationServiceTest {
             reservationService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT);
 
             // then
-            verify(reservationRetriever).getReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID);
+            verify(reservationRetriever).findReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID);
         }
 
         @Test
         @DisplayName("예약 정보 조회 실패 - 예약 없음")
         void should_ThrowException_When_ReservationNotFound() {
             // given
-            given(reservationRetriever.getReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID))
+            given(reservationRetriever.findReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID))
                     .willThrow(new ReservationNotfoundException());
 
             // when & then
@@ -140,22 +132,22 @@ class ReservationServiceTest {
             // given
             setupMinimalMocksForSuccess();
             Event event = createEvent();
-            given(eventRetriever.getEvent(EVENT_ID)).willReturn(event);
+            given(eventRetriever.findEventById(EVENT_ID)).willReturn(event);
 
             // when
             reservationService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT);
 
             // then
-            verify(eventRetriever).getEvent(EVENT_ID);
+            verify(eventRetriever).findEventById(EVENT_ID);
         }
 
         @Test
         @DisplayName("이벤트 정보 조회 실패 - 이벤트 없음")
         void should_ThrowException_When_EventNotFound() {
             // given
-            given(reservationRetriever.getReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID))
+            given(reservationRetriever.findReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID))
                     .willReturn(createReservation());
-            given(eventRetriever.getEvent(EVENT_ID))
+            given(eventRetriever.findEventById(EVENT_ID))
                     .willThrow(new com.permitseoul.permitserver.domain.event.core.exception.EventNotfoundException());
 
             // when & then
@@ -187,9 +179,9 @@ class ReservationServiceTest {
         @DisplayName("토스 결제 확인 실패 - API 오류")
         void should_ThrowException_When_TossApiError() throws JsonProcessingException {
             // given
-            given(reservationRetriever.getReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID))
+            given(reservationRetriever.findReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID))
                     .willReturn(createReservation());
-            given(eventRetriever.getEvent(EVENT_ID)).willReturn(createEvent());
+            given(eventRetriever.findEventById(EVENT_ID)).willReturn(createEvent());
             
             FeignException feignException = mock(FeignException.class);
             given(feignException.contentUTF8()).willReturn("{\"code\":\"PAYMENT_ERROR\",\"message\":\"결제 오류\"}");
@@ -388,7 +380,7 @@ class ReservationServiceTest {
             // given
             setupMinimalMocksForSuccess();
             Event event = createEvent();
-            given(eventRetriever.getEvent(EVENT_ID)).willReturn(event);
+            given(eventRetriever.findEventById(EVENT_ID)).willReturn(event);
 
             // when
             PaymentConfirmResponse response = reservationService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT);
@@ -401,9 +393,9 @@ class ReservationServiceTest {
 
     // 헬퍼 메소드들
     private void setupMinimalMocksForSuccess() {
-        given(reservationRetriever.getReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID))
+        given(reservationRetriever.findReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID))
                 .willReturn(createReservation());
-        given(eventRetriever.getEvent(EVENT_ID)).willReturn(createEvent());
+        given(eventRetriever.findEventById(EVENT_ID)).willReturn(createEvent());
         given(tossPaymentClient.purchaseConfirm(anyString(), any())).willReturn(createPaymentResponse());
         given(paymentSaver.savePayment(anyLong(), anyString(), anyLong(), anyString(), anyInt(), anyString()))
                 .willReturn(createPayment());
@@ -412,9 +404,9 @@ class ReservationServiceTest {
     }
 
     private void setupMocksUntilTicketTypeRetrieval() {
-        given(reservationRetriever.getReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID))
+        given(reservationRetriever.findReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID))
                 .willReturn(createReservation());
-        given(eventRetriever.getEvent(EVENT_ID)).willReturn(createEvent());
+        given(eventRetriever.findEventById(EVENT_ID)).willReturn(createEvent());
         given(tossPaymentClient.purchaseConfirm(anyString(), any())).willReturn(createPaymentResponse());
         given(paymentSaver.savePayment(anyLong(), anyString(), anyLong(), anyString(), anyInt(), anyString()))
                 .willReturn(createPayment());
@@ -427,9 +419,9 @@ class ReservationServiceTest {
     }
 
     private void setupMocksForMultipleTicketTypes() {
-        given(reservationRetriever.getReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID))
+        given(reservationRetriever.findReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID))
                 .willReturn(createReservation());
-        given(eventRetriever.getEvent(EVENT_ID)).willReturn(createEvent());
+        given(eventRetriever.findEventById(EVENT_ID)).willReturn(createEvent());
         given(tossPaymentClient.purchaseConfirm(anyString(), any())).willReturn(createPaymentResponse());
         given(paymentSaver.savePayment(anyLong(), anyString(), anyLong(), anyString(), anyInt(), anyString()))
                 .willReturn(createPayment());

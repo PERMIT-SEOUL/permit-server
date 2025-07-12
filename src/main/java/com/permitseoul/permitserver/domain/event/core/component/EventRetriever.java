@@ -14,7 +14,7 @@ public class EventRetriever {
     private final EventRepository eventRepository;
 
     @Transactional(readOnly = true)
-    public Event getEvent(final long eventId) {
+    public Event findEventById(final long eventId) {
         final EventEntity eventEntity = eventRepository.findById(eventId).orElseThrow(
                 EventNotfoundException::new
         );

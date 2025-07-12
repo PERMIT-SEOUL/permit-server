@@ -6,6 +6,7 @@ import com.permitseoul.permitserver.domain.reservation.core.exception.Reservatio
 import com.permitseoul.permitserver.domain.reservation.core.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Component
@@ -13,7 +14,8 @@ import org.springframework.stereotype.Component;
 public class ReservationRetriever {
     private final ReservationRepository reservationRepository;
 
-    public Reservation getReservationByOrderIdAndAmount(final String orderId, final int amount, final long userId) {
+    @Transactional(readOnly = true)
+    public Reservation findReservationByOrderIdAndAmount(final String orderId, final int amount, final long userId) {
         final ReservationEntity reservationEntity =  reservationRepository.findByOrderIdAndTotalAmountAndUserId(orderId, amount, userId).orElseThrow(ReservationNotfoundException::new);
         return Reservation.fromEntity(reservationEntity);
     }

@@ -44,7 +44,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -104,7 +103,7 @@ public class ReservationService {
         final Event event;
         final User user;
         try {
-            event = eventRetriever.getEvent(eventId);
+            event = eventRetriever.findEventById(eventId);
             user = userRetriever.findUserById(userId);
         } catch (EventNotfoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_EVENT);
@@ -127,8 +126,8 @@ public class ReservationService {
                                                     final String paymentKey,
                                                     final int totalAmount) {
         try {
-            final Reservation reservation = reservationRetriever.getReservationByOrderIdAndAmount(orderId, totalAmount, userId);
-            final Event event = eventRetriever.getEvent(reservation.getEventId());
+            final Reservation reservation = reservationRetriever.findReservationByOrderIdAndAmount(orderId, totalAmount, userId);
+            final Event event = eventRetriever.findEventById(reservation.getEventId());
             final PaymentResponse paymentResponse = tossPaymentClient.purchaseConfirm(
                     authorizationHeader,
                     PaymentRequest.of(paymentKey, reservation.getOrderId(), reservation.getTotalAmount()));
