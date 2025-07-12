@@ -40,11 +40,10 @@ public class TicketTypeEntity {
     private LocalDateTime ticketEndDate;
 
 
-    public void decreaseRemainCount(final int count) {
-        if (this.remainTicketCount < count) {
+    public void decreaseRemainCount(final int buyTicketCount) {
+        if (this.remainTicketCount < buyTicketCount) {
             throw new TicketTypeInsufficientCountException();
         }
-        this.remainTicketCount -= count;
+        this.remainTicketCount -= buyTicketCount;
     }
-
 }
