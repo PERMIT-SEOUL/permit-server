@@ -18,9 +18,7 @@ public class Event {
     private final String lineUp;
     private final String details;
     private final Integer minAge;
-    private final int ticketCount;
     private final boolean isActive;
-    private final int remainTicketCount;
     private final String ticketCheckCode;
     private final LocalDateTime visibleStartDate;
 
@@ -35,9 +33,7 @@ public class Event {
                 entity.getLineUp(),
                 entity.getDetails(),
                 entity.getMinAge(),
-                entity.getTicketCount(),
                 entity.isActive(),
-                entity.getRemainTicketCount(),
                 entity.getTicketCheckCode(),
                 entity.getVisibleStartDate()
         );

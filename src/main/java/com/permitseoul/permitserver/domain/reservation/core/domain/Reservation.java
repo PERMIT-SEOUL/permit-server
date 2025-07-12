@@ -4,6 +4,8 @@ import com.permitseoul.permitserver.domain.reservation.core.domain.entity.Reserv
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Getter
 @RequiredArgsConstructor
 public class Reservation {
@@ -11,7 +13,7 @@ public class Reservation {
     private final long userId;
     private final long eventId;
     private final String orderId;
-    private final int totalAmount;
+    private final BigDecimal totalAmount;
     private final String couponCode;
     private final ReservationStatus status;
     private final String payErrorCode;

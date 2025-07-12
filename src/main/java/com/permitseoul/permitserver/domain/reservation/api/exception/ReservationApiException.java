@@ -6,8 +6,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class ReservationApiException extends ReservationBaseException {
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+public abstract class ReservationApiException extends ReservationBaseException {
     private final ErrorCode errorCode;
 }

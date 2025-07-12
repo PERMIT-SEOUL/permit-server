@@ -28,7 +28,7 @@ public enum ErrorCode implements ApiCode {
     UNAUTHORIZED_RT_EXPIRED(HttpStatus.UNAUTHORIZED, 40104, "만료된 리프레시 토큰입니다."),
     UNAUTHORIZED_DIFF_USER_ID(HttpStatus.UNAUTHORIZED, 40105, "리프레시 토큰 userId와 다른 userId 입니다"),
     UNAUTHORIZED_SECURITY_ENTRY(HttpStatus.UNAUTHORIZED, 40106, "시큐리티 필터 혹은 SecurityContext 오류입니다."),
-    UNAUTHORIZED_FEIGN(HttpStatus.UNAUTHORIZED, 40108, "feign 오류입니다."),
+    UNAUTHORIZED_FEIGN(HttpStatus.UNAUTHORIZED, 40107, "auth feign 오류입니다."),
 
     /**
      * 403 Forbidden
@@ -44,6 +44,8 @@ public enum ErrorCode implements ApiCode {
     NOT_FOUND_AT_COOKIE(HttpStatus.NOT_FOUND, 40403, "요청 accessToken 쿠키가 없습니다."),
     NOT_FOUND_RT_COOKIE(HttpStatus.NOT_FOUND, 40404, "요청 refresh 쿠키가 없습니다."),
     NOT_FOUND_EVENT(HttpStatus.NOT_FOUND, 40405, "해당 아이디 이벤트가 없습니다."),
+    NOT_FOUND_RESERVATION(HttpStatus.NOT_FOUND, 40406, "해당 Reservation 이 없습니다."),
+    NOT_FOUND_TICKET_TYPE(HttpStatus.NOT_FOUND, 40407, "해당 ticketType 이 없습니다."),
 
     /**
      * 405 Method Not Allowed
@@ -55,12 +57,18 @@ public enum ErrorCode implements ApiCode {
      */
     CONFLICT(HttpStatus.CONFLICT, 40900, "이미 존재하는 리소스입니다."),
     INTEGRITY_CONFLICT(HttpStatus.CONFLICT, 40901, "데이터 무결성 위반입니다."),
+    CONFLICT_INSUFFICIENT_TICKET(HttpStatus.CONFLICT, 40902, "구매하려는 티켓의 티켓 개수가 부족합니다."),
 
     /**
      * 500 Internal Server Error
      */
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50000, "서버 내부 오류입니다."),
     INTERNAL_RT_CACHE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50001, "RT가 캐시에 저장되어 있지 않습니다."),
+    INTERNAL_JSON_FORMAT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50002, "json 포맷팅 과정에서 에러가 발생했습니다."),
+    INTERNAL_TICKET_ALGORITHM_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50003, "티켓 코드 생성 알고리즘 에러입니다."),
+    INTERNAL_PAYMENT_FEIGN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50004, "결제 feign 통신 에러입니다."),
+
+
 
 
     ;

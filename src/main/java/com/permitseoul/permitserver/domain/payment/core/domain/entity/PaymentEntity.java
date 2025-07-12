@@ -1,19 +1,17 @@
-package com.permitseoul.permitserver.domain.payment.domain.entity;
+package com.permitseoul.permitserver.domain.payment.core.domain.entity;
 
 import com.permitseoul.permitserver.global.domain.BaseTimeEntity;
-import com.permitseoul.permitserver.domain.payment.domain.PaymentStatus;
-import com.permitseoul.permitserver.domain.payment.domain.PaymentType;
+import com.permitseoul.permitserver.domain.payment.core.domain.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "payments")
-@Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@AllArgsConstructor
 public class PaymentEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,19 +30,18 @@ public class PaymentEntity extends BaseTimeEntity {
     @Column(name = "payment_key", nullable = false, length = 200, unique = true)
     private String paymentKey;
 
-    @Column(name = "total_amount", nullable = false)
-    private int totalAmount;
+    @Column(name = "total_amount", nullable = false, precision = 15, scale = 2)
+    private BigDecimal totalAmount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PaymentStatus status;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "payment_type", nullable = false)
-    private PaymentType paymentType;
-
     @Column(name = "canceled_at")
     private LocalDateTime canceledAt;
+
+    @Column(name = "transaction_key")
+    private String transactionKey;
 
     @Column(name = "currency", nullable = false)
     private String currency;
@@ -52,8 +49,24 @@ public class PaymentEntity extends BaseTimeEntity {
     @Column(name = "canceled_error_message")
     private String canceledErrorMessage;
 
-
-
-
+    public PaymentEntity(
+                         long reservationId,
+                         String orderId,
+                         long eventId,
+                         String paymentKey,
+                         BigDecimal totalAmount,
+                         String currency
+                      ) {
+        this.reservationId = reservationId;
+        this.orderId = orderId;
+        this.eventId = eventId;
+        this.paymentKey = paymentKey;
+        this.totalAmount = totalAmount;
+        this.currency = currency;
+        this.status = PaymentStatus.SUCCESS;
+        this.transactionKey = null;
+        this.canceledAt = null;
+        this.canceledErrorMessage = null;
+    }
 }
 

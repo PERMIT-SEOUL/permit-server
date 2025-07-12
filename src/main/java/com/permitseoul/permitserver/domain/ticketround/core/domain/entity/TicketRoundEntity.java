@@ -24,12 +24,6 @@ public class TicketRoundEntity {
     @Column(name = "ticket_round_title", nullable = false)
     private String ticketRoundTitle;
 
-    @Column(name = "ticket_total_count", nullable = false)
-    private int ticketTotalCount;
-
-    @Column(name = "ticket_remain_count", nullable = false)
-    private int ticketRemainCount;
-
     @Column(name = "sales_start_date", nullable = false)
     private LocalDateTime saleStartDate;
 

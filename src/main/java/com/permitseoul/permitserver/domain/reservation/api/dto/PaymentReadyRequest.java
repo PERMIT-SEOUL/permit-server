@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public record PaymentReadyRequest(
@@ -16,7 +17,7 @@ public record PaymentReadyRequest(
         String couponCode,
 
         @Positive(message = "총 가격은 양수여야합니다.")
-        int totalAmount,
+        BigDecimal totalAmount,
 
         @NotBlank
         String orderId,

@@ -17,6 +17,11 @@ tasks.withType(JavaCompile) {
 	options.compilerArgs << "-parameters"
 }
 
+tasks.named('test') {
+	useJUnitPlatform()
+	jvmArgs '-Xshare:off' // JVM 아규먼트 설정
+}
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
@@ -59,8 +64,4 @@ dependencies {
 
 	//oauth
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-}
-
-tasks.named('test') {
-	useJUnitPlatform()
 }

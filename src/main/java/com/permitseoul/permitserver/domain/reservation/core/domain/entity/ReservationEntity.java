@@ -5,6 +5,8 @@ import com.permitseoul.permitserver.domain.reservation.core.domain.ReservationSt
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "reservations")
 @Builder(access = AccessLevel.PRIVATE)
@@ -26,8 +28,8 @@ public class ReservationEntity extends BaseTimeEntity {
     @Column(name = "order_id", nullable = false, unique = true, length = 64)
     private String orderId;
 
-    @Column(name = "total_amount", nullable = false)
-    private int totalAmount;
+    @Column(name = "total_amount", nullable = false, precision = 15, scale = 2)
+    private BigDecimal totalAmount;
 
     @Column(name = "coupon_code")
     private String couponCode;
@@ -42,7 +44,7 @@ public class ReservationEntity extends BaseTimeEntity {
     public static ReservationEntity create(final long userId,
                                            final long eventId,
                                            final String orderId,
-                                           final int totalAmount,
+                                           final BigDecimal totalAmount,
                                            final String couponCode,
                                            final ReservationStatus status,
                                            final String payErrorMessage) {
