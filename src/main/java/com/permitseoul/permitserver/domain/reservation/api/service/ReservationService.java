@@ -183,12 +183,12 @@ public class ReservationService {
                 try {
                     final ObjectMapper mapper = new ObjectMapper();
                     final TossConfirmErrorResponse tossError = mapper.readValue(body, TossConfirmErrorResponse.class);
-                    throw new TossPaymentConfirmException(ErrorCode.UNAUTHORIZED, tossError.getMessage());
+                    throw new TossPaymentConfirmException(ErrorCode.INTERNAL_PAYMENT_FEIGN_ERROR, tossError.getMessage());
                 } catch (JsonProcessingException jsonException) {
                     throw new PaymentFeignException(ErrorCode.INTERNAL_JSON_FORMAT_ERROR, e.getCause().getMessage());
                 }
             } else {
-                throw new PaymentFeignException(ErrorCode.INTERNAL_FEIGN_ERROR, e.getCause().getMessage());
+                throw new PaymentFeignException(ErrorCode.INTERNAL_PAYMENT_FEIGN_ERROR, e.getCause().getMessage());
             }
         } catch (AlgorithmException e) {
             throw new TicketAlgorithmException(ErrorCode.INTERNAL_TICKET_ALGORITHM_ERROR);
