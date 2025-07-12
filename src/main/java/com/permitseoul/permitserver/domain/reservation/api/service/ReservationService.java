@@ -125,7 +125,7 @@ public class ReservationService {
     public PaymentConfirmResponse getPaymentConfirm(final long userId,
                                                     final String orderId,
                                                     final String paymentKey,
-                                                    final int totalAmount) throws JsonProcessingException {
+                                                    final int totalAmount) {
         try {
             final Reservation reservation = reservationRetriever.getReservationByOrderIdAndAmount(orderId, totalAmount, userId);
             final Event event = eventRetriever.getEvent(reservation.getEventId());
