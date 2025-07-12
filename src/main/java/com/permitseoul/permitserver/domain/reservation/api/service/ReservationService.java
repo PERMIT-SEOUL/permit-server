@@ -15,6 +15,7 @@ import com.permitseoul.permitserver.domain.reservation.api.TossProperties;
 import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentConfirmResponse;
 import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentReadyRequest;
 import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentReadyResponse;
+import com.permitseoul.permitserver.domain.reservation.api.exception.ConflictReservationException;
 import com.permitseoul.permitserver.domain.reservation.api.exception.NotfoundReservationException;
 import com.permitseoul.permitserver.domain.reservation.api.exception.TicketAlgorithmException;
 import com.permitseoul.permitserver.domain.reservation.api.exception.TossPaymentConfirmException;
@@ -29,8 +30,12 @@ import com.permitseoul.permitserver.domain.reservationticket.core.domain.Reserva
 import com.permitseoul.permitserver.domain.ticket.core.component.TicketSaver;
 import com.permitseoul.permitserver.domain.ticket.core.domain.Ticket;
 import com.permitseoul.permitserver.domain.ticket.core.domain.TicketStatus;
+import com.permitseoul.permitserver.domain.tickettype.core.component.TicketTypeRetriever;
+import com.permitseoul.permitserver.domain.tickettype.core.domain.entity.TicketTypeEntity;
+import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeNotfoundException;
+import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeInsufficientCountException;
+import com.permitseoul.permitserver.domain.tickettype.core.repository.TicketTypeRepository;
 import com.permitseoul.permitserver.global.TicketCodeGenerator;
-import com.permitseoul.permitserver.domain.ticket.core.domain.entity.TicketEntity;
 import com.permitseoul.permitserver.domain.user.core.component.UserRetriever;
 import com.permitseoul.permitserver.domain.user.core.domain.User;
 import com.permitseoul.permitserver.domain.user.core.exception.UserNotFoundException;
@@ -64,6 +69,8 @@ public class ReservationService {
     private final String authorizationHeader;
     private final PaymentSaver paymentSaver;
     private final TicketSaver ticketSaver;
+    private final TicketTypeRetriever ticketTypeRetriever;
+    private final TicketTypeRepository ticketTypeRepository;
 
 
     public ReservationService(ReservationSaver reservationSaver,
@@ -75,7 +82,8 @@ public class ReservationService {
                               ReservationRetriever reservationRetriever,
                               TossProperties tossProperties,
                               PaymentSaver paymentSaver,
-                              TicketSaver ticketSaver) {
+                              TicketSaver ticketSaver,
+                              TicketTypeRetriever ticketTypeRetriever, TicketTypeRepository ticketTypeRepository) {
         this.reservationSaver = reservationSaver;
         this.reservationTicketSaver = reservationTicketSaver;
         this.reservationTicketRetriever = reservationTicketRetriever;
@@ -87,6 +95,8 @@ public class ReservationService {
         this.authorizationHeader = buildAuthHeader(tossProperties.apiSecretKey());
         this.paymentSaver = paymentSaver;
         this.ticketSaver = ticketSaver;
+        this.ticketTypeRetriever = ticketTypeRetriever;
+        this.ticketTypeRepository = ticketTypeRepository;
     }
 
     @Transactional
@@ -107,6 +117,7 @@ public class ReservationService {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_USER);
         }
 
+        //여기서 터지는 dataintegrationException은 글로벌 핸들러에서 잡고있음.
         final Reservation reservation = reservationSaver.saveReservation(userId, eventId, orderId, totalAmount, couponCode, ReservationStatus.PENDING);
         ticketTypeInfos.forEach(
                 ticketTypeInfo -> reservationTicketSaver.saveReservationTicket(ticketTypeInfo.id(), reservation.getOrderId(), ticketTypeInfo.count())
@@ -127,6 +138,7 @@ public class ReservationService {
                     authorizationHeader,
                     PaymentRequest.of(paymentKey, reservation.getOrderId(), reservation.getTotalAmount()));
 
+            //결제정보저장
             final Payment savedPayment = paymentSaver.savePayment(
                     reservation.getReservationId(),
                     reservation.getOrderId(),
@@ -136,6 +148,14 @@ public class ReservationService {
                     paymentResponse.currency());
             final List<ReservationTicket> findReservationTicket = reservationTicketRetriever.findAllByOrderId(savedPayment.getOrderId());
 
+
+            //티켓개수차감
+            findReservationTicket.forEach(reservationTicket -> {
+                final TicketTypeEntity ticketTypeEntity = ticketTypeRetriever.findTicketTypeEntityById(reservationTicket.getTicketTypeId());
+                ticketTypeEntity.decreaseRemainCount(reservationTicket.getCount());
+            });
+
+            //티켓생성
             final List<Ticket> newTickets = findReservationTicket.stream()
                     .flatMap(reservationTicket ->
                             IntStream.range(0, reservationTicket.getCount())
@@ -161,6 +181,8 @@ public class ReservationService {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_RESERVATION);
         } catch(EventNotfoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_EVENT);
+        } catch (TicketTypeNotfoundException e) {
+            throw new NotfoundReservationException(ErrorCode.NOT_FOUND_TICKET_TYPE);
         } catch(FeignException e) {
             final String body = e.contentUTF8();
             final ObjectMapper mapper = new ObjectMapper();
@@ -168,6 +190,8 @@ public class ReservationService {
             throw new TossPaymentConfirmException(ErrorCode.UNAUTHORIZED, tossError.getMessage());
         } catch (AlgorithmException e) {
             throw new TicketAlgorithmException(ErrorCode.INTERNAL_TICKET_ALGORITHM_ERROR);
+        } catch (TicketTypeInsufficientCountException e) {
+            throw new ConflictReservationException(ErrorCode.CONFLICT_INSUFFICIENT_TICKET);
         }
     }
 

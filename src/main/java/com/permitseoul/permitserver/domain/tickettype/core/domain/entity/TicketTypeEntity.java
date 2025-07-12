@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.domain.tickettype.core.domain.entity;
 
+import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeInsufficientCountException;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,7 +27,24 @@ public class TicketTypeEntity {
     @Column(name = "ticket_price", nullable = false)
     private int ticketPrice;
 
-    @Column(name = "ticket_dates", nullable = false)
-    private LocalDateTime ticketDates;
+    @Column(name = "total_ticket_count", nullable = false)
+    private int totalTicketCount;
+
+    @Column(name = "remain_ticket_count", nullable = false)
+    private int remainTicketCount;
+
+    @Column(name = "ticket_start_date", nullable = false)
+    private LocalDateTime ticketStartDate;
+
+    @Column(name = "ticket_end_date", nullable = false)
+    private LocalDateTime ticketEndDate;
+
+
+    public void decreaseRemainCount(final int count) {
+        if (this.remainTicketCount < count) {
+            throw new TicketTypeInsufficientCountException();
+        }
+        this.remainTicketCount -= count;
+    }
 
 }

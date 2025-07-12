@@ -8,6 +8,7 @@ import com.permitseoul.permitserver.domain.user.core.exception.UserNotFoundExcep
 import com.permitseoul.permitserver.domain.user.core.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -24,6 +25,7 @@ public class UserRetriever {
         }
     }
 
+    @Transactional(readOnly = true)
     public User findUserById(final long userId) {
         final UserEntity userEntity = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         return User.fromEntity(userEntity);

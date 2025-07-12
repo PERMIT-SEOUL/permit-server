@@ -15,7 +15,7 @@ public class TicketSaver {
     private final TicketRepository ticketRepository;
 
     public void saveTickets(final List<Ticket> tickets) {
-        List<TicketEntity> ticketEntityList = tickets.stream()
+        final List<TicketEntity> ticketEntityList = tickets.stream()
                 .map(ticket -> TicketEntity.builder()
                         .orderId(ticket.getOrderId())
                         .ticketCode(ticket.getTicketCode())

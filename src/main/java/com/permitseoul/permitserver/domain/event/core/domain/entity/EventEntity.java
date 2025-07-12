@@ -38,20 +38,14 @@ public class EventEntity extends BaseTimeEntity {
     @Column(name = "line_up", columnDefinition = "TEXT")
     private String lineUp;
 
-    @Column(name = "details", columnDefinition = "TEXT") ///255보다 더 길어질 수 있기 때문
+    @Column(name = "details", columnDefinition = "TEXT")
     private String details;
 
     @Column(name = "min_age")
     private Integer minAge;
 
-    @Column(name = "ticket_count", nullable = false)
-    private int ticketCount;
-
     @Column(name = "is_active", nullable = false)
     private boolean isActive;
-
-    @Column(name = "remain_ticket_count", nullable = false)
-    private int remainTicketCount;
 
     @Column(name = "ticket_check_code", length = 10, nullable = false)
     private String ticketCheckCode;

@@ -16,7 +16,6 @@ public class Payment {
     private final String paymentKey;
     private final int totalAmount;
     private final PaymentStatus status;
-    private final PaymentType paymentType;
     private final LocalDateTime canceledAt;
     private final String currency;
     private final String canceledErrorMessage;
@@ -30,7 +29,6 @@ public class Payment {
                 paymentEntity.getPaymentKey(),
                 paymentEntity.getTotalAmount(),
                 paymentEntity.getStatus(),
-                paymentEntity.getPaymentType(),
                 paymentEntity.getCanceledAt(),
                 paymentEntity.getCurrency(),
                 paymentEntity.getCanceledErrorMessage()

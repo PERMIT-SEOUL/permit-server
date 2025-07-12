@@ -11,13 +11,14 @@ public abstract class EventDateFormatterUtil {
 
     public static String formatEventDate(final LocalDateTime startDate, final LocalDateTime endDate) {
         final StringBuilder sb = new StringBuilder();
+        // 시작날짜와 종료날짜가 같을 때, "Sun, 25 May 2025" 형식으로 포맷팅
         if (startDate.toLocalDate().equals(endDate.toLocalDate())) {
             sb.append(startDate.format(DAY_FORMATTER))
                     .append(", ")
                     .append(startDate.format(DATE_FORMATTER))
                     .append(" ")
                     .append(startDate.format(MONTH_YEAR_FORMATTER));
-        } else {
+        } else { // 시작날짜와 종료날짜가 다를 때, "Sun–Mon, 25–26 May 2025" 형식으로 포맷팅
             sb.append(startDate.format(DAY_FORMATTER))
                     .append("–")
                     .append(endDate.format(DAY_FORMATTER))

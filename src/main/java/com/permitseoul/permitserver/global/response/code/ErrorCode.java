@@ -45,6 +45,7 @@ public enum ErrorCode implements ApiCode {
     NOT_FOUND_RT_COOKIE(HttpStatus.NOT_FOUND, 40404, "요청 refresh 쿠키가 없습니다."),
     NOT_FOUND_EVENT(HttpStatus.NOT_FOUND, 40405, "해당 아이디 이벤트가 없습니다."),
     NOT_FOUND_RESERVATION(HttpStatus.NOT_FOUND, 40406, "해당 Reservation 이 없습니다."),
+    NOT_FOUND_TICKET_TYPE(HttpStatus.NOT_FOUND, 40407, "해당 ticketType 이 없습니다."),
 
     /**
      * 405 Method Not Allowed
@@ -56,6 +57,7 @@ public enum ErrorCode implements ApiCode {
      */
     CONFLICT(HttpStatus.CONFLICT, 40900, "이미 존재하는 리소스입니다."),
     INTEGRITY_CONFLICT(HttpStatus.CONFLICT, 40901, "데이터 무결성 위반입니다."),
+    CONFLICT_INSUFFICIENT_TICKET(HttpStatus.CONFLICT, 40902, "구매하려는 티켓의 티켓 개수가 부족합니다."),
 
     /**
      * 500 Internal Server Error
