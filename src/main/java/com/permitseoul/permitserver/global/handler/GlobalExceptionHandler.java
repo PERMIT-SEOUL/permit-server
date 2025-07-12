@@ -27,6 +27,8 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -192,15 +194,23 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<BaseResponse<?>> handleDataIntegrityViolationException(final DataIntegrityViolationException e) {
-        if (e.getCause() instanceof ConstraintViolationException constraintViolationException) {
+        Throwable rootCause = e.getRootCause();
 
-            // 제약 조건 이름 추출
-            String constraintName = constraintViolationException.getConstraintViolations().toString();
-            String errorMessage = String.format("제약 조건 '%s' 위반이 발생했습니다.", constraintName);
-            return ApiResponseUtil.failure(ErrorCode.INTEGRITY_CONFLICT, errorMessage);
-        } else {
-            return ApiResponseUtil.failure(ErrorCode.INTEGRITY_CONFLICT);
+        if (rootCause != null) {
+            String message = rootCause.getMessage();
+
+            // 정규식으로 중복된 필드명 추출 (예: order_id)
+            Pattern pattern = Pattern.compile("Key \\((.*?)\\)=");
+            Matcher matcher = pattern.matcher(message);
+
+            if (matcher.find()) {
+                String duplicateField = matcher.group(1);
+                String errorMessage = String.format("'%s' 필드가 중복되었습니다.", duplicateField);
+                return ApiResponseUtil.failure(ErrorCode.INTEGRITY_CONFLICT, errorMessage);
+            }
         }
+
+        return ApiResponseUtil.failure(ErrorCode.INTEGRITY_CONFLICT);
     }
 
 

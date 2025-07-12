@@ -28,7 +28,7 @@ public enum ErrorCode implements ApiCode {
     UNAUTHORIZED_RT_EXPIRED(HttpStatus.UNAUTHORIZED, 40104, "만료된 리프레시 토큰입니다."),
     UNAUTHORIZED_DIFF_USER_ID(HttpStatus.UNAUTHORIZED, 40105, "리프레시 토큰 userId와 다른 userId 입니다"),
     UNAUTHORIZED_SECURITY_ENTRY(HttpStatus.UNAUTHORIZED, 40106, "시큐리티 필터 혹은 SecurityContext 오류입니다."),
-    UNAUTHORIZED_FEIGN(HttpStatus.UNAUTHORIZED, 40108, "feign 오류입니다."),
+    UNAUTHORIZED_FEIGN(HttpStatus.UNAUTHORIZED, 40107, "auth feign 오류입니다."),
 
     /**
      * 403 Forbidden
@@ -66,6 +66,7 @@ public enum ErrorCode implements ApiCode {
     INTERNAL_RT_CACHE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50001, "RT가 캐시에 저장되어 있지 않습니다."),
     INTERNAL_JSON_FORMAT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50002, "json 포맷팅 과정에서 에러가 발생했습니다."),
     INTERNAL_TICKET_ALGORITHM_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50003, "티켓 코드 생성 알고리즘 에러입니다."),
+    INTERNAL_FEIGN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50004, "feign 통신 에러입니다."),
 
 
 
