@@ -16,7 +16,7 @@ public class CookieCreatorUtil {
                 .maxAge(AT_MAX_AGE)
                 .path("/")
                 .httpOnly(true)
-                .secure(!isFromLocal)
+                .secure(true)
                 .sameSite("None")
                 .domain(isFromLocal ? null : ".permitseoul.com")
                 .build();
@@ -28,7 +28,7 @@ public class CookieCreatorUtil {
                 .maxAge(RT_MAX_AGE)
                 .path("/")
                 .httpOnly(true)
-                .secure(!isFromLocal)
+                .secure(true)
                 .sameSite("None")
                 .domain(isFromLocal ? null : ".permitseoul.com")
                 .build();
@@ -40,7 +40,7 @@ public class CookieCreatorUtil {
                 .maxAge(0)
                 .path("/")
                 .httpOnly(true)
-                .secure(!isFromLocal)
+                .secure(true)
                 .sameSite("None")
                 .domain(isFromLocal ? null : ".permitseoul.com")
                 .build();
@@ -52,7 +52,7 @@ public class CookieCreatorUtil {
                 .maxAge(0)
                 .path("/")
                 .httpOnly(true)
-                .secure(!isFromLocal)
+                .secure(true)
                 .sameSite("None")
                 .domain(isFromLocal ? null : ".permitseoul.com")
                 .build();
