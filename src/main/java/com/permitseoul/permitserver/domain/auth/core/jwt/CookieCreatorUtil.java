@@ -18,7 +18,7 @@ public class CookieCreatorUtil {
                 .httpOnly(true)
                 .secure(!isFromLocal)
                 .sameSite(isFromLocal ? "Lax" : "None")
-                .domain(isFromLocal ? "localhost" : ".permitseoul.com")
+                .domain(isFromLocal ? null : ".permitseoul.com")
                 .build();
     }
 
@@ -30,7 +30,7 @@ public class CookieCreatorUtil {
                 .httpOnly(true)
                 .secure(!isFromLocal)
                 .sameSite(isFromLocal ? "Lax" : "None")
-                .domain(isFromLocal ? "localhost" : ".permitseoul.com")
+                .domain(isFromLocal ? null : ".permitseoul.com")
                 .build();
     }
 
@@ -42,7 +42,7 @@ public class CookieCreatorUtil {
                 .httpOnly(true)
                 .secure(!isFromLocal)
                 .sameSite(isFromLocal ? "Lax" : "None")
-                .domain(isFromLocal ? "localhost" : ".permitseoul.com")
+                .domain(isFromLocal ? null : ".permitseoul.com")
                 .build();
     }
 
@@ -54,7 +54,7 @@ public class CookieCreatorUtil {
                 .httpOnly(true)
                 .secure(!isFromLocal)
                 .sameSite(isFromLocal ? "Lax" : "None")
-                .domain(isFromLocal ? "localhost" : ".permitseoul.com")
+                .domain(isFromLocal ? null : ".permitseoul.com")
                 .build();
     }
 }
