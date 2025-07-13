@@ -17,6 +17,7 @@ public class CookieCreatorUtil {
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("None")
+                .domain("api-dev.permitseoul.com")
                 .build();
     }
 
@@ -27,6 +28,7 @@ public class CookieCreatorUtil {
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("None")
+                .domain("api-dev.permitseoul.com")
                 .build();
     }
 
@@ -37,6 +39,7 @@ public class CookieCreatorUtil {
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("None")
+                .domain("api-dev.permitseoul.com")
                 .build();
     }
 
@@ -47,6 +50,7 @@ public class CookieCreatorUtil {
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("None")
+                .domain("api-dev.permitseoul.com")
                 .build();
     }
 }
