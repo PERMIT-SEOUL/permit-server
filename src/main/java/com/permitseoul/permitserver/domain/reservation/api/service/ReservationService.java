@@ -39,6 +39,7 @@ import com.permitseoul.permitserver.domain.user.core.exception.UserNotFoundExcep
 import com.permitseoul.permitserver.global.exception.AlgorithmException;
 import com.permitseoul.permitserver.global.formatter.EventDateFormatterUtil;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
+import feign.Feign;
 import feign.FeignException;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
@@ -54,6 +55,8 @@ import java.util.stream.IntStream;
 public class ReservationService {
     private static final String COLON = ":";
     private static final String AUTH_TYPE_BASIC = "Basic ";
+    private static final String JSON_PARSING_FAIL = "JSON 파싱 실패입니다.";
+    private static final String PAYMENT_FEIGN_FAIL = "결제 Feign 통신 오류입니다.";
 
     private final ReservationSaver reservationSaver;
     private final ReservationTicketSaver reservationTicketSaver;
@@ -149,23 +152,17 @@ public class ReservationService {
         } catch (TicketTypeNotfoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_TICKET_TYPE);
         } catch(FeignException e) {
-            final String body = e.contentUTF8();
-            if (body != null && !body.isBlank()) {
-                try {
-                    final ObjectMapper mapper = new ObjectMapper();
-                    final TossConfirmErrorResponse tossError = mapper.readValue(body, TossConfirmErrorResponse.class);
-                    throw new TossPaymentConfirmException(ErrorCode.INTERNAL_PAYMENT_FEIGN_ERROR, tossError.getMessage());
-                } catch (JsonProcessingException jsonException) {
-                    throw new PaymentFeignException(ErrorCode.INTERNAL_JSON_FORMAT_ERROR, e.getCause() != null ? e.getCause().getMessage() : "JSON 파싱 실패");
-                }
-            } else {
-                throw new PaymentFeignException(ErrorCode.INTERNAL_PAYMENT_FEIGN_ERROR, e.getCause() != null ? e.getCause().getMessage() : "결제 Feign 통신 오류");
-            }
+            throw handleFeignException(e);
         } catch (AlgorithmException e) {
             throw new TicketAlgorithmException(ErrorCode.INTERNAL_TICKET_ALGORITHM_ERROR);
         } catch (TicketTypeInsufficientCountException e) {
             throw new ConflictReservationException(ErrorCode.CONFLICT_INSUFFICIENT_TICKET);
         }
+    }
+
+    @Transactional
+    public void canclePayment(final long userId, final String orderId) {
+
     }
 
     private String buildAuthHeader(final String secretKey) {
@@ -215,5 +212,26 @@ public class ReservationService {
                                 )
                 )
                 .toList();
+    }
+
+    private RuntimeException handleFeignException(FeignException e) {
+        final String body = e.contentUTF8();
+        if (body != null && !body.isBlank()) {
+            try {
+                final ObjectMapper mapper = new ObjectMapper();
+                final TossConfirmErrorResponse tossError = mapper.readValue(body, TossConfirmErrorResponse.class);
+                return new TossPaymentConfirmException(ErrorCode.INTERNAL_PAYMENT_FEIGN_ERROR, tossError.getMessage());
+            } catch (JsonProcessingException jsonException) {
+                return new PaymentFeignException(
+                        ErrorCode.INTERNAL_JSON_FORMAT_ERROR,
+                        e.getCause() != null ? e.getCause().getMessage() : JSON_PARSING_FAIL
+                );
+            }
+        } else {
+            return new PaymentFeignException(
+                    ErrorCode.INTERNAL_PAYMENT_FEIGN_ERROR,
+                    e.getCause() != null ? e.getCause().getMessage() : PAYMENT_FEIGN_FAIL
+            );
+        }
     }
 }
