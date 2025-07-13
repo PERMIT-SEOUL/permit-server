@@ -77,7 +77,10 @@ public class AuthController {
             ) {
         authService.logout(userId, refreshTokenCookie.getValue());
 
-        final String origin = request.getHeader("Origin");
+        String origin = request.getHeader("Origin");
+        if (origin == null) {
+            origin = "localhost";
+        }
         // 쿠키 삭제
         final ResponseCookie deleteAccessToken = CookieCreatorUtil.deleteAccessTokenCookie(origin);
         final ResponseCookie deleteRefreshToken = CookieCreatorUtil.deleteRefreshTokenCookie(origin);
@@ -89,7 +92,10 @@ public class AuthController {
     private ResponseEntity<BaseResponse<?>> responseWithGeneratedCookie(final HttpServletResponse response,
                                                                         final TokenDto tokenDto,
                                                                         final HttpServletRequest request) {
-        final String origin = request.getHeader("Origin");
+        String origin = request.getHeader("Origin");
+        if (origin == null) {
+            origin = "localhost";
+        }
         final ResponseCookie accessTokenCookie = CookieCreatorUtil.createAccessTokenCookie(tokenDto.accessToken(), origin);
         final ResponseCookie refreshTokenCookie = CookieCreatorUtil.createRefreshTokenCookie(tokenDto.refreshToken(), origin);
         response.setHeader("Set-Cookie", accessTokenCookie.toString());
