@@ -6,14 +6,14 @@ import com.permitseoul.permitserver.domain.event.core.component.EventRetriever;
 import com.permitseoul.permitserver.domain.event.core.domain.Event;
 import com.permitseoul.permitserver.domain.event.core.exception.EventNotfoundException;
 import com.permitseoul.permitserver.domain.payment.api.client.TossPaymentClient;
-import com.permitseoul.permitserver.domain.payment.api.dto.PaymentRequest;
+import com.permitseoul.permitserver.domain.payment.api.dto.TossPaymentRequest;
 import com.permitseoul.permitserver.domain.payment.api.dto.PaymentResponse;
 import com.permitseoul.permitserver.domain.payment.api.dto.TossConfirmErrorResponse;
 import com.permitseoul.permitserver.domain.payment.core.component.PaymentRetriever;
 import com.permitseoul.permitserver.domain.payment.core.component.PaymentSaver;
 import com.permitseoul.permitserver.domain.payment.core.domain.Payment;
 import com.permitseoul.permitserver.domain.reservation.api.TossProperties;
-import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentCancelRequest;
+import com.permitseoul.permitserver.domain.reservation.api.dto.TossPaymentCancelRequest;
 import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentConfirmResponse;
 import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentReadyRequest;
 import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentReadyResponse;
@@ -156,18 +156,7 @@ public class ReservationService {
         } catch (TicketTypeNotfoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_TICKET_TYPE);
         } catch(FeignException e) {
-            final String body = e.contentUTF8();
-            if (body != null && !body.isBlank()) {
-                try {
-                    final ObjectMapper mapper = new ObjectMapper();
-                    final TossConfirmErrorResponse tossError = mapper.readValue(body, TossConfirmErrorResponse.class);
-                    throw new TossPaymentConfirmException(ErrorCode.INTERNAL_PAYMENT_FEIGN_ERROR, tossError.getMessage());
-                } catch (JsonProcessingException jsonException) {
-                    throw new PaymentFeignException(ErrorCode.INTERNAL_JSON_FORMAT_ERROR, e.getCause() != null ? e.getCause().getMessage() : "JSON 파싱 실패");
-                }
-            } else {
-                throw new PaymentFeignException(ErrorCode.INTERNAL_PAYMENT_FEIGN_ERROR, e.getCause() != null ? e.getCause().getMessage() : "결제 Feign 통신 오류");
-            }
+            throw handleFeignException(e);
         } catch (AlgorithmException e) {
             throw new TicketAlgorithmException(ErrorCode.INTERNAL_TICKET_ALGORITHM_ERROR);
         } catch (TicketTypeInsufficientCountException e) {
@@ -179,9 +168,10 @@ public class ReservationService {
     public void cancelPayment(final long userId, final String orderId) {
         final Payment payment = paymentRetriever.findPaymentByOrderId(orderId);
         validateCancelPaymentWithUserId(userId, payment);
-        final PaymentCancelRequest paymentCancelRequest = PaymentCancelRequest.of(CANCEL_REASON, payment.getCurrency());
-        final PaymentResponse cancelResponse = tossPaymentClient.cancelPayment(authorizationHeader, payment.getPaymentKey(), paymentCancelRequest);
+        final TossPaymentCancelRequest tossPaymentCancelRequest = TossPaymentCancelRequest.of(CANCEL_REASON, payment.getCurrency());
+        final PaymentResponse cancelResponse = tossPaymentClient.cancelPayment(authorizationHeader, payment.getPaymentKey(), tossPaymentCancelRequest);
     }
+
 
 
     private void validateCancelPaymentWithUserId(final long userId, final Payment payment) {
@@ -201,7 +191,7 @@ public class ReservationService {
                                                   final BigDecimal totalAmount) {
         return  tossPaymentClient.purchaseConfirm(
                 authorizationHeader,
-                PaymentRequest.of(paymentKey, orderId, totalAmount)
+                TossPaymentRequest.of(paymentKey, orderId, totalAmount)
         );
     }
 
@@ -239,4 +229,26 @@ public class ReservationService {
                 )
                 .toList();
     }
+
+    private RuntimeException handleFeignException(final FeignException e) {
+        final String body = e.contentUTF8();
+        if (body != null && !body.isBlank()) {
+            try {
+                final ObjectMapper mapper = new ObjectMapper();
+                final TossConfirmErrorResponse tossError = mapper.readValue(body, TossConfirmErrorResponse.class);
+                return new TossPaymentConfirmException(ErrorCode.INTERNAL_PAYMENT_FEIGN_ERROR, tossError.getMessage());
+            } catch (JsonProcessingException jsonException) {
+                return new PaymentFeignException(
+                        ErrorCode.INTERNAL_JSON_FORMAT_ERROR,
+                        e.getCause() != null ? e.getCause().getMessage() : JSON_PARSING_FAIL
+                );
+            }
+        } else {
+            return new PaymentFeignException(
+                    ErrorCode.INTERNAL_PAYMENT_FEIGN_ERROR,
+                    e.getCause() != null ? e.getCause().getMessage() : PAYMENT_FEIGN_FAIL
+            );
+        }
+    }
+
 }
