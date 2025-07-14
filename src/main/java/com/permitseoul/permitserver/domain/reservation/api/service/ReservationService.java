@@ -171,6 +171,7 @@ public class ReservationService {
         validateCancelPaymentWithUserId(userId, payment);
         final TossPaymentCancelRequest tossPaymentCancelRequest = TossPaymentCancelRequest.of(CANCEL_REASON, payment.getCurrency());
         final PaymentResponse cancelResponse = tossPaymentClient.cancelPayment(authorizationHeader, payment.getPaymentKey(), tossPaymentCancelRequest);
+
     }
 
 

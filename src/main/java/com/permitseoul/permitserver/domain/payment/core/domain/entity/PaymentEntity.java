@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "payments")
@@ -37,17 +36,8 @@ public class PaymentEntity extends BaseTimeEntity {
     @Column(nullable = false)
     private PaymentStatus status;
 
-    @Column(name = "canceled_at")
-    private LocalDateTime canceledAt;
-
-    @Column(name = "transaction_key")
-    private String transactionKey;
-
     @Column(name = "currency", nullable = false)
     private String currency;
-
-    @Column(name = "canceled_error_message")
-    private String canceledErrorMessage;
 
     public PaymentEntity(
                          long reservationId,
@@ -64,9 +54,6 @@ public class PaymentEntity extends BaseTimeEntity {
         this.totalAmount = totalAmount;
         this.currency = currency;
         this.status = PaymentStatus.SUCCESS;
-        this.transactionKey = null;
-        this.canceledAt = null;
-        this.canceledErrorMessage = null;
     }
 }
 
