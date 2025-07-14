@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.domain.payment.core.domain.entity;
 
+import com.permitseoul.permitserver.domain.payment.core.domain.Currency;
 import com.permitseoul.permitserver.global.domain.BaseTimeEntity;
 import com.permitseoul.permitserver.domain.payment.core.domain.PaymentStatus;
 import jakarta.persistence.*;
@@ -36,17 +37,26 @@ public class PaymentEntity extends BaseTimeEntity {
     @Column(nullable = false)
     private PaymentStatus status;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "currency", nullable = false)
-    private String currency;
+    private Currency currency;
 
-    public PaymentEntity(
-                         long reservationId,
-                         String orderId,
-                         long eventId,
-                         String paymentKey,
-                         BigDecimal totalAmount,
-                         String currency
-                      ) {
+    @Column(name = "requested_at", nullable = false)
+    private String requestedAt;
+
+    @Column(name = "approved_at")
+    private String approvedAt;
+
+    private PaymentEntity (
+            long reservationId,
+            String orderId,
+            long eventId,
+            String paymentKey,
+            BigDecimal totalAmount,
+            Currency currency,
+            String requestedAt,
+            String approvedAt
+    ) {
         this.reservationId = reservationId;
         this.orderId = orderId;
         this.eventId = eventId;
@@ -54,6 +64,19 @@ public class PaymentEntity extends BaseTimeEntity {
         this.totalAmount = totalAmount;
         this.currency = currency;
         this.status = PaymentStatus.SUCCESS;
+        this.requestedAt = requestedAt;
+        this.approvedAt = approvedAt;
+    }
+
+    public static PaymentEntity create(final long reservationId,
+                                       final String orderId,
+                                       final long eventId,
+                                       final String paymentKey,
+                                       final BigDecimal totalAmount,
+                                       final Currency currency,
+                                       final String requestedAt,
+                                       final String approvedAt) {
+        return new PaymentEntity(reservationId, orderId, eventId, paymentKey, totalAmount, currency, requestedAt, approvedAt);
     }
 }
 

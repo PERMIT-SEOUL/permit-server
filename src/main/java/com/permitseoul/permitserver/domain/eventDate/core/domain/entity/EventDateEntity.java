@@ -8,10 +8,7 @@ import java.time.LocalTime;
 
 @Entity
 @Table(name = "event_dates")
-@Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
-@AllArgsConstructor
 public class EventDateEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,5 +26,12 @@ public class EventDateEntity {
 
     @Column(name = "end_time", nullable = false)
     private LocalTime endTime;
+
+    private EventDateEntity(long eventId, LocalDate eventDate, LocalTime startTime, LocalTime endTime) {
+        this.eventId = eventId;
+        this.eventDate = eventDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
 }
 

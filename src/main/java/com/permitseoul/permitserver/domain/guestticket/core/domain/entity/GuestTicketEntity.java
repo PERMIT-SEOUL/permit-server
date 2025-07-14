@@ -5,10 +5,7 @@ import lombok.*;
 
 @Entity
 @Table(name = "guests_tickets")
-@Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
-@AllArgsConstructor
 public class GuestTicketEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,4 +20,10 @@ public class GuestTicketEntity {
 
     @Column(name = "guest_ticket_code", nullable = false)
     private String guestTicketCode;
+
+    private GuestTicketEntity(long eventId, long guestId, String guestTicketCode) {
+        this.eventId = eventId;
+        this.guestId = guestId;
+        this.guestTicketCode = guestTicketCode;
+    }
 }

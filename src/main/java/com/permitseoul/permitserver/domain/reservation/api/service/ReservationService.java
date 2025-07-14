@@ -11,6 +11,7 @@ import com.permitseoul.permitserver.domain.payment.api.dto.PaymentResponse;
 import com.permitseoul.permitserver.domain.payment.api.dto.TossConfirmErrorResponse;
 import com.permitseoul.permitserver.domain.payment.core.component.PaymentRetriever;
 import com.permitseoul.permitserver.domain.payment.core.component.PaymentSaver;
+import com.permitseoul.permitserver.domain.payment.core.domain.Currency;
 import com.permitseoul.permitserver.domain.payment.core.domain.Payment;
 import com.permitseoul.permitserver.domain.reservation.api.TossProperties;
 import com.permitseoul.permitserver.domain.reservation.api.dto.TossPaymentCancelRequest;
@@ -121,7 +122,7 @@ public class ReservationService {
         }
 
         //여기서 터지는 dataintegrationException은 글로벌 핸들러에서 잡고있음.
-        final Reservation reservation = reservationSaver.saveReservation(userId, eventId, orderId, totalAmount, couponCode, ReservationStatus.PENDING);
+        final Reservation reservation = reservationSaver.saveReservation(userId, eventId, orderId, totalAmount, couponCode);
         ticketTypeInfos.forEach(
                 ticketTypeInfo -> reservationTicketSaver.saveReservationTicket(ticketTypeInfo.id(), reservation.getOrderId(), ticketTypeInfo.count())
         );
@@ -169,9 +170,16 @@ public class ReservationService {
     public void cancelPayment(final long userId, final String orderId) {
         final Payment payment = paymentRetriever.findPaymentByOrderId(orderId);
         validateCancelPaymentWithUserId(userId, payment);
-        final TossPaymentCancelRequest tossPaymentCancelRequest = TossPaymentCancelRequest.of(CANCEL_REASON, payment.getCurrency());
-        final PaymentResponse cancelResponse = tossPaymentClient.cancelPayment(authorizationHeader, payment.getPaymentKey(), tossPaymentCancelRequest);
+        cancelTossPayment(payment.getPaymentKey(), payment.getCurrency());
 
+    }
+
+    public void cancelTossPayment(final String paymentKey, final Currency currency) {
+        final PaymentResponse cancelResponse = tossPaymentClient.cancelPayment(
+                authorizationHeader,
+                paymentKey,
+                TossPaymentCancelRequest.of(CANCEL_REASON, currency)
+        );
     }
 
 
@@ -211,7 +219,10 @@ public class ReservationService {
                 reservation.getEventId(),
                 paymentResponse.paymentKey(),
                 reservation.getTotalAmount(),
-                paymentResponse.currency());
+                paymentResponse.currency(),
+                paymentResponse.requestedAt(),
+                paymentResponse.approvedAt()
+        );
     }
 
     private List<Ticket> generateTickets(final List<ReservationTicket> reservationTicketList, final long userId, final Reservation reservation) {

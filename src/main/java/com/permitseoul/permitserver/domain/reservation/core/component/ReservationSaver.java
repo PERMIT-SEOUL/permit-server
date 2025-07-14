@@ -18,9 +18,8 @@ public class ReservationSaver {
                                        final long eventId,
                                        final String orderId,
                                        final BigDecimal totalAmount,
-                                       final String couponCode,
-                                       final ReservationStatus status) {
-        final ReservationEntity reservationEntity = reservationRepository.save(ReservationEntity.create(userId, eventId, orderId, totalAmount, couponCode, status,null));
+                                       final String couponCode) {
+        final ReservationEntity reservationEntity = reservationRepository.save(ReservationEntity.create(userId, eventId, orderId, totalAmount, couponCode));
         return Reservation.fromEntity(reservationRepository.save(reservationEntity));
     }
 }

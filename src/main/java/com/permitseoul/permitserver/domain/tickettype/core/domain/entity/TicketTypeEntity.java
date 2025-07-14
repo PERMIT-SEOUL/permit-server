@@ -8,10 +8,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "ticket_type")
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
-@AllArgsConstructor
 public class TicketTypeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,6 +36,21 @@ public class TicketTypeEntity {
     @Column(name = "ticket_end_date", nullable = false)
     private LocalDateTime ticketEndDate;
 
+    private TicketTypeEntity(long ticketRoundId,
+                            String ticketTypeName,
+                            int ticketPrice,
+                            int totalTicketCount,
+                            int remainTicketCount,
+                            LocalDateTime ticketStartDate,
+                            LocalDateTime ticketEndDate) {
+        this.ticketRoundId = ticketRoundId;
+        this.ticketTypeName = ticketTypeName;
+        this.ticketPrice = ticketPrice;
+        this.totalTicketCount = totalTicketCount;
+        this.remainTicketCount = remainTicketCount;
+        this.ticketStartDate = ticketStartDate;
+        this.ticketEndDate = ticketEndDate;
+    }
 
     public void decreaseRemainCount(final int buyTicketCount) {
         if (this.remainTicketCount < buyTicketCount) {

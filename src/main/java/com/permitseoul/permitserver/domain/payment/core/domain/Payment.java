@@ -16,7 +16,10 @@ public class Payment {
     private final String paymentKey;
     private final BigDecimal totalAmount;
     private final PaymentStatus status;
-    private final String currency;
+    private final Currency currency;
+    private final String requestAt;
+    private final String approveAt;
+
 
     public static Payment fromEntity(final PaymentEntity paymentEntity) {
         return new Payment(
@@ -27,7 +30,9 @@ public class Payment {
                 paymentEntity.getPaymentKey(),
                 paymentEntity.getTotalAmount(),
                 paymentEntity.getStatus(),
-                paymentEntity.getCurrency()
+                paymentEntity.getCurrency(),
+                paymentEntity.getRequestedAt(),
+                paymentEntity.getApprovedAt()
         );
     }
 }

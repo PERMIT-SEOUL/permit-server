@@ -6,10 +6,8 @@ import lombok.*;
 
 @Entity
 @Table(name = "reservation_tickets")
-@Builder(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ReservationTicketEntity extends BaseTimeEntity {
 
     @Id
@@ -26,14 +24,13 @@ public class ReservationTicketEntity extends BaseTimeEntity {
     @Column(name = "count", nullable = false)
     private int count;
 
-    public static ReservationTicketEntity create(final long ticketTypeId,
-                                                 final String orderId,
-                                                 final int count) {
-        return ReservationTicketEntity.builder()
-                .ticketTypeId(ticketTypeId)
-                .orderId(orderId)
-                .count(count)
-                .build();
+    private ReservationTicketEntity(long ticketTypeId, String orderId, int count) {
+        this.ticketTypeId = ticketTypeId;
+        this.orderId = orderId;
+        this.count = count;
     }
 
+    public static ReservationTicketEntity create(final long ticketTypeId, final String orderId, final int count) {
+        return new ReservationTicketEntity(ticketTypeId, orderId, count);
+    }
 }

@@ -7,10 +7,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "ticket_rounds")
-@Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
-@AllArgsConstructor
 public class TicketRoundEntity {
 
     @Id
@@ -32,4 +29,12 @@ public class TicketRoundEntity {
 
     @Column(name = "is_active", nullable = false)
     private boolean isActive;
+
+    private TicketRoundEntity(long eventId, String ticketRoundTitle, LocalDateTime saleStartDate, LocalDateTime salesEndDate, boolean isActive) {
+        this.eventId = eventId;
+        this.ticketRoundTitle = ticketRoundTitle;
+        this.saleStartDate = saleStartDate;
+        this.salesEndDate = salesEndDate;
+        this.isActive = isActive;
+    }
 }

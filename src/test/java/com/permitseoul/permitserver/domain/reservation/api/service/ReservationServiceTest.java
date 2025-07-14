@@ -6,6 +6,7 @@ import com.permitseoul.permitserver.domain.event.core.domain.Event;
 import com.permitseoul.permitserver.domain.payment.api.client.TossPaymentClient;
 import com.permitseoul.permitserver.domain.payment.api.dto.PaymentResponse;
 import com.permitseoul.permitserver.domain.payment.core.component.PaymentSaver;
+import com.permitseoul.permitserver.domain.payment.core.domain.Currency;
 import com.permitseoul.permitserver.domain.payment.core.domain.Payment;
 import com.permitseoul.permitserver.domain.payment.core.domain.PaymentStatus;
 import com.permitseoul.permitserver.domain.reservation.api.TossProperties;
@@ -213,7 +214,7 @@ class ReservationServiceTest {
                     .willReturn(reservation);
             given(eventRetriever.findEventById(EVENT_ID)).willReturn(event);
             given(tossPaymentClient.purchaseConfirm(anyString(), any())).willReturn(paymentResponse);
-            given(paymentSaver.savePayment(anyLong(), anyString(), anyLong(), anyString(), any(BigDecimal.class), anyString()))
+            given(paymentSaver.savePayment(anyLong(), anyString(), anyLong(), anyString(), any(BigDecimal.class), any(Currency.class), anyString(), anyString()))
                     .willReturn(savedPayment);
             given(reservationTicketRetriever.findAllByOrderId(ORDER_ID)).willReturn(reservationTickets);
             given(ticketTypeRetriever.findTicketTypeEntityById(TICKET_TYPE_ID)).willReturn(ticketTypeEntity);
@@ -222,7 +223,7 @@ class ReservationServiceTest {
             reservationService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT);
 
             // then
-            verify(paymentSaver).savePayment(RESERVATION_ID, ORDER_ID, EVENT_ID, PAYMENT_KEY, TOTAL_AMOUNT, "KRW");
+            verify(paymentSaver).savePayment(RESERVATION_ID, ORDER_ID, EVENT_ID, PAYMENT_KEY, TOTAL_AMOUNT, Currency.KRW, "2024-01-01T00:00:00", "2024-01-01T00:00:00");
         }
     }
 
@@ -409,7 +410,7 @@ class ReservationServiceTest {
                 .willReturn(createReservation());
         given(eventRetriever.findEventById(EVENT_ID)).willReturn(createEvent());
         given(tossPaymentClient.purchaseConfirm(anyString(), any())).willReturn(createPaymentResponse());
-        given(paymentSaver.savePayment(anyLong(), anyString(), anyLong(), anyString(), any(BigDecimal.class), anyString()))
+        given(paymentSaver.savePayment(anyLong(), anyString(), anyLong(), anyString(), any(BigDecimal.class), any(Currency.class), anyString(), anyString()))
                 .willReturn(createPayment());
         given(reservationTicketRetriever.findAllByOrderId(ORDER_ID)).willReturn(createReservationTickets());
         given(ticketTypeRetriever.findTicketTypeEntityById(TICKET_TYPE_ID)).willReturn(createTicketTypeEntity());
@@ -420,7 +421,7 @@ class ReservationServiceTest {
                 .willReturn(createReservation());
         given(eventRetriever.findEventById(EVENT_ID)).willReturn(createEvent());
         given(tossPaymentClient.purchaseConfirm(anyString(), any())).willReturn(createPaymentResponse());
-        given(paymentSaver.savePayment(anyLong(), anyString(), anyLong(), anyString(), any(BigDecimal.class), anyString()))
+        given(paymentSaver.savePayment(anyLong(), anyString(), anyLong(), anyString(), any(BigDecimal.class), any(Currency.class), anyString(), anyString()))
                 .willReturn(createPayment());
         given(reservationTicketRetriever.findAllByOrderId(ORDER_ID)).willReturn(createReservationTickets());
     }
@@ -435,7 +436,7 @@ class ReservationServiceTest {
                 .willReturn(createReservation());
         given(eventRetriever.findEventById(EVENT_ID)).willReturn(createEvent());
         given(tossPaymentClient.purchaseConfirm(anyString(), any())).willReturn(createPaymentResponse());
-        given(paymentSaver.savePayment(anyLong(), anyString(), anyLong(), anyString(), any(BigDecimal.class), anyString()))
+        given(paymentSaver.savePayment(anyLong(), anyString(), anyLong(), anyString(), any(BigDecimal.class), any(Currency.class), anyString(), anyString()))
                 .willReturn(createPayment());
         
         List<ReservationTicket> multipleTickets = Arrays.asList(
@@ -449,7 +450,7 @@ class ReservationServiceTest {
 
     // 테스트 데이터 생성 메소드들
     private Reservation createReservation() {
-        return new Reservation(RESERVATION_ID, USER_ID, EVENT_ID, ORDER_ID, TOTAL_AMOUNT, null, ReservationStatus.PENDING, null);
+        return new Reservation(RESERVATION_ID, USER_ID, EVENT_ID, ORDER_ID, TOTAL_AMOUNT, null, ReservationStatus.SUCCESS);
     }
 
     private Event createEvent() {
@@ -459,11 +460,11 @@ class ReservationServiceTest {
     }
 
     private PaymentResponse createPaymentResponse() {
-        return new PaymentResponse(PAYMENT_KEY, ORDER_ID, "KRW", TOTAL_AMOUNT, "2024-01-01T00:00:00", "2024-01-01T00:00:00");
+        return new PaymentResponse(PAYMENT_KEY, ORDER_ID, Currency.KRW, TOTAL_AMOUNT, "2024-01-01T00:00:00", "2024-01-01T00:00:00", null);
     }
 
     private Payment createPayment() {
-        return new Payment(1L, RESERVATION_ID, ORDER_ID, EVENT_ID, PAYMENT_KEY, TOTAL_AMOUNT, PaymentStatus.SUCCESS, null, "KRW", null);
+        return new Payment(1L, RESERVATION_ID, ORDER_ID, EVENT_ID, PAYMENT_KEY, TOTAL_AMOUNT, PaymentStatus.SUCCESS, Currency.KRW, "2024-01-01T00:00:00", "2024-01-01T00:00:00");
     }
 
     private List<ReservationTicket> createReservationTickets() {

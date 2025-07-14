@@ -8,10 +8,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "payment_cancels")
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@AllArgsConstructor
 public class PaymentCancelEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,4 +29,17 @@ public class PaymentCancelEntity {
     @Column(name = "canceled_at", nullable = false)
     private LocalDateTime canceledAt;
 
+    private PaymentCancelEntity(long paymentsId, BigDecimal cancelAmount, String transactionKey, LocalDateTime canceledAt) {
+        this.paymentsId = paymentsId;
+        this.cancelAmount = cancelAmount;
+        this.transactionKey = transactionKey;
+        this.canceledAt = canceledAt;
+    }
+
+    public static PaymentCancelEntity create(final long paymentsId,
+                                             final BigDecimal cancelAmount,
+                                             final String transactionKey,
+                                             final LocalDateTime canceledAt) {
+        return new PaymentCancelEntity(paymentsId, cancelAmount, transactionKey, canceledAt);
+    }
 }

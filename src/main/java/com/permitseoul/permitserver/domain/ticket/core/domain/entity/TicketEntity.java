@@ -7,8 +7,8 @@ import lombok.*;
 
 @Entity
 @Table(name = "tickets")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TicketEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,8 +37,7 @@ public class TicketEntity extends BaseTimeEntity {
     @Column(name = "is_used", nullable = false)
     private boolean isUsed;
 
-    @Builder
-    public TicketEntity(final long userId,
+    private TicketEntity(final long userId,
                         final String orderId,
                         final long ticketTypeId,
                         final long eventId,
@@ -51,6 +50,10 @@ public class TicketEntity extends BaseTimeEntity {
         this.ticketCode = ticketCode;
         this.status = TicketStatus.RESERVED;
         this.isUsed = false;
+    }
+
+    public static TicketEntity create(final long userId, final String orderId, final long ticketTypeId, final long eventId, final String ticketCode) {
+        return new TicketEntity(userId, orderId, ticketTypeId, eventId, ticketCode);
     }
 }
 

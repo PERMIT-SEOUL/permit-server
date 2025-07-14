@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.domain.payment.core.component;
 
+import com.permitseoul.permitserver.domain.payment.core.domain.Currency;
 import com.permitseoul.permitserver.domain.payment.core.domain.Payment;
 import com.permitseoul.permitserver.domain.payment.core.domain.entity.PaymentEntity;
 import com.permitseoul.permitserver.domain.payment.core.repository.PaymentRepository;
@@ -18,8 +19,12 @@ public class PaymentSaver {
                                final long eventId,
                                String paymentKey,
                                BigDecimal totalAmount,
-                               String currency) {
-        final PaymentEntity paymentEntity = paymentRepository.save(new PaymentEntity(reservationId, orderId, eventId, paymentKey, totalAmount, currency));
+                               Currency currency,
+                               String requestedAt,
+                               String approvedAt) {
+        final PaymentEntity paymentEntity = paymentRepository.save(
+                PaymentEntity.create(reservationId, orderId, eventId, paymentKey, totalAmount, currency, requestedAt, approvedAt)
+        );
         return Payment.fromEntity(paymentEntity);
     }
 

@@ -9,10 +9,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "events")
-@Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@AllArgsConstructor
 public class EventEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,5 +50,29 @@ public class EventEntity extends BaseTimeEntity {
 
     @Column(name = "visible_start_date")
     private LocalDateTime visibleStartDate;
+
+    private EventEntity(String name,
+                        EventType eventType,
+                        LocalDateTime startDate,
+                        LocalDateTime endDate,
+                        String venue,
+                        String lineUp,
+                        String details,
+                        Integer minAge,
+                        boolean isActive,
+                        String ticketCheckCode,
+                        LocalDateTime visibleStartDate) {
+        this.name = name;
+        this.eventType = eventType;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.venue = venue;
+        this.lineUp = lineUp;
+        this.details = details;
+        this.minAge = minAge;
+        this.isActive = isActive;
+        this.ticketCheckCode = ticketCheckCode;
+        this.visibleStartDate = visibleStartDate;
+    }
 }
 

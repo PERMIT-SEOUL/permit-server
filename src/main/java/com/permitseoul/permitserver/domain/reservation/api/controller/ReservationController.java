@@ -60,5 +60,6 @@ public class ReservationController {
             @RequestBody @Valid final PaymentCancelRequest paymentCancelRequest
     ) {
         reservationService.cancelPayment(userId, paymentCancelRequest.orderId());
+        return ApiResponseUtil.success(SuccessCode.OK);
     }
 }

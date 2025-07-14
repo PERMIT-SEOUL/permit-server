@@ -1,11 +1,13 @@
 package com.permitseoul.permitserver.domain.reservation.api.dto;
 
 
+import com.permitseoul.permitserver.domain.payment.core.domain.Currency;
+
 public record TossPaymentCancelRequest(
         String cancelReason,
-        String currency
+        Currency currency
 ) {
-    public static TossPaymentCancelRequest of(final String cancelReason, final String currency) {
+    public static TossPaymentCancelRequest of(final String cancelReason, final Currency currency) {
         return new TossPaymentCancelRequest(cancelReason, currency);
     }
 }
