@@ -40,6 +40,7 @@ import com.permitseoul.permitserver.domain.user.core.exception.UserNotFoundExcep
 import com.permitseoul.permitserver.global.exception.AlgorithmException;
 import com.permitseoul.permitserver.global.formatter.EventDateFormatterUtil;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
+import feign.Feign;
 import feign.FeignException;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;

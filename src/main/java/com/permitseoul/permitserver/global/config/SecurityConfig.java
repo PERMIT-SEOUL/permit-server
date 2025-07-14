@@ -41,6 +41,7 @@ public class SecurityConfig {
             "/api/users/logout",
             "/api/reservations/ready",
             "/api/reservations/confirm",
+            "/api/reservations/cancel",
     };
 
     @Bean

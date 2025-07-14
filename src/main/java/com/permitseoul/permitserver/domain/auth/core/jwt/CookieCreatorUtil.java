@@ -10,7 +10,8 @@ public class CookieCreatorUtil {
     private static final long AT_MAX_AGE = 365L * 24 * 60 * 60 * 1000; // todo: 추후 변경
     private static final long RT_MAX_AGE = 369L * 24 * 60 * 60 * 1000; // todo: 추후 변경
 
-    public static ResponseCookie createAccessTokenCookie(final String accessToken) {
+    public static ResponseCookie createAccessTokenCookie(final String accessToken, final String origin) {
+        final boolean isFromLocal = origin.contains("localhost");
         return ResponseCookie.from(Constants.ACCESS_TOKEN, accessToken)
                 .maxAge(AT_MAX_AGE)
                 .path("/")
@@ -20,7 +21,8 @@ public class CookieCreatorUtil {
                 .build();
     }
 
-    public static ResponseCookie createRefreshTokenCookie(final String refreshToken) {
+    public static ResponseCookie createRefreshTokenCookie(final String refreshToken, final String origin) {
+        final boolean isFromLocal = origin.contains("localhost");
         return ResponseCookie.from(Constants.REFRESH_TOKEN, refreshToken)
                 .maxAge(RT_MAX_AGE)
                 .path("/")
@@ -30,23 +32,27 @@ public class CookieCreatorUtil {
                 .build();
     }
 
-    public static ResponseCookie deleteAccessTokenCookie() {
+    public static ResponseCookie deleteAccessTokenCookie(final String origin) {
+        final boolean isFromLocal = origin.contains("localhost");
         return ResponseCookie.from(Constants.ACCESS_TOKEN, "")
                 .maxAge(0)
                 .path("/")
                 .httpOnly(true)
-                .secure(true)
-                .sameSite("None")
+                .secure(!isFromLocal)
+                .sameSite(isFromLocal ? "Lax" : "None")
+                .domain(isFromLocal ? "localhost" : ".permitseoul.com")
                 .build();
     }
 
-    public static ResponseCookie deleteRefreshTokenCookie() {
+    public static ResponseCookie deleteRefreshTokenCookie(final String origin) {
+        final boolean isFromLocal = origin.contains("localhost");
         return ResponseCookie.from(Constants.REFRESH_TOKEN, "")
                 .maxAge(0)
                 .path("/")
                 .httpOnly(true)
-                .secure(true)
-                .sameSite("None")
+                .secure(!isFromLocal)
+                .sameSite(isFromLocal ? "Lax" : "None")
+                .domain(isFromLocal ? "localhost" : ".permitseoul.com")
                 .build();
     }
 }

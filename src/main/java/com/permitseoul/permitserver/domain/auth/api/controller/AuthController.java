@@ -29,7 +29,8 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<BaseResponse<?>> signUp(
             @RequestBody @Valid final SignUpRequest signUpRequest,
-            final HttpServletResponse response
+            final HttpServletResponse response,
+            final HttpServletRequest request
     ) {
         final TokenDto tokenDto = authService.signUp(
                 signUpRequest.userName(),
@@ -46,7 +47,8 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<BaseResponse<?>> login(
             @RequestBody @Valid final LoginRequest loginRequest,
-            final HttpServletResponse response
+            final HttpServletResponse response,
+            final HttpServletRequest request
     ) {
         final TokenDto tokenDto = authService.login(loginRequest.socialType(), loginRequest.authorizationCode(), loginRequest.redirectUrl());
         return responseWithGeneratedCookie(response, tokenDto);
@@ -56,7 +58,8 @@ public class AuthController {
     @PostMapping("/reissue")
     public ResponseEntity<BaseResponse<?>> reissue(
             @CookieValue(name = Constants.REFRESH_TOKEN) Cookie refreshCookie,
-            final HttpServletResponse response
+            final HttpServletResponse response,
+            final HttpServletRequest request
     ) {
         final TokenDto tokenDto = authService.reissue(refreshCookie.getValue());
         return responseWithGeneratedCookie(response, tokenDto);
@@ -67,13 +70,18 @@ public class AuthController {
     public ResponseEntity<BaseResponse<?>> logout(
             @UserId final Long userId,
             @CookieValue(name = Constants.REFRESH_TOKEN) final Cookie refreshTokenCookie,
-            final HttpServletResponse response
-            ) {
+            final HttpServletResponse response,
+            final HttpServletRequest request
+    ) {
         authService.logout(userId, refreshTokenCookie.getValue());
 
+        String origin = request.getHeader("Origin");
+        if (origin == null) {
+            origin = "localhost";
+        }
         // 쿠키 삭제
-        final ResponseCookie deleteAccessToken = CookieCreatorUtil.deleteAccessTokenCookie();
-        final ResponseCookie deleteRefreshToken = CookieCreatorUtil.deleteRefreshTokenCookie();
+        final ResponseCookie deleteAccessToken = CookieCreatorUtil.deleteAccessTokenCookie(origin);
+        final ResponseCookie deleteRefreshToken = CookieCreatorUtil.deleteRefreshTokenCookie(origin);
         response.setHeader("Set-Cookie", deleteAccessToken.toString());
         response.addHeader("Set-Cookie", deleteRefreshToken.toString());
         return ApiResponseUtil.success(SuccessCode.OK);
