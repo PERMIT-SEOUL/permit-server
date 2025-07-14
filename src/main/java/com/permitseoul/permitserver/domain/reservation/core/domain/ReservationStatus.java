@@ -4,5 +4,4 @@ public enum ReservationStatus {
     PENDING,
     SUCCESS,
     CANCELED,
-    REFUNDED,
 }

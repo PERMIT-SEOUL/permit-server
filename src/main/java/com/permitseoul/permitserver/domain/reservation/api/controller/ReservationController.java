@@ -55,4 +55,13 @@ public class ReservationController {
         );
         return ApiResponseUtil.success(SuccessCode.OK, paymentConfirmResponse);
     }
+
+    //결제 취소 api
+    @PostMapping("/cancel")
+    public ResponseEntity<BaseResponse<?>> cancelPayment(
+            @UserId final Long userId,
+            @RequestBody @Valid final CancelPaymentRequest paymentConfirmRequest
+    ) {
+        reservationService.cancelPayment(userId, paymentConfirmRequest.orderId());
+    }
 }

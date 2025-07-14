@@ -9,9 +9,11 @@ import com.permitseoul.permitserver.domain.payment.api.client.TossPaymentClient;
 import com.permitseoul.permitserver.domain.payment.api.dto.PaymentRequest;
 import com.permitseoul.permitserver.domain.payment.api.dto.PaymentResponse;
 import com.permitseoul.permitserver.domain.payment.api.dto.TossConfirmErrorResponse;
+import com.permitseoul.permitserver.domain.payment.core.component.PaymentRetriever;
 import com.permitseoul.permitserver.domain.payment.core.component.PaymentSaver;
 import com.permitseoul.permitserver.domain.payment.core.domain.Payment;
 import com.permitseoul.permitserver.domain.reservation.api.TossProperties;
+import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentCancelRequest;
 import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentConfirmResponse;
 import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentReadyRequest;
 import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentReadyResponse;
@@ -31,7 +33,6 @@ import com.permitseoul.permitserver.domain.tickettype.core.component.TicketTypeR
 import com.permitseoul.permitserver.domain.tickettype.core.domain.entity.TicketTypeEntity;
 import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeNotfoundException;
 import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeInsufficientCountException;
-import com.permitseoul.permitserver.domain.tickettype.core.repository.TicketTypeRepository;
 import com.permitseoul.permitserver.global.TicketCodeGenerator;
 import com.permitseoul.permitserver.domain.user.core.component.UserRetriever;
 import com.permitseoul.permitserver.domain.user.core.domain.User;
@@ -54,6 +55,9 @@ import java.util.stream.IntStream;
 public class ReservationService {
     private static final String COLON = ":";
     private static final String AUTH_TYPE_BASIC = "Basic ";
+    private static final String JSON_PARSING_FAIL = "JSON 파싱 실패입니다.";
+    private static final String PAYMENT_FEIGN_FAIL = "결제 Feign 통신 오류입니다.";
+    private static final String CANCEL_REASON = "고객 요구 취소";
 
     private final ReservationSaver reservationSaver;
     private final ReservationTicketSaver reservationTicketSaver;
@@ -67,6 +71,7 @@ public class ReservationService {
     private final PaymentSaver paymentSaver;
     private final TicketSaver ticketSaver;
     private final TicketTypeRetriever ticketTypeRetriever;
+    private final PaymentRetriever paymentRetriever;
 
 
     public ReservationService(ReservationSaver reservationSaver,
@@ -79,7 +84,8 @@ public class ReservationService {
                               TossProperties tossProperties,
                               PaymentSaver paymentSaver,
                               TicketSaver ticketSaver,
-                              TicketTypeRetriever ticketTypeRetriever, TicketTypeRepository ticketTypeRepository) {
+                              TicketTypeRetriever ticketTypeRetriever,
+                              PaymentRetriever paymentRetriever) {
         this.reservationSaver = reservationSaver;
         this.reservationTicketSaver = reservationTicketSaver;
         this.reservationTicketRetriever = reservationTicketRetriever;
@@ -92,6 +98,7 @@ public class ReservationService {
         this.paymentSaver = paymentSaver;
         this.ticketSaver = ticketSaver;
         this.ticketTypeRetriever = ticketTypeRetriever;
+        this.paymentRetriever = paymentRetriever;
     }
 
     @Transactional
@@ -165,6 +172,22 @@ public class ReservationService {
             throw new TicketAlgorithmException(ErrorCode.INTERNAL_TICKET_ALGORITHM_ERROR);
         } catch (TicketTypeInsufficientCountException e) {
             throw new ConflictReservationException(ErrorCode.CONFLICT_INSUFFICIENT_TICKET);
+        }
+    }
+
+    @Transactional
+    public void cancelPayment(final long userId, final String orderId) {
+        final Payment payment = paymentRetriever.findPaymentByOrderId(orderId);
+        validateCancelPaymentWithUserId(userId, payment);
+        final PaymentCancelRequest paymentCancelRequest = PaymentCancelRequest.of(CANCEL_REASON, payment.getCurrency());
+        final PaymentResponse cancelResponse = tossPaymentClient.cancelPayment(authorizationHeader, payment.getPaymentKey(), paymentCancelRequest);
+    }
+
+
+    private void validateCancelPaymentWithUserId(final long userId, final Payment payment) {
+        final Reservation reservation = reservationRetriever.findReservationById(payment.getReservationId());
+        if (reservation.getUserId() != userId) {
+            throw new ReservationUnAuthorizedException(ErrorCode.UNAUTHORIZED_CANCEL_PAYMENT);
         }
     }
 

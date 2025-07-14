@@ -21,4 +21,10 @@ public class ReservationRetriever {
         final ReservationEntity reservationEntity =  reservationRepository.findByOrderIdAndTotalAmountAndUserId(orderId, amount, userId).orElseThrow(ReservationNotFoundException::new);
         return Reservation.fromEntity(reservationEntity);
     }
+
+    @Transactional(readOnly = true)
+    public Reservation findReservationById(final long reservationId) {
+        final ReservationEntity reservationEntity = reservationRepository.findById(reservationId).orElseThrow(ReservationNotFoundException::new);
+        return Reservation.fromEntity(reservationEntity);
+    }
 }
