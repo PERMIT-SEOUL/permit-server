@@ -21,8 +21,15 @@ public class UserRetriever {
     }
 
     @Transactional(readOnly = true)
-    public void isExistUser(final SocialType socialType, final String socialId) {
+    public void isExistUserBySocial(final SocialType socialType, final String socialId) {
         if (userRepository.existsBySocialTypeAndSocialId(socialType, socialId)) {
+            throw new UserExistException();
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public void isExistUserByUserId(final long userId) {
+        if (!userRepository.existsById(userId)) {
             throw new UserExistException();
         }
     }

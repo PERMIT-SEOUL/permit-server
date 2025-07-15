@@ -5,6 +5,7 @@ import com.permitseoul.permitserver.domain.event.core.component.EventRetriever;
 import com.permitseoul.permitserver.domain.event.core.domain.Event;
 import com.permitseoul.permitserver.domain.payment.api.client.TossPaymentClient;
 import com.permitseoul.permitserver.domain.payment.api.dto.PaymentResponse;
+import com.permitseoul.permitserver.domain.payment.api.service.PaymentService;
 import com.permitseoul.permitserver.domain.payment.core.component.PaymentSaver;
 import com.permitseoul.permitserver.domain.payment.core.domain.Currency;
 import com.permitseoul.permitserver.domain.payment.core.domain.Payment;
@@ -53,7 +54,7 @@ import static org.mockito.Mockito.*;
 import org.mockito.ArgumentCaptor;
 
 @ExtendWith(MockitoExtension.class)
-class ReservationServiceTest {
+class PaymentServiceTest {
 
     @Mock
     private ReservationRetriever reservationRetriever;
@@ -75,7 +76,7 @@ class ReservationServiceTest {
     private TossProperties tossProperties;
 
     @InjectMocks
-    private ReservationService reservationService;
+    private PaymentService paymentService;
 
     private static final long USER_ID = 1L;
     private static final String ORDER_ID = "order123";
@@ -87,7 +88,7 @@ class ReservationServiceTest {
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(reservationService, "authorizationHeader", "Basic dGVzdC1zZWNyZXQta2V5Og==");
+        ReflectionTestUtils.setField(paymentService, "authorizationHeader", "Basic dGVzdC1zZWNyZXQta2V5Og==");
     }
 
     @Nested
@@ -106,7 +107,7 @@ class ReservationServiceTest {
             setupMinimalMocksForSuccess();
 
             // when
-            reservationService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT);
+            paymentService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT);
 
             // then
             verify(reservationRetriever).findReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID);
@@ -120,7 +121,7 @@ class ReservationServiceTest {
                     .willThrow(new ReservationNotFoundException());
 
             // when & then
-            assertThatThrownBy(() -> reservationService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT))
+            assertThatThrownBy(() -> paymentService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT))
                     .isInstanceOf(NotfoundReservationException.class);
         }
     }
@@ -138,7 +139,7 @@ class ReservationServiceTest {
             given(eventRetriever.findEventById(EVENT_ID)).willReturn(event);
 
             // when
-            reservationService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT);
+            paymentService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT);
 
             // then
             verify(eventRetriever).findEventById(EVENT_ID);
@@ -154,7 +155,7 @@ class ReservationServiceTest {
                     .willThrow(new com.permitseoul.permitserver.domain.event.core.exception.EventNotfoundException());
 
             // when & then
-            assertThatThrownBy(() -> reservationService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT))
+            assertThatThrownBy(() -> paymentService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT))
                     .isInstanceOf(NotfoundReservationException.class);
         }
     }
@@ -172,7 +173,7 @@ class ReservationServiceTest {
             given(tossPaymentClient.purchaseConfirm(anyString(), any())).willReturn(paymentResponse);
 
             // when
-            reservationService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT);
+            paymentService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT);
 
             // then
             verify(tossPaymentClient).purchaseConfirm(eq("Basic dGVzdC1zZWNyZXQta2V5Og=="), any());
@@ -191,7 +192,7 @@ class ReservationServiceTest {
             given(tossPaymentClient.purchaseConfirm(anyString(), any())).willThrow(feignException);
 
             // when & then
-            assertThatThrownBy(() -> reservationService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT))
+            assertThatThrownBy(() -> paymentService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT))
                     .isInstanceOf(TossPaymentConfirmException.class);
         }
     }
@@ -221,7 +222,7 @@ class ReservationServiceTest {
             given(ticketTypeRetriever.findTicketTypeEntityById(TICKET_TYPE_ID)).willReturn(ticketTypeEntity);
 
             // when
-            reservationService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT);
+            paymentService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT);
 
             // then
             verify(paymentSaver).savePayment(RESERVATION_ID, ORDER_ID, EVENT_ID, PAYMENT_KEY, TOTAL_AMOUNT, Currency.KRW, DateFormatterUtil.parseDateToLocalDateTime("2024-01-01T00:00:00"), DateFormatterUtil.parseDateToLocalDateTime("2024-01-01T00:00:00"));
@@ -241,7 +242,7 @@ class ReservationServiceTest {
             given(reservationTicketRetriever.findAllByOrderId(ORDER_ID)).willReturn(reservationTickets);
 
             // when
-            reservationService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT);
+            paymentService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT);
 
             // then
             verify(reservationTicketRetriever).findAllByOrderId(ORDER_ID);
@@ -261,7 +262,7 @@ class ReservationServiceTest {
             given(ticketTypeRetriever.findTicketTypeEntityById(TICKET_TYPE_ID)).willReturn(ticketType);
 
             // when
-            reservationService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT);
+            paymentService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT);
 
             // then
             verify(ticketTypeRetriever).findTicketTypeEntityById(TICKET_TYPE_ID);
@@ -276,7 +277,7 @@ class ReservationServiceTest {
                     .willThrow(new com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeNotfoundException());
 
             // when & then
-            assertThatThrownBy(() -> reservationService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT))
+            assertThatThrownBy(() -> paymentService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT))
                     .isInstanceOf(NotfoundReservationException.class);
         }
 
@@ -289,7 +290,7 @@ class ReservationServiceTest {
             given(ticketTypeRetriever.findTicketTypeEntityById(TICKET_TYPE_ID)).willReturn(ticketType);
 
             // when
-            reservationService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT);
+            paymentService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT);
 
             // then
             verify(ticketType).decreaseRemainCount(2);  // ReservationTicket count = 2
@@ -306,7 +307,7 @@ class ReservationServiceTest {
                     .when(ticketType).decreaseRemainCount(2);
 
             // when & then
-            assertThatThrownBy(() -> reservationService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT))
+            assertThatThrownBy(() -> paymentService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT))
                     .isInstanceOf(ConflictReservationException.class);
         }
     }
@@ -322,7 +323,7 @@ class ReservationServiceTest {
             setupMinimalMocksForSuccess();
 
             // when
-            reservationService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT);
+            paymentService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT);
 
             // then
             ArgumentCaptor<List<Ticket>> ticketCaptor = ArgumentCaptor.forClass(List.class);
@@ -349,7 +350,7 @@ class ReservationServiceTest {
             setupMocksForMultipleTicketTypes();
 
             // when
-            reservationService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT);
+            paymentService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT);
 
             // then
             ArgumentCaptor<List<Ticket>> ticketCaptor = ArgumentCaptor.forClass(List.class);
@@ -379,7 +380,7 @@ class ReservationServiceTest {
                     .when(ticketSaver).saveTickets(anyList());
 
             // when & then
-            assertThatThrownBy(() -> reservationService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT))
+            assertThatThrownBy(() -> paymentService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT))
                     .isInstanceOf(TicketAlgorithmException.class);
         }
     }
@@ -397,7 +398,7 @@ class ReservationServiceTest {
             given(eventRetriever.findEventById(EVENT_ID)).willReturn(event);
 
             // when
-            PaymentConfirmResponse response = reservationService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT);
+            PaymentConfirmResponse response = paymentService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT);
 
             // then
             assertThat(response.eventName()).isEqualTo("테스트 이벤트");

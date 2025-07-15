@@ -21,9 +21,13 @@ public class GuestTicketEntity {
     @Column(name = "guest_ticket_code", nullable = false)
     private String guestTicketCode;
 
+    @Column(name = "is_used")
+    private boolean isUsed;
+
     private GuestTicketEntity(long eventId, long guestId, String guestTicketCode) {
         this.eventId = eventId;
         this.guestId = guestId;
         this.guestTicketCode = guestTicketCode;
+        this.isUsed = false;
     }
 }

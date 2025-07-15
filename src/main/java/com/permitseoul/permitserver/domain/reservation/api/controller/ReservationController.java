@@ -1,6 +1,5 @@
 package com.permitseoul.permitserver.domain.reservation.api.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.permitseoul.permitserver.domain.reservation.api.dto.*;
 import com.permitseoul.permitserver.domain.reservation.api.service.ReservationService;
 import com.permitseoul.permitserver.global.resolver.user.UserId;
@@ -10,24 +9,21 @@ import com.permitseoul.permitserver.global.response.code.SuccessCode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/reservations")
 @RequiredArgsConstructor
+@RequestMapping("/api/reservations")
 public class ReservationController {
     private final ReservationService reservationService;
 
-    //결제 요청 준비 api
+    //예약 생성 api
     @PostMapping("/ready")
-    public ResponseEntity<BaseResponse<?>> getReadyToPayment(
+    public ResponseEntity<BaseResponse<?>> saveReservation(
             @RequestBody @Valid final PaymentReadyRequest paymentReadyRequest,
             @UserId final Long userId
     ) {
-        final PaymentReadyResponse paymentReadyResponse = reservationService.getPaymentReady(
+        final String orderId = reservationService.saveReservation(
                 userId,
                 paymentReadyRequest.eventId(),
                 paymentReadyRequest.couponCode(),
@@ -35,31 +31,23 @@ public class ReservationController {
                 paymentReadyRequest.orderId(),
                 paymentReadyRequest.ticketTypeInfos()
         );
-        return ApiResponseUtil.success(SuccessCode.OK, paymentReadyResponse);
+        return ApiResponseUtil.success(SuccessCode.OK, orderId);
     }
 
-    //결제 승인 api
-    @PostMapping("/confirm")
-    public ResponseEntity<BaseResponse<?>> getConfirmToPayment(
-            @UserId final Long userId,
-            @RequestBody @Valid final PaymentConfirmRequest paymentConfirmRequest
+    //예약 조회 api
+    @GetMapping("/ready/{orderId}")
+    public ResponseEntity<BaseResponse<?>> getReadyToPayment(
+            @RequestBody @Valid final PaymentReadyRequest paymentReadyRequest,
+            @UserId final Long userId
     ) {
-        final PaymentConfirmResponse paymentConfirmResponse = reservationService.getPaymentConfirm(
+        final ReservationInfoResponse reservationInfoResponse = reservationService.getPaymentReady(
                 userId,
-                paymentConfirmRequest.orderId(),
-                paymentConfirmRequest.paymentKey(),
-                paymentConfirmRequest.totalAmount()
+                paymentReadyRequest.eventId(),
+                paymentReadyRequest.couponCode(),
+                paymentReadyRequest.totalAmount(),
+                paymentReadyRequest.orderId(),
+                paymentReadyRequest.ticketTypeInfos()
         );
-        return ApiResponseUtil.success(SuccessCode.OK, paymentConfirmResponse);
-    }
-
-    //결제 취소 api
-    @PostMapping("/cancel")
-    public ResponseEntity<BaseResponse<?>> cancelPayment(
-            @UserId final Long userId,
-            @RequestBody @Valid final PaymentCancelRequest paymentCancelRequest
-    ) {
-        reservationService.cancelPayment(userId, paymentCancelRequest.orderId());
-        return ApiResponseUtil.success(SuccessCode.OK);
+        return ApiResponseUtil.success(SuccessCode.OK, reservationInfoResponse);
     }
 }

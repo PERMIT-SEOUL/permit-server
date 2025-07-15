@@ -21,5 +21,11 @@ public class EventRetriever {
         return Event.fromEntity(eventEntity);
     }
 
+    @Transactional(readOnly = true)
+    public void isExistByEventId(final long eventId) {
+        if(!eventRepository.existsById(eventId)) {
+            throw new EventNotfoundException();
+        }
+    }
 
 }

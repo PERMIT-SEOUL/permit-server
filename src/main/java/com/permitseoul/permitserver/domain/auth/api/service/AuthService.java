@@ -140,7 +140,7 @@ public class AuthService {
     }
 
     private void isUserExist(final SocialType socialType, final String socialId) {
-        userRetriever.isExistUser(socialType, socialId);
+        userRetriever.isExistUserBySocial(socialType, socialId);
     }
 
     private Token GetJwtToken(final long userId) {
