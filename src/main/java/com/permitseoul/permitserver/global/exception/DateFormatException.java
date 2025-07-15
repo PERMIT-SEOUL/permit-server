@@ -1,7 +1,13 @@
 package com.permitseoul.permitserver.global.exception;
 
-public class DateFormatException extends RuntimeException {
-  public DateFormatException(String message) {
-    super(message);
-  }
+import com.permitseoul.permitserver.global.response.code.ErrorCode;
+import lombok.Getter;
+
+@Getter
+public class DateFormatException extends PermitGlobalException {
+    private final ErrorCode errorCode;
+
+    public DateFormatException(ErrorCode errorCode) {
+        this.errorCode = errorCode;
+    }
 }

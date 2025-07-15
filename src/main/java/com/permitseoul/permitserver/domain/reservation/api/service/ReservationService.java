@@ -6,6 +6,7 @@ import com.permitseoul.permitserver.domain.event.core.component.EventRetriever;
 import com.permitseoul.permitserver.domain.event.core.domain.Event;
 import com.permitseoul.permitserver.domain.event.core.exception.EventNotfoundException;
 import com.permitseoul.permitserver.domain.payment.api.client.TossPaymentClient;
+import com.permitseoul.permitserver.domain.payment.api.dto.PaymentCancelResponse;
 import com.permitseoul.permitserver.domain.payment.api.dto.TossPaymentRequest;
 import com.permitseoul.permitserver.domain.payment.api.dto.PaymentResponse;
 import com.permitseoul.permitserver.domain.payment.api.dto.TossConfirmErrorResponse;
@@ -13,6 +14,8 @@ import com.permitseoul.permitserver.domain.payment.core.component.PaymentRetriev
 import com.permitseoul.permitserver.domain.payment.core.component.PaymentSaver;
 import com.permitseoul.permitserver.domain.payment.core.domain.Currency;
 import com.permitseoul.permitserver.domain.payment.core.domain.Payment;
+import com.permitseoul.permitserver.domain.payment.core.exception.PaymentNotFoundException;
+import com.permitseoul.permitserver.domain.paymentcancel.core.component.PaymentCancelSaver;
 import com.permitseoul.permitserver.domain.reservation.api.TossProperties;
 import com.permitseoul.permitserver.domain.reservation.api.dto.TossPaymentCancelRequest;
 import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentConfirmResponse;
@@ -22,7 +25,6 @@ import com.permitseoul.permitserver.domain.reservation.api.exception.*;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationRetriever;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationSaver;
 import com.permitseoul.permitserver.domain.reservation.core.domain.Reservation;
-import com.permitseoul.permitserver.domain.reservation.core.domain.ReservationStatus;
 import com.permitseoul.permitserver.domain.reservation.core.exception.ReservationNotFoundException;
 import com.permitseoul.permitserver.domain.reservationticket.core.component.ReservationTicketRetriever;
 import com.permitseoul.permitserver.domain.reservationticket.core.component.ReservationTicketSaver;
@@ -39,9 +41,9 @@ import com.permitseoul.permitserver.domain.user.core.component.UserRetriever;
 import com.permitseoul.permitserver.domain.user.core.domain.User;
 import com.permitseoul.permitserver.domain.user.core.exception.UserNotFoundException;
 import com.permitseoul.permitserver.global.exception.AlgorithmException;
-import com.permitseoul.permitserver.global.formatter.EventDateFormatterUtil;
+import com.permitseoul.permitserver.global.exception.DateFormatException;
+import com.permitseoul.permitserver.global.formatter.DateFormatterUtil;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
-import feign.Feign;
 import feign.FeignException;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
@@ -51,6 +53,9 @@ import java.math.BigDecimal;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.IntStream;
+import java.util.zip.DataFormatException;
+
+import static com.permitseoul.permitserver.global.formatter.DateFormatterUtil.parseDateToLocalDateTime;
 
 @Service
 @EnableConfigurationProperties(TossProperties.class)
@@ -74,6 +79,7 @@ public class ReservationService {
     private final TicketSaver ticketSaver;
     private final TicketTypeRetriever ticketTypeRetriever;
     private final PaymentRetriever paymentRetriever;
+    private final PaymentCancelSaver paymentCancelSaver;
 
 
     public ReservationService(ReservationSaver reservationSaver,
@@ -87,7 +93,8 @@ public class ReservationService {
                               PaymentSaver paymentSaver,
                               TicketSaver ticketSaver,
                               TicketTypeRetriever ticketTypeRetriever,
-                              PaymentRetriever paymentRetriever) {
+                              PaymentRetriever paymentRetriever,
+                              PaymentCancelSaver paymentCancelSaver) {
         this.reservationSaver = reservationSaver;
         this.reservationTicketSaver = reservationTicketSaver;
         this.reservationTicketRetriever = reservationTicketRetriever;
@@ -101,6 +108,7 @@ public class ReservationService {
         this.ticketSaver = ticketSaver;
         this.ticketTypeRetriever = ticketTypeRetriever;
         this.paymentRetriever = paymentRetriever;
+        this.paymentCancelSaver = paymentCancelSaver;
     }
 
     @Transactional
@@ -149,7 +157,7 @@ public class ReservationService {
 
             return PaymentConfirmResponse.of(
                     event.getName(),
-                    EventDateFormatterUtil.formatEventDate(event.getStartDate(), event.getEndDate())
+                    DateFormatterUtil.formatEventDate(event.getStartDate(), event.getEndDate())
             );
         } catch (ReservationNotFoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_RESERVATION);
@@ -168,17 +176,33 @@ public class ReservationService {
 
     @Transactional
     public void cancelPayment(final long userId, final String orderId) {
-        final Payment payment = paymentRetriever.findPaymentByOrderId(orderId);
-        validateCancelPaymentWithUserId(userId, payment);
-        cancelTossPayment(payment.getPaymentKey(), payment.getCurrency());
+        try {
+            final Payment payment = paymentRetriever.findPaymentByOrderId(orderId);
+            validateCancelPaymentWithUserId(userId, payment);
+            cancelTossPaymentAndSave(payment.getPaymentId(), payment.getPaymentKey(), payment.getCurrency());
 
+        } catch (PaymentNotFoundException e) {
+            throw new NotfoundReservationException(ErrorCode.NOT_FOUND_PAYMENT);
+        } catch (ReservationNotFoundException e) {
+            throw new NotfoundReservationException(ErrorCode.NOT_FOUND_RESERVATION);
+        }
     }
 
-    public void cancelTossPayment(final String paymentKey, final Currency currency) {
-        final PaymentResponse cancelResponse = tossPaymentClient.cancelPayment(
+    private void cancelTossPaymentAndSave(final long paymentId, final String paymentKey, final Currency currency) {
+        final PaymentCancelResponse cancelResponse = tossPaymentClient.cancelPayment(
                 authorizationHeader,
                 paymentKey,
                 TossPaymentCancelRequest.of(CANCEL_REASON, currency)
+        );
+
+        final PaymentCancelResponse.CancelDetail latestCancelPayment = DateFormatterUtil.getLatestCancelPaymentByDate(cancelResponse.cancels()).orElseThrow(
+                        () -> new DateFormatException(ErrorCode.INTERNAL_ISO_DATE_ERROR)
+                );
+        paymentCancelSaver.savePaymentCancel(
+                paymentId,
+                latestCancelPayment.cancelAmount(),
+                latestCancelPayment.transactionKey(),
+                parseDateToLocalDateTime(latestCancelPayment.canceledAt())
         );
     }
 

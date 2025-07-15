@@ -14,10 +14,10 @@ public class PaymentCancelEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "payment_cancels_id")
-    private Long paymentCancelsId;
+    private Long paymentCancelId;
 
     @Column(name = "payments_id", nullable = false)
-    private long paymentsId;
+    private long paymentId;
 
     @Column(name = "cancel_amount", nullable = false)
     private BigDecimal cancelAmount;
@@ -29,8 +29,8 @@ public class PaymentCancelEntity {
     @Column(name = "canceled_at", nullable = false)
     private LocalDateTime canceledAt;
 
-    private PaymentCancelEntity(long paymentsId, BigDecimal cancelAmount, String transactionKey, LocalDateTime canceledAt) {
-        this.paymentsId = paymentsId;
+    private PaymentCancelEntity(long paymentId, BigDecimal cancelAmount, String transactionKey, LocalDateTime canceledAt) {
+        this.paymentId = paymentId;
         this.cancelAmount = cancelAmount;
         this.transactionKey = transactionKey;
         this.canceledAt = canceledAt;

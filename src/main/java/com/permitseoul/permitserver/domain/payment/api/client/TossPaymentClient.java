@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.domain.payment.api.client;
 
+import com.permitseoul.permitserver.domain.payment.api.dto.PaymentCancelResponse;
 import com.permitseoul.permitserver.domain.payment.api.dto.TossPaymentRequest;
 import com.permitseoul.permitserver.domain.payment.api.dto.PaymentResponse;
 import com.permitseoul.permitserver.domain.reservation.api.dto.TossPaymentCancelRequest;
@@ -15,9 +16,9 @@ public interface TossPaymentClient {
                                     @RequestBody TossPaymentRequest tossPaymentRequest);
 
     @PostMapping(value = "/v1/payments/{paymentKey}/cancel")
-    PaymentResponse cancelPayment(@RequestHeader(HttpHeaders.AUTHORIZATION) String basicAuth,
-                                  @PathVariable final String paymentKey,
-                                  @RequestBody TossPaymentCancelRequest paymentRequest);
+    PaymentCancelResponse cancelPayment(@RequestHeader(HttpHeaders.AUTHORIZATION) String basicAuth,
+                                        @PathVariable("paymentKey") String paymentKey,
+                                        @RequestBody TossPaymentCancelRequest paymentRequest);
 
 }
 

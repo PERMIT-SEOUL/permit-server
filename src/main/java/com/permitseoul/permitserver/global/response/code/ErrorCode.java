@@ -69,7 +69,7 @@ public enum ErrorCode implements ApiCode {
     INTERNAL_JSON_FORMAT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50002, "json 포맷팅 과정에서 에러가 발생했습니다."),
     INTERNAL_TICKET_ALGORITHM_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50003, "티켓 코드 생성 알고리즘 에러입니다."),
     INTERNAL_PAYMENT_FEIGN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50004, "결제 feign 통신 에러입니다."),
-    INTERNAL_ISO_DATE_EMPTY(HttpStatus.INTERNAL_SERVER_ERROR, 50005, "isoDate string이 비어있습니다."),
+    INTERNAL_ISO_DATE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50005, "iso date string에서 localdate로 변환 과정 에러입니다."),
 
 
 

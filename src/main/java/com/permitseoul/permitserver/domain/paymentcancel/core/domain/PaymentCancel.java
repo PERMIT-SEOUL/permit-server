@@ -18,8 +18,8 @@ public class PaymentCancel {
 
     public static PaymentCancel fromEntity(final PaymentCancelEntity entity) {
         return new PaymentCancel(
-                entity.getPaymentCancelsId(),
-                entity.getPaymentsId(),
+                entity.getPaymentCancelId(),
+                entity.getPaymentId(),
                 entity.getCancelAmount(),
                 entity.getTransactionKey(),
                 entity.getCanceledAt()
