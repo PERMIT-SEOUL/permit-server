@@ -19,4 +19,9 @@ public class PaymentRetriever {
         return Payment.fromEntity(paymentEntity);
     }
 
+    @Transactional(readOnly = true)
+    public PaymentEntity findPaymentEntityByOrderId(final String orderId) {
+        return paymentRepository.findByOrderId(orderId).orElseThrow(PaymentNotFoundException::new);
+    }
+
 }

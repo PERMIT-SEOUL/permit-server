@@ -12,8 +12,11 @@ import com.permitseoul.permitserver.domain.payment.api.dto.PaymentResponse;
 import com.permitseoul.permitserver.domain.payment.api.dto.TossConfirmErrorResponse;
 import com.permitseoul.permitserver.domain.payment.core.component.PaymentRetriever;
 import com.permitseoul.permitserver.domain.payment.core.component.PaymentSaver;
+import com.permitseoul.permitserver.domain.payment.core.component.PaymentUpdater;
 import com.permitseoul.permitserver.domain.payment.core.domain.Currency;
 import com.permitseoul.permitserver.domain.payment.core.domain.Payment;
+import com.permitseoul.permitserver.domain.payment.core.domain.PaymentStatus;
+import com.permitseoul.permitserver.domain.payment.core.domain.entity.PaymentEntity;
 import com.permitseoul.permitserver.domain.payment.core.exception.PaymentNotFoundException;
 import com.permitseoul.permitserver.domain.paymentcancel.core.component.PaymentCancelSaver;
 import com.permitseoul.permitserver.domain.reservation.api.TossProperties;
@@ -24,14 +27,21 @@ import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentReadyRespo
 import com.permitseoul.permitserver.domain.reservation.api.exception.*;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationRetriever;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationSaver;
+import com.permitseoul.permitserver.domain.reservation.core.component.ReservationUpdater;
 import com.permitseoul.permitserver.domain.reservation.core.domain.Reservation;
+import com.permitseoul.permitserver.domain.reservation.core.domain.ReservationStatus;
+import com.permitseoul.permitserver.domain.reservation.core.domain.entity.ReservationEntity;
 import com.permitseoul.permitserver.domain.reservation.core.exception.ReservationNotFoundException;
 import com.permitseoul.permitserver.domain.reservationticket.core.component.ReservationTicketRetriever;
 import com.permitseoul.permitserver.domain.reservationticket.core.component.ReservationTicketSaver;
 import com.permitseoul.permitserver.domain.reservationticket.core.domain.ReservationTicket;
+import com.permitseoul.permitserver.domain.ticket.core.component.TicketRetriever;
 import com.permitseoul.permitserver.domain.ticket.core.component.TicketSaver;
+import com.permitseoul.permitserver.domain.ticket.core.component.TicketUpdater;
 import com.permitseoul.permitserver.domain.ticket.core.domain.Ticket;
 import com.permitseoul.permitserver.domain.ticket.core.domain.TicketStatus;
+import com.permitseoul.permitserver.domain.ticket.core.domain.entity.TicketEntity;
+import com.permitseoul.permitserver.domain.ticket.core.exception.TicketNotFoundException;
 import com.permitseoul.permitserver.domain.tickettype.core.component.TicketTypeRetriever;
 import com.permitseoul.permitserver.domain.tickettype.core.domain.entity.TicketTypeEntity;
 import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeNotfoundException;
@@ -80,6 +90,10 @@ public class ReservationService {
     private final TicketTypeRetriever ticketTypeRetriever;
     private final PaymentRetriever paymentRetriever;
     private final PaymentCancelSaver paymentCancelSaver;
+    private final PaymentUpdater paymentUpdater;
+    private final TicketUpdater ticketUpdater;
+    private final TicketRetriever ticketRetriever;
+    private final ReservationUpdater reservationUpdater;
 
 
     public ReservationService(ReservationSaver reservationSaver,
@@ -94,7 +108,11 @@ public class ReservationService {
                               TicketSaver ticketSaver,
                               TicketTypeRetriever ticketTypeRetriever,
                               PaymentRetriever paymentRetriever,
-                              PaymentCancelSaver paymentCancelSaver) {
+                              PaymentCancelSaver paymentCancelSaver,
+                              PaymentUpdater paymentUpdater,
+                              TicketUpdater ticketUpdater,
+                              TicketRetriever ticketRetriever,
+                              ReservationUpdater reservationUpdater) {
         this.reservationSaver = reservationSaver;
         this.reservationTicketSaver = reservationTicketSaver;
         this.reservationTicketRetriever = reservationTicketRetriever;
@@ -109,6 +127,10 @@ public class ReservationService {
         this.ticketTypeRetriever = ticketTypeRetriever;
         this.paymentRetriever = paymentRetriever;
         this.paymentCancelSaver = paymentCancelSaver;
+        this.paymentUpdater = paymentUpdater;
+        this.ticketUpdater = ticketUpdater;
+        this.ticketRetriever = ticketRetriever;
+        this.reservationUpdater = reservationUpdater;
     }
 
     @Transactional
@@ -177,15 +199,37 @@ public class ReservationService {
     @Transactional
     public void cancelPayment(final long userId, final String orderId) {
         try {
-            final Payment payment = paymentRetriever.findPaymentByOrderId(orderId);
-            validateCancelPaymentWithUserId(userId, payment);
-            cancelTossPaymentAndSave(payment.getPaymentId(), payment.getPaymentKey(), payment.getCurrency());
+            final PaymentEntity paymentEntity = paymentRetriever.findPaymentEntityByOrderId(orderId);
+            final List<TicketEntity> ticketEntity = ticketRetriever.findAllTicketsByOrderId(paymentEntity.getOrderId());
+            final ReservationEntity reservationEntity = reservationRetriever.findReservationEntityById(paymentEntity.getReservationId());
 
+            validateCancelPaymentWithUserId(userId, paymentEntity.getReservationId());
+            cancelTossPaymentAndSave(paymentEntity.getPaymentId(), paymentEntity.getPaymentKey(), paymentEntity.getCurrency());
+
+            updatePaymentStatus(paymentEntity, PaymentStatus.CANCELLED);
+            updateTicketStatus(ticketEntity, TicketStatus.CANCELED);
+            updateReservationStatus(reservationEntity, ReservationStatus.CANCELED);
         } catch (PaymentNotFoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_PAYMENT);
         } catch (ReservationNotFoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_RESERVATION);
+        } catch (TicketNotFoundException e) {
+            throw new NotfoundReservationException(ErrorCode.NOT_FOUND_TICKET);
         }
+    }
+
+    private void updateReservationStatus(final ReservationEntity reservationEntity, final ReservationStatus reservationStatus) {
+        reservationUpdater.updateReservationStatus(reservationEntity, reservationStatus);
+    }
+
+    private void updatePaymentStatus(final PaymentEntity paymentEntity, final PaymentStatus paymentStatus) {
+        paymentUpdater.updatePaymentStatus(paymentEntity ,paymentStatus);
+    }
+
+    private void updateTicketStatus(final List<TicketEntity> ticketEntity, final TicketStatus ticketStatus) {
+        ticketEntity.forEach(
+                ticket -> ticketUpdater.updateTicketStatus(ticket, ticketStatus)
+        );
     }
 
     private void cancelTossPaymentAndSave(final long paymentId, final String paymentKey, final Currency currency) {
@@ -204,12 +248,13 @@ public class ReservationService {
                 latestCancelPayment.transactionKey(),
                 parseDateToLocalDateTime(latestCancelPayment.canceledAt())
         );
+
+
+
     }
 
-
-
-    private void validateCancelPaymentWithUserId(final long userId, final Payment payment) {
-        final Reservation reservation = reservationRetriever.findReservationById(payment.getReservationId());
+    private void validateCancelPaymentWithUserId(final long userId, final long reservationId) {
+        final Reservation reservation = reservationRetriever.findReservationById(reservationId);
         if (reservation.getUserId() != userId) {
             throw new ReservationUnAuthorizedException(ErrorCode.UNAUTHORIZED_CANCEL_PAYMENT);
         }

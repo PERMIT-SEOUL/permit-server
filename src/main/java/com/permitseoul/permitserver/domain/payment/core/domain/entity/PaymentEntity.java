@@ -78,5 +78,9 @@ public class PaymentEntity extends BaseTimeEntity {
                                        final String approvedAt) {
         return new PaymentEntity(reservationId, orderId, eventId, paymentKey, totalAmount, currency, requestedAt, approvedAt);
     }
+
+    public void updatePaymentStatus(final PaymentStatus status) {
+        this.status = status;
+    }
 }
 

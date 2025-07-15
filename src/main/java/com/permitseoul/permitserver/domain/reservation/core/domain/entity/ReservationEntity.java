@@ -53,5 +53,9 @@ public class ReservationEntity extends BaseTimeEntity {
                                           ) {
         return new ReservationEntity(userId, eventId, orderId, totalAmount, couponCode);
     }
+
+    public void updateReservationStatus(final ReservationStatus status) {
+        this.status = status;
+    }
 }
 

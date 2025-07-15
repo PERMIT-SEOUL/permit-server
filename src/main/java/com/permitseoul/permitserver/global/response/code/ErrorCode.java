@@ -48,6 +48,7 @@ public enum ErrorCode implements ApiCode {
     NOT_FOUND_RESERVATION(HttpStatus.NOT_FOUND, 40406, "해당 Reservation 이 없습니다."),
     NOT_FOUND_TICKET_TYPE(HttpStatus.NOT_FOUND, 40407, "해당 ticketType 이 없습니다."),
     NOT_FOUND_PAYMENT(HttpStatus.NOT_FOUND, 40408, "해당 payment 가 없습니다."),
+    NOT_FOUND_TICKET(HttpStatus.NOT_FOUND, 40409, "해당 ticket 이 없습니다."),
 
     /**
      * 405 Method Not Allowed

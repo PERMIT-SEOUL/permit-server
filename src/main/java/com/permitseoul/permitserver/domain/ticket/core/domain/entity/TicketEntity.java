@@ -55,5 +55,9 @@ public class TicketEntity extends BaseTimeEntity {
     public static TicketEntity create(final long userId, final String orderId, final long ticketTypeId, final long eventId, final String ticketCode) {
         return new TicketEntity(userId, orderId, ticketTypeId, eventId, ticketCode);
     }
+
+    public void updateTicketStatus(final TicketStatus status) {
+        this.status = status;
+    }
 }
 

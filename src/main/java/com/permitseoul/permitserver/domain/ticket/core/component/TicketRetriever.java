@@ -1,0 +1,23 @@
+package com.permitseoul.permitserver.domain.ticket.core.component;
+
+import com.permitseoul.permitserver.domain.ticket.core.domain.entity.TicketEntity;
+import com.permitseoul.permitserver.domain.ticket.core.exception.TicketNotFoundException;
+import com.permitseoul.permitserver.domain.ticket.core.repository.TicketRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+
+@Component
+@RequiredArgsConstructor
+public class TicketRetriever {
+    private final TicketRepository ticketRepository;
+
+    public List<TicketEntity> findAllTicketsByOrderId(final String orderId) {
+        final List<TicketEntity> ticketEntityList = ticketRepository.findAllByOrderId(orderId);
+        if(ticketEntityList.isEmpty()) {
+            throw new TicketNotFoundException();
+        }
+        return ticketEntityList;
+    }
+}
