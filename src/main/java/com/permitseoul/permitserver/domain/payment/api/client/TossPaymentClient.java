@@ -3,7 +3,7 @@ package com.permitseoul.permitserver.domain.payment.api.client;
 import com.permitseoul.permitserver.domain.payment.api.dto.PaymentCancelResponse;
 import com.permitseoul.permitserver.domain.payment.api.dto.TossPaymentRequest;
 import com.permitseoul.permitserver.domain.payment.api.dto.PaymentResponse;
-import com.permitseoul.permitserver.domain.reservation.api.dto.TossPaymentCancelRequest;
+import com.permitseoul.permitserver.domain.payment.api.dto.TossPaymentCancelRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;

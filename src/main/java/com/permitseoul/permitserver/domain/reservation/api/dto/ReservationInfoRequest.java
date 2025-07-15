@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.util.List;
 
-public record PaymentReadyRequest(
+public record ReservationInfoRequest(
 
         @Positive(message = "eventId는 양수여야 합니다.")
         long eventId,

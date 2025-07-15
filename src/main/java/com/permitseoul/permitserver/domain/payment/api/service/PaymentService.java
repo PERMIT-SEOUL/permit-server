@@ -2,7 +2,6 @@ package com.permitseoul.permitserver.domain.payment.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.permitseoul.permitserver.domain.coupon.core.component.CouponRetriever;
 import com.permitseoul.permitserver.domain.event.core.component.EventRetriever;
 import com.permitseoul.permitserver.domain.event.core.domain.Event;
 import com.permitseoul.permitserver.domain.event.core.exception.EventNotfoundException;
@@ -21,19 +20,16 @@ import com.permitseoul.permitserver.domain.payment.core.domain.entity.PaymentEnt
 import com.permitseoul.permitserver.domain.payment.core.exception.PaymentNotFoundException;
 import com.permitseoul.permitserver.domain.paymentcancel.core.component.PaymentCancelSaver;
 import com.permitseoul.permitserver.domain.reservation.api.TossProperties;
-import com.permitseoul.permitserver.domain.reservation.api.dto.TossPaymentCancelRequest;
-import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentConfirmResponse;
-import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentReadyRequest;
+import com.permitseoul.permitserver.domain.payment.api.dto.TossPaymentCancelRequest;
+import com.permitseoul.permitserver.domain.payment.api.dto.PaymentConfirmResponse;
 import com.permitseoul.permitserver.domain.reservation.api.exception.*;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationRetriever;
-import com.permitseoul.permitserver.domain.reservation.core.component.ReservationSaver;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationUpdater;
 import com.permitseoul.permitserver.domain.reservation.core.domain.Reservation;
 import com.permitseoul.permitserver.domain.reservation.core.domain.ReservationStatus;
 import com.permitseoul.permitserver.domain.reservation.core.domain.entity.ReservationEntity;
 import com.permitseoul.permitserver.domain.reservation.core.exception.ReservationNotFoundException;
 import com.permitseoul.permitserver.domain.reservationticket.core.component.ReservationTicketRetriever;
-import com.permitseoul.permitserver.domain.reservationticket.core.component.ReservationTicketSaver;
 import com.permitseoul.permitserver.domain.reservationticket.core.domain.ReservationTicket;
 import com.permitseoul.permitserver.domain.ticket.core.component.TicketRetriever;
 import com.permitseoul.permitserver.domain.ticket.core.component.TicketSaver;
@@ -47,7 +43,6 @@ import com.permitseoul.permitserver.domain.tickettype.core.domain.entity.TicketT
 import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeNotfoundException;
 import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeInsufficientCountException;
 import com.permitseoul.permitserver.global.TicketCodeGenerator;
-import com.permitseoul.permitserver.domain.user.core.component.UserRetriever;
 import com.permitseoul.permitserver.global.exception.AlgorithmException;
 import com.permitseoul.permitserver.global.exception.DateFormatException;
 import com.permitseoul.permitserver.global.exception.IllegalEnumTransitionException;

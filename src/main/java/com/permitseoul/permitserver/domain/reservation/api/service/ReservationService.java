@@ -6,25 +6,13 @@ import com.permitseoul.permitserver.domain.coupon.core.exception.CouponNotfoundE
 import com.permitseoul.permitserver.domain.event.core.component.EventRetriever;
 import com.permitseoul.permitserver.domain.event.core.domain.Event;
 import com.permitseoul.permitserver.domain.event.core.exception.EventNotfoundException;
-import com.permitseoul.permitserver.domain.payment.api.client.TossPaymentClient;
-import com.permitseoul.permitserver.domain.payment.core.component.PaymentRetriever;
-import com.permitseoul.permitserver.domain.payment.core.component.PaymentSaver;
-import com.permitseoul.permitserver.domain.payment.core.component.PaymentUpdater;
-import com.permitseoul.permitserver.domain.paymentcancel.core.component.PaymentCancelSaver;
-import com.permitseoul.permitserver.domain.reservation.api.TossProperties;
-import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentReadyRequest;
+import com.permitseoul.permitserver.domain.reservation.api.dto.ReservationInfoRequest;
 import com.permitseoul.permitserver.domain.reservation.api.dto.ReservationInfoResponse;
 import com.permitseoul.permitserver.domain.reservation.api.exception.ConflictReservationException;
 import com.permitseoul.permitserver.domain.reservation.api.exception.NotfoundReservationException;
-import com.permitseoul.permitserver.domain.reservation.core.component.ReservationRetriever;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationSaver;
-import com.permitseoul.permitserver.domain.reservation.core.component.ReservationUpdater;
 import com.permitseoul.permitserver.domain.reservation.core.domain.Reservation;
-import com.permitseoul.permitserver.domain.reservationticket.core.component.ReservationTicketRetriever;
 import com.permitseoul.permitserver.domain.reservationticket.core.component.ReservationTicketSaver;
-import com.permitseoul.permitserver.domain.ticket.core.component.TicketRetriever;
-import com.permitseoul.permitserver.domain.ticket.core.component.TicketSaver;
-import com.permitseoul.permitserver.domain.ticket.core.component.TicketUpdater;
 import com.permitseoul.permitserver.domain.tickettype.core.component.TicketTypeRetriever;
 import com.permitseoul.permitserver.domain.user.core.component.UserRetriever;
 import com.permitseoul.permitserver.domain.user.core.domain.User;
@@ -54,7 +42,7 @@ public class ReservationService {
                                   final String couponCode,
                                   final BigDecimal totalAmount,
                                   final String orderId,
-                                  final List<PaymentReadyRequest.TicketTypeInfo> ticketTypeInfos) {
+                                  final List<ReservationInfoRequest.TicketTypeInfo> ticketTypeInfos) {
         try {
             isExistUser(userId);
             isExistEvent(eventId);
@@ -80,19 +68,13 @@ public class ReservationService {
         }
     }
 
-
-
-
-
-
-
     @Transactional
-    public ReservationInfoResponse getPaymentReady(final long userId,
-                                                   final long eventId,
-                                                   final String couponCode,
-                                                   final BigDecimal totalAmount,
-                                                   final String orderId,
-                                                   final List<PaymentReadyRequest.TicketTypeInfo> ticketTypeInfos) {
+    public ReservationInfoResponse getReservationInfo(final long userId,
+                                                      final long eventId,
+                                                      final String couponCode,
+                                                      final BigDecimal totalAmount,
+                                                      final String orderId,
+                                                      final List<ReservationInfoRequest.TicketTypeInfo> ticketTypeInfos) {
         final Event event;
         final User user;
         try {
@@ -120,7 +102,7 @@ public class ReservationService {
         eventRetriever.isExistByEventId(eventId);
     }
 
-    private void isExistTicketType(final List<PaymentReadyRequest.TicketTypeInfo> ticketTypeInfos) {
+    private void isExistTicketType(final List<ReservationInfoRequest.TicketTypeInfo> ticketTypeInfos) {
         ticketTypeInfos.forEach(
                 ticketType -> ticketTypeRetriever.isExistByTicketTypeId(ticketType.id())
         );

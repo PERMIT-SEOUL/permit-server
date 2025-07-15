@@ -1,4 +1,4 @@
-package com.permitseoul.permitserver.domain.reservation.api.dto;
+package com.permitseoul.permitserver.domain.payment.api.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

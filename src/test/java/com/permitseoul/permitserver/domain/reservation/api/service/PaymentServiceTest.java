@@ -11,7 +11,7 @@ import com.permitseoul.permitserver.domain.payment.core.domain.Currency;
 import com.permitseoul.permitserver.domain.payment.core.domain.Payment;
 import com.permitseoul.permitserver.domain.payment.core.domain.PaymentStatus;
 import com.permitseoul.permitserver.domain.reservation.api.TossProperties;
-import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentConfirmResponse;
+import com.permitseoul.permitserver.domain.payment.api.dto.PaymentConfirmResponse;
 import com.permitseoul.permitserver.domain.reservation.api.exception.ConflictReservationException;
 import com.permitseoul.permitserver.domain.reservation.api.exception.NotfoundReservationException;
 import com.permitseoul.permitserver.domain.reservation.api.exception.TicketAlgorithmException;

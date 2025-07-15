@@ -1,9 +1,9 @@
 package com.permitseoul.permitserver.domain.payment.api.controller;
 
 import com.permitseoul.permitserver.domain.payment.api.service.PaymentService;
-import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentCancelRequest;
-import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentConfirmRequest;
-import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentConfirmResponse;
+import com.permitseoul.permitserver.domain.payment.api.dto.PaymentCancelRequest;
+import com.permitseoul.permitserver.domain.payment.api.dto.PaymentConfirmRequest;
+import com.permitseoul.permitserver.domain.payment.api.dto.PaymentConfirmResponse;
 import com.permitseoul.permitserver.global.resolver.user.UserId;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
