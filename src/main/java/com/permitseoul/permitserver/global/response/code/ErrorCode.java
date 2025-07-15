@@ -47,6 +47,7 @@ public enum ErrorCode implements ApiCode {
     NOT_FOUND_EVENT(HttpStatus.NOT_FOUND, 40405, "해당 아이디 이벤트가 없습니다."),
     NOT_FOUND_RESERVATION(HttpStatus.NOT_FOUND, 40406, "해당 Reservation 이 없습니다."),
     NOT_FOUND_TICKET_TYPE(HttpStatus.NOT_FOUND, 40407, "해당 ticketType 이 없습니다."),
+    NOT_FOUND_PAYMENT(HttpStatus.NOT_FOUND, 40408, "해당 payment 가 없습니다."),
 
     /**
      * 405 Method Not Allowed
@@ -68,6 +69,7 @@ public enum ErrorCode implements ApiCode {
     INTERNAL_JSON_FORMAT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50002, "json 포맷팅 과정에서 에러가 발생했습니다."),
     INTERNAL_TICKET_ALGORITHM_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50003, "티켓 코드 생성 알고리즘 에러입니다."),
     INTERNAL_PAYMENT_FEIGN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50004, "결제 feign 통신 에러입니다."),
+    INTERNAL_ISO_DATE_EMPTY(HttpStatus.INTERNAL_SERVER_ERROR, 50005, "isoDate string이 비어있습니다."),
 
 
 
