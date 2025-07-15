@@ -100,7 +100,7 @@ class PaymentServiceTest {
         void should_RetrieveReservation_When_ValidOrderIdAndAmount() throws JsonProcessingException {
             // given
             Reservation reservation = createReservation();
-            given(reservationRetriever.findReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID))
+            given(reservationRetriever.findReservationByOrderIdAndAmountAndUserId(ORDER_ID, TOTAL_AMOUNT, USER_ID))
                     .willReturn(reservation);
             
             // 나머지 의존성들을 최소한으로 Mock 설정
@@ -110,14 +110,14 @@ class PaymentServiceTest {
             paymentService.getPaymentConfirm(USER_ID, ORDER_ID, PAYMENT_KEY, TOTAL_AMOUNT);
 
             // then
-            verify(reservationRetriever).findReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID);
+            verify(reservationRetriever).findReservationByOrderIdAndAmountAndUserId(ORDER_ID, TOTAL_AMOUNT, USER_ID);
         }
 
         @Test
         @DisplayName("예약 정보 조회 실패 - 예약 없음")
         void should_ThrowException_When_ReservationNotFound() {
             // given
-            given(reservationRetriever.findReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID))
+            given(reservationRetriever.findReservationByOrderIdAndAmountAndUserId(ORDER_ID, TOTAL_AMOUNT, USER_ID))
                     .willThrow(new ReservationNotFoundException());
 
             // when & then
@@ -149,7 +149,7 @@ class PaymentServiceTest {
         @DisplayName("이벤트 정보 조회 실패 - 이벤트 없음")
         void should_ThrowException_When_EventNotFound() {
             // given
-            given(reservationRetriever.findReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID))
+            given(reservationRetriever.findReservationByOrderIdAndAmountAndUserId(ORDER_ID, TOTAL_AMOUNT, USER_ID))
                     .willReturn(createReservation());
             given(eventRetriever.findEventById(EVENT_ID))
                     .willThrow(new com.permitseoul.permitserver.domain.event.core.exception.EventNotfoundException());
@@ -183,7 +183,7 @@ class PaymentServiceTest {
         @DisplayName("토스 결제 확인 실패 - API 오류")
         void should_ThrowException_When_TossApiError() throws JsonProcessingException {
             // given
-            given(reservationRetriever.findReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID))
+            given(reservationRetriever.findReservationByOrderIdAndAmountAndUserId(ORDER_ID, TOTAL_AMOUNT, USER_ID))
                     .willReturn(createReservation());
             given(eventRetriever.findEventById(EVENT_ID)).willReturn(createEvent());
             
@@ -212,7 +212,7 @@ class PaymentServiceTest {
             List<ReservationTicket> reservationTickets = createReservationTickets();
             TicketTypeEntity ticketTypeEntity = createTicketTypeEntity();
 
-            given(reservationRetriever.findReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID))
+            given(reservationRetriever.findReservationByOrderIdAndAmountAndUserId(ORDER_ID, TOTAL_AMOUNT, USER_ID))
                     .willReturn(reservation);
             given(eventRetriever.findEventById(EVENT_ID)).willReturn(event);
             given(tossPaymentClient.purchaseConfirm(anyString(), any())).willReturn(paymentResponse);
@@ -408,7 +408,7 @@ class PaymentServiceTest {
 
     // 헬퍼 메소드들
     private void setupMinimalMocksForSuccess() {
-        given(reservationRetriever.findReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID))
+        given(reservationRetriever.findReservationByOrderIdAndAmountAndUserId(ORDER_ID, TOTAL_AMOUNT, USER_ID))
                 .willReturn(createReservation());
         given(eventRetriever.findEventById(EVENT_ID)).willReturn(createEvent());
         given(tossPaymentClient.purchaseConfirm(anyString(), any())).willReturn(createPaymentResponse());
@@ -419,7 +419,7 @@ class PaymentServiceTest {
     }
 
     private void setupMocksUntilTicketTypeRetrieval() {
-        given(reservationRetriever.findReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID))
+        given(reservationRetriever.findReservationByOrderIdAndAmountAndUserId(ORDER_ID, TOTAL_AMOUNT, USER_ID))
                 .willReturn(createReservation());
         given(eventRetriever.findEventById(EVENT_ID)).willReturn(createEvent());
         given(tossPaymentClient.purchaseConfirm(anyString(), any())).willReturn(createPaymentResponse());
@@ -434,7 +434,7 @@ class PaymentServiceTest {
     }
 
     private void setupMocksForMultipleTicketTypes() {
-        given(reservationRetriever.findReservationByOrderIdAndAmount(ORDER_ID, TOTAL_AMOUNT, USER_ID))
+        given(reservationRetriever.findReservationByOrderIdAndAmountAndUserId(ORDER_ID, TOTAL_AMOUNT, USER_ID))
                 .willReturn(createReservation());
         given(eventRetriever.findEventById(EVENT_ID)).willReturn(createEvent());
         given(tossPaymentClient.purchaseConfirm(anyString(), any())).willReturn(createPaymentResponse());

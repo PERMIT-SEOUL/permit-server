@@ -124,7 +124,7 @@ public class PaymentService {
                                                     final String paymentKey,
                                                     final BigDecimal totalAmount) {
         try {
-            final Reservation reservation = reservationRetriever.findReservationByOrderIdAndAmount(orderId, totalAmount, userId);
+            final Reservation reservation = reservationRetriever.findReservationByOrderIdAndAmountAndUserId(orderId, totalAmount, userId);
             final Event event = eventRetriever.findEventById(reservation.getEventId());
             final PaymentResponse paymentResponse = getTossPaymentConfirm(authorizationHeader, paymentKey, reservation.getOrderId(), reservation.getTotalAmount());
 

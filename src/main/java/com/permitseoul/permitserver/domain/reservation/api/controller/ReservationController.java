@@ -21,8 +21,8 @@ public class ReservationController {
     //예약 생성 api
     @PostMapping("/ready")
     public ResponseEntity<BaseResponse<?>> saveReservation(
-            @RequestBody @Valid final ReservationInfoRequest reservationInfoRequest,
-            @UserId final Long userId
+            @UserId final Long userId,
+            @RequestBody @Valid final ReservationInfoRequest reservationInfoRequest
     ) {
         final String orderId = reservationService.saveReservation(
                 userId,
@@ -38,17 +38,10 @@ public class ReservationController {
     //예약 조회 api
     @GetMapping("/ready/{orderId}")
     public ResponseEntity<BaseResponse<?>> getReadyToPayment(
-            @PathVariable("orderId") final String orderId,
-            @UserId final Long userId
+            @UserId final Long userId,
+            @PathVariable("orderId") final String orderId
     ) {
-        final ReservationInfoResponse reservationInfoResponse = reservationService.getReservationInfo(
-                userId,
-                reservationInfoRequest.eventId(),
-                reservationInfoRequest.couponCode(),
-                reservationInfoRequest.totalAmount(),
-                reservationInfoRequest.orderId(),
-                reservationInfoRequest.ticketTypeInfos()
-        );
+        final ReservationInfoResponse reservationInfoResponse = reservationService.getReservationInfo(userId, orderId);
         return ApiResponseUtil.success(SuccessCode.OK, reservationInfoResponse);
     }
 }

@@ -10,8 +10,10 @@ import com.permitseoul.permitserver.domain.reservation.api.dto.ReservationInfoRe
 import com.permitseoul.permitserver.domain.reservation.api.dto.ReservationInfoResponse;
 import com.permitseoul.permitserver.domain.reservation.api.exception.ConflictReservationException;
 import com.permitseoul.permitserver.domain.reservation.api.exception.NotfoundReservationException;
+import com.permitseoul.permitserver.domain.reservation.core.component.ReservationRetriever;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationSaver;
 import com.permitseoul.permitserver.domain.reservation.core.domain.Reservation;
+import com.permitseoul.permitserver.domain.reservation.core.exception.ReservationNotFoundException;
 import com.permitseoul.permitserver.domain.reservationticket.core.component.ReservationTicketSaver;
 import com.permitseoul.permitserver.domain.tickettype.core.component.TicketTypeRetriever;
 import com.permitseoul.permitserver.domain.user.core.component.UserRetriever;
@@ -35,6 +37,7 @@ public class ReservationService {
     private final UserRetriever userRetriever;
     private final TicketTypeRetriever ticketTypeRetriever;
     private final CouponRetriever couponRetriever;
+    private final ReservationRetriever reservationRetriever;
 
     @Transactional
     public String saveReservation(final long userId,
@@ -68,29 +71,27 @@ public class ReservationService {
         }
     }
 
-    @Transactional
-    public ReservationInfoResponse getReservationInfo(final long userId,
-                                                      final long eventId,
-                                                      final String couponCode,
-                                                      final BigDecimal totalAmount,
-                                                      final String orderId,
-                                                      final List<ReservationInfoRequest.TicketTypeInfo> ticketTypeInfos) {
-        final Event event;
-        final User user;
+    @Transactional(readOnly = true)
+    public ReservationInfoResponse getReservationInfo(final long userId, final String orderId) {
         try {
-            event = eventRetriever.findEventById(eventId);
-            user = userRetriever.findUserById(userId);
+            final User user = userRetriever.findUserById(userId);
+            final Reservation reservation = reservationRetriever.findReservationEntityByOrderIdAndUserId(orderId, userId);
+            final Event event = eventRetriever.findEventById(reservation.getEventId());
 
-            //여기서 터지는 dataintegrationException은 글로벌 핸들러에서 잡고있음.
-            final Reservation reservation = reservationSaver.saveReservation(userId, eventId, orderId, totalAmount, couponCode);
-            ticketTypeInfos.forEach(
-                    ticketTypeInfo -> reservationTicketSaver.saveReservationTicket(ticketTypeInfo.id(), reservation.getOrderId(), ticketTypeInfo.count())
+            return ReservationInfoResponse.of(
+                    event.getName(),
+                    reservation.getOrderId(),
+                    user.getName(),
+                    user.getEmail(),
+                    reservation.getTotalAmount(),
+                    user.getSocialId()
             );
-            return ReservationInfoResponse.of(event.getName(), reservation.getOrderId(), user.getName(), user.getEmail(), reservation.getTotalAmount(), user.getSocialId());
         } catch (EventNotfoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_EVENT);
         } catch (UserNotFoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_USER);
+        } catch (ReservationNotFoundException e) {
+            throw new NotfoundReservationException(ErrorCode.NOT_FOUND_RESERVATION);
         }
     }
 

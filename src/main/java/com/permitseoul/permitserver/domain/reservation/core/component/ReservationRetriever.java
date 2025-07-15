@@ -17,7 +17,7 @@ public class ReservationRetriever {
     private final ReservationRepository reservationRepository;
 
     @Transactional(readOnly = true)
-    public Reservation findReservationByOrderIdAndAmount(final String orderId, final BigDecimal amount, final long userId) {
+    public Reservation findReservationByOrderIdAndAmountAndUserId(final String orderId, final BigDecimal amount, final long userId) {
         final ReservationEntity reservationEntity = reservationRepository.findByOrderIdAndTotalAmountAndUserId(orderId, amount, userId).orElseThrow(ReservationNotFoundException::new);
         return Reservation.fromEntity(reservationEntity);
     }
@@ -31,5 +31,11 @@ public class ReservationRetriever {
     @Transactional(readOnly = true)
     public ReservationEntity findReservationEntityById(final long reservationId) {
         return reservationRepository.findById(reservationId).orElseThrow(ReservationNotFoundException::new);
+    }
+
+    @Transactional(readOnly = true)
+    public Reservation findReservationEntityByOrderIdAndUserId(final String orderId, final long userId) {
+        final ReservationEntity reservationEntity = reservationRepository.findByOrderIdAndUserId(orderId, userId).orElseThrow(ReservationNotFoundException::new);
+        return Reservation.fromEntity(reservationEntity);
     }
 }
