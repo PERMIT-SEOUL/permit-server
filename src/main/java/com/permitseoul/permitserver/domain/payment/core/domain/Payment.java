@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Getter
 @RequiredArgsConstructor
@@ -17,8 +18,8 @@ public class Payment {
     private final BigDecimal totalAmount;
     private final PaymentStatus status;
     private final Currency currency;
-    private final String requestAt;
-    private final String approveAt;
+    private final LocalDateTime requestedAt;
+    private final LocalDateTime approvedAt;
 
 
     public static Payment fromEntity(final PaymentEntity paymentEntity) {

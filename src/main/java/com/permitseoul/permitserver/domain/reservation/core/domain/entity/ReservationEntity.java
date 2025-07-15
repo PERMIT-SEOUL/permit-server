@@ -2,6 +2,7 @@ package com.permitseoul.permitserver.domain.reservation.core.domain.entity;
 
 import com.permitseoul.permitserver.global.domain.BaseTimeEntity;
 import com.permitseoul.permitserver.domain.reservation.core.domain.ReservationStatus;
+import com.permitseoul.permitserver.global.exception.IllegalEnumTransitionException;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -42,7 +43,7 @@ public class ReservationEntity extends BaseTimeEntity {
         this.orderId = orderId;
         this.totalAmount = totalAmount;
         this.couponCode = couponCode;
-        this.status = ReservationStatus.SUCCESS;
+        this.status = ReservationStatus.RESERVED;
     }
 
     public static ReservationEntity create(final long userId,
@@ -55,6 +56,9 @@ public class ReservationEntity extends BaseTimeEntity {
     }
 
     public void updateReservationStatus(final ReservationStatus status) {
+        if(!this.status.canTransitionTo(status)) {
+            throw new IllegalEnumTransitionException();
+        }
         this.status = status;
     }
 }

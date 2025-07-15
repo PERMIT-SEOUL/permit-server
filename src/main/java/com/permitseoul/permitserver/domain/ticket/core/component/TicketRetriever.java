@@ -5,6 +5,7 @@ import com.permitseoul.permitserver.domain.ticket.core.exception.TicketNotFoundE
 import com.permitseoul.permitserver.domain.ticket.core.repository.TicketRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
 public class TicketRetriever {
     private final TicketRepository ticketRepository;
 
+    @Transactional(readOnly = true)
     public List<TicketEntity> findAllTicketsByOrderId(final String orderId) {
         final List<TicketEntity> ticketEntityList = ticketRepository.findAllByOrderId(orderId);
         if(ticketEntityList.isEmpty()) {

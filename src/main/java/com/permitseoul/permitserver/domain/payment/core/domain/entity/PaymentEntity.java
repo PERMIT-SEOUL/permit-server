@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "payments")
@@ -42,10 +43,10 @@ public class PaymentEntity extends BaseTimeEntity {
     private Currency currency;
 
     @Column(name = "requested_at", nullable = false)
-    private String requestedAt;
+    private LocalDateTime requestedAt;
 
     @Column(name = "approved_at")
-    private String approvedAt;
+    private LocalDateTime approvedAt;
 
     private PaymentEntity (
             long reservationId,
@@ -54,8 +55,8 @@ public class PaymentEntity extends BaseTimeEntity {
             String paymentKey,
             BigDecimal totalAmount,
             Currency currency,
-            String requestedAt,
-            String approvedAt
+            LocalDateTime requestedAt,
+            LocalDateTime approvedAt
     ) {
         this.reservationId = reservationId;
         this.orderId = orderId;
@@ -74,8 +75,8 @@ public class PaymentEntity extends BaseTimeEntity {
                                        final String paymentKey,
                                        final BigDecimal totalAmount,
                                        final Currency currency,
-                                       final String requestedAt,
-                                       final String approvedAt) {
+                                       final LocalDateTime requestedAt,
+                                       final LocalDateTime approvedAt) {
         return new PaymentEntity(reservationId, orderId, eventId, paymentKey, totalAmount, currency, requestedAt, approvedAt);
     }
 

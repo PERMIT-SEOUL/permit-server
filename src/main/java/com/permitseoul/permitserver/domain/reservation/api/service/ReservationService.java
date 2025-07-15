@@ -52,6 +52,7 @@ import com.permitseoul.permitserver.domain.user.core.domain.User;
 import com.permitseoul.permitserver.domain.user.core.exception.UserNotFoundException;
 import com.permitseoul.permitserver.global.exception.AlgorithmException;
 import com.permitseoul.permitserver.global.exception.DateFormatException;
+import com.permitseoul.permitserver.global.exception.IllegalEnumTransitionException;
 import com.permitseoul.permitserver.global.formatter.DateFormatterUtil;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import feign.FeignException;
@@ -145,19 +146,18 @@ public class ReservationService {
         try {
             event = eventRetriever.findEventById(eventId);
             user = userRetriever.findUserById(userId);
+
+            //여기서 터지는 dataintegrationException은 글로벌 핸들러에서 잡고있음.
+            final Reservation reservation = reservationSaver.saveReservation(userId, eventId, orderId, totalAmount, couponCode);
+            ticketTypeInfos.forEach(
+                    ticketTypeInfo -> reservationTicketSaver.saveReservationTicket(ticketTypeInfo.id(), reservation.getOrderId(), ticketTypeInfo.count())
+            );
+            return PaymentReadyResponse.of(event.getName(), reservation.getOrderId(), user.getName(), user.getEmail(), reservation.getTotalAmount(), user.getSocialId());
         } catch (EventNotfoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_EVENT);
         } catch (UserNotFoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_USER);
         }
-
-        //여기서 터지는 dataintegrationException은 글로벌 핸들러에서 잡고있음.
-        final Reservation reservation = reservationSaver.saveReservation(userId, eventId, orderId, totalAmount, couponCode);
-        ticketTypeInfos.forEach(
-                ticketTypeInfo -> reservationTicketSaver.saveReservationTicket(ticketTypeInfo.id(), reservation.getOrderId(), ticketTypeInfo.count())
-        );
-
-        return PaymentReadyResponse.of(event.getName(), reservation.getOrderId(), user.getName(), user.getEmail(), reservation.getTotalAmount(), user.getSocialId());
     }
 
     @Transactional
@@ -169,10 +169,11 @@ public class ReservationService {
             final Reservation reservation = reservationRetriever.findReservationByOrderIdAndAmount(orderId, totalAmount, userId);
             final Event event = eventRetriever.findEventById(reservation.getEventId());
             final PaymentResponse paymentResponse = getTossPaymentConfirm(authorizationHeader, paymentKey, reservation.getOrderId(), reservation.getTotalAmount());
+
+
             final Payment savedPayment = savePaymentInfo(reservation, paymentResponse);
 
             final List<ReservationTicket> findReservationTicketList = reservationTicketRetriever.findAllByOrderId(savedPayment.getOrderId());
-
             checkTicketCountAndDecrease(findReservationTicketList);
             final List<Ticket> newTicketList = generateTickets(findReservationTicketList, userId, reservation);
             ticketSaver.saveTickets(newTicketList);
@@ -193,6 +194,8 @@ public class ReservationService {
             throw new TicketAlgorithmException(ErrorCode.INTERNAL_TICKET_ALGORITHM_ERROR);
         } catch (TicketTypeInsufficientCountException e) {
             throw new ConflictReservationException(ErrorCode.CONFLICT_INSUFFICIENT_TICKET);
+        } catch (IllegalEnumTransitionException e) {
+            throw new ReservationIllegalException(ErrorCode.INTERNAL_TRANSITION_ENUM_ERROR);
         }
     }
 
@@ -208,7 +211,7 @@ public class ReservationService {
 
             updatePaymentStatus(paymentEntity, PaymentStatus.CANCELLED);
             updateTicketStatus(ticketEntity, TicketStatus.CANCELED);
-            updateReservationStatus(reservationEntity, ReservationStatus.CANCELED);
+            updateReservationStatus(reservationEntity, ReservationStatus.PAYMENT_CANCELED);
         } catch (PaymentNotFoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_PAYMENT);
         } catch (ReservationNotFoundException e) {
@@ -240,8 +243,8 @@ public class ReservationService {
         );
 
         final PaymentCancelResponse.CancelDetail latestCancelPayment = DateFormatterUtil.getLatestCancelPaymentByDate(cancelResponse.cancels()).orElseThrow(
-                        () -> new DateFormatException(ErrorCode.INTERNAL_ISO_DATE_ERROR)
-                );
+                () -> new DateFormatException(ErrorCode.INTERNAL_ISO_DATE_ERROR)
+        );
         paymentCancelSaver.savePaymentCancel(
                 paymentId,
                 latestCancelPayment.cancelAmount(),
@@ -286,8 +289,8 @@ public class ReservationService {
                 paymentResponse.paymentKey(),
                 reservation.getTotalAmount(),
                 paymentResponse.currency(),
-                paymentResponse.requestedAt(),
-                paymentResponse.approvedAt()
+                DateFormatterUtil.parseDateToLocalDateTime(paymentResponse.requestedAt()),
+                DateFormatterUtil.parseDateToLocalDateTime(paymentResponse.approvedAt())
         );
     }
 

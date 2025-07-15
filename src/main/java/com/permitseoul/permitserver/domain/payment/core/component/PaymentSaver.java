@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -20,8 +21,8 @@ public class PaymentSaver {
                                String paymentKey,
                                BigDecimal totalAmount,
                                Currency currency,
-                               String requestedAt,
-                               String approvedAt) {
+                               LocalDateTime requestedAt,
+                               LocalDateTime approvedAt) {
         final PaymentEntity paymentEntity = paymentRepository.save(
                 PaymentEntity.create(reservationId, orderId, eventId, paymentKey, totalAmount, currency, requestedAt, approvedAt)
         );
