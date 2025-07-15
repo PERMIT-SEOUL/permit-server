@@ -2,6 +2,7 @@ package com.permitseoul.permitserver.domain.reservation.core.domain.entity;
 
 import com.permitseoul.permitserver.global.domain.BaseTimeEntity;
 import com.permitseoul.permitserver.domain.reservation.core.domain.ReservationStatus;
+import com.permitseoul.permitserver.global.exception.IllegalEnumTransitionException;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,10 +10,8 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "reservations")
-@Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@AllArgsConstructor
 public class ReservationEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,24 +37,29 @@ public class ReservationEntity extends BaseTimeEntity {
     @Column(nullable = false)
     private ReservationStatus status;
 
-    @Column(name = "pay_error_message")
-    private String payErrorMessage;
+    private ReservationEntity(long userId, long eventId, String orderId, BigDecimal totalAmount, String couponCode) {
+        this.userId = userId;
+        this.eventId = eventId;
+        this.orderId = orderId;
+        this.totalAmount = totalAmount;
+        this.couponCode = couponCode;
+        this.status = ReservationStatus.RESERVED;
+    }
 
     public static ReservationEntity create(final long userId,
                                            final long eventId,
                                            final String orderId,
                                            final BigDecimal totalAmount,
-                                           final String couponCode,
-                                           final ReservationStatus status,
-                                           final String payErrorMessage) {
-        return ReservationEntity.builder()
-                .userId(userId)
-                .eventId(eventId)
-                .orderId(orderId)
-                .totalAmount(totalAmount)
-                .couponCode(couponCode)
-                .payErrorMessage(payErrorMessage)
-                .status(status).build();
+                                           final String couponCode
+                                          ) {
+        return new ReservationEntity(userId, eventId, orderId, totalAmount, couponCode);
+    }
+
+    public void updateReservationStatus(final ReservationStatus status) {
+        if(!this.status.canTransitionTo(status)) {
+            throw new IllegalEnumTransitionException();
+        }
+        this.status = status;
     }
 }
 

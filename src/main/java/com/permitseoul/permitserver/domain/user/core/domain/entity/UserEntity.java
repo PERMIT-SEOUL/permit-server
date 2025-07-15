@@ -10,10 +10,8 @@ import lombok.*;
 
 @Entity
 @Table(name = "users")
-@Builder(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserEntity extends BaseTimeEntity {
 
     @Id
@@ -45,6 +43,16 @@ public class UserEntity extends BaseTimeEntity {
     @Column(name = "user_type", nullable = false)
     private UserRole userType;
 
+    private UserEntity(String name, Gender gender, int age, String email, String socialId, SocialType socialType, UserRole userType) {
+        this.name = name;
+        this.gender = gender;
+        this.age = age;
+        this.email = email;
+        this.socialId = socialId;
+        this.socialType = socialType;
+        this.userType = userType;
+    }
+
     public static UserEntity create(final String name,
                                     final Gender gender,
                                     final int age,
@@ -52,15 +60,7 @@ public class UserEntity extends BaseTimeEntity {
                                     final String socialId,
                                     final SocialType socialType,
                                     final UserRole userType) {
-        return UserEntity.builder()
-                .name(name)
-                .gender(gender)
-                .age(age)
-                .email(email)
-                .socialId(socialId)
-                .socialType(socialType)
-                .userType(userType)
-                .build();
+        return new UserEntity(name, gender, age, email, socialId, socialType, userType);
     }
 }
 

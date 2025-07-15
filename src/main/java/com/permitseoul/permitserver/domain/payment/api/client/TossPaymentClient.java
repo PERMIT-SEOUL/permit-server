@@ -1,19 +1,24 @@
 package com.permitseoul.permitserver.domain.payment.api.client;
 
-import com.permitseoul.permitserver.domain.payment.api.dto.PaymentRequest;
+import com.permitseoul.permitserver.domain.payment.api.dto.PaymentCancelResponse;
+import com.permitseoul.permitserver.domain.payment.api.dto.TossPaymentRequest;
 import com.permitseoul.permitserver.domain.payment.api.dto.PaymentResponse;
+import com.permitseoul.permitserver.domain.reservation.api.dto.TossPaymentCancelRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient(name = "tossPaymentClient", url = "${payment.toss.base-url}")
 public interface TossPaymentClient {
 
     @PostMapping(value = "/v1/payments/confirm")
     PaymentResponse purchaseConfirm(@RequestHeader(HttpHeaders.AUTHORIZATION) String basicAuth,
-                                          @RequestBody PaymentRequest paymentRequest);
+                                    @RequestBody TossPaymentRequest tossPaymentRequest);
+
+    @PostMapping(value = "/v1/payments/{paymentKey}/cancel")
+    PaymentCancelResponse cancelPayment(@RequestHeader(HttpHeaders.AUTHORIZATION) String basicAuth,
+                                        @PathVariable("paymentKey") String paymentKey,
+                                        @RequestBody TossPaymentCancelRequest paymentRequest);
 
 }
 

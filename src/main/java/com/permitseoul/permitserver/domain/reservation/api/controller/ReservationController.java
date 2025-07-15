@@ -1,10 +1,7 @@
 package com.permitseoul.permitserver.domain.reservation.api.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentConfirmRequest;
-import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentConfirmResponse;
-import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentReadyRequest;
-import com.permitseoul.permitserver.domain.reservation.api.dto.PaymentReadyResponse;
+import com.permitseoul.permitserver.domain.reservation.api.dto.*;
 import com.permitseoul.permitserver.domain.reservation.api.service.ReservationService;
 import com.permitseoul.permitserver.global.resolver.user.UserId;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
@@ -54,5 +51,15 @@ public class ReservationController {
                 paymentConfirmRequest.totalAmount()
         );
         return ApiResponseUtil.success(SuccessCode.OK, paymentConfirmResponse);
+    }
+
+    //결제 취소 api
+    @PostMapping("/cancel")
+    public ResponseEntity<BaseResponse<?>> cancelPayment(
+            @UserId final Long userId,
+            @RequestBody @Valid final PaymentCancelRequest paymentCancelRequest
+    ) {
+        reservationService.cancelPayment(userId, paymentCancelRequest.orderId());
+        return ApiResponseUtil.success(SuccessCode.OK);
     }
 }

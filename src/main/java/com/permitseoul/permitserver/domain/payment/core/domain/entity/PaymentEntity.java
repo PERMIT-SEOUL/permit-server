@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.domain.payment.core.domain.entity;
 
+import com.permitseoul.permitserver.domain.payment.core.domain.Currency;
 import com.permitseoul.permitserver.global.domain.BaseTimeEntity;
 import com.permitseoul.permitserver.domain.payment.core.domain.PaymentStatus;
 import jakarta.persistence.*;
@@ -37,26 +38,26 @@ public class PaymentEntity extends BaseTimeEntity {
     @Column(nullable = false)
     private PaymentStatus status;
 
-    @Column(name = "canceled_at")
-    private LocalDateTime canceledAt;
-
-    @Column(name = "transaction_key")
-    private String transactionKey;
-
+    @Enumerated(EnumType.STRING)
     @Column(name = "currency", nullable = false)
-    private String currency;
+    private Currency currency;
 
-    @Column(name = "canceled_error_message")
-    private String canceledErrorMessage;
+    @Column(name = "requested_at", nullable = false)
+    private LocalDateTime requestedAt;
 
-    public PaymentEntity(
-                         long reservationId,
-                         String orderId,
-                         long eventId,
-                         String paymentKey,
-                         BigDecimal totalAmount,
-                         String currency
-                      ) {
+    @Column(name = "approved_at")
+    private LocalDateTime approvedAt;
+
+    private PaymentEntity (
+            long reservationId,
+            String orderId,
+            long eventId,
+            String paymentKey,
+            BigDecimal totalAmount,
+            Currency currency,
+            LocalDateTime requestedAt,
+            LocalDateTime approvedAt
+    ) {
         this.reservationId = reservationId;
         this.orderId = orderId;
         this.eventId = eventId;
@@ -64,9 +65,23 @@ public class PaymentEntity extends BaseTimeEntity {
         this.totalAmount = totalAmount;
         this.currency = currency;
         this.status = PaymentStatus.SUCCESS;
-        this.transactionKey = null;
-        this.canceledAt = null;
-        this.canceledErrorMessage = null;
+        this.requestedAt = requestedAt;
+        this.approvedAt = approvedAt;
+    }
+
+    public static PaymentEntity create(final long reservationId,
+                                       final String orderId,
+                                       final long eventId,
+                                       final String paymentKey,
+                                       final BigDecimal totalAmount,
+                                       final Currency currency,
+                                       final LocalDateTime requestedAt,
+                                       final LocalDateTime approvedAt) {
+        return new PaymentEntity(reservationId, orderId, eventId, paymentKey, totalAmount, currency, requestedAt, approvedAt);
+    }
+
+    public void updatePaymentStatus(final PaymentStatus status) {
+        this.status = status;
     }
 }
 

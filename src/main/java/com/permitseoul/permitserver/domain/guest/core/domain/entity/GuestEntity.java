@@ -5,10 +5,8 @@ import lombok.*;
 
 @Entity
 @Table(name = "guests")
-@Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@AllArgsConstructor
 public class GuestEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,4 +27,12 @@ public class GuestEntity {
 
     @Column(name = "email", nullable = false)
     private String email;
+
+    private GuestEntity(String name, String guestType, String affiliation, String phoneNumber, String email) {
+        this.name = name;
+        this.guestType = guestType;
+        this.affiliation = affiliation;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+    }
 }

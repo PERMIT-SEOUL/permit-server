@@ -16,14 +16,13 @@ public class TicketSaver {
 
     public void saveTickets(final List<Ticket> tickets) {
         final List<TicketEntity> ticketEntityList = tickets.stream()
-                .map(ticket -> TicketEntity.builder()
-                        .orderId(ticket.getOrderId())
-                        .ticketCode(ticket.getTicketCode())
-                        .userId(ticket.getUserId())
-                        .eventId(ticket.getEventId())
-                        .ticketTypeId(ticket.getTicketTypeId())
-                        .build()
-                ).toList();
+                .map(ticket -> TicketEntity.create(
+                        ticket.getUserId(),
+                        ticket.getOrderId(),
+                        ticket.getTicketTypeId(),
+                        ticket.getEventId(),
+                        ticket.getTicketCode()))
+                .toList();
         ticketRepository.saveAll(ticketEntityList);
     }
 }

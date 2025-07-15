@@ -17,9 +17,10 @@ public class Payment {
     private final String paymentKey;
     private final BigDecimal totalAmount;
     private final PaymentStatus status;
-    private final LocalDateTime canceledAt;
-    private final String currency;
-    private final String canceledErrorMessage;
+    private final Currency currency;
+    private final LocalDateTime requestedAt;
+    private final LocalDateTime approvedAt;
+
 
     public static Payment fromEntity(final PaymentEntity paymentEntity) {
         return new Payment(
@@ -30,9 +31,9 @@ public class Payment {
                 paymentEntity.getPaymentKey(),
                 paymentEntity.getTotalAmount(),
                 paymentEntity.getStatus(),
-                paymentEntity.getCanceledAt(),
                 paymentEntity.getCurrency(),
-                paymentEntity.getCanceledErrorMessage()
+                paymentEntity.getRequestedAt(),
+                paymentEntity.getApprovedAt()
         );
     }
 }

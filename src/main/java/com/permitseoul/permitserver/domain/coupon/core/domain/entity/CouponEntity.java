@@ -6,10 +6,7 @@ import lombok.*;
 
 @Entity
 @Table(name = "coupons")
-@Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
-@AllArgsConstructor
 public class CouponEntity {
 
     @Id
@@ -25,4 +22,10 @@ public class CouponEntity {
 
     @Column(name = "discount_rates")
     private int discountRates;
+
+    private CouponEntity(long eventId, String couponCode, int discountRates) {
+        this.eventId = eventId;
+        this.couponCode = couponCode;
+        this.discountRates = discountRates;
+    }
 }

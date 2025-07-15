@@ -68,9 +68,8 @@ public class AuthController {
             @UserId final Long userId,
             @CookieValue(name = Constants.REFRESH_TOKEN) final Cookie refreshTokenCookie,
             final HttpServletResponse response
-            ) {
+    ) {
         authService.logout(userId, refreshTokenCookie.getValue());
-
         // 쿠키 삭제
         final ResponseCookie deleteAccessToken = CookieCreatorUtil.deleteAccessTokenCookie();
         final ResponseCookie deleteRefreshToken = CookieCreatorUtil.deleteRefreshTokenCookie();

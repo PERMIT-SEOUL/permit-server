@@ -1,14 +1,11 @@
-package com.permitseoul.permitserver.domain.eventImage.domain.entity;
+package com.permitseoul.permitserver.domain.eventImage.core.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
 @Table(name = "event_images")
-@Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
-@AllArgsConstructor
 public class EventImageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,5 +23,12 @@ public class EventImageEntity {
 
     @Column(name = "is_thumbnail", nullable = false)
     private boolean isThumbnail;
+
+    private EventImageEntity(long eventId, String imageUrl, int sequence, boolean isThumbnail) {
+        this.eventId = eventId;
+        this.imageUrl = imageUrl;
+        this.sequence = sequence;
+        this.isThumbnail = isThumbnail;
+    }
 }
 

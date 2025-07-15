@@ -1,7 +1,6 @@
 package com.permitseoul.permitserver.domain.reservation.core.component;
 
 import com.permitseoul.permitserver.domain.reservation.core.domain.Reservation;
-import com.permitseoul.permitserver.domain.reservation.core.domain.ReservationStatus;
 import com.permitseoul.permitserver.domain.reservation.core.domain.entity.ReservationEntity;
 import com.permitseoul.permitserver.domain.reservation.core.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +17,8 @@ public class ReservationSaver {
                                        final long eventId,
                                        final String orderId,
                                        final BigDecimal totalAmount,
-                                       final String couponCode,
-                                       final ReservationStatus status) {
-        final ReservationEntity reservationEntity = reservationRepository.save(ReservationEntity.create(userId, eventId, orderId, totalAmount, couponCode, status,null));
+                                       final String couponCode) {
+        final ReservationEntity reservationEntity = reservationRepository.save(ReservationEntity.create(userId, eventId, orderId, totalAmount, couponCode));
         return Reservation.fromEntity(reservationRepository.save(reservationEntity));
     }
 }

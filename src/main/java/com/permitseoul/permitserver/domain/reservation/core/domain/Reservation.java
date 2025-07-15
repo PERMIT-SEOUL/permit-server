@@ -16,7 +16,6 @@ public class Reservation {
     private final BigDecimal totalAmount;
     private final String couponCode;
     private final ReservationStatus status;
-    private final String payErrorCode;
 
     public static Reservation fromEntity(final ReservationEntity reservationEntity) {
         return new Reservation(
@@ -26,7 +25,7 @@ public class Reservation {
                 reservationEntity.getOrderId(),
                 reservationEntity.getTotalAmount(),
                 reservationEntity.getCouponCode(),
-                reservationEntity.getStatus(),
-                reservationEntity.getPayErrorMessage());
+                reservationEntity.getStatus()
+        );
     }
 }
