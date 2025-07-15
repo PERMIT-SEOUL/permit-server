@@ -248,9 +248,6 @@ public class ReservationService {
                 latestCancelPayment.transactionKey(),
                 parseDateToLocalDateTime(latestCancelPayment.canceledAt())
         );
-
-
-
     }
 
     private void validateCancelPaymentWithUserId(final long userId, final long reservationId) {
@@ -332,5 +329,4 @@ public class ReservationService {
             );
         }
     }
-
 }
