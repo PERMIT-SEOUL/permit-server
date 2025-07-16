@@ -52,10 +52,13 @@ public class TicketTypeEntity {
         this.ticketEndDate = ticketEndDate;
     }
 
-    public void decreaseRemainCount(final int buyTicketCount) {
+    public void verifyTicketCount(final int buyTicketCount) {
         if (this.remainTicketCount < buyTicketCount) {
             throw new TicketTypeInsufficientCountException();
         }
+    }
+
+    public void decreaseTicketCount(final int buyTicketCount) {
         this.remainTicketCount -= buyTicketCount;
     }
 }

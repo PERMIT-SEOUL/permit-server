@@ -23,4 +23,9 @@ public class TicketTypeRetriever {
             throw new TicketTypeNotfoundException();
         }
     }
+
+    @Transactional(readOnly = true)
+    public void verifyTicketCount(final TicketTypeEntity ticketTypeEntity, final int count) {
+        ticketTypeEntity.verifyTicketCount(count);
+    }
 }

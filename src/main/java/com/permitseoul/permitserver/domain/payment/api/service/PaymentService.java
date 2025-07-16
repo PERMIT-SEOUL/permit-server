@@ -12,10 +12,8 @@ import com.permitseoul.permitserver.domain.payment.api.dto.PaymentResponse;
 import com.permitseoul.permitserver.domain.payment.api.dto.TossConfirmErrorResponse;
 import com.permitseoul.permitserver.domain.payment.core.component.PaymentRetriever;
 import com.permitseoul.permitserver.domain.payment.core.component.PaymentSaver;
-import com.permitseoul.permitserver.domain.payment.core.component.PaymentUpdater;
 import com.permitseoul.permitserver.domain.payment.core.domain.Currency;
 import com.permitseoul.permitserver.domain.payment.core.domain.Payment;
-import com.permitseoul.permitserver.domain.payment.core.domain.PaymentStatus;
 import com.permitseoul.permitserver.domain.payment.core.domain.entity.PaymentEntity;
 import com.permitseoul.permitserver.domain.payment.core.exception.PaymentNotFoundException;
 import com.permitseoul.permitserver.domain.paymentcancel.core.component.PaymentCancelSaver;
@@ -80,10 +78,10 @@ public class PaymentService {
     private final TicketTypeRetriever ticketTypeRetriever;
     private final PaymentRetriever paymentRetriever;
     private final PaymentCancelSaver paymentCancelSaver;
-    private final PaymentUpdater paymentUpdater;
     private final TicketUpdater ticketUpdater;
     private final TicketRetriever ticketRetriever;
     private final ReservationUpdater reservationUpdater;
+    private final TicketReservationFacade ticketReservationFacade;
 
     public PaymentService(
             ReservationTicketRetriever reservationTicketRetriever,
@@ -96,10 +94,10 @@ public class PaymentService {
             TicketTypeRetriever ticketTypeRetriever,
             PaymentRetriever paymentRetriever,
             PaymentCancelSaver paymentCancelSaver,
-            PaymentUpdater paymentUpdater,
             TicketUpdater ticketUpdater,
             TicketRetriever ticketRetriever,
-            ReservationUpdater reservationUpdater) {
+            ReservationUpdater reservationUpdater,
+            TicketReservationFacade ticketReservationFacade) {
         this.reservationTicketRetriever = reservationTicketRetriever;
         this.eventRetriever = eventRetriever;
         this.tossPaymentClient = tossPaymentClient;
@@ -111,30 +109,33 @@ public class PaymentService {
         this.ticketTypeRetriever = ticketTypeRetriever;
         this.paymentRetriever = paymentRetriever;
         this.paymentCancelSaver = paymentCancelSaver;
-        this.paymentUpdater = paymentUpdater;
         this.ticketUpdater = ticketUpdater;
         this.ticketRetriever = ticketRetriever;
         this.reservationUpdater = reservationUpdater;
+        this.ticketReservationFacade = ticketReservationFacade;
     }
 
 
-    @Transactional
     public PaymentConfirmResponse getPaymentConfirm(final long userId,
                                                     final String orderId,
                                                     final String paymentKey,
                                                     final BigDecimal totalAmount) {
+        ReservationEntity reservationEntity = null;
         try {
-            final Reservation reservation = reservationRetriever.findReservationByOrderIdAndAmountAndUserId(orderId, totalAmount, userId);
-            final Event event = eventRetriever.findEventById(reservation.getEventId());
-            final PaymentResponse paymentResponse = getTossPaymentConfirm(authorizationHeader, paymentKey, reservation.getOrderId(), reservation.getTotalAmount());
+            reservationEntity = reservationRetriever.findReservationByOrderIdAndAmountAndUserId(orderId, totalAmount, userId);
+            final Event event = eventRetriever.findEventById(reservationEntity.getEventId());
+            final PaymentResponse paymentResponse = getTossPaymentConfirm(authorizationHeader, paymentKey, reservationEntity.getOrderId(), reservationEntity.getTotalAmount());
 
+            updateReservationStatus(reservationEntity, ReservationStatus.PAYMENT_SUCCESS);
 
-            final Payment savedPayment = savePaymentInfo(reservation, paymentResponse);
+            final Payment savedPayment = savePaymentInfo(reservationEntity, paymentResponse);
 
             final List<ReservationTicket> findReservationTicketList = reservationTicketRetriever.findAllByOrderId(savedPayment.getOrderId());
-            checkTicketCountAndDecrease(findReservationTicketList);
-            final List<Ticket> newTicketList = generateTickets(findReservationTicketList, userId, reservation);
-            ticketSaver.saveTickets(newTicketList);
+
+            verifyTicketCount(findReservationTicketList);
+
+            final List<Ticket> newTicketList = generateTickets(findReservationTicketList, userId, reservationEntity);
+            ticketReservationFacade.saveAllTickets(newTicketList, reservationEntity);
 
             return PaymentConfirmResponse.of(
                     event.getName(),
@@ -142,11 +143,12 @@ public class PaymentService {
             );
         } catch (ReservationNotFoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_RESERVATION);
-        } catch(EventNotfoundException e) {
+        } catch (EventNotfoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_EVENT);
         } catch (TicketTypeNotfoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_TICKET_TYPE);
         } catch(FeignException e) {
+            updateReservationStatus(reservationEntity, ReservationStatus.PAYMENT_FAILED);
             throw handleFeignException(e);
         } catch (AlgorithmException e) {
             throw new TicketAlgorithmException(ErrorCode.INTERNAL_TICKET_ALGORITHM_ERROR);
@@ -167,7 +169,6 @@ public class PaymentService {
             validateCancelPaymentWithUserId(userId, paymentEntity.getReservationId());
             cancelTossPaymentAndSave(paymentEntity.getPaymentId(), paymentEntity.getPaymentKey(), paymentEntity.getCurrency());
 
-            updatePaymentStatus(paymentEntity, PaymentStatus.CANCELLED);
             updateTicketStatus(ticketEntity, TicketStatus.CANCELED);
             updateReservationStatus(reservationEntity, ReservationStatus.PAYMENT_CANCELED);
         } catch (PaymentNotFoundException e) {
@@ -181,10 +182,6 @@ public class PaymentService {
 
     private void updateReservationStatus(final ReservationEntity reservationEntity, final ReservationStatus reservationStatus) {
         reservationUpdater.updateReservationStatus(reservationEntity, reservationStatus);
-    }
-
-    private void updatePaymentStatus(final PaymentEntity paymentEntity, final PaymentStatus paymentStatus) {
-        paymentUpdater.updatePaymentStatus(paymentEntity ,paymentStatus);
     }
 
     private void updateTicketStatus(final List<TicketEntity> ticketEntity, final TicketStatus ticketStatus) {
@@ -232,14 +229,15 @@ public class PaymentService {
         );
     }
 
-    private void checkTicketCountAndDecrease(final List<ReservationTicket> reservationTicketList) {
-        reservationTicketList.forEach(reservationTicket -> {
-            final TicketTypeEntity ticketTypeEntity = ticketTypeRetriever.findTicketTypeEntityById(reservationTicket.getTicketTypeId());
-            ticketTypeEntity.decreaseRemainCount(reservationTicket.getCount());
-        });
+    private void verifyTicketCount(final List<ReservationTicket> reservationTicketList) {
+        reservationTicketList.forEach(
+                reservationTicket -> {
+                    final TicketTypeEntity ticketTypeEntity = ticketTypeRetriever.findTicketTypeEntityById(reservationTicket.getTicketTypeId());
+                    ticketTypeRetriever.verifyTicketCount(ticketTypeEntity, reservationTicket.getCount());
+                });
     }
 
-    private Payment savePaymentInfo(final Reservation reservation, final PaymentResponse paymentResponse) {
+    private Payment savePaymentInfo(final ReservationEntity reservation, final PaymentResponse paymentResponse) {
         return  paymentSaver.savePayment(
                 reservation.getReservationId(),
                 reservation.getOrderId(),
@@ -247,12 +245,12 @@ public class PaymentService {
                 paymentResponse.paymentKey(),
                 reservation.getTotalAmount(),
                 paymentResponse.currency(),
-                DateFormatterUtil.parseDateToLocalDateTime(paymentResponse.requestedAt()),
-                DateFormatterUtil.parseDateToLocalDateTime(paymentResponse.approvedAt())
+                parseDateToLocalDateTime(paymentResponse.requestedAt()),
+                parseDateToLocalDateTime(paymentResponse.approvedAt())
         );
     }
 
-    private List<Ticket> generateTickets(final List<ReservationTicket> reservationTicketList, final long userId, final Reservation reservation) {
+    private List<Ticket> generateTickets(final List<ReservationTicket> reservationTicketList, final long userId, final ReservationEntity reservation) {
         return reservationTicketList.stream()
                 .flatMap(reservationTicket ->
                         IntStream.range(0, reservationTicket.getCount())
@@ -262,7 +260,6 @@ public class PaymentService {
                                         .ticketTypeId(reservationTicket.getTicketTypeId())
                                         .eventId(reservation.getEventId())
                                         .ticketCode(TicketCodeGenerator.generateTicketCode())
-                                        .isUsed(false)
                                         .status(TicketStatus.RESERVED)
                                         .build()
                                 )
@@ -290,6 +287,4 @@ public class PaymentService {
             );
         }
     }
-
-
 }

@@ -9,7 +9,6 @@ import com.permitseoul.permitserver.domain.payment.api.service.PaymentService;
 import com.permitseoul.permitserver.domain.payment.core.component.PaymentSaver;
 import com.permitseoul.permitserver.domain.payment.core.domain.Currency;
 import com.permitseoul.permitserver.domain.payment.core.domain.Payment;
-import com.permitseoul.permitserver.domain.payment.core.domain.PaymentStatus;
 import com.permitseoul.permitserver.domain.reservation.api.TossProperties;
 import com.permitseoul.permitserver.domain.payment.api.dto.PaymentConfirmResponse;
 import com.permitseoul.permitserver.domain.reservation.api.exception.ConflictReservationException;
@@ -24,7 +23,6 @@ import com.permitseoul.permitserver.domain.reservationticket.core.component.Rese
 import com.permitseoul.permitserver.domain.reservationticket.core.domain.ReservationTicket;
 import com.permitseoul.permitserver.domain.ticket.core.component.TicketSaver;
 import com.permitseoul.permitserver.domain.ticket.core.domain.Ticket;
-import com.permitseoul.permitserver.domain.ticket.core.domain.TicketStatus;
 import com.permitseoul.permitserver.domain.tickettype.core.component.TicketTypeRetriever;
 import com.permitseoul.permitserver.domain.tickettype.core.domain.entity.TicketTypeEntity;
 import com.permitseoul.permitserver.domain.tickettype.core.repository.TicketTypeRepository;
