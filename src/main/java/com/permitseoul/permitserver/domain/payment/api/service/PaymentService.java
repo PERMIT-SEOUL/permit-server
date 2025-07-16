@@ -23,6 +23,7 @@ import com.permitseoul.permitserver.domain.payment.api.dto.PaymentConfirmRespons
 import com.permitseoul.permitserver.domain.reservation.api.exception.*;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationRetriever;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationUpdater;
+import com.permitseoul.permitserver.domain.reservation.core.domain.Reservation;
 import com.permitseoul.permitserver.domain.reservation.core.domain.ReservationStatus;
 import com.permitseoul.permitserver.domain.reservation.core.domain.entity.ReservationEntity;
 import com.permitseoul.permitserver.domain.reservation.core.exception.ReservationNotFoundException;
@@ -35,6 +36,7 @@ import com.permitseoul.permitserver.domain.ticket.core.domain.TicketStatus;
 import com.permitseoul.permitserver.domain.ticket.core.domain.entity.TicketEntity;
 import com.permitseoul.permitserver.domain.ticket.core.exception.TicketNotFoundException;
 import com.permitseoul.permitserver.domain.tickettype.core.component.TicketTypeRetriever;
+import com.permitseoul.permitserver.domain.tickettype.core.component.TicketTypeUpdater;
 import com.permitseoul.permitserver.domain.tickettype.core.domain.entity.TicketTypeEntity;
 import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeNotfoundException;
 import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeInsufficientCountException;
@@ -78,6 +80,7 @@ public class PaymentService {
     private final TicketRetriever ticketRetriever;
     private final ReservationUpdater reservationUpdater;
     private final TicketReservationFacade ticketReservationFacade;
+    private final TicketTypeUpdater ticketTypeUpdater;
 
     public PaymentService(
             ReservationTicketRetriever reservationTicketRetriever,
@@ -92,7 +95,8 @@ public class PaymentService {
             TicketUpdater ticketUpdater,
             TicketRetriever ticketRetriever,
             ReservationUpdater reservationUpdater,
-            TicketReservationFacade ticketReservationFacade) {
+            TicketReservationFacade ticketReservationFacade,
+            TicketTypeUpdater ticketTypeUpdater) {
         this.reservationTicketRetriever = reservationTicketRetriever;
         this.eventRetriever = eventRetriever;
         this.tossPaymentClient = tossPaymentClient;
@@ -107,6 +111,7 @@ public class PaymentService {
         this.ticketRetriever = ticketRetriever;
         this.reservationUpdater = reservationUpdater;
         this.ticketReservationFacade = ticketReservationFacade;
+        this.ticketTypeUpdater = ticketTypeUpdater;
     }
 
 
@@ -118,18 +123,16 @@ public class PaymentService {
         try {
             reservationEntity = reservationRetriever.findReservationByOrderIdAndAmountAndUserId(orderId, totalAmount, userId);
             final Event event = eventRetriever.findEventById(reservationEntity.getEventId());
-            final PaymentResponse paymentResponse = getTossPaymentConfirm(authorizationHeader, paymentKey, reservationEntity.getOrderId(), reservationEntity.getTotalAmount());
 
-            updateReservationStatus(reservationEntity, ReservationStatus.PAYMENT_SUCCESS);
-
-            final Payment savedPayment = savePaymentInfo(reservationEntity, paymentResponse);
-
-            final List<ReservationTicket> findReservationTicketList = reservationTicketRetriever.findAllByOrderId(savedPayment.getOrderId());
-
+            final List<ReservationTicket> findReservationTicketList = reservationTicketRetriever.findAllByOrderId(orderId);
             verifyTicketCount(findReservationTicketList);
 
+            final PaymentResponse paymentResponse = getTossPaymentConfirm(authorizationHeader, paymentKey, reservationEntity.getOrderId(), reservationEntity.getTotalAmount());
+            updateReservationStatus(reservationEntity, ReservationStatus.PAYMENT_SUCCESS);
+            savePaymentInfo(reservationEntity, paymentResponse);
+
             final List<Ticket> newTicketList = generateTickets(findReservationTicketList, userId, reservationEntity);
-            ticketReservationFacade.saveAllTickets(newTicketList, reservationEntity);
+            ticketReservationFacade.saveAllTickets(newTicketList, reservationEntity, findReservationTicketList);
 
             return PaymentConfirmResponse.of(
                     event.getName(),
@@ -158,6 +161,8 @@ public class PaymentService {
             final PaymentEntity paymentEntity = paymentRetriever.findPaymentEntityByOrderId(orderId);
             final List<TicketEntity> ticketEntity = ticketRetriever.findAllTicketsByOrderIdAndUserId(paymentEntity.getOrderId(), userId);
             final ReservationEntity reservationEntity = reservationRetriever.findReservationEntityByIdAndUserId(paymentEntity.getReservationId(), userId);
+            final List<ReservationTicket> reservationTicketList = reservationTicketRetriever.findAllByOrderId(orderId);
+
 
             final PaymentCancelResponse paymentCancelResponse = cancelTossPayment(
                     paymentEntity.getPaymentId(),
@@ -165,8 +170,10 @@ public class PaymentService {
                     paymentEntity.getCurrency()
             );
 
+
             updateTicketStatus(ticketEntity, TicketStatus.CANCELED);
             updateReservationStatus(reservationEntity, ReservationStatus.PAYMENT_CANCELED);
+            increaseTicketTypeCount(reservationTicketList);
 
             final PaymentCancelResponse.CancelDetail latestCancelPayment = DateFormatterUtil.getLatestCancelPaymentByDate(paymentCancelResponse.cancels()).orElseThrow(
                     () -> new DateFormatException(ErrorCode.INTERNAL_ISO_DATE_ERROR)
@@ -185,6 +192,15 @@ public class PaymentService {
         } catch (TicketNotFoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_TICKET);
         }
+    }
+
+    private void increaseTicketTypeCount(final List<ReservationTicket> reservationTicketList) {
+        reservationTicketList.forEach(
+                reservationTicket -> {
+                    final TicketTypeEntity ticketTypeEntity = ticketTypeRetriever.findTicketTypeEntityById(reservationTicket.getTicketTypeId());
+                    ticketTypeUpdater.increaseTicketCount(ticketTypeEntity, reservationTicket.getCount());
+                }
+        );
     }
 
     private void updateReservationStatus(final ReservationEntity reservationEntity, final ReservationStatus reservationStatus) {
@@ -227,8 +243,8 @@ public class PaymentService {
                 });
     }
 
-    private Payment savePaymentInfo(final ReservationEntity reservation, final PaymentResponse paymentResponse) {
-        return  paymentSaver.savePayment(
+    private void savePaymentInfo(final ReservationEntity reservation, final PaymentResponse paymentResponse) {
+        paymentSaver.savePayment(
                 reservation.getReservationId(),
                 reservation.getOrderId(),
                 reservation.getEventId(),

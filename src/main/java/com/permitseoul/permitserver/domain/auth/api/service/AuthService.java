@@ -52,7 +52,7 @@ public class AuthService {
             final UserEntity newUserEntity = createUser(userName, userAge, userGender, userEmail, userSocialId, socialType);
             final Token newToken = GetJwtToken(newUserEntity.getUserId());
             return TokenDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
-        } catch (com.permitseoul.permitserver.domain.auth.core.exception.AuthFeignException e) {
+        } catch (AuthFeignException e) {
             throw new AuthUnAuthorizedFeignException(ErrorCode.UNAUTHORIZED_FEIGN, e.getMessage());
         } catch (UserExistException e ) {
             throw new AuthUnAuthorizedException(ErrorCode.CONFLICT);

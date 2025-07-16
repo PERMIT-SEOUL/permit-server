@@ -1,7 +1,6 @@
 package com.permitseoul.permitserver.domain.payment.core.component;
 
 import com.permitseoul.permitserver.domain.payment.core.domain.Currency;
-import com.permitseoul.permitserver.domain.payment.core.domain.Payment;
 import com.permitseoul.permitserver.domain.payment.core.domain.entity.PaymentEntity;
 import com.permitseoul.permitserver.domain.payment.core.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,18 +16,17 @@ public class PaymentSaver {
     private final PaymentRepository paymentRepository;
 
     @Transactional
-    public Payment savePayment(final long reservationId,
-                               final String orderId,
-                               final long eventId,
-                               final String paymentKey,
-                               final BigDecimal totalAmount,
-                               final Currency currency,
-                               final LocalDateTime requestedAt,
-                               final LocalDateTime approvedAt) {
-        final PaymentEntity paymentEntity = paymentRepository.save(
+    public void savePayment(final long reservationId,
+                            final String orderId,
+                            final long eventId,
+                            final String paymentKey,
+                            final BigDecimal totalAmount,
+                            final Currency currency,
+                            final LocalDateTime requestedAt,
+                            final LocalDateTime approvedAt) {
+        paymentRepository.save(
                 PaymentEntity.create(reservationId, orderId, eventId, paymentKey, totalAmount, currency, requestedAt, approvedAt)
         );
-        return Payment.fromEntity(paymentEntity);
     }
 
 }
