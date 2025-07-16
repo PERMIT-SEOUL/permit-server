@@ -49,6 +49,7 @@ public enum ErrorCode implements ApiCode {
     NOT_FOUND_TICKET_TYPE(HttpStatus.NOT_FOUND, 40407, "해당 ticketType 이 없습니다."),
     NOT_FOUND_PAYMENT(HttpStatus.NOT_FOUND, 40408, "해당 payment 가 없습니다."),
     NOT_FOUND_TICKET(HttpStatus.NOT_FOUND, 40409, "해당 ticket 이 없습니다."),
+    NOT_FOUND_COUPON_CODE(HttpStatus.NOT_FOUND, 40410, "해당 couponCode 가 없습니다."),
 
     /**
      * 405 Method Not Allowed
@@ -61,6 +62,7 @@ public enum ErrorCode implements ApiCode {
     CONFLICT(HttpStatus.CONFLICT, 40900, "이미 존재하는 리소스입니다."),
     INTEGRITY_CONFLICT(HttpStatus.CONFLICT, 40901, "데이터 무결성 위반입니다."),
     CONFLICT_INSUFFICIENT_TICKET(HttpStatus.CONFLICT, 40902, "구매하려는 티켓의 티켓 개수가 부족합니다."),
+    CONFLICT_ALREADY_USED_COUPON_CODE(HttpStatus.CONFLICT, 40903, "이미 사용한 쿠폰코드입니다."),
 
     /**
      * 500 Internal Server Error

@@ -5,6 +5,7 @@ import com.permitseoul.permitserver.domain.ticket.core.domain.entity.TicketEntit
 import com.permitseoul.permitserver.domain.ticket.core.repository.TicketRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
 public class TicketSaver {
     private final TicketRepository ticketRepository;
 
+    @Transactional
     public void saveTickets(final List<Ticket> tickets) {
         final List<TicketEntity> ticketEntityList = tickets.stream()
                 .map(ticket -> TicketEntity.create(

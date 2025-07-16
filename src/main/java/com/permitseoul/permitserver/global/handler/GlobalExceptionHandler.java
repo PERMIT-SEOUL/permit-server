@@ -199,7 +199,6 @@ public class GlobalExceptionHandler {
         if (rootCause != null) {
             String message = rootCause.getMessage();
 
-            // 정규식으로 중복된 필드명 추출 (예: order_id)
             Pattern pattern = Pattern.compile("Key \\((.*?)\\)=");
             Matcher matcher = pattern.matcher(message);
 

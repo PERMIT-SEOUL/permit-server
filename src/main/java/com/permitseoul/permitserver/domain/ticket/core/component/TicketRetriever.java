@@ -15,8 +15,8 @@ public class TicketRetriever {
     private final TicketRepository ticketRepository;
 
     @Transactional(readOnly = true)
-    public List<TicketEntity> findAllTicketsByOrderId(final String orderId) {
-        final List<TicketEntity> ticketEntityList = ticketRepository.findAllByOrderId(orderId);
+    public List<TicketEntity> findAllTicketsByOrderIdAndUserId(final String orderId, final long userId) {
+        final List<TicketEntity> ticketEntityList = ticketRepository.findAllByOrderIdAndUserId(orderId, userId);
         if(ticketEntityList.isEmpty()) {
             throw new TicketNotFoundException();
         }

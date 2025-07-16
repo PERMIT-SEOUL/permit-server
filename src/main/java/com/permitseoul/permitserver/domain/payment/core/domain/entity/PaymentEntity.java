@@ -2,7 +2,6 @@ package com.permitseoul.permitserver.domain.payment.core.domain.entity;
 
 import com.permitseoul.permitserver.domain.payment.core.domain.Currency;
 import com.permitseoul.permitserver.global.domain.BaseTimeEntity;
-import com.permitseoul.permitserver.domain.payment.core.domain.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,10 +34,6 @@ public class PaymentEntity extends BaseTimeEntity {
     private BigDecimal totalAmount;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private PaymentStatus status;
-
-    @Enumerated(EnumType.STRING)
     @Column(name = "currency", nullable = false)
     private Currency currency;
 
@@ -64,7 +59,6 @@ public class PaymentEntity extends BaseTimeEntity {
         this.paymentKey = paymentKey;
         this.totalAmount = totalAmount;
         this.currency = currency;
-        this.status = PaymentStatus.SUCCESS;
         this.requestedAt = requestedAt;
         this.approvedAt = approvedAt;
     }
@@ -78,10 +72,6 @@ public class PaymentEntity extends BaseTimeEntity {
                                        final LocalDateTime requestedAt,
                                        final LocalDateTime approvedAt) {
         return new PaymentEntity(reservationId, orderId, eventId, paymentKey, totalAmount, currency, requestedAt, approvedAt);
-    }
-
-    public void updatePaymentStatus(final PaymentStatus status) {
-        this.status = status;
     }
 }
 
