@@ -28,8 +28,8 @@ public class ReservationRetriever {
     }
 
     @Transactional(readOnly = true)
-    public ReservationEntity findReservationEntityById(final long reservationId) {
-        return reservationRepository.findById(reservationId).orElseThrow(ReservationNotFoundException::new);
+    public ReservationEntity findReservationEntityByIdAndUserId(final long reservationId, final long userId) {
+        return reservationRepository.findByReservationIdAndUserId(reservationId, userId).orElseThrow(ReservationNotFoundException::new);
     }
 
     @Transactional(readOnly = true)

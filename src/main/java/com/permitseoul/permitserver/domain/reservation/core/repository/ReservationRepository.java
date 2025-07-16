@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface ReservationRepository extends JpaRepository<ReservationEntity, Long> {
     Optional<ReservationEntity> findByOrderIdAndTotalAmountAndUserId(final String orderId, BigDecimal totalAmount, long userId);
     Optional<ReservationEntity> findByOrderIdAndUserId(final String orderId, final long userId);
+    Optional<ReservationEntity> findByReservationIdAndUserId(final long id, long userId);
 }

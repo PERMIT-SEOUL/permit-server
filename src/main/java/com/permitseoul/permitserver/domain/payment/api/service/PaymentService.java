@@ -23,14 +23,12 @@ import com.permitseoul.permitserver.domain.payment.api.dto.PaymentConfirmRespons
 import com.permitseoul.permitserver.domain.reservation.api.exception.*;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationRetriever;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationUpdater;
-import com.permitseoul.permitserver.domain.reservation.core.domain.Reservation;
 import com.permitseoul.permitserver.domain.reservation.core.domain.ReservationStatus;
 import com.permitseoul.permitserver.domain.reservation.core.domain.entity.ReservationEntity;
 import com.permitseoul.permitserver.domain.reservation.core.exception.ReservationNotFoundException;
 import com.permitseoul.permitserver.domain.reservationticket.core.component.ReservationTicketRetriever;
 import com.permitseoul.permitserver.domain.reservationticket.core.domain.ReservationTicket;
 import com.permitseoul.permitserver.domain.ticket.core.component.TicketRetriever;
-import com.permitseoul.permitserver.domain.ticket.core.component.TicketSaver;
 import com.permitseoul.permitserver.domain.ticket.core.component.TicketUpdater;
 import com.permitseoul.permitserver.domain.ticket.core.domain.Ticket;
 import com.permitseoul.permitserver.domain.ticket.core.domain.TicketStatus;
@@ -49,7 +47,6 @@ import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import feign.FeignException;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Base64;
@@ -74,7 +71,6 @@ public class PaymentService {
     private final TossProperties tossProperties;
     private final String authorizationHeader;
     private final PaymentSaver paymentSaver;
-    private final TicketSaver ticketSaver;
     private final TicketTypeRetriever ticketTypeRetriever;
     private final PaymentRetriever paymentRetriever;
     private final PaymentCancelSaver paymentCancelSaver;
@@ -90,7 +86,6 @@ public class PaymentService {
             ReservationRetriever reservationRetriever,
             TossProperties tossProperties,
             PaymentSaver paymentSaver,
-            TicketSaver ticketSaver,
             TicketTypeRetriever ticketTypeRetriever,
             PaymentRetriever paymentRetriever,
             PaymentCancelSaver paymentCancelSaver,
@@ -105,7 +100,6 @@ public class PaymentService {
         this.tossProperties = tossProperties;
         this.authorizationHeader = buildAuthHeader(tossProperties.apiSecretKey());
         this.paymentSaver = paymentSaver;
-        this.ticketSaver = ticketSaver;
         this.ticketTypeRetriever = ticketTypeRetriever;
         this.paymentRetriever = paymentRetriever;
         this.paymentCancelSaver = paymentCancelSaver;
@@ -159,18 +153,31 @@ public class PaymentService {
         }
     }
 
-    @Transactional
     public void cancelPayment(final long userId, final String orderId) {
         try {
             final PaymentEntity paymentEntity = paymentRetriever.findPaymentEntityByOrderId(orderId);
-            final List<TicketEntity> ticketEntity = ticketRetriever.findAllTicketsByOrderId(paymentEntity.getOrderId());
-            final ReservationEntity reservationEntity = reservationRetriever.findReservationEntityById(paymentEntity.getReservationId());
+            final List<TicketEntity> ticketEntity = ticketRetriever.findAllTicketsByOrderIdAndUserId(paymentEntity.getOrderId(), userId);
+            final ReservationEntity reservationEntity = reservationRetriever.findReservationEntityByIdAndUserId(paymentEntity.getReservationId(), userId);
 
-            validateCancelPaymentWithUserId(userId, paymentEntity.getReservationId());
-            cancelTossPaymentAndSave(paymentEntity.getPaymentId(), paymentEntity.getPaymentKey(), paymentEntity.getCurrency());
+            final PaymentCancelResponse paymentCancelResponse = cancelTossPayment(
+                    paymentEntity.getPaymentId(),
+                    paymentEntity.getPaymentKey(),
+                    paymentEntity.getCurrency()
+            );
 
             updateTicketStatus(ticketEntity, TicketStatus.CANCELED);
             updateReservationStatus(reservationEntity, ReservationStatus.PAYMENT_CANCELED);
+
+            final PaymentCancelResponse.CancelDetail latestCancelPayment = DateFormatterUtil.getLatestCancelPaymentByDate(paymentCancelResponse.cancels()).orElseThrow(
+                    () -> new DateFormatException(ErrorCode.INTERNAL_ISO_DATE_ERROR)
+            );
+
+            paymentCancelSaver.savePaymentCancel(
+                    paymentEntity.getPaymentId(),
+                    latestCancelPayment.cancelAmount(),
+                    latestCancelPayment.transactionKey(),
+                    parseDateToLocalDateTime(latestCancelPayment.canceledAt())
+            );
         } catch (PaymentNotFoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_PAYMENT);
         } catch (ReservationNotFoundException e) {
@@ -190,29 +197,12 @@ public class PaymentService {
         );
     }
 
-    private void cancelTossPaymentAndSave(final long paymentId, final String paymentKey, final Currency currency) {
-        final PaymentCancelResponse cancelResponse = tossPaymentClient.cancelPayment(
+    private PaymentCancelResponse cancelTossPayment(final long paymentId, final String paymentKey, final Currency currency) {
+        return tossPaymentClient.cancelPayment(
                 authorizationHeader,
                 paymentKey,
                 TossPaymentCancelRequest.of(CANCEL_REASON, currency)
         );
-
-        final PaymentCancelResponse.CancelDetail latestCancelPayment = DateFormatterUtil.getLatestCancelPaymentByDate(cancelResponse.cancels()).orElseThrow(
-                () -> new DateFormatException(ErrorCode.INTERNAL_ISO_DATE_ERROR)
-        );
-        paymentCancelSaver.savePaymentCancel(
-                paymentId,
-                latestCancelPayment.cancelAmount(),
-                latestCancelPayment.transactionKey(),
-                parseDateToLocalDateTime(latestCancelPayment.canceledAt())
-        );
-    }
-
-    private void validateCancelPaymentWithUserId(final long userId, final long reservationId) {
-        final Reservation reservation = reservationRetriever.findReservationById(reservationId);
-        if (reservation.getUserId() != userId) {
-            throw new ReservationUnAuthorizedException(ErrorCode.UNAUTHORIZED_CANCEL_PAYMENT);
-        }
     }
 
     private String buildAuthHeader(final String secretKey) {
