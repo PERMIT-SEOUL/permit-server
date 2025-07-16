@@ -33,7 +33,7 @@ public class ReservationRetriever {
     }
 
     @Transactional(readOnly = true)
-    public Reservation findReservationEntityByOrderIdAndUserId(final String orderId, final long userId) {
+    public Reservation findReservationByOrderIdAndUserId(final String orderId, final long userId) {
         final ReservationEntity reservationEntity = reservationRepository.findByOrderIdAndUserId(orderId, userId).orElseThrow(ReservationNotFoundException::new);
         return Reservation.fromEntity(reservationEntity);
     }

@@ -7,13 +7,11 @@ import com.permitseoul.permitserver.domain.event.core.component.EventRetriever;
 import com.permitseoul.permitserver.domain.event.core.domain.Event;
 import com.permitseoul.permitserver.domain.event.core.exception.EventNotfoundException;
 import com.permitseoul.permitserver.domain.reservation.api.dto.ReservationInfoRequest;
-import com.permitseoul.permitserver.domain.reservation.api.dto.ReservationInfoResponse;
 import com.permitseoul.permitserver.domain.reservation.api.exception.ConflictReservationException;
 import com.permitseoul.permitserver.domain.reservation.api.exception.NotfoundReservationException;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationRetriever;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationSaver;
 import com.permitseoul.permitserver.domain.reservation.core.domain.Reservation;
-import com.permitseoul.permitserver.domain.reservation.core.domain.entity.ReservationEntity;
 import com.permitseoul.permitserver.domain.reservation.core.exception.ReservationNotFoundException;
 import com.permitseoul.permitserver.domain.reservationticket.core.component.ReservationTicketSaver;
 import com.permitseoul.permitserver.domain.tickettype.core.component.TicketTypeRetriever;
@@ -119,7 +117,7 @@ class ReservationServiceTest {
             Reservation reservation = mock(Reservation.class);
             Event event = mock(Event.class);
             given(userRetriever.findUserById(userId)).willReturn(user);
-            given(reservationRetriever.findReservationEntityByOrderIdAndUserId(orderId, userId)).willReturn(reservation);
+            given(reservationRetriever.findReservationByOrderIdAndUserId(orderId, userId)).willReturn(reservation);
             given(reservation.getEventId()).willReturn(10L);
             given(eventRetriever.findEventById(10L)).willReturn(event);
             given(event.getName()).willReturn("이벤트명");
@@ -136,7 +134,7 @@ class ReservationServiceTest {
             User user = mock(User.class);
             Reservation reservation = mock(Reservation.class);
             given(userRetriever.findUserById(anyLong())).willReturn(user);
-            given(reservationRetriever.findReservationEntityByOrderIdAndUserId(anyString(), anyLong())).willReturn(reservation);
+            given(reservationRetriever.findReservationByOrderIdAndUserId(anyString(), anyLong())).willReturn(reservation);
             given(reservation.getEventId()).willReturn(10L);
             given(eventRetriever.findEventById(anyLong())).willThrow(EventNotfoundException.class);
             assertThatThrownBy(() -> reservationService.getReservationInfo(1L, "ORDER")).isInstanceOf(NotfoundReservationException.class);
@@ -152,7 +150,7 @@ class ReservationServiceTest {
         void reservationNotFound() {
             User user = mock(User.class);
             given(userRetriever.findUserById(anyLong())).willReturn(user);
-            given(reservationRetriever.findReservationEntityByOrderIdAndUserId(anyString(), anyLong())).willThrow(ReservationNotFoundException.class);
+            given(reservationRetriever.findReservationByOrderIdAndUserId(anyString(), anyLong())).willThrow(ReservationNotFoundException.class);
             assertThatThrownBy(() -> reservationService.getReservationInfo(1L, "ORDER")).isInstanceOf(NotfoundReservationException.class);
         }
     }

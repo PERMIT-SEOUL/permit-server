@@ -75,7 +75,7 @@ public class ReservationService {
     public ReservationInfoResponse getReservationInfo(final long userId, final String orderId) {
         try {
             final User user = userRetriever.findUserById(userId);
-            final Reservation reservation = reservationRetriever.findReservationEntityByOrderIdAndUserId(orderId, userId);
+            final Reservation reservation = reservationRetriever.findReservationByOrderIdAndUserId(orderId, userId);
             final Event event = eventRetriever.findEventById(reservation.getEventId());
 
             return ReservationInfoResponse.of(

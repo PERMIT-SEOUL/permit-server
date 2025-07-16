@@ -145,7 +145,9 @@ public class PaymentService {
         } catch (TicketTypeNotfoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_TICKET_TYPE);
         } catch(FeignException e) {
-            updateReservationStatus(reservationEntity, ReservationStatus.PAYMENT_FAILED);
+            if (reservationEntity != null) {
+                updateReservationStatus(reservationEntity, ReservationStatus.PAYMENT_FAILED);
+            }
             throw handleFeignException(e);
         } catch (AlgorithmException e) {
             throw new TicketAlgorithmException(ErrorCode.INTERNAL_TICKET_ALGORITHM_ERROR);

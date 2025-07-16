@@ -10,6 +10,6 @@ public class TicketUpdater {
 
     @Transactional
     public void updateTicketStatus(final TicketEntity ticketEntity, final TicketStatus status) {
-        ticketEntity.updateTicketStatus(status);;
+        ticketEntity.updateTicketStatus(status);
     }
 }

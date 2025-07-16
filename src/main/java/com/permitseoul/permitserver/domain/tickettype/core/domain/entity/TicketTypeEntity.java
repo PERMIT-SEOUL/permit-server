@@ -59,6 +59,7 @@ public class TicketTypeEntity {
     }
 
     public void decreaseTicketCount(final int buyTicketCount) {
+        verifyTicketCount(buyTicketCount);
         this.remainTicketCount -= buyTicketCount;
     }
 
