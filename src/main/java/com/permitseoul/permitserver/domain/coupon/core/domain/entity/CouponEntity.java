@@ -23,13 +23,14 @@ public class CouponEntity {
     @Column(name = "discount_rates")
     private int discountRates;
 
+    @Getter
     @Column(name = "is_used")
-    private boolean isUsed;
+    private boolean used;
 
     private CouponEntity(long eventId, String couponCode, int discountRates) {
         this.eventId = eventId;
         this.couponCode = couponCode;
         this.discountRates = discountRates;
-        this.isUsed = false;
+        this.used = false;
     }
 }
