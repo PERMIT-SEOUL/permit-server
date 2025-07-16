@@ -22,7 +22,7 @@ public class UserRetriever {
 
     @Transactional(readOnly = true)
     public void isExistUserBySocial(final SocialType socialType, final String socialId) {
-        if (!userRepository.existsBySocialTypeAndSocialId(socialType, socialId)) {
+        if (userRepository.existsBySocialTypeAndSocialId(socialType, socialId)) {
             throw new UserExistException();
         }
     }
