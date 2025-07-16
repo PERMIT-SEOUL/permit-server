@@ -4,6 +4,7 @@ import com.permitseoul.permitserver.domain.paymentcancel.core.domain.entity.Paym
 import com.permitseoul.permitserver.domain.paymentcancel.core.repository.PaymentCancelRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 public class PaymentCancelSaver {
     private final PaymentCancelRepository paymentCancelRepository;
 
+    @Transactional
     public void savePaymentCancel(final long paymentId,
                                   final BigDecimal cancelAmount,
                                   final String transactionKey,
