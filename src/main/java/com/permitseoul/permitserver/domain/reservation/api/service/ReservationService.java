@@ -28,6 +28,7 @@ import com.permitseoul.permitserver.domain.user.core.domain.User;
 import com.permitseoul.permitserver.domain.user.core.exception.UserNotFoundException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,9 +91,10 @@ public class ReservationService {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_TICKET_ROUND);
         } catch (TicketTypeInsufficientCountException e) {
             throw new InSufficientReservationException(ErrorCode.CONFLICT_INSUFFICIENT_TICKET);
+        } catch (IllegalStateException e) {
+            throw new ReservationBadRequestException(ErrorCode.BAD_REQUEST_TICKET_TYPE_DUPLICATED);
         }
 
-        //여기서 터지는 dataintegrationException은 글로벌 핸들러에서 잡고있음.
         final String sessionKey;
         try {
             sessionKey = reservationAndReservationTicketFacade.saveReservationWithTicketAndSessionKey(
@@ -104,6 +106,8 @@ public class ReservationService {
                     requestTicketTypeInfos
             );
             return sessionKey;
+        } catch (DataIntegrityViolationException e) {
+            throw e;
         } catch (Exception e) {
             increaseRedisTicketCount(requestedTicketTypeAndCountMap);
             throw new ReservationIllegalException(ErrorCode.INTERNAL_SESSION_ERROR);
@@ -127,7 +131,7 @@ public class ReservationService {
             );
 
             return requestTicketTypeInfoMap;
-        } catch (RedisInSufficientTicketException e) {
+        } catch (RedisInSufficientTicketException e) { //개수 부족하면 redis 롤백 처리
             requestTicketTypeInfoMap.forEach(
                     (requestTicketTypeId, count) -> {
                         final String redisKey = REDIS_TICKET_TYPE_KEY_NAME + requestTicketTypeId + REDIS_TICKET_TYPE_REMAIN;
@@ -137,6 +141,7 @@ public class ReservationService {
         }
     }
 
+    //session 저장 실패하면 redis 롤백처리
     private void increaseRedisTicketCount(final Map<Long, Integer> requestTicketTypeInfoMap) {
             requestTicketTypeInfoMap.forEach(
                     (requestTicketTypeId, count) -> {

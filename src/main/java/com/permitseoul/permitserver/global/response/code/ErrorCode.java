@@ -19,7 +19,7 @@ public enum ErrorCode implements ApiCode {
     BAD_REQUEST_NOT_READABLE(HttpStatus.BAD_REQUEST, 40005, "json 오류 혹은 reqeust body 필드 오류 입니다."),
     BAD_REQUEST_COUPON_TICKET_COUNT(HttpStatus.BAD_REQUEST, 40006, "쿠폰코드로는 하나의 티켓만 구매 가능합니다."),
     BAD_REQUEST_TICKET_SALES_EXPIRED(HttpStatus.BAD_REQUEST, 40007, "구매 날짜가 아닌 티켓입니다."),
-
+    BAD_REQUEST_TICKET_TYPE_DUPLICATED(HttpStatus.BAD_REQUEST, 40008, "같은 티켓타입 아이디 여러 개가 요청되었습니다."),
 
     /**
      * 401 Unauthorized
@@ -68,6 +68,7 @@ public enum ErrorCode implements ApiCode {
     INTEGRITY_CONFLICT(HttpStatus.CONFLICT, 40901, "데이터 무결성 위반입니다."),
     CONFLICT_INSUFFICIENT_TICKET(HttpStatus.CONFLICT, 40902, "구매하려는 티켓의 티켓 개수가 부족합니다."),
     CONFLICT_ALREADY_USED_COUPON_CODE(HttpStatus.CONFLICT, 40903, "이미 사용한 쿠폰코드입니다."),
+
 
     /**
      * 500 Internal Server Error
