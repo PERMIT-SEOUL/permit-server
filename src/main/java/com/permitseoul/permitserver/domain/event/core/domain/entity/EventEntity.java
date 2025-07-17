@@ -25,10 +25,10 @@ public class EventEntity extends BaseTimeEntity {
     private EventType eventType;
 
     @Column(name = "start_date", nullable = false)
-    private LocalDateTime startDate; //2025.11.20 15:40
+    private LocalDateTime startDate;
 
     @Column(name = "end_date", nullable = false)
-    private LocalDateTime endDate; //2025.11.20 15:40
+    private LocalDateTime endDate;
 
     @Column(name = "venue", nullable = false)
     private String venue;
@@ -42,8 +42,8 @@ public class EventEntity extends BaseTimeEntity {
     @Column(name = "min_age")
     private Integer minAge;
 
-    @Column(name = "is_active", nullable = false)
-    private boolean isActive;
+    @Column(name = "visible_end_date", nullable = false)
+    private LocalDateTime visibleEndDate;
 
     @Column(name = "ticket_check_code", length = 10, nullable = false)
     private String ticketCheckCode;
@@ -59,7 +59,7 @@ public class EventEntity extends BaseTimeEntity {
                         String lineUp,
                         String details,
                         Integer minAge,
-                        boolean isActive,
+                        LocalDateTime visibleEndDate,
                         String ticketCheckCode,
                         LocalDateTime visibleStartDate) {
         this.name = name;
@@ -70,7 +70,7 @@ public class EventEntity extends BaseTimeEntity {
         this.lineUp = lineUp;
         this.details = details;
         this.minAge = minAge;
-        this.isActive = isActive;
+        this.visibleEndDate = visibleEndDate;
         this.ticketCheckCode = ticketCheckCode;
         this.visibleStartDate = visibleStartDate;
     }

@@ -18,6 +18,8 @@ public enum ErrorCode implements ApiCode {
     BAD_REQUEST_METHOD_ARGUMENT_TYPE(HttpStatus.BAD_REQUEST, 40004, "메서드 인자타입이 잘못되었습니다."),
     BAD_REQUEST_NOT_READABLE(HttpStatus.BAD_REQUEST, 40005, "json 오류 혹은 reqeust body 필드 오류 입니다."),
     BAD_REQUEST_COUPON_TICKET_COUNT(HttpStatus.BAD_REQUEST, 40006, "쿠폰코드로는 하나의 티켓만 구매 가능합니다."),
+    BAD_REQUEST_TICKET_SALES_EXPIRED(HttpStatus.BAD_REQUEST, 40007, "구매 날짜가 아닌 티켓입니다."),
+
 
     /**
      * 401 Unauthorized
@@ -51,6 +53,8 @@ public enum ErrorCode implements ApiCode {
     NOT_FOUND_PAYMENT(HttpStatus.NOT_FOUND, 40408, "해당 payment 가 없습니다."),
     NOT_FOUND_TICKET(HttpStatus.NOT_FOUND, 40409, "해당 ticket 이 없습니다."),
     NOT_FOUND_COUPON_CODE(HttpStatus.NOT_FOUND, 40410, "해당 couponCode 가 없습니다."),
+    NOT_FOUND_TICKET_ROUND(HttpStatus.NOT_FOUND, 40411, "해당 티켓 차수(round)가 없습니다."),
+
 
     /**
      * 405 Method Not Allowed

@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.domain.ticketround.core.domain.entity;
 
+import com.permitseoul.permitserver.domain.ticketround.core.exception.TicketRoundExpiredException;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,19 +23,21 @@ public class TicketRoundEntity {
     private String ticketRoundTitle;
 
     @Column(name = "sales_start_date", nullable = false)
-    private LocalDateTime saleStartDate;
+    private LocalDateTime salesStartDate;
 
     @Column(name = "sales_end_date", nullable = false)
     private LocalDateTime salesEndDate;
 
-    @Column(name = "is_active", nullable = false)
-    private boolean isActive;
-
-    private TicketRoundEntity(long eventId, String ticketRoundTitle, LocalDateTime saleStartDate, LocalDateTime salesEndDate, boolean isActive) {
+    private TicketRoundEntity(long eventId, String ticketRoundTitle, LocalDateTime salesStartDate, LocalDateTime salesEndDate) {
         this.eventId = eventId;
         this.ticketRoundTitle = ticketRoundTitle;
-        this.saleStartDate = saleStartDate;
+        this.salesStartDate = salesStartDate;
         this.salesEndDate = salesEndDate;
-        this.isActive = isActive;
+    }
+
+    public void verifyTicketSalesAvailable(final LocalDateTime now) {
+        if (now.isBefore(this.salesStartDate) || now.isAfter(this.salesEndDate)) {
+            throw new TicketRoundExpiredException();
+        }
     }
 }

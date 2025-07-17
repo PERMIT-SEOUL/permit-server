@@ -5,6 +5,7 @@ import com.permitseoul.permitserver.domain.reservation.core.domain.entity.Reserv
 import com.permitseoul.permitserver.domain.reservation.core.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 

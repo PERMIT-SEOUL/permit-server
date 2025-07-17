@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.domain.tickettype.core.component;
 
+import com.permitseoul.permitserver.domain.tickettype.core.domain.TicketType;
 import com.permitseoul.permitserver.domain.tickettype.core.domain.entity.TicketTypeEntity;
 import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeNotfoundException;
 import com.permitseoul.permitserver.domain.tickettype.core.repository.TicketTypeRepository;
@@ -15,6 +16,12 @@ public class TicketTypeRetriever {
     @Transactional(readOnly = true)
     public TicketTypeEntity findTicketTypeEntityById(final long ticketTypeId) {
         return ticketTypeRepository.findById(ticketTypeId).orElseThrow(TicketTypeNotfoundException::new);
+    }
+
+    @Transactional(readOnly = true)
+    public TicketType findTicketTypeById(final long ticketTypeId) {
+        final TicketTypeEntity ticketType = ticketTypeRepository.findById(ticketTypeId).orElseThrow(TicketTypeNotfoundException::new);
+        return TicketType.fromEntity(ticketType);
     }
 
     @Transactional(readOnly = true)
