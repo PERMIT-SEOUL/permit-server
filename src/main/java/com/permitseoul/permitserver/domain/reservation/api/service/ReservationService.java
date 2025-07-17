@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.domain.reservation.api.service;
 
+import com.permitseoul.permitserver.domain.auth.core.jwt.CookieCreatorUtil;
 import com.permitseoul.permitserver.domain.coupon.core.component.CouponRetriever;
 import com.permitseoul.permitserver.domain.coupon.core.exception.CouponConflictException;
 import com.permitseoul.permitserver.domain.coupon.core.exception.CouponNotfoundException;
@@ -20,7 +21,6 @@ import com.permitseoul.permitserver.domain.ticketround.core.domain.entity.Ticket
 import com.permitseoul.permitserver.domain.ticketround.core.exception.TicketRoundExpiredException;
 import com.permitseoul.permitserver.domain.ticketround.core.exception.TicketRoundNotFoundException;
 import com.permitseoul.permitserver.domain.tickettype.core.component.TicketTypeRetriever;
-import com.permitseoul.permitserver.domain.tickettype.core.domain.TicketType;
 import com.permitseoul.permitserver.domain.tickettype.core.domain.entity.TicketTypeEntity;
 import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeInsufficientCountException;
 import com.permitseoul.permitserver.domain.user.core.component.UserRetriever;
@@ -68,7 +68,6 @@ public class ReservationService {
                                   final BigDecimal totalAmount,
                                   final String orderId,
                                   final List<ReservationInfoRequest.TicketTypeInfo> requestTicketTypeInfos) {
-
         try {
             validExistUserById(userId);
             validExistEventById(eventId);
@@ -76,20 +75,6 @@ public class ReservationService {
             if(couponCode != null) {
                 validateCouponCode(couponCode, requestTicketTypeInfos);
             }
-
-            //redis로 선점 예약 방식 (10분)
-            decreaseRedisTicketCount(requestTicketTypeInfos);
-
-            //여기서 터지는 dataintegrationException은 글로벌 핸들러에서 잡고있음.
-            final String savedReservationOrderId =  reservationAndReservationTicketFacade.saveReservationWithTicket(
-                    userId,
-                    eventId,
-                    orderId,
-                    totalAmount,
-                    couponCode,
-                    requestTicketTypeInfos
-            );
-            return savedReservationOrderId;
         } catch (EventNotfoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_EVENT);
         } catch (UserNotFoundException e) {
@@ -105,6 +90,26 @@ public class ReservationService {
         } catch (TicketTypeInsufficientCountException e) {
             throw new InSufficientReservationException(ErrorCode.CONFLICT_INSUFFICIENT_TICKET);
         }
+
+        //redis로 선점 예약 방식 (10분)
+        decreaseRedisTicketCount(requestTicketTypeInfos);
+
+        //여기서 터지는 dataintegrationException은 글로벌 핸들러에서 잡고있음.
+        final String sessionKey;
+        try {
+            sessionKey = reservationAndReservationTicketFacade.saveReservationWithTicketAndSessionKey(
+                    userId,
+                    eventId,
+                    orderId,
+                    totalAmount,
+                    couponCode,
+                    requestTicketTypeInfos
+            );
+            return sessionKey;
+        } catch (Exception e) {
+            increaseRedisTicketCount();
+        }
+
     }
 
     private void decreaseRedisTicketCount(final List<ReservationInfoRequest.TicketTypeInfo> requestTicketTypeInfos) {
