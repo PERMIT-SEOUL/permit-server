@@ -140,7 +140,7 @@ public class AuthService {
     }
 
     private void validDuplicatedUserBySocial(final SocialType socialType, final String socialId) {
-        userRetriever.validDuplicateUserBySocial(socialType, socialId);
+        userRetriever.validDuplicatedUserBySocial(socialType, socialId);
     }
 
     private Token GetJwtToken(final long userId) {

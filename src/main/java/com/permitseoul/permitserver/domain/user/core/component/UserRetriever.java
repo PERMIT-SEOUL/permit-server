@@ -21,7 +21,7 @@ public class UserRetriever {
     }
 
     @Transactional(readOnly = true)
-    public void validDuplicateUserBySocial(final SocialType socialType, final String socialId) {
+    public void validDuplicatedUserBySocial(final SocialType socialType, final String socialId) {
         if (userRepository.existsBySocialTypeAndSocialId(socialType, socialId)) {
             throw new UserDuplicateException();
         }

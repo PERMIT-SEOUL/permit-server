@@ -107,10 +107,37 @@ public class ReservationService {
             );
             return sessionKey;
         } catch (DataIntegrityViolationException e) {
+            increaseRedisTicketCount(requestedTicketTypeAndCountMap);
             throw e;
         } catch (Exception e) {
             increaseRedisTicketCount(requestedTicketTypeAndCountMap);
             throw new ReservationIllegalException(ErrorCode.INTERNAL_SESSION_ERROR);
+        }
+    }
+
+
+
+    @Transactional(readOnly = true)
+    public ReservationInfoResponse getReservationInfo(final long userId, final String orderId) {
+        try {
+            final User user = userRetriever.findUserById(userId);
+            final Reservation reservation = reservationRetriever.findReservationByOrderIdAndUserId(orderId, userId);
+            final Event event = eventRetriever.findEventById(reservation.getEventId());
+
+            return ReservationInfoResponse.of(
+                    event.getName(),
+                    reservation.getOrderId(),
+                    user.getName(),
+                    user.getEmail(),
+                    reservation.getTotalAmount(),
+                    user.getSocialId()
+            );
+        } catch (EventNotfoundException e) {
+            throw new NotfoundReservationException(ErrorCode.NOT_FOUND_EVENT);
+        } catch (UserNotFoundException e) {
+            throw new NotfoundReservationException(ErrorCode.NOT_FOUND_USER);
+        } catch (ReservationNotFoundException e) {
+            throw new NotfoundReservationException(ErrorCode.NOT_FOUND_RESERVATION);
         }
     }
 
@@ -143,36 +170,12 @@ public class ReservationService {
 
     //session 저장 실패하면 redis 롤백처리
     private void increaseRedisTicketCount(final Map<Long, Integer> requestTicketTypeInfoMap) {
-            requestTicketTypeInfoMap.forEach(
-                    (requestTicketTypeId, count) -> {
-                        final String redisKey = REDIS_TICKET_TYPE_KEY_NAME + requestTicketTypeId + REDIS_TICKET_TYPE_REMAIN;
-                        redisTemplate.opsForValue().increment(redisKey, count);
-                    }
-            );
-    }
-
-    @Transactional(readOnly = true)
-    public ReservationInfoResponse getReservationInfo(final long userId, final String orderId) {
-        try {
-            final User user = userRetriever.findUserById(userId);
-            final Reservation reservation = reservationRetriever.findReservationByOrderIdAndUserId(orderId, userId);
-            final Event event = eventRetriever.findEventById(reservation.getEventId());
-
-            return ReservationInfoResponse.of(
-                    event.getName(),
-                    reservation.getOrderId(),
-                    user.getName(),
-                    user.getEmail(),
-                    reservation.getTotalAmount(),
-                    user.getSocialId()
-            );
-        } catch (EventNotfoundException e) {
-            throw new NotfoundReservationException(ErrorCode.NOT_FOUND_EVENT);
-        } catch (UserNotFoundException e) {
-            throw new NotfoundReservationException(ErrorCode.NOT_FOUND_USER);
-        } catch (ReservationNotFoundException e) {
-            throw new NotfoundReservationException(ErrorCode.NOT_FOUND_RESERVATION);
-        }
+        requestTicketTypeInfoMap.forEach(
+                (requestTicketTypeId, count) -> {
+                    final String redisKey = REDIS_TICKET_TYPE_KEY_NAME + requestTicketTypeId + REDIS_TICKET_TYPE_REMAIN;
+                    redisTemplate.opsForValue().increment(redisKey, count);
+                }
+        );
     }
 
     private void validExistUserById(final long userId) {
@@ -207,4 +210,5 @@ public class ReservationService {
             throw new ReservationBadRequestException(ErrorCode.BAD_REQUEST_COUPON_TICKET_COUNT);
         }
     }
+
 }
