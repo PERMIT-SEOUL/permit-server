@@ -10,6 +10,7 @@ import com.permitseoul.permitserver.domain.reservation.api.dto.ReservationInfoRe
 import com.permitseoul.permitserver.domain.reservation.api.dto.ReservationInfoResponse;
 import com.permitseoul.permitserver.domain.reservation.api.exception.ConflictReservationException;
 import com.permitseoul.permitserver.domain.reservation.api.exception.NotfoundReservationException;
+import com.permitseoul.permitserver.domain.reservation.api.exception.ReservationBadRequestException;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationRetriever;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationSaver;
 import com.permitseoul.permitserver.domain.reservation.core.domain.Reservation;
@@ -46,12 +47,18 @@ public class ReservationService {
                                   final BigDecimal totalAmount,
                                   final String orderId,
                                   final List<ReservationInfoRequest.TicketTypeInfo> ticketTypeInfos) {
+        // request 값들 검증
+        // redis로 ticketTypeInfos에 있는 티켓 타입의 개수만큼 redis 재고에 있는지 확인 -> 있으면 redis 재고 티켓타입 id별로 티켓 count만큼 descBy 사용해서 재고 감소시킴
+        // 그런 후에 예약테이블 및 예약티켓 생성
+
+        
+
         try {
-            isExistUser(userId);
-            isExistEvent(eventId);
-            isExistTicketType(ticketTypeInfos);
+            validExistUserById(userId);
+            validExistEventById(eventId);
+            validExistTicketType(ticketTypeInfos);
             if(couponCode != null) {
-                isUsableCouponCode(couponCode);
+                validateCouponCode(couponCode, ticketTypeInfos);
             }
 
             //여기서 터지는 dataintegrationException은 글로벌 핸들러에서 잡고있음.
@@ -95,22 +102,26 @@ public class ReservationService {
         }
     }
 
-    private void isExistUser(final long userId) {
-        userRetriever.isExistUserByUserId(userId);
+    private void validExistUserById(final long userId) {
+        userRetriever.validExistUserById(userId);
     }
 
-    private void isExistEvent(final long eventId) {
-        eventRetriever.isExistByEventId(eventId);
+    private void validExistEventById(final long eventId) {
+        eventRetriever.validExistEventById(eventId);
     }
 
-    private void isExistTicketType(final List<ReservationInfoRequest.TicketTypeInfo> ticketTypeInfos) {
+    private void validExistTicketType(final List<ReservationInfoRequest.TicketTypeInfo> ticketTypeInfos) {
         ticketTypeInfos.forEach(
-                ticketType -> ticketTypeRetriever.isExistByTicketTypeId(ticketType.id())
+                ticketType -> ticketTypeRetriever.validExistTicketType(ticketType.id())
         );
     }
 
-    private void isUsableCouponCode(final String couponCode) {
+    private void validateCouponCode(final String couponCode, final List<ReservationInfoRequest.TicketTypeInfo> ticketTypeInfos) {
         couponRetriever.isExistCoupon(couponCode);
         couponRetriever.isCouponValid(couponCode);
+        //쿠폰코드쓰면 티켓 구매 1개만 가능함
+        if (ticketTypeInfos == null || ticketTypeInfos.size() != 1 || ticketTypeInfos.get(0).count() != 1) {
+            throw new ReservationBadRequestException(ErrorCode.BAD_REQUEST_COUPON_TICKET_COUNT);
+        }
     }
 }

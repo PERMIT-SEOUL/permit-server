@@ -18,7 +18,7 @@ public class TicketTypeRetriever {
     }
 
     @Transactional(readOnly = true)
-    public void isExistByTicketTypeId(final long ticketTypeId) {
+    public void validExistTicketType(final long ticketTypeId) {
         if(!ticketTypeRepository.existsById(ticketTypeId)) {
             throw new TicketTypeNotfoundException();
         }

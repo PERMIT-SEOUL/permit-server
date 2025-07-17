@@ -1,9 +1,9 @@
 package com.permitseoul.permitserver.domain.user.core.component;
 
+import com.permitseoul.permitserver.domain.user.core.exception.UserDuplicateException;
 import com.permitseoul.permitserver.domain.user.core.domain.SocialType;
 import com.permitseoul.permitserver.domain.user.core.domain.User;
 import com.permitseoul.permitserver.domain.user.core.domain.entity.UserEntity;
-import com.permitseoul.permitserver.domain.user.core.exception.UserExistException;
 import com.permitseoul.permitserver.domain.user.core.exception.UserNotFoundException;
 import com.permitseoul.permitserver.domain.user.core.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,16 +21,16 @@ public class UserRetriever {
     }
 
     @Transactional(readOnly = true)
-    public void isExistUserBySocial(final SocialType socialType, final String socialId) {
+    public void validDuplicateUserBySocial(final SocialType socialType, final String socialId) {
         if (userRepository.existsBySocialTypeAndSocialId(socialType, socialId)) {
-            throw new UserExistException();
+            throw new UserDuplicateException();
         }
     }
 
     @Transactional(readOnly = true)
-    public void isExistUserByUserId(final long userId) {
+    public void validExistUserById(final long userId) {
         if (!userRepository.existsById(userId)) {
-            throw new UserExistException();
+            throw new UserNotFoundException();
         }
     }
 

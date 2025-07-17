@@ -22,7 +22,7 @@ public class EventRetriever {
     }
 
     @Transactional(readOnly = true)
-    public void isExistByEventId(final long eventId) {
+    public void validExistEventById(final long eventId) {
         if(!eventRepository.existsById(eventId)) {
             throw new EventNotfoundException();
         }
