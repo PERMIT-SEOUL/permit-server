@@ -59,9 +59,9 @@ class ReservationServiceTest {
             List<ReservationInfoRequest.TicketTypeInfo> ticketTypeInfos = List.of(
                     new ReservationInfoRequest.TicketTypeInfo(10L, 2)
             );
-            willDoNothing().given(userRetriever).isExistUserByUserId(userId);
-            willDoNothing().given(eventRetriever).isExistByEventId(eventId);
-            willDoNothing().given(ticketTypeRetriever).isExistByTicketTypeId(10L);
+            willDoNothing().given(userRetriever).validExistUserById(userId);
+            willDoNothing().given(eventRetriever).validExistEventById(eventId);
+            willDoNothing().given(ticketTypeRetriever).validExistTicketType(10L);
             willDoNothing().given(couponRetriever).isExistCoupon(couponCode);
             willDoNothing().given(couponRetriever).isCouponValid(couponCode);
             Reservation reservation = mock(Reservation.class);
@@ -73,21 +73,21 @@ class ReservationServiceTest {
         @Test
         @DisplayName("이벤트 없음 예외")
         void eventNotFound() {
-            willThrow(EventNotfoundException.class).given(eventRetriever).isExistByEventId(anyLong());
+            willThrow(EventNotfoundException.class).given(eventRetriever).validExistEventById(anyLong());
             assertThatThrownBy(() -> reservationService.saveReservation(1L, 2L, null, BigDecimal.TEN, "ORDER", List.of())).isInstanceOf(NotfoundReservationException.class);
         }
         @Test
         @DisplayName("유저 없음 예외")
         void userNotFound() {
-            willThrow(UserNotFoundException.class).given(userRetriever).isExistUserByUserId(anyLong());
+            willThrow(UserNotFoundException.class).given(userRetriever).validExistUserById(anyLong());
             assertThatThrownBy(() -> reservationService.saveReservation(1L, 2L, null, BigDecimal.TEN, "ORDER", List.of())).isInstanceOf(NotfoundReservationException.class);
         }
         @Test
         @DisplayName("쿠폰 없음 예외")
         void couponNotFound() {
-            willDoNothing().given(userRetriever).isExistUserByUserId(anyLong());
-            willDoNothing().given(eventRetriever).isExistByEventId(anyLong());
-            willDoNothing().given(ticketTypeRetriever).isExistByTicketTypeId(anyLong());
+            willDoNothing().given(userRetriever).validExistUserById(anyLong());
+            willDoNothing().given(eventRetriever).validExistEventById(anyLong());
+            willDoNothing().given(ticketTypeRetriever).validExistTicketType(anyLong());
             willThrow(CouponNotfoundException.class).given(couponRetriever).isExistCoupon(anyString());
             assertThatThrownBy(() -> reservationService.saveReservation(1L, 2L, "COUPON", BigDecimal.TEN, "ORDER", List.of(new ReservationInfoRequest.TicketTypeInfo(10L, 1))))
                     .isInstanceOf(NotfoundReservationException.class);
@@ -95,9 +95,9 @@ class ReservationServiceTest {
         @Test
         @DisplayName("쿠폰 중복 사용 예외")
         void couponConflict() {
-            willDoNothing().given(userRetriever).isExistUserByUserId(anyLong());
-            willDoNothing().given(eventRetriever).isExistByEventId(anyLong());
-            willDoNothing().given(ticketTypeRetriever).isExistByTicketTypeId(anyLong());
+            willDoNothing().given(userRetriever).validExistUserById(anyLong());
+            willDoNothing().given(eventRetriever).validExistEventById(anyLong());
+            willDoNothing().given(ticketTypeRetriever).validExistTicketType(anyLong());
             willDoNothing().given(couponRetriever).isExistCoupon(anyString());
             willThrow(CouponConflictException.class).given(couponRetriever).isCouponValid(anyString());
             assertThatThrownBy(() -> reservationService.saveReservation(1L, 2L, "COUPON", BigDecimal.TEN, "ORDER", List.of(new ReservationInfoRequest.TicketTypeInfo(10L, 1))))

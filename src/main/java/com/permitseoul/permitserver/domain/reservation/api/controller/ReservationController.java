@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.domain.reservation.api.controller;
 
+import com.permitseoul.permitserver.domain.auth.core.jwt.CookieCreatorUtil;
 import com.permitseoul.permitserver.domain.reservation.api.dto.ReservationInfoRequest;
 import com.permitseoul.permitserver.domain.reservation.api.dto.*;
 import com.permitseoul.permitserver.domain.reservation.api.service.ReservationService;
@@ -7,8 +8,10 @@ import com.permitseoul.permitserver.global.resolver.user.UserId;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.SuccessCode;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,9 +25,10 @@ public class ReservationController {
     @PostMapping("/ready")
     public ResponseEntity<BaseResponse<?>> saveReservation(
             @UserId final Long userId,
-            @RequestBody @Valid final ReservationInfoRequest reservationInfoRequest
+            @RequestBody @Valid final ReservationInfoRequest reservationInfoRequest,
+            final HttpServletResponse response
     ) {
-        final String orderId = reservationService.saveReservation(
+        final String sessionKey = reservationService.saveReservation(
                 userId,
                 reservationInfoRequest.eventId(),
                 reservationInfoRequest.couponCode(),
@@ -32,7 +36,9 @@ public class ReservationController {
                 reservationInfoRequest.orderId(),
                 reservationInfoRequest.ticketTypeInfos()
         );
-        return ApiResponseUtil.success(SuccessCode.OK, orderId);
+        final ResponseCookie reservationSessionCookie = CookieCreatorUtil.createReservationSessionCookie(sessionKey);
+        response.setHeader("Set-Cookie", reservationSessionCookie.toString());
+        return ApiResponseUtil.success(SuccessCode.OK);
     }
 
     //예약 조회 api

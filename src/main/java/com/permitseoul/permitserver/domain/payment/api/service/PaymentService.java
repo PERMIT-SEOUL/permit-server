@@ -13,7 +13,6 @@ import com.permitseoul.permitserver.domain.payment.api.dto.TossConfirmErrorRespo
 import com.permitseoul.permitserver.domain.payment.core.component.PaymentRetriever;
 import com.permitseoul.permitserver.domain.payment.core.component.PaymentSaver;
 import com.permitseoul.permitserver.domain.payment.core.domain.Currency;
-import com.permitseoul.permitserver.domain.payment.core.domain.Payment;
 import com.permitseoul.permitserver.domain.payment.core.domain.entity.PaymentEntity;
 import com.permitseoul.permitserver.domain.payment.core.exception.PaymentNotFoundException;
 import com.permitseoul.permitserver.domain.paymentcancel.core.component.PaymentCancelSaver;
@@ -23,7 +22,6 @@ import com.permitseoul.permitserver.domain.payment.api.dto.PaymentConfirmRespons
 import com.permitseoul.permitserver.domain.reservation.api.exception.*;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationRetriever;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationUpdater;
-import com.permitseoul.permitserver.domain.reservation.core.domain.Reservation;
 import com.permitseoul.permitserver.domain.reservation.core.domain.ReservationStatus;
 import com.permitseoul.permitserver.domain.reservation.core.domain.entity.ReservationEntity;
 import com.permitseoul.permitserver.domain.reservation.core.exception.ReservationNotFoundException;
@@ -175,7 +173,7 @@ public class PaymentService {
 
             updateTicketStatus(ticketEntity, TicketStatus.CANCELED);
             updateReservationStatus(reservationEntity, ReservationStatus.PAYMENT_CANCELED);
-            increaseTicketTypeCount(reservationTicketList);
+            increaseRedisTicketTypeCount(reservationTicketList);
 
             final PaymentCancelResponse.CancelDetail latestCancelPayment = DateFormatterUtil.getLatestCancelPaymentByDate(paymentCancelResponse.cancels()).orElseThrow(
                     () -> new DateFormatException(ErrorCode.INTERNAL_ISO_DATE_ERROR)
@@ -196,7 +194,7 @@ public class PaymentService {
         }
     }
 
-    private void increaseTicketTypeCount(final List<ReservationTicket> reservationTicketList) {
+    private void increaseRedisTicketTypeCount(final List<ReservationTicket> reservationTicketList) {
         reservationTicketList.forEach(
                 reservationTicket -> {
                     final TicketTypeEntity ticketTypeEntity = ticketTypeRetriever.findTicketTypeEntityById(reservationTicket.getTicketTypeId());

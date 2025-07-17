@@ -6,6 +6,7 @@ import com.permitseoul.permitserver.domain.auth.api.exception.AuthUnAuthorizedFe
 import com.permitseoul.permitserver.domain.auth.core.domain.Token;
 import com.permitseoul.permitserver.domain.auth.api.dto.TokenDto;
 import com.permitseoul.permitserver.domain.auth.core.dto.UserSocialInfoDto;
+import com.permitseoul.permitserver.domain.user.core.exception.UserDuplicateException;
 import com.permitseoul.permitserver.domain.auth.core.exception.AuthFeignException;
 import com.permitseoul.permitserver.domain.auth.core.exception.AuthRTCacheException;
 import com.permitseoul.permitserver.domain.auth.core.exception.AuthWrongJwtException;
@@ -20,7 +21,6 @@ import com.permitseoul.permitserver.domain.user.core.domain.Gender;
 import com.permitseoul.permitserver.domain.user.core.domain.SocialType;
 import com.permitseoul.permitserver.domain.user.core.domain.UserRole;
 import com.permitseoul.permitserver.domain.user.core.domain.entity.UserEntity;
-import com.permitseoul.permitserver.domain.user.core.exception.UserExistException;
 import com.permitseoul.permitserver.domain.user.core.exception.UserNotFoundException;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
@@ -48,13 +48,13 @@ public class AuthService {
                            final String socialAccessToken) {
         try {
             final String userSocialId = getUserSocialId(socialType, socialAccessToken);
-            isUserExist(socialType, userSocialId);
+            validDuplicatedUserBySocial(socialType, userSocialId);
             final UserEntity newUserEntity = createUser(userName, userAge, userGender, userEmail, userSocialId, socialType);
             final Token newToken = GetJwtToken(newUserEntity.getUserId());
             return TokenDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
         } catch (AuthFeignException e) {
             throw new AuthUnAuthorizedFeignException(ErrorCode.UNAUTHORIZED_FEIGN, e.getMessage());
-        } catch (UserExistException e ) {
+        } catch (UserDuplicateException e ) {
             throw new AuthUnAuthorizedException(ErrorCode.CONFLICT);
         }
     }
@@ -139,8 +139,8 @@ public class AuthService {
         return userRetriever.getUserIdBySocialInfo(socialType, socialId);
     }
 
-    private void isUserExist(final SocialType socialType, final String socialId) {
-        userRetriever.isExistUserBySocial(socialType, socialId);
+    private void validDuplicatedUserBySocial(final SocialType socialType, final String socialId) {
+        userRetriever.validDuplicatedUserBySocial(socialType, socialId);
     }
 
     private Token GetJwtToken(final long userId) {
