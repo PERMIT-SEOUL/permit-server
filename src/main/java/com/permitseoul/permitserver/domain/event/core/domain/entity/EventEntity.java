@@ -45,7 +45,7 @@ public class EventEntity extends BaseTimeEntity {
     @Column(name = "visible_end_date", nullable = false)
     private LocalDateTime visibleEndDate;
 
-    @Column(name = "ticket_check_code", length = 10, nullable = false)
+    @Column(name = "ticket_check_code", length = 30, nullable = false)
     private String ticketCheckCode;
 
     @Column(name = "visible_start_date")

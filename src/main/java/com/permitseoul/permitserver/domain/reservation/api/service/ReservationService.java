@@ -43,8 +43,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ReservationService {
 
-    private final ReservationSaver reservationSaver;
-    private final ReservationTicketSaver reservationTicketSaver;
     private final EventRetriever eventRetriever;
     private final UserRetriever userRetriever;
     private final TicketTypeRetriever ticketTypeRetriever;
@@ -56,25 +54,28 @@ public class ReservationService {
 
     private static final String REDIS_TICKET_TYPE_KEY_NAME = "ticket_type:";
     private static final String REDIS_TICKET_TYPE_REMAIN = ":remain";
+    private static final int COUPON_CAN_BUY_TICKET_MAX_ = 1;
 
 
-
-    // request 값들 검증
-    // redis로 ticketTypeInfos에 있는 티켓 타입의 개수만큼 redis 재고에 있는지 확인 -> 있으면 redis 재고 티켓타입 id별로 티켓 count만큼 descBy 사용해서 재고 감소시킴
-    // 그런 후에 예약테이블 및 예약티켓 생성
     public String saveReservation(final long userId,
                                   final long eventId,
                                   final String couponCode,
                                   final BigDecimal totalAmount,
                                   final String orderId,
                                   final List<ReservationInfoRequest.TicketTypeInfo> requestTicketTypeInfos) {
+        final Map<Long, Integer> requestedTicketTypeAndCountMap;
         try {
             validExistUserById(userId);
             validExistEventById(eventId);
             validUsableTicketType(requestTicketTypeInfos);
+
             if(couponCode != null) {
                 validateCouponCode(couponCode, requestTicketTypeInfos);
             }
+
+            //redis로 선점 예약 방식 (10분)
+            requestedTicketTypeAndCountMap = decreaseRedisTicketCount(requestTicketTypeInfos);
+
         } catch (EventNotfoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_EVENT);
         } catch (UserNotFoundException e) {
@@ -91,9 +92,6 @@ public class ReservationService {
             throw new InSufficientReservationException(ErrorCode.CONFLICT_INSUFFICIENT_TICKET);
         }
 
-        //redis로 선점 예약 방식 (10분)
-        decreaseRedisTicketCount(requestTicketTypeInfos);
-
         //여기서 터지는 dataintegrationException은 글로벌 핸들러에서 잡고있음.
         final String sessionKey;
         try {
@@ -107,31 +105,45 @@ public class ReservationService {
             );
             return sessionKey;
         } catch (Exception e) {
-            increaseRedisTicketCount();
+            increaseRedisTicketCount(requestedTicketTypeAndCountMap);
+            throw new ReservationIllegalException(ErrorCode.INTERNAL_SESSION_ERROR);
         }
-
     }
 
-    private void decreaseRedisTicketCount(final List<ReservationInfoRequest.TicketTypeInfo> requestTicketTypeInfos) {
-        final Map<Long, Integer> decrementedStock = new HashMap<>();
+    private Map<Long, Integer> decreaseRedisTicketCount(final List<ReservationInfoRequest.TicketTypeInfo> requestTicketTypeInfos) {
+        final Map<Long, Integer> requestTicketTypeInfoMap = new HashMap<>();
         try {
-            for (ReservationInfoRequest.TicketTypeInfo requestTicketType : requestTicketTypeInfos) {
-                final String redisKey = REDIS_TICKET_TYPE_KEY_NAME + requestTicketType.id() + REDIS_TICKET_TYPE_REMAIN;
-                final Long remain = redisTemplate.opsForValue().decrement(redisKey, requestTicketType.count());
-                if (remain == null || remain < 0) {
-                    decrementedStock.put(requestTicketType.id(), requestTicketType.count());
-                    throw new RedisInSufficientTicketException();
-                }
+            requestTicketTypeInfos.forEach(
+                    ticketTypeInfo -> {
+                        final String redisKey = REDIS_TICKET_TYPE_KEY_NAME + ticketTypeInfo.id() + REDIS_TICKET_TYPE_REMAIN;
+                        final Long remain = redisTemplate.opsForValue().decrement(redisKey, ticketTypeInfo.count());
 
+                        requestTicketTypeInfoMap.put(ticketTypeInfo.id(), ticketTypeInfo.count());
 
-            }
+                        if (remain == null || remain < 0) {
+                            throw new RedisInSufficientTicketException();
+                        }
+                    }
+            );
+
+            return requestTicketTypeInfoMap;
         } catch (RedisInSufficientTicketException e) {
-            decrementedStock.forEach((requestTicketTypeId, count) -> {
-                final String redisKey = REDIS_TICKET_TYPE_KEY_NAME + requestTicketTypeId + REDIS_TICKET_TYPE_REMAIN;
-                redisTemplate.opsForValue().increment(redisKey, count);
-            });
+            requestTicketTypeInfoMap.forEach(
+                    (requestTicketTypeId, count) -> {
+                        final String redisKey = REDIS_TICKET_TYPE_KEY_NAME + requestTicketTypeId + REDIS_TICKET_TYPE_REMAIN;
+                        redisTemplate.opsForValue().increment(redisKey, count);
+                    });
             throw new TicketTypeInsufficientCountException();
         }
+    }
+
+    private void increaseRedisTicketCount(final Map<Long, Integer> requestTicketTypeInfoMap) {
+            requestTicketTypeInfoMap.forEach(
+                    (requestTicketTypeId, count) -> {
+                        final String redisKey = REDIS_TICKET_TYPE_KEY_NAME + requestTicketTypeId + REDIS_TICKET_TYPE_REMAIN;
+                        redisTemplate.opsForValue().increment(redisKey, count);
+                    }
+            );
     }
 
     @Transactional(readOnly = true)
@@ -186,7 +198,7 @@ public class ReservationService {
         couponRetriever.isExistCoupon(couponCode);
         couponRetriever.isCouponValid(couponCode);
         //쿠폰코드쓰면 티켓 구매 1개만 가능함
-        if (ticketTypeInfos == null || ticketTypeInfos.size() != 1 || ticketTypeInfos.get(0).count() != 1) {
+        if (ticketTypeInfos == null || ticketTypeInfos.size() != COUPON_CAN_BUY_TICKET_MAX_ || ticketTypeInfos.get(0).count() != COUPON_CAN_BUY_TICKET_MAX_) {
             throw new ReservationBadRequestException(ErrorCode.BAD_REQUEST_COUPON_TICKET_COUNT);
         }
     }
