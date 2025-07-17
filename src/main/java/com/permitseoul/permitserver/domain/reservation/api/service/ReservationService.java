@@ -159,11 +159,7 @@ public class ReservationService {
 
             return requestTicketTypeInfoMap;
         } catch (RedisInSufficientTicketException e) { //개수 부족하면 redis 롤백 처리
-            requestTicketTypeInfoMap.forEach(
-                    (requestTicketTypeId, count) -> {
-                        final String redisKey = REDIS_TICKET_TYPE_KEY_NAME + requestTicketTypeId + REDIS_TICKET_TYPE_REMAIN;
-                        redisTemplate.opsForValue().increment(redisKey, count);
-                    });
+            increaseRedisTicketCount(requestTicketTypeInfoMap);
             throw new TicketTypeInsufficientCountException();
         }
     }
