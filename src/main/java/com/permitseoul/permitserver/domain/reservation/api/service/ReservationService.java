@@ -1,6 +1,5 @@
 package com.permitseoul.permitserver.domain.reservation.api.service;
 
-import com.permitseoul.permitserver.domain.auth.core.jwt.CookieCreatorUtil;
 import com.permitseoul.permitserver.domain.coupon.core.component.CouponRetriever;
 import com.permitseoul.permitserver.domain.coupon.core.exception.CouponConflictException;
 import com.permitseoul.permitserver.domain.coupon.core.exception.CouponNotfoundException;
@@ -12,10 +11,10 @@ import com.permitseoul.permitserver.domain.reservation.api.dto.ReservationInfoRe
 import com.permitseoul.permitserver.domain.reservation.api.exception.*;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationAndReservationTicketFacade;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationRetriever;
-import com.permitseoul.permitserver.domain.reservation.core.component.ReservationSaver;
 import com.permitseoul.permitserver.domain.reservation.core.domain.Reservation;
 import com.permitseoul.permitserver.domain.reservation.core.exception.ReservationNotFoundException;
-import com.permitseoul.permitserver.domain.reservationticket.core.component.ReservationTicketSaver;
+import com.permitseoul.permitserver.domain.reservationsession.core.component.ReservationSessionRetriever;
+import com.permitseoul.permitserver.domain.reservationsession.core.domain.ReservationSession;
 import com.permitseoul.permitserver.domain.ticketround.core.component.TicketRoundRetriever;
 import com.permitseoul.permitserver.domain.ticketround.core.domain.entity.TicketRoundEntity;
 import com.permitseoul.permitserver.domain.ticketround.core.exception.TicketRoundExpiredException;
@@ -52,6 +51,7 @@ public class ReservationService {
     private final TicketRoundRetriever ticketRoundRetriever;
     private final RedisTemplate<String, String> redisTemplate;
     private final ReservationAndReservationTicketFacade reservationAndReservationTicketFacade;
+    private final ReservationSessionRetriever reservationSessionRetriever;
 
     private static final String REDIS_TICKET_TYPE_KEY_NAME = "ticket_type:";
     private static final String REDIS_TICKET_TYPE_REMAIN = ":remain";
@@ -115,22 +115,17 @@ public class ReservationService {
         }
     }
 
-    private void validateSessionKey(final String sessionKey) {
-        //일단 있는지 + 10분 안지났는지 + 성공안했는지
+    private String getOrderIdWithValidateSessionKey(final long userId, final String sessionKey) {
+        final LocalDateTime now = LocalDateTime.now();
+        final ReservationSession reservationSession = reservationSessionRetriever.getValidatedReservationSession(userId, sessionKey, now);
+        return reservationSession.getOrderId();
     }
 
 
     @Transactional(readOnly = true)
     public ReservationInfoResponse getReservationInfo(final long userId, final String sessionKey) {
-
-        validateSessionKey(sessionKey)
-
-
-
-
-
-
         try {
+            final String orderId = getOrderIdWithValidateSessionKey(userId,sessionKey);
             final User user = userRetriever.findUserById(userId);
             final Reservation reservation = reservationRetriever.findReservationByOrderIdAndUserId(orderId, userId);
             final Event event = eventRetriever.findEventById(reservation.getEventId());

@@ -26,10 +26,14 @@ public class ReservationSessionEntity extends BaseTimeEntity {
     @Column(name = "session_key", nullable = false)
     private String sessionKey;
 
+    @Column(name = "successful", nullable = false)
+    private boolean successful;
+
     private ReservationSessionEntity(long userId, String orderId, String sessionKey) {
         this.userId = userId;
         this.orderId = orderId;
         this.sessionKey = sessionKey;
+        this.successful = false;
     }
 
     public static ReservationSessionEntity create(long userId, String orderId, String sessionKey) {
