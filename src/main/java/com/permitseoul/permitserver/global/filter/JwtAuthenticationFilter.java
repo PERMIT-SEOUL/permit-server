@@ -5,6 +5,7 @@ import com.permitseoul.permitserver.domain.auth.core.exception.AuthExpiredJwtExc
 import com.permitseoul.permitserver.domain.auth.core.exception.AuthWrongJwtException;
 import com.permitseoul.permitserver.domain.auth.core.jwt.CookieExtractor;
 import com.permitseoul.permitserver.domain.auth.core.jwt.JwtProvider;
+import com.permitseoul.permitserver.global.domain.CookieType;
 import com.permitseoul.permitserver.global.exception.FilterException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import jakarta.servlet.FilterChain;
@@ -46,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void setAuthentication(final HttpServletRequest request) {
-        final String token = CookieExtractor.getTokenCookie(request).getValue(); ///accessToken 쿠키 뽑음
+        final String token = CookieExtractor.extractCookie(request, CookieType.ACCESS_TOKEN).getValue(); ///accessToken 쿠키 뽑음
         final long userId = jwtProvider.extractUserIdFromToken(token);
         final String userRole = jwtProvider.extractUserRoleFromToken(token);
         final List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(userRole));

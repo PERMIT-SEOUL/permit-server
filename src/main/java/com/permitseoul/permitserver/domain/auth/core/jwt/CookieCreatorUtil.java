@@ -10,10 +10,9 @@ public class CookieCreatorUtil {
     private static final long AT_MAX_AGE = 365L * 24 * 60 * 60 * 1000; // todo: 추후 변경
     private static final long RT_MAX_AGE = 369L * 24 * 60 * 60 * 1000; // todo: 추후 변경
     private static final long RESERVED_MAX_AGE = 10L * 60; // 10분(10분간 선점 가능)
-    private static final String SESSION_NAME = "sessionKey";
 
     public static ResponseCookie createReservationSessionCookie(final String sessionKey) {
-        return ResponseCookie.from(SESSION_NAME, sessionKey)
+        return ResponseCookie.from(Constants.RESERVATION_SESSION_KEY, sessionKey)
                 .maxAge(RESERVED_MAX_AGE)
                 .path("/")
                 .httpOnly(true)

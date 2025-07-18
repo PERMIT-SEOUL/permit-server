@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reservations")
@@ -37,6 +38,9 @@ public class ReservationEntity extends BaseTimeEntity {
     @Column(nullable = false)
     private ReservationStatus status;
 
+    @Column(name = "toss_payment_receive_time")
+    private LocalDateTime tossPaymentReceiveTime;
+
     private ReservationEntity(long userId, long eventId, String orderId, BigDecimal totalAmount, String couponCode) {
         this.userId = userId;
         this.eventId = eventId;
@@ -44,6 +48,7 @@ public class ReservationEntity extends BaseTimeEntity {
         this.totalAmount = totalAmount;
         this.couponCode = couponCode;
         this.status = ReservationStatus.RESERVED;
+        this.tossPaymentReceiveTime = null;
     }
 
     public static ReservationEntity create(final long userId,
@@ -60,6 +65,10 @@ public class ReservationEntity extends BaseTimeEntity {
             throw new IllegalEnumTransitionException();
         }
         this.status = status;
+    }
+
+    public void updateTossPaymentReceiveTime(final LocalDateTime tossPaymentReceiveTime) {
+        this.tossPaymentReceiveTime = tossPaymentReceiveTime;
     }
 }
 

@@ -115,10 +115,21 @@ public class ReservationService {
         }
     }
 
+    private void validateSessionKey(final String sessionKey) {
+        //일단 있는지 + 10분 안지났는지 + 성공안했는지
+    }
 
 
     @Transactional(readOnly = true)
-    public ReservationInfoResponse getReservationInfo(final long userId, final String orderId) {
+    public ReservationInfoResponse getReservationInfo(final long userId, final String sessionKey) {
+
+        validateSessionKey(sessionKey)
+
+
+
+
+
+
         try {
             final User user = userRetriever.findUserById(userId);
             final Reservation reservation = reservationRetriever.findReservationByOrderIdAndUserId(orderId, userId);
