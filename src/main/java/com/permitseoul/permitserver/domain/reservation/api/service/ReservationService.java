@@ -68,7 +68,7 @@ public class ReservationService {
         try {
             validExistUserById(userId);
             validExistEventById(eventId);
-            validUsableTicketType(requestTicketTypeInfos);
+            validUsableTicketType(requestTicketTypeInfos, eventId);
 
             if(couponCode != null) {
                 validateCouponCode(couponCode, requestTicketTypeInfos);
@@ -115,13 +115,6 @@ public class ReservationService {
         }
     }
 
-    private String getOrderIdWithValidateSessionKey(final long userId, final String sessionKey) {
-        final LocalDateTime now = LocalDateTime.now();
-        final ReservationSession reservationSession = reservationSessionRetriever.getValidatedReservationSession(userId, sessionKey, now);
-        return reservationSession.getOrderId();
-    }
-
-
     @Transactional(readOnly = true)
     public ReservationInfoResponse getReservationInfo(final long userId, final String sessionKey) {
         try {
@@ -147,6 +140,14 @@ public class ReservationService {
         }
     }
 
+
+    private String getOrderIdWithValidateSessionKey(final long userId, final String sessionKey) {
+        final LocalDateTime now = LocalDateTime.now();
+        final ReservationSession reservationSession = reservationSessionRetriever.getValidatedReservationSession(userId, sessionKey, now);
+        return reservationSession.getOrderId();
+    }
+
+
     private Map<Long, Integer> decreaseRedisTicketCount(final List<ReservationInfoRequest.TicketTypeInfo> requestTicketTypeInfos) {
         final Map<Long, Integer> requestTicketTypeInfoMap = new HashMap<>();
         try {
@@ -164,13 +165,13 @@ public class ReservationService {
             );
 
             return requestTicketTypeInfoMap;
-        } catch (RedisInSufficientTicketException e) { //개수 부족하면 redis 롤백 처리
+        } catch (RedisInSufficientTicketException e) {
             increaseRedisTicketCount(requestTicketTypeInfoMap);
             throw new TicketTypeInsufficientCountException();
         }
     }
 
-    //session 저장 실패하면 redis 롤백처리
+    // redis 롤백처리
     private void increaseRedisTicketCount(final Map<Long, Integer> requestTicketTypeInfoMap) {
         requestTicketTypeInfoMap.forEach(
                 (requestTicketTypeId, count) -> {
@@ -188,16 +189,19 @@ public class ReservationService {
         eventRetriever.validExistEventById(eventId);
     }
 
-    private void validUsableTicketType(final List<ReservationInfoRequest.TicketTypeInfo> requestTicketTypeInfos) {
+    private void validUsableTicketType(final List<ReservationInfoRequest.TicketTypeInfo> requestTicketTypeInfos, final long eventId) {
         final Map<Long, Integer> ticketCountMap = requestTicketTypeInfos.stream()
                 .collect(Collectors.toMap(ReservationInfoRequest.TicketTypeInfo::id, ReservationInfoRequest.TicketTypeInfo::count));
 
         ticketCountMap.forEach((ticketTypeId, requestedCount) -> {
                     final TicketTypeEntity ticketType = ticketTypeRetriever.findTicketTypeEntityById(ticketTypeId);
-                    // 티켓 개수 검증
+                    // 티켓 개수 검증 todo: 삭제하고 redis로만 판단해도될듯
                     ticketType.verifyTicketCount(requestedCount);
                     //티켓 구매가능 날짜 검증
                     final TicketRoundEntity ticketRound = ticketRoundRetriever.findTicketRoundEntityById(ticketType.getTicketRoundId());
+                    if (ticketRound.getEventId() != eventId) {
+                        throw new TicketRoundNotFoundException();
+                    }
                     final LocalDateTime now = LocalDateTime.now();
                     ticketRound.verifyTicketSalesAvailable(now);
                 }

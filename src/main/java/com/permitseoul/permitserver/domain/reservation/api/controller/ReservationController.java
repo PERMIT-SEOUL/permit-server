@@ -46,7 +46,7 @@ public class ReservationController {
     }
 
     //예약 조회 api
-    @GetMapping("/ready/")
+    @GetMapping("/ready")
     public ResponseEntity<BaseResponse<?>> getReadyToPayment(
             @UserId final Long userId,
             final HttpServletRequest request

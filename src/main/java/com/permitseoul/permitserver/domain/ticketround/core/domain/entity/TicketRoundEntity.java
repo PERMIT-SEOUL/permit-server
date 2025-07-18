@@ -7,6 +7,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
 @Table(name = "ticket_rounds")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TicketRoundEntity {
