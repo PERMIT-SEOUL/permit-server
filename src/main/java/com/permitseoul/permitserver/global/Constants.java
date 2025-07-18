@@ -8,6 +8,7 @@ public abstract class Constants {
     public static final String CHARACTER_TYPE = "utf-8";
     public static final String USER_ROLE = "userRole";
     public static final String AUTHCODE = "authorization_code";
+    public static final String RESERVATION_SESSION_KEY = "sessionKey";
 
 
 }

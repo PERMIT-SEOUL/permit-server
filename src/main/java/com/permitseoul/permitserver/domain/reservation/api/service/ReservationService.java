@@ -1,6 +1,5 @@
 package com.permitseoul.permitserver.domain.reservation.api.service;
 
-import com.permitseoul.permitserver.domain.auth.core.jwt.CookieCreatorUtil;
 import com.permitseoul.permitserver.domain.coupon.core.component.CouponRetriever;
 import com.permitseoul.permitserver.domain.coupon.core.exception.CouponConflictException;
 import com.permitseoul.permitserver.domain.coupon.core.exception.CouponNotfoundException;
@@ -12,10 +11,10 @@ import com.permitseoul.permitserver.domain.reservation.api.dto.ReservationInfoRe
 import com.permitseoul.permitserver.domain.reservation.api.exception.*;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationAndReservationTicketFacade;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationRetriever;
-import com.permitseoul.permitserver.domain.reservation.core.component.ReservationSaver;
 import com.permitseoul.permitserver.domain.reservation.core.domain.Reservation;
 import com.permitseoul.permitserver.domain.reservation.core.exception.ReservationNotFoundException;
-import com.permitseoul.permitserver.domain.reservationticket.core.component.ReservationTicketSaver;
+import com.permitseoul.permitserver.domain.reservationsession.core.component.ReservationSessionRetriever;
+import com.permitseoul.permitserver.domain.reservationsession.core.domain.ReservationSession;
 import com.permitseoul.permitserver.domain.ticketround.core.component.TicketRoundRetriever;
 import com.permitseoul.permitserver.domain.ticketround.core.domain.entity.TicketRoundEntity;
 import com.permitseoul.permitserver.domain.ticketround.core.exception.TicketRoundExpiredException;
@@ -52,6 +51,7 @@ public class ReservationService {
     private final TicketRoundRetriever ticketRoundRetriever;
     private final RedisTemplate<String, String> redisTemplate;
     private final ReservationAndReservationTicketFacade reservationAndReservationTicketFacade;
+    private final ReservationSessionRetriever reservationSessionRetriever;
 
     private static final String REDIS_TICKET_TYPE_KEY_NAME = "ticket_type:";
     private static final String REDIS_TICKET_TYPE_REMAIN = ":remain";
@@ -68,7 +68,7 @@ public class ReservationService {
         try {
             validExistUserById(userId);
             validExistEventById(eventId);
-            validUsableTicketType(requestTicketTypeInfos);
+            validUsableTicketType(requestTicketTypeInfos, eventId);
 
             if(couponCode != null) {
                 validateCouponCode(couponCode, requestTicketTypeInfos);
@@ -115,11 +115,10 @@ public class ReservationService {
         }
     }
 
-
-
     @Transactional(readOnly = true)
-    public ReservationInfoResponse getReservationInfo(final long userId, final String orderId) {
+    public ReservationInfoResponse getReservationInfo(final long userId, final String sessionKey) {
         try {
+            final String orderId = getOrderIdWithValidateSessionKey(userId,sessionKey);
             final User user = userRetriever.findUserById(userId);
             final Reservation reservation = reservationRetriever.findReservationByOrderIdAndUserId(orderId, userId);
             final Event event = eventRetriever.findEventById(reservation.getEventId());
@@ -141,6 +140,13 @@ public class ReservationService {
         }
     }
 
+    private String getOrderIdWithValidateSessionKey(final long userId, final String sessionKey) {
+        final LocalDateTime validTime = LocalDateTime.now().minusMinutes(10);
+        final ReservationSession reservationSession = reservationSessionRetriever.getValidatedReservationSession(userId, sessionKey, validTime);
+        return reservationSession.getOrderId();
+    }
+
+
     private Map<Long, Integer> decreaseRedisTicketCount(final List<ReservationInfoRequest.TicketTypeInfo> requestTicketTypeInfos) {
         final Map<Long, Integer> requestTicketTypeInfoMap = new HashMap<>();
         try {
@@ -158,13 +164,13 @@ public class ReservationService {
             );
 
             return requestTicketTypeInfoMap;
-        } catch (RedisInSufficientTicketException e) { //개수 부족하면 redis 롤백 처리
+        } catch (RedisInSufficientTicketException e) {
             increaseRedisTicketCount(requestTicketTypeInfoMap);
             throw new TicketTypeInsufficientCountException();
         }
     }
 
-    //session 저장 실패하면 redis 롤백처리
+    // redis 롤백처리
     private void increaseRedisTicketCount(final Map<Long, Integer> requestTicketTypeInfoMap) {
         requestTicketTypeInfoMap.forEach(
                 (requestTicketTypeId, count) -> {
@@ -182,16 +188,17 @@ public class ReservationService {
         eventRetriever.validExistEventById(eventId);
     }
 
-    private void validUsableTicketType(final List<ReservationInfoRequest.TicketTypeInfo> requestTicketTypeInfos) {
+    private void validUsableTicketType(final List<ReservationInfoRequest.TicketTypeInfo> requestTicketTypeInfos, final long eventId) {
         final Map<Long, Integer> ticketCountMap = requestTicketTypeInfos.stream()
                 .collect(Collectors.toMap(ReservationInfoRequest.TicketTypeInfo::id, ReservationInfoRequest.TicketTypeInfo::count));
 
         ticketCountMap.forEach((ticketTypeId, requestedCount) -> {
                     final TicketTypeEntity ticketType = ticketTypeRetriever.findTicketTypeEntityById(ticketTypeId);
-                    // 티켓 개수 검증
-                    ticketType.verifyTicketCount(requestedCount);
                     //티켓 구매가능 날짜 검증
                     final TicketRoundEntity ticketRound = ticketRoundRetriever.findTicketRoundEntityById(ticketType.getTicketRoundId());
+                    if (ticketRound.getEventId() != eventId) {
+                        throw new TicketRoundNotFoundException();
+                    }
                     final LocalDateTime now = LocalDateTime.now();
                     ticketRound.verifyTicketSalesAvailable(now);
                 }
