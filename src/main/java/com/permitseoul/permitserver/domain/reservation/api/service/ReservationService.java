@@ -140,10 +140,9 @@ public class ReservationService {
         }
     }
 
-
     private String getOrderIdWithValidateSessionKey(final long userId, final String sessionKey) {
-        final LocalDateTime now = LocalDateTime.now();
-        final ReservationSession reservationSession = reservationSessionRetriever.getValidatedReservationSession(userId, sessionKey, now);
+        final LocalDateTime validTime = LocalDateTime.now().minusMinutes(10);
+        final ReservationSession reservationSession = reservationSessionRetriever.getValidatedReservationSession(userId, sessionKey, validTime);
         return reservationSession.getOrderId();
     }
 
@@ -195,8 +194,6 @@ public class ReservationService {
 
         ticketCountMap.forEach((ticketTypeId, requestedCount) -> {
                     final TicketTypeEntity ticketType = ticketTypeRetriever.findTicketTypeEntityById(ticketTypeId);
-                    // 티켓 개수 검증 todo: 삭제하고 redis로만 판단해도될듯
-                    ticketType.verifyTicketCount(requestedCount);
                     //티켓 구매가능 날짜 검증
                     final TicketRoundEntity ticketRound = ticketRoundRetriever.findTicketRoundEntityById(ticketType.getTicketRoundId());
                     if (ticketRound.getEventId() != eventId) {
