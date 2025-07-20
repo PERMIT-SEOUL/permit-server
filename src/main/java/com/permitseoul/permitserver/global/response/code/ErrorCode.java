@@ -20,6 +20,8 @@ public enum ErrorCode implements ApiCode {
     BAD_REQUEST_COUPON_TICKET_COUNT(HttpStatus.BAD_REQUEST, 40006, "쿠폰코드로는 하나의 티켓만 구매 가능합니다."),
     BAD_REQUEST_TICKET_SALES_EXPIRED(HttpStatus.BAD_REQUEST, 40007, "구매 날짜가 아닌 티켓입니다."),
     BAD_REQUEST_TICKET_TYPE_DUPLICATED(HttpStatus.BAD_REQUEST, 40008, "같은 티켓타입 아이디 여러 개가 요청되었습니다."),
+    BAD_REQUEST_SESSION_ORDER_ID(HttpStatus.BAD_REQUEST, 40009, "예약 세션에 있는 orderId와 요청하신 orderId가 다릅니다."),
+    BAD_REQUEST_TICKET_COUNT_ZERO(HttpStatus.BAD_REQUEST, 400010, "구매하려는 티켓 개수가 1보다 작습니다."),
 
     /**
      * 401 Unauthorized

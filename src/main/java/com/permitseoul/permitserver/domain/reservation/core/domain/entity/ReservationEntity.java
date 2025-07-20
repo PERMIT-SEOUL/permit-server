@@ -67,7 +67,7 @@ public class ReservationEntity extends BaseTimeEntity {
         this.status = status;
     }
 
-    public void updateTossPaymentReceiveTime(final LocalDateTime tossPaymentReceiveTime) {
+    public void updateTossPaymentResponseTime(final LocalDateTime tossPaymentReceiveTime) {
         this.tossPaymentReceiveTime = tossPaymentReceiveTime;
     }
 }

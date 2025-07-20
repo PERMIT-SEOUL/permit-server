@@ -141,7 +141,7 @@ public class ReservationService {
     }
 
     private String getOrderIdWithValidateSessionKey(final long userId, final String sessionKey) {
-        final LocalDateTime validTime = LocalDateTime.now().minusMinutes(10);
+        final LocalDateTime validTime = LocalDateTime.now().minusMinutes(7);
         final ReservationSession reservationSession = reservationSessionRetriever.getValidatedReservationSession(userId, sessionKey, validTime);
         return reservationSession.getOrderId();
     }

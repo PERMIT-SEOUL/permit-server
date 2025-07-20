@@ -15,17 +15,12 @@ public class EventRetriever {
 
     @Transactional(readOnly = true)
     public Event findEventById(final long eventId) {
-        final EventEntity eventEntity = eventRepository.findById(eventId).orElseThrow(
-                EventNotfoundException::new
-        );
+        final EventEntity eventEntity = eventRepository.findById(eventId).orElseThrow(EventNotfoundException::new);
         return Event.fromEntity(eventEntity);
     }
 
     @Transactional(readOnly = true)
     public void validExistEventById(final long eventId) {
-        if(!eventRepository.existsById(eventId)) {
-            throw new EventNotfoundException();
-        }
+        eventRepository.findById(eventId).orElseThrow(EventNotfoundException::new);
     }
-
 }

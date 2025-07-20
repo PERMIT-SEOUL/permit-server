@@ -22,7 +22,7 @@ public interface ReservationSessionRepository extends JpaRepository<ReservationS
           AND rs.successful = false
           AND rs.createdAt >= :validFrom
     """)
-    Optional<ReservationSessionEntity> findValidSession(
+    Optional<ReservationSessionEntity> findValidSessionByUserIdAndSessionKeyAndValidTime(
             @Param("userId") final long userId,
             @Param("sessionKey") final String sessionKey,
             @Param("validFrom") final LocalDateTime validFrom

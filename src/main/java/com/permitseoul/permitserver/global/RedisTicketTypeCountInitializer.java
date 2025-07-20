@@ -25,7 +25,7 @@ public class RedisTicketTypeCountInitializer implements ApplicationRunner {
 
         ticketTypes.forEach(ticketType -> {
             String key = REDIS_TICKET_TYPE_KEY_PREFIX + ticketType.getTicketTypeId() + REDIS_TICKET_TYPE_REMAIN_SUFFIX;
-            redisTemplate.opsForValue().setIfAbsent(key, String.valueOf(ticketType.getRemainTicketCount()));
+            redisTemplate.opsForValue().set(key, String.valueOf(ticketType.getRemainTicketCount())); //todo: 개발에서는 set, 운영에서는 setIfAbsent로 사용
         });
     }
 }

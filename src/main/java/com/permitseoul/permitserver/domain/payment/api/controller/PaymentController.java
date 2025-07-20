@@ -1,13 +1,16 @@
 package com.permitseoul.permitserver.domain.payment.api.controller;
 
+import com.permitseoul.permitserver.domain.auth.core.jwt.CookieExtractor;
 import com.permitseoul.permitserver.domain.payment.api.service.PaymentService;
 import com.permitseoul.permitserver.domain.payment.api.dto.PaymentCancelRequest;
 import com.permitseoul.permitserver.domain.payment.api.dto.PaymentConfirmRequest;
 import com.permitseoul.permitserver.domain.payment.api.dto.PaymentConfirmResponse;
+import com.permitseoul.permitserver.global.domain.CookieType;
 import com.permitseoul.permitserver.global.resolver.user.UserId;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.SuccessCode;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,13 +29,16 @@ public class PaymentController {
     @PostMapping("/confirm")
     public ResponseEntity<BaseResponse<?>> getConfirmToPayment(
             @UserId final Long userId,
-            @RequestBody @Valid final PaymentConfirmRequest paymentConfirmRequest
+            @RequestBody @Valid final PaymentConfirmRequest paymentConfirmRequest,
+            final HttpServletRequest request
     ) {
+        final String reservationSessionKey = CookieExtractor.extractCookie(request, CookieType.RESERVATION_SESSION).getValue();
         final PaymentConfirmResponse paymentConfirmResponse = paymentService.getPaymentConfirm(
                 userId,
                 paymentConfirmRequest.orderId(),
                 paymentConfirmRequest.paymentKey(),
-                paymentConfirmRequest.totalAmount()
+                paymentConfirmRequest.totalAmount(),
+                reservationSessionKey
         );
         return ApiResponseUtil.success(SuccessCode.OK, paymentConfirmResponse);
     }

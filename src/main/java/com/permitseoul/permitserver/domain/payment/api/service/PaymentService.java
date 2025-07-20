@@ -10,6 +10,7 @@ import com.permitseoul.permitserver.domain.payment.api.dto.PaymentCancelResponse
 import com.permitseoul.permitserver.domain.payment.api.dto.TossPaymentRequest;
 import com.permitseoul.permitserver.domain.payment.api.dto.PaymentResponse;
 import com.permitseoul.permitserver.domain.payment.api.dto.TossConfirmErrorResponse;
+import com.permitseoul.permitserver.domain.payment.api.exception.PaymentBadRequestException;
 import com.permitseoul.permitserver.domain.payment.core.component.PaymentRetriever;
 import com.permitseoul.permitserver.domain.payment.core.component.PaymentSaver;
 import com.permitseoul.permitserver.domain.payment.core.domain.Currency;
@@ -20,11 +21,15 @@ import com.permitseoul.permitserver.domain.reservation.api.TossProperties;
 import com.permitseoul.permitserver.domain.payment.api.dto.TossPaymentCancelRequest;
 import com.permitseoul.permitserver.domain.payment.api.dto.PaymentConfirmResponse;
 import com.permitseoul.permitserver.domain.reservation.api.exception.*;
+import com.permitseoul.permitserver.domain.reservation.core.component.ReservationAndReservationTicketFacade;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationRetriever;
 import com.permitseoul.permitserver.domain.reservation.core.component.ReservationUpdater;
 import com.permitseoul.permitserver.domain.reservation.core.domain.ReservationStatus;
 import com.permitseoul.permitserver.domain.reservation.core.domain.entity.ReservationEntity;
 import com.permitseoul.permitserver.domain.reservation.core.exception.ReservationNotFoundException;
+import com.permitseoul.permitserver.domain.reservationsession.core.component.ReservationSessionRetriever;
+import com.permitseoul.permitserver.domain.reservationsession.core.domain.ReservationSession;
+import com.permitseoul.permitserver.domain.reservationsession.core.domain.entity.ReservationSessionEntity;
 import com.permitseoul.permitserver.domain.reservationticket.core.component.ReservationTicketRetriever;
 import com.permitseoul.permitserver.domain.reservationticket.core.domain.ReservationTicket;
 import com.permitseoul.permitserver.domain.ticket.core.component.TicketRetriever;
@@ -38,6 +43,7 @@ import com.permitseoul.permitserver.domain.tickettype.core.component.TicketTypeU
 import com.permitseoul.permitserver.domain.tickettype.core.domain.entity.TicketTypeEntity;
 import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeNotfoundException;
 import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeInsufficientCountException;
+import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeTicketZeroException;
 import com.permitseoul.permitserver.global.TicketCodeGenerator;
 import com.permitseoul.permitserver.global.exception.AlgorithmException;
 import com.permitseoul.permitserver.global.exception.DateFormatException;
@@ -45,17 +51,19 @@ import com.permitseoul.permitserver.global.exception.IllegalEnumTransitionExcept
 import com.permitseoul.permitserver.global.formatter.DateFormatterUtil;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import feign.FeignException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.IntStream;
 
 import static com.permitseoul.permitserver.global.formatter.DateFormatterUtil.parseDateToLocalDateTime;
 
+@Slf4j
 @Service
 @EnableConfigurationProperties(TossProperties.class)
 public class PaymentService {
@@ -71,15 +79,18 @@ public class PaymentService {
     private final ReservationRetriever reservationRetriever;
     private final TossProperties tossProperties;
     private final String authorizationHeader;
-    private final PaymentSaver paymentSaver;
     private final TicketTypeRetriever ticketTypeRetriever;
     private final PaymentRetriever paymentRetriever;
     private final PaymentCancelSaver paymentCancelSaver;
     private final TicketUpdater ticketUpdater;
     private final TicketRetriever ticketRetriever;
     private final ReservationUpdater reservationUpdater;
-    private final TicketReservationFacade ticketReservationFacade;
+    private final TicketReservationPaymentFacade ticketReservationPaymentFacade;
     private final TicketTypeUpdater ticketTypeUpdater;
+    private final ReservationSessionRetriever reservationSessionRetriever;
+    private final PaymentSaver paymentSaver;
+    private final ReservationAndReservationTicketFacade reservationAndReservationTicketFacade;
+
 
     public PaymentService(
             ReservationTicketRetriever reservationTicketRetriever,
@@ -87,51 +98,68 @@ public class PaymentService {
             TossPaymentClient tossPaymentClient,
             ReservationRetriever reservationRetriever,
             TossProperties tossProperties,
-            PaymentSaver paymentSaver,
             TicketTypeRetriever ticketTypeRetriever,
             PaymentRetriever paymentRetriever,
             PaymentCancelSaver paymentCancelSaver,
             TicketUpdater ticketUpdater,
             TicketRetriever ticketRetriever,
             ReservationUpdater reservationUpdater,
-            TicketReservationFacade ticketReservationFacade,
-            TicketTypeUpdater ticketTypeUpdater) {
+            TicketReservationPaymentFacade ticketReservationPaymentFacade,
+            TicketTypeUpdater ticketTypeUpdater,
+            ReservationSessionRetriever reservationSessionRetriever,
+            PaymentSaver paymentSaver, ReservationAndReservationTicketFacade reservationAndReservationTicketFacade) {
         this.reservationTicketRetriever = reservationTicketRetriever;
         this.eventRetriever = eventRetriever;
         this.tossPaymentClient = tossPaymentClient;
         this.reservationRetriever = reservationRetriever;
         this.tossProperties = tossProperties;
         this.authorizationHeader = buildAuthHeader(tossProperties.apiSecretKey());
-        this.paymentSaver = paymentSaver;
         this.ticketTypeRetriever = ticketTypeRetriever;
         this.paymentRetriever = paymentRetriever;
         this.paymentCancelSaver = paymentCancelSaver;
         this.ticketUpdater = ticketUpdater;
         this.ticketRetriever = ticketRetriever;
         this.reservationUpdater = reservationUpdater;
-        this.ticketReservationFacade = ticketReservationFacade;
+        this.ticketReservationPaymentFacade = ticketReservationPaymentFacade;
         this.ticketTypeUpdater = ticketTypeUpdater;
+        this.reservationSessionRetriever = reservationSessionRetriever;
+        this.paymentSaver = paymentSaver;
+        this.reservationAndReservationTicketFacade = reservationAndReservationTicketFacade;
     }
 
 
     public PaymentConfirmResponse getPaymentConfirm(final long userId,
                                                     final String orderId,
                                                     final String paymentKey,
-                                                    final BigDecimal totalAmount) {
+                                                    final BigDecimal totalAmount,
+                                                    final String reservationSessionKey) {
         ReservationEntity reservationEntity = null;
         try {
-            reservationEntity = reservationRetriever.findReservationByOrderIdAndAmountAndUserId(orderId, totalAmount, userId);
+            final ReservationSessionEntity reservationSessionEntity = getReservationSession(userId, reservationSessionKey);
+            if (!reservationSessionEntity.getOrderId().equals(orderId)) {
+                throw new PaymentBadRequestException(ErrorCode.BAD_REQUEST_SESSION_ORDER_ID);
+            }
+            reservationEntity = reservationRetriever.findReservationByOrderIdAndAmountAndUserId(reservationSessionEntity.getOrderId(), totalAmount, userId);
             final Event event = eventRetriever.findEventById(reservationEntity.getEventId());
-
-            final List<ReservationTicket> findReservationTicketList = reservationTicketRetriever.findAllByOrderId(orderId);
+            final List<ReservationTicket> findReservationTicketList = reservationTicketRetriever.findAllByOrderId(reservationEntity.getOrderId());
             verifyTicketCount(findReservationTicketList);
 
             final PaymentResponse paymentResponse = getTossPaymentConfirm(authorizationHeader, paymentKey, reservationEntity.getOrderId(), reservationEntity.getTotalAmount());
-            updateReservationStatus(reservationEntity, ReservationStatus.PAYMENT_SUCCESS);
+            log.info("토스페이먼츠 성공: {}", paymentResponse.toString());
+            updateReservation(reservationEntity.getReservationId(), ReservationStatus.PAYMENT_SUCCESS);
+
+
+
             savePaymentInfo(reservationEntity, paymentResponse);
 
             final List<Ticket> newTicketList = generateTickets(findReservationTicketList, userId, reservationEntity);
-            ticketReservationFacade.saveAllTickets(newTicketList, reservationEntity, findReservationTicketList);
+            ticketReservationPaymentFacade.savePaymentAndAllTickets(
+                    newTicketList,
+                    findReservationTicketList,
+                    reservationEntity.getUserId(),
+                    reservationSessionEntity.getSessionKey(),
+                    reservationEntity.getTotalAmount()
+            );
 
             return PaymentConfirmResponse.of(
                     event.getName(),
@@ -146,6 +174,9 @@ public class PaymentService {
         } catch(FeignException e) {
             if (reservationEntity != null) {
                 updateReservationStatus(reservationEntity, ReservationStatus.PAYMENT_FAILED);
+                updateReservationTossResponseTime(reservationEntity);
+            } else {
+                log.error("토스 승인 api가 실패했고, reservation이 null입니다. 주문 번호는 {}입니다.", orderId);
             }
             throw handleFeignException(e);
         } catch (AlgorithmException e) {
@@ -154,7 +185,15 @@ public class PaymentService {
             throw new ConflictReservationException(ErrorCode.CONFLICT_INSUFFICIENT_TICKET);
         } catch (IllegalEnumTransitionException e) {
             throw new ReservationIllegalException(ErrorCode.INTERNAL_TRANSITION_ENUM_ERROR);
+        } catch (TicketTypeTicketZeroException e) {
+            throw new PaymentBadRequestException(ErrorCode.BAD_REQUEST_TICKET_COUNT_ZERO);
         }
+    }
+
+    private void updateReservation(final ReservationEntity reservationEntity, final ReservationStatus reservationStatus) {
+        reservationAndReservationTicketFacade.updateReservationStatusAndTossResponseTime()
+        updateReservationStatus(reservationEntity, ReservationStatus.PAYMENT_SUCCESS);
+        updateReservationTossResponseTime(reservationEntity);
     }
 
     public void cancelPayment(final long userId, final String orderId) {
@@ -195,6 +234,24 @@ public class PaymentService {
         }
     }
 
+    private void updateReservationTossResponseTime(final ReservationEntity reservationEntity) {
+        final LocalDateTime now = LocalDateTime.now();
+        reservationUpdater.updateTossResponseTime(reservationEntity, now);
+    }
+
+    private void savePaymentInfo(final ReservationEntity reservation, final PaymentResponse paymentResponse) {
+        paymentSaver.savePayment(
+                reservation.getReservationId(),
+                reservation.getOrderId(),
+                reservation.getEventId(),
+                paymentResponse.paymentKey(),
+                reservation.getTotalAmount(),
+                paymentResponse.currency(),
+                parseDateToLocalDateTime(paymentResponse.requestedAt()),
+                parseDateToLocalDateTime(paymentResponse.approvedAt())
+        );
+    }
+
     private void increaseRedisTicketTypeCount(final List<ReservationTicket> reservationTicketList) {
         reservationTicketList.forEach(
                 reservationTicket -> {
@@ -202,6 +259,11 @@ public class PaymentService {
                     ticketTypeUpdater.increaseTicketCount(ticketTypeEntity, reservationTicket.getCount());
                 }
         );
+    }
+
+    private ReservationSessionEntity getReservationSession(final long userId, final String sessionKey) {
+        final LocalDateTime validTime = LocalDateTime.now().minusMinutes(7);
+        return reservationSessionRetriever.getValidatedReservationSessionEntity(userId, sessionKey, validTime);
     }
 
     private void updateReservationStatus(final ReservationEntity reservationEntity, final ReservationStatus reservationStatus) {
@@ -242,19 +304,6 @@ public class PaymentService {
                     final TicketTypeEntity ticketTypeEntity = ticketTypeRetriever.findTicketTypeEntityById(reservationTicket.getTicketTypeId());
                     ticketTypeRetriever.verifyTicketCount(ticketTypeEntity, reservationTicket.getCount());
                 });
-    }
-
-    private void savePaymentInfo(final ReservationEntity reservation, final PaymentResponse paymentResponse) {
-        paymentSaver.savePayment(
-                reservation.getReservationId(),
-                reservation.getOrderId(),
-                reservation.getEventId(),
-                paymentResponse.paymentKey(),
-                reservation.getTotalAmount(),
-                paymentResponse.currency(),
-                parseDateToLocalDateTime(paymentResponse.requestedAt()),
-                parseDateToLocalDateTime(paymentResponse.approvedAt())
-        );
     }
 
     private List<Ticket> generateTickets(final List<ReservationTicket> reservationTicketList, final long userId, final ReservationEntity reservation) {

@@ -16,7 +16,7 @@ public class ReservationSessionCleanupScheduler {
 
     private final ReservationSessionRepository reservationSessionRepository;
 
-    @Scheduled(cron = "*/10 * * * * *") // 매 1분마다 실행
+    @Scheduled(cron = "*/30 * * * * *") // 매 1분마다 실행
     @Transactional
     public void cleanupOldOrSuccessfulSessions() {
         final LocalDateTime expireThreshold = LocalDateTime.now().minusMinutes(7);
