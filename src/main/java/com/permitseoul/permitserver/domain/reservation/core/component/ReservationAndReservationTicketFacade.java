@@ -2,6 +2,7 @@ package com.permitseoul.permitserver.domain.reservation.core.component;
 
 import com.permitseoul.permitserver.domain.reservation.api.dto.ReservationInfoRequest;
 import com.permitseoul.permitserver.domain.reservation.core.domain.Reservation;
+import com.permitseoul.permitserver.domain.reservation.core.domain.ReservationStatus;
 import com.permitseoul.permitserver.domain.reservationsession.core.component.ReservationSessionSaver;
 import com.permitseoul.permitserver.domain.reservationsession.core.domain.ReservationSession;
 import com.permitseoul.permitserver.domain.reservationticket.core.component.ReservationTicketSaver;

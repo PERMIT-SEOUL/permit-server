@@ -15,7 +15,6 @@ import java.util.List;
 public class TicketSaver {
     private final TicketRepository ticketRepository;
 
-    @Transactional
     public void saveTickets(final List<Ticket> tickets) {
         final List<TicketEntity> ticketEntityList = tickets.stream()
                 .map(ticket -> TicketEntity.create(

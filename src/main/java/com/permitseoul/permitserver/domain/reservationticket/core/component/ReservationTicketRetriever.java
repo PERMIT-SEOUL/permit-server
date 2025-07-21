@@ -20,8 +20,8 @@ public class ReservationTicketRetriever {
         if (reservationTicketEntities == null || reservationTicketEntities.isEmpty()) {
             throw new ReservationTicketNotFoundException();
         }
-        return reservationTicketEntities.stream().map(
-                ReservationTicket::fromEntity
-        ).toList();
+        return reservationTicketEntities.stream()
+                .map(ReservationTicket::fromEntity)
+                .toList();
     }
 }

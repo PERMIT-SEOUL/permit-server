@@ -26,11 +26,17 @@ public class ReservationSessionRetriever {
     }
 
     @Transactional(readOnly = true)
-    public ReservationSessionEntity getValidatedReservationSessionEntity(final long userId, final String sessionKey, final LocalDateTime now) {
+    public ReservationSessionEntity getValidReservationSessionEntity(final long userId, final String sessionKey, final LocalDateTime now) {
         return reservationSessionRepository.findValidSessionByUserIdAndSessionKeyAndValidTime(
                 userId,
                 sessionKey,
                 now
         ).orElseThrow(ReservationSessionNotFoundException::new);
+    }
+
+    public ReservationSessionEntity findReservationSessionEntityById(final long reservationSessionId) {
+        return reservationSessionRepository.findById(reservationSessionId).orElseThrow(
+                ReservationSessionNotFoundException::new
+        );
     }
 }

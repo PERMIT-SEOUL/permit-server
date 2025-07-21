@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 public class PaymentSaver {
     private final PaymentRepository paymentRepository;
 
-    @Transactional
     public void savePayment(final long reservationId,
                             final String orderId,
                             final long eventId,

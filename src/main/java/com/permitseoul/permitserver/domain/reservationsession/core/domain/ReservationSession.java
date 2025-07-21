@@ -11,13 +11,15 @@ public class ReservationSession {
     private final long userId;
     private final String orderId;
     private final String sessionKey;
+    private final boolean successful;
 
     public static ReservationSession fromEntity(ReservationSessionEntity reservationSessionEntity) {
         return new ReservationSession(
                 reservationSessionEntity.getReservationSessionsId(),
                 reservationSessionEntity.getUserId(),
                 reservationSessionEntity.getOrderId(),
-                reservationSessionEntity.getSessionKey()
+                reservationSessionEntity.getSessionKey(),
+                reservationSessionEntity.isSuccessful()
         );
     }
 }

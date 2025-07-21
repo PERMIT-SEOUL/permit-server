@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class TicketTypeUpdater {
 
-    @Transactional
     public void decreaseTicketCount(final TicketTypeEntity ticketTypeEntity, final int count) {
         ticketTypeEntity.decreaseTicketCount(count);
     }

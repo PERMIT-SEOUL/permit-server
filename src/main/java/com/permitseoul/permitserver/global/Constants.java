@@ -9,6 +9,7 @@ public abstract class Constants {
     public static final String USER_ROLE = "userRole";
     public static final String AUTHCODE = "authorization_code";
     public static final String RESERVATION_SESSION_KEY = "sessionKey";
-
+    public static final String REDIS_TICKET_TYPE_KEY_NAME = "ticket_type:";
+    public static final String REDIS_TICKET_TYPE_REMAIN = ":remain";
 
 }
