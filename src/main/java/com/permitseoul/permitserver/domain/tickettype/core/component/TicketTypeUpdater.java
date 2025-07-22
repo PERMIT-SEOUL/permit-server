@@ -4,17 +4,18 @@ import com.permitseoul.permitserver.domain.tickettype.core.domain.entity.TicketT
 import jakarta.validation.constraints.Positive;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 @Component
+@Validated
 public class TicketTypeUpdater {
 
-    @Transactional
-    public void decreaseTicketCount(@Positive final TicketTypeEntity ticketTypeEntity, final int count) {
+    public void decreaseTicketCount(final TicketTypeEntity ticketTypeEntity, @Positive(message = "count는 0이상이어야합니다.") final int count) {
         ticketTypeEntity.decreaseTicketCount(count);
     }
 
     @Transactional
-    public void increaseTicketCount(@Positive final TicketTypeEntity ticketTypeEntity, final int count) {
+    public void increaseTicketCount(final TicketTypeEntity ticketTypeEntity, @Positive(message = "count는 0이상이어야합니다.") final int count) {
         ticketTypeEntity.increaseTicketCount(count);
     }
 }

@@ -5,6 +5,7 @@ import lombok.*;
 
 
 @Entity
+@Getter
 @Table(name = "coupons")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CouponEntity {

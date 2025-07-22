@@ -7,6 +7,7 @@ import com.permitseoul.permitserver.domain.reservationticket.core.repository.Res
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 
 
@@ -20,8 +21,18 @@ public class ReservationTicketRetriever {
         if (reservationTicketEntities == null || reservationTicketEntities.isEmpty()) {
             throw new ReservationTicketNotFoundException();
         }
-        return reservationTicketEntities.stream().map(
-                ReservationTicket::fromEntity
-        ).toList();
+        return reservationTicketEntities.stream()
+                .map(ReservationTicket::fromEntity)
+                .toList();
+    }
+
+    public List<ReservationTicket> findAllByOrderIds(List<String> orderIds) {
+        final List<ReservationTicketEntity> reservationTicketEntityList = reservationTicketRepository.findAllByOrderIdIn(orderIds);
+        if (reservationTicketEntityList == null || reservationTicketEntityList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return reservationTicketEntityList.stream()
+                .map(ReservationTicket::fromEntity)
+                .toList();
     }
 }

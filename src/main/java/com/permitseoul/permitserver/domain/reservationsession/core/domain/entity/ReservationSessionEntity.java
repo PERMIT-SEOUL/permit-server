@@ -36,7 +36,11 @@ public class ReservationSessionEntity extends BaseTimeEntity {
         this.successful = false;
     }
 
-    public static ReservationSessionEntity create(long userId, String orderId, String sessionKey) {
+    public static ReservationSessionEntity create(final long userId, final String orderId, final String sessionKey) {
         return new ReservationSessionEntity(userId, orderId, sessionKey);
+    }
+
+    public void updateToReservationSessionEntityToSuccessful() {
+        this.successful = true;
     }
 }

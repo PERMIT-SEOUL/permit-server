@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface ReservationTicketRepository extends JpaRepository<ReservationTicketEntity, Long> {
     List<ReservationTicketEntity> findAllByOrderId(final String orderId);
+    List<ReservationTicketEntity> findAllByOrderIdIn(final List<String> orderIds);
 }

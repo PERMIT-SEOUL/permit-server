@@ -1,6 +1,7 @@
 package com.permitseoul.permitserver.domain.tickettype.core.domain.entity;
 
 import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeInsufficientCountException;
+import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeTicketZeroException;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -54,17 +55,25 @@ public class TicketTypeEntity {
     }
 
     public void verifyTicketCount(final int buyTicketCount) {
+        checkBuyTicketCountZero(buyTicketCount);
         if (this.remainTicketCount < buyTicketCount) {
             throw new TicketTypeInsufficientCountException();
         }
     }
 
     public void decreaseTicketCount(final int buyTicketCount) {
-        verifyTicketCount(buyTicketCount);
+        checkBuyTicketCountZero(buyTicketCount);
         this.remainTicketCount -= buyTicketCount;
     }
 
     public void increaseTicketCount(final int buyTicketCount) {
+        checkBuyTicketCountZero(buyTicketCount);
         this.remainTicketCount += buyTicketCount;
+    }
+
+    private void checkBuyTicketCountZero(final int buyTicketCount) {
+        if ( buyTicketCount <= 0) {
+            throw new TicketTypeTicketZeroException();
+        }
     }
 }

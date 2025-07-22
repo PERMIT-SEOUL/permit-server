@@ -20,6 +20,9 @@ public enum ErrorCode implements ApiCode {
     BAD_REQUEST_COUPON_TICKET_COUNT(HttpStatus.BAD_REQUEST, 40006, "쿠폰코드로는 하나의 티켓만 구매 가능합니다."),
     BAD_REQUEST_TICKET_SALES_EXPIRED(HttpStatus.BAD_REQUEST, 40007, "구매 날짜가 아닌 티켓입니다."),
     BAD_REQUEST_TICKET_TYPE_DUPLICATED(HttpStatus.BAD_REQUEST, 40008, "같은 티켓타입 아이디 여러 개가 요청되었습니다."),
+    BAD_REQUEST_SESSION_ORDER_ID(HttpStatus.BAD_REQUEST, 40009, "예약 세션에 있는 orderId와 요청하신 orderId가 다릅니다."),
+    BAD_REQUEST_TICKET_COUNT_ZERO(HttpStatus.BAD_REQUEST, 40010, "구매하려는 티켓 개수가 1보다 작습니다."),
+    BAD_REQUEST_AMOUNT_MISMATCH(HttpStatus.BAD_REQUEST, 40011, "구매하려는 티켓들의 가격과 totalAmount가 다릅니다."),
 
     /**
      * 401 Unauthorized
@@ -54,6 +57,10 @@ public enum ErrorCode implements ApiCode {
     NOT_FOUND_TICKET(HttpStatus.NOT_FOUND, 40409, "해당 ticket 이 없습니다."),
     NOT_FOUND_COUPON_CODE(HttpStatus.NOT_FOUND, 40410, "해당 couponCode 가 없습니다."),
     NOT_FOUND_TICKET_ROUND(HttpStatus.NOT_FOUND, 40411, "해당 티켓 차수(round)가 없습니다."),
+    NOT_FOUND_RESERVATION_TICKET(HttpStatus.NOT_FOUND, 40412, "예약된 티켓이 없습니다."),
+    NOT_FOUND_RESERVATION_SESSION(HttpStatus.NOT_FOUND, 40413, "예약 세션이 없습니다."),
+    NOT_FOUND_RESERVATION_SESSION_AFTER_PAYMENT_SUCCESS(HttpStatus.NOT_FOUND, 40414, "결제 완료 후, 예약 세션이 없습니다."),
+    NOT_FOUND_RESERVATION_SESSION_COOKIE(HttpStatus.NOT_FOUND, 40414, "세션 쿠키가 없습니다."),
 
 
     /**

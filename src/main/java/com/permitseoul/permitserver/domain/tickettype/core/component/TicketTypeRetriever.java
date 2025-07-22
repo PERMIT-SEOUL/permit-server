@@ -1,12 +1,13 @@
 package com.permitseoul.permitserver.domain.tickettype.core.component;
 
-import com.permitseoul.permitserver.domain.tickettype.core.domain.TicketType;
 import com.permitseoul.permitserver.domain.tickettype.core.domain.entity.TicketTypeEntity;
 import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeNotfoundException;
 import com.permitseoul.permitserver.domain.tickettype.core.repository.TicketTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -19,12 +20,6 @@ public class TicketTypeRetriever {
     }
 
     @Transactional(readOnly = true)
-    public TicketType findTicketTypeById(final long ticketTypeId) {
-        final TicketTypeEntity ticketType = ticketTypeRepository.findById(ticketTypeId).orElseThrow(TicketTypeNotfoundException::new);
-        return TicketType.fromEntity(ticketType);
-    }
-
-    @Transactional(readOnly = true)
     public void validExistTicketType(final long ticketTypeId) {
         if(!ticketTypeRepository.existsById(ticketTypeId)) {
             throw new TicketTypeNotfoundException();
@@ -34,5 +29,16 @@ public class TicketTypeRetriever {
     @Transactional(readOnly = true)
     public void verifyTicketCount(final TicketTypeEntity ticketTypeEntity, final int count) {
         ticketTypeEntity.verifyTicketCount(count);
+    }
+
+    @Transactional
+    public TicketTypeEntity findByIdWithLock(final long ticketTypeId) {
+        return ticketTypeRepository.findByIdForUpdate(ticketTypeId)
+                .orElseThrow(TicketTypeNotfoundException::new);
+    }
+
+    @Transactional(readOnly = true)
+    public List<TicketTypeEntity> findAllByIds(final List<Long> ids) {
+        return ticketTypeRepository.findAllById(ids);
     }
 }

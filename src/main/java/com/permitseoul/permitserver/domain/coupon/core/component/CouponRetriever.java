@@ -1,5 +1,7 @@
 package com.permitseoul.permitserver.domain.coupon.core.component;
 
+import com.permitseoul.permitserver.domain.coupon.core.domain.Coupon;
+import com.permitseoul.permitserver.domain.coupon.core.domain.entity.CouponEntity;
 import com.permitseoul.permitserver.domain.coupon.core.exception.CouponConflictException;
 import com.permitseoul.permitserver.domain.coupon.core.exception.CouponNotfoundException;
 import com.permitseoul.permitserver.domain.coupon.core.repository.CouponRepository;
@@ -17,6 +19,12 @@ public class CouponRetriever {
         if(!couponRepository.existsByCouponCode(couponCode)) {
             throw new CouponNotfoundException();
         };
+    }
+
+    @Transactional(readOnly = true)
+    public Coupon findCouponByCouponCode(final String couponCode) {
+        final CouponEntity couponEntity = couponRepository.findByCouponCode(couponCode).orElseThrow(CouponNotfoundException::new);
+        return Coupon.fromEntity(couponEntity);
     }
 
     @Transactional(readOnly = true)
