@@ -21,8 +21,8 @@ public enum ErrorCode implements ApiCode {
     BAD_REQUEST_TICKET_SALES_EXPIRED(HttpStatus.BAD_REQUEST, 40007, "구매 날짜가 아닌 티켓입니다."),
     BAD_REQUEST_TICKET_TYPE_DUPLICATED(HttpStatus.BAD_REQUEST, 40008, "같은 티켓타입 아이디 여러 개가 요청되었습니다."),
     BAD_REQUEST_SESSION_ORDER_ID(HttpStatus.BAD_REQUEST, 40009, "예약 세션에 있는 orderId와 요청하신 orderId가 다릅니다."),
-    BAD_REQUEST_TICKET_COUNT_ZERO(HttpStatus.BAD_REQUEST, 400010, "구매하려는 티켓 개수가 1보다 작습니다."),
-    BAD_REQUEST_AMOUNT_MISMATCH(HttpStatus.BAD_REQUEST, 400011, "구매하려는 티켓들의 가격과 totalAmount가 다릅니다."),
+    BAD_REQUEST_TICKET_COUNT_ZERO(HttpStatus.BAD_REQUEST, 40010, "구매하려는 티켓 개수가 1보다 작습니다."),
+    BAD_REQUEST_AMOUNT_MISMATCH(HttpStatus.BAD_REQUEST, 40011, "구매하려는 티켓들의 가격과 totalAmount가 다릅니다."),
 
     /**
      * 401 Unauthorized
