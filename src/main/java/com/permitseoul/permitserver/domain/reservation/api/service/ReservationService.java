@@ -95,7 +95,7 @@ public class ReservationService {
 
         final String sessionKey;
         try {
-            sessionKey = reservationAndReservationTicketFacade.saveReservationWithTicketAndSessionKey(
+            sessionKey = reservationAndReservationTicketFacade.saveReservationWithTicketAndSession(
                     userId,
                     eventId,
                     orderId,

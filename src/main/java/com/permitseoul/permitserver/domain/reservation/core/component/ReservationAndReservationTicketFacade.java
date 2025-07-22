@@ -2,7 +2,6 @@ package com.permitseoul.permitserver.domain.reservation.core.component;
 
 import com.permitseoul.permitserver.domain.reservation.api.dto.ReservationInfoRequest;
 import com.permitseoul.permitserver.domain.reservation.core.domain.Reservation;
-import com.permitseoul.permitserver.domain.reservation.core.domain.ReservationStatus;
 import com.permitseoul.permitserver.domain.reservationsession.core.component.ReservationSessionSaver;
 import com.permitseoul.permitserver.domain.reservationsession.core.domain.ReservationSession;
 import com.permitseoul.permitserver.domain.reservationticket.core.component.ReservationTicketSaver;
@@ -23,12 +22,12 @@ public class ReservationAndReservationTicketFacade {
     private final ReservationSessionSaver reservationSessionSaver;
 
     @Transactional
-    public String saveReservationWithTicketAndSessionKey(final long userId,
-                                                         final long eventId,
-                                                         final String orderId,
-                                                         final BigDecimal totalAmount,
-                                                         final String couponCode,
-                                                         final List<ReservationInfoRequest.TicketTypeInfo> requestTicketTypeInfos) {
+    public String saveReservationWithTicketAndSession(final long userId,
+                                                      final long eventId,
+                                                      final String orderId,
+                                                      final BigDecimal totalAmount,
+                                                      final String couponCode,
+                                                      final List<ReservationInfoRequest.TicketTypeInfo> requestTicketTypeInfos) {
         final Reservation reservation = reservationSaver.saveReservation(userId, eventId, orderId, totalAmount, couponCode);
         requestTicketTypeInfos.forEach(
                 ticketTypeInfo -> reservationTicketSaver.saveReservationTicket(ticketTypeInfo.id(), reservation.getOrderId(), ticketTypeInfo.count())

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -28,12 +29,7 @@ public interface ReservationSessionRepository extends JpaRepository<ReservationS
             @Param("validFrom") final LocalDateTime validFrom
     );
 
-    @Modifying
-    @Transactional
-    @Query("""
-        DELETE FROM ReservationSessionEntity rs
-        WHERE rs.successful = true
-           OR rs.createdAt < :expireThreshold
-    """)
-    int deleteBySuccessfulTrueOrCreatedAtBefore(@Param("expireThreshold") final LocalDateTime expireThreshold);
+    List<ReservationSessionEntity> findAllBySuccessfulTrue();
+
+    List<ReservationSessionEntity> findAllBySuccessfulFalseAndCreatedAtBefore(final LocalDateTime time);
 }

@@ -1,7 +1,5 @@
 package com.permitseoul.permitserver.domain.reservationsession.core.domain.entity;
 
-import com.permitseoul.permitserver.domain.reservationsession.core.domain.ReservationSession;
-import com.permitseoul.permitserver.domain.reservationsession.core.domain.ReservationSessionStatus;
 import com.permitseoul.permitserver.global.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -29,20 +27,20 @@ public class ReservationSessionEntity extends BaseTimeEntity {
     private String sessionKey;
 
     @Column(name = "successful", nullable = false)
-    private ReservationSessionStatus reservationSessionStatus;
+    private boolean successful;
 
     private ReservationSessionEntity(long userId, String orderId, String sessionKey) {
         this.userId = userId;
         this.orderId = orderId;
         this.sessionKey = sessionKey;
-        this.reservationSessionStatus = ReservationSessionStatus.PENDING;
+        this.successful = false;
     }
 
     public static ReservationSessionEntity create(final long userId, final String orderId, final String sessionKey) {
         return new ReservationSessionEntity(userId, orderId, sessionKey);
     }
 
-    public void updateToReservationSessionEntityToSuccessful(final ReservationSessionStatus reservationSessionStatus) {
-        this.reservationSessionStatus = reservationSessionStatus;
+    public void updateToReservationSessionEntityToSuccessful() {
+        this.successful = true;
     }
 }

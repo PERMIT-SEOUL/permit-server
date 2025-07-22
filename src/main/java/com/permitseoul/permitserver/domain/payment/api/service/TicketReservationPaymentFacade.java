@@ -8,7 +8,6 @@ import com.permitseoul.permitserver.domain.reservation.core.domain.ReservationSt
 import com.permitseoul.permitserver.domain.reservation.core.domain.entity.ReservationEntity;
 import com.permitseoul.permitserver.domain.reservationsession.core.component.ReservationSessionRetriever;
 import com.permitseoul.permitserver.domain.reservationsession.core.component.ReservationSessionUpdater;
-import com.permitseoul.permitserver.domain.reservationsession.core.domain.ReservationSessionStatus;
 import com.permitseoul.permitserver.domain.reservationsession.core.domain.entity.ReservationSessionEntity;
 import com.permitseoul.permitserver.domain.reservationticket.core.domain.ReservationTicket;
 import com.permitseoul.permitserver.domain.ticket.core.component.TicketSaver;
@@ -53,7 +52,7 @@ public class TicketReservationPaymentFacade {
         decreaseTicketCountAtTicketTypeDBWithLock(reservationTicketList);
         ticketSaver.saveTickets(newTicketList);
         updateReservationStatus(reservationEntity, ReservationStatus.TICKET_ISSUED);
-        reservationSessionUpdater.updateReservationSessionStatus(reservationSessionEntity, ReservationSessionStatus.SUCCESS);
+        reservationSessionUpdater.updateReservationSessionStatus(reservationSessionEntity);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
