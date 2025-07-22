@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.domain.reservationsession.core.component;
 
+import com.permitseoul.permitserver.domain.reservationsession.core.domain.SessionProperties;
 import com.permitseoul.permitserver.domain.reservationsession.core.domain.entity.ReservationSessionEntity;
 import com.permitseoul.permitserver.domain.reservationsession.core.repository.ReservationSessionRepository;
 import com.permitseoul.permitserver.domain.reservationticket.core.component.ReservationTicketRetriever;
@@ -7,6 +8,7 @@ import com.permitseoul.permitserver.domain.reservationticket.core.domain.Reserva
 import com.permitseoul.permitserver.global.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -20,16 +22,18 @@ import java.util.Map;
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@EnableConfigurationProperties(SessionProperties.class)
 public class ReservationSessionCleanupScheduler {
 
     private final ReservationSessionRepository reservationSessionRepository;
     private final ReservationTicketRetriever reservationTicketRetriever;
     private final RedisTemplate<String, String> redisTemplate;
+    private final SessionProperties sessionProperties;
 
-    @Scheduled(cron = "*/30 * * * * *") // 매 30초마다
+    @Scheduled(cron = "0 * * * * *") // 매 1분마다
     @Transactional
     public void cleanupSessions() {
-        final LocalDateTime expireThreshold = LocalDateTime.now().minusMinutes(7);
+        final LocalDateTime expireThreshold = LocalDateTime.now().minusMinutes(sessionProperties.expireTime());
 
         // 성공인 세션들 -> 모두 삭제
         final List<ReservationSessionEntity> successSessions = reservationSessionRepository.findAllBySuccessfulTrue();
@@ -50,11 +54,14 @@ public class ReservationSessionCleanupScheduler {
 
             rollbackMap.forEach((ticketTypeId, count) -> {
                 final String redisKey = Constants.REDIS_TICKET_TYPE_KEY_NAME + ticketTypeId + Constants.REDIS_TICKET_TYPE_REMAIN;
-                redisTemplate.opsForValue().increment(redisKey, count);
-//                log.info("[Scheduler] Redis rollback: ticketTypeId={}, count={}", ticketTypeId, count);
+                try {
+                    redisTemplate.opsForValue().increment(redisKey, count);
+                    log.info("[Scheduler] Redis rollback: ticketTypeId={}, count={}", ticketTypeId, count);
+                } catch (Exception e) {
+                    log.error("[Scheduler] Redis rollback failed: ticketTypeId={}, count={}", ticketTypeId, count, e); // 실패한 롤백들 알림 발송해야될듯
+                }
             });
         }
         reservationSessionRepository.deleteAllInBatch(expiredOrFailedSessions);
-//        log.info("[Scheduler] Deleted {} expired & unsuccessful sessions", expiredOrFailedSessions.size());
     }
 }

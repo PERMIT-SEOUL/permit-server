@@ -38,8 +38,8 @@ public class ReservationEntity extends BaseTimeEntity {
     @Column(nullable = false)
     private ReservationStatus status;
 
-    @Column(name = "toss_payment_receive_time")
-    private LocalDateTime tossPaymentReceiveTime;
+    @Column(name = "toss_payment_response_time")
+    private LocalDateTime tossPaymentResponseTime;
 
     private ReservationEntity(long userId, long eventId, String orderId, BigDecimal totalAmount, String couponCode) {
         this.userId = userId;
@@ -48,7 +48,7 @@ public class ReservationEntity extends BaseTimeEntity {
         this.totalAmount = totalAmount;
         this.couponCode = couponCode;
         this.status = ReservationStatus.RESERVED;
-        this.tossPaymentReceiveTime = null;
+        this.tossPaymentResponseTime = null;
     }
 
     public static ReservationEntity create(final long userId,
@@ -67,8 +67,8 @@ public class ReservationEntity extends BaseTimeEntity {
         this.status = status;
     }
 
-    public void updateTossPaymentResponseTime(final LocalDateTime tossPaymentReceiveTime) {
-        this.tossPaymentReceiveTime = tossPaymentReceiveTime;
+    public void updateTossPaymentResponseTime(final LocalDateTime tossPaymentResponseTime) {
+        this.tossPaymentResponseTime = tossPaymentResponseTime;
     }
 }
 

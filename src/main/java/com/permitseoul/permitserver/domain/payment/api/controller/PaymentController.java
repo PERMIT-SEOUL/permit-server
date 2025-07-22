@@ -1,14 +1,17 @@
 package com.permitseoul.permitserver.domain.payment.api.controller;
 
 import com.permitseoul.permitserver.domain.auth.core.jwt.CookieExtractor;
+import com.permitseoul.permitserver.domain.payment.api.exception.NotFoundPaymentException;
 import com.permitseoul.permitserver.domain.payment.api.service.PaymentService;
 import com.permitseoul.permitserver.domain.payment.api.dto.PaymentCancelRequest;
 import com.permitseoul.permitserver.domain.payment.api.dto.PaymentConfirmRequest;
 import com.permitseoul.permitserver.domain.payment.api.dto.PaymentConfirmResponse;
+import com.permitseoul.permitserver.domain.reservation.api.exception.ReservationSessionCookieException;
 import com.permitseoul.permitserver.global.domain.CookieType;
 import com.permitseoul.permitserver.global.resolver.user.UserId;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
+import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import com.permitseoul.permitserver.global.response.code.SuccessCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -32,7 +35,12 @@ public class PaymentController {
             @RequestBody @Valid final PaymentConfirmRequest paymentConfirmRequest,
             final HttpServletRequest request
     ) {
-        final String reservationSessionKey = CookieExtractor.extractCookie(request, CookieType.RESERVATION_SESSION).getValue();
+        String reservationSessionKey;
+        try {
+            reservationSessionKey = CookieExtractor.extractCookie(request, CookieType.RESERVATION_SESSION).getValue();
+        } catch (ReservationSessionCookieException e) {
+            throw new NotFoundPaymentException(ErrorCode.NOT_FOUND_RESERVATION_SESSION_COOKIE);
+        }
         final PaymentConfirmResponse paymentConfirmResponse = paymentService.getPaymentConfirm(
                 userId,
                 paymentConfirmRequest.orderId(),

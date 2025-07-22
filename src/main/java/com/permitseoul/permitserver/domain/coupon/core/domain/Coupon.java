@@ -1,7 +1,6 @@
 package com.permitseoul.permitserver.domain.coupon.core.domain;
 
 import com.permitseoul.permitserver.domain.coupon.core.domain.entity.CouponEntity;
-import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

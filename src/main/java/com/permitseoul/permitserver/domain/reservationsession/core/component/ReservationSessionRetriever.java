@@ -26,11 +26,6 @@ public class ReservationSessionRetriever {
         return ReservationSession.fromEntity(reservationSession);
     }
 
-    public ReservationSessionEntity findReservationSessionEntityById(final long reservationSessionId) {
-        return reservationSessionRepository.findById(reservationSessionId).orElseThrow(
-                ReservationSessionNotFoundException::new
-        );
-    }
 
     @Transactional(readOnly = true)
     public ReservationSessionEntity findReservationSessionEntityByIdAfterPaymentSuccess(final long reservationSessionId) {
