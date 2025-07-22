@@ -58,7 +58,7 @@ public enum ErrorCode implements ApiCode {
     NOT_FOUND_TICKET_ROUND(HttpStatus.NOT_FOUND, 40411, "해당 티켓 차수(round)가 없습니다."),
     NOT_FOUND_RESERVATION_TICKET(HttpStatus.NOT_FOUND, 40412, "예약된 티켓이 없습니다."),
     NOT_FOUND_RESERVATION_SESSION(HttpStatus.NOT_FOUND, 40413, "예약 세션이 없습니다."),
-
+    NOT_FOUND_RESERVATION_SESSION_AFTER_PAYMENT_SUCCESS(HttpStatus.NOT_FOUND, 40414, "결제 완료 후, 예약 세션이 없습니다."),
 
 
     /**

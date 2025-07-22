@@ -31,16 +31,14 @@ public class ReservationSessionCleanupScheduler {
     public void cleanupSessions() {
         final LocalDateTime expireThreshold = LocalDateTime.now().minusMinutes(7);
 
-        // 1. 성공 세션은 시간 상관없이 전부 삭제
+        // 성공인 세션들 -> 모두 삭제
         final List<ReservationSessionEntity> successSessions = reservationSessionRepository.findAllBySuccessfulTrue();
         reservationSessionRepository.deleteAllInBatch(successSessions);
 
-        // 2. 실패 + 7분 경과 세션만 따로 조회
+        // 실패인 세션들 + 7분 지난 세션 -> 롤백 및 삭제
         final List<ReservationSessionEntity> expiredOrFailedSessions = reservationSessionRepository.findAllBySuccessfulFalseAndCreatedAtBefore(expireThreshold);
-
-        // Redis rollback
         final Map<Long, Integer> rollbackMap = new HashMap<>();
-        List<String> expiredOrderIds = expiredOrFailedSessions.stream()
+        final List<String> expiredOrderIds = expiredOrFailedSessions.stream()
                 .map(ReservationSessionEntity::getOrderId)
                 .toList();
 
