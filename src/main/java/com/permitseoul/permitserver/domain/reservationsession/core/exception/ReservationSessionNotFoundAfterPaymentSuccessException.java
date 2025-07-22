@@ -1,0 +1,4 @@
+package com.permitseoul.permitserver.domain.reservationsession.core.exception;
+
+public class ReservationSessionNotFoundAfterPaymentSuccessException extends ReservationSessionCoreException {
+}

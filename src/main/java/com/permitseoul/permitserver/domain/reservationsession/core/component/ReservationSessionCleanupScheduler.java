@@ -53,10 +53,10 @@ public class ReservationSessionCleanupScheduler {
             rollbackMap.forEach((ticketTypeId, count) -> {
                 final String redisKey = Constants.REDIS_TICKET_TYPE_KEY_NAME + ticketTypeId + Constants.REDIS_TICKET_TYPE_REMAIN;
                 redisTemplate.opsForValue().increment(redisKey, count);
-                log.info("[Scheduler] Redis rollback: ticketTypeId={}, count={}", ticketTypeId, count);
+//                log.info("[Scheduler] Redis rollback: ticketTypeId={}, count={}", ticketTypeId, count);
             });
         }
         reservationSessionRepository.deleteAllInBatch(expiredOrFailedSessions);
-        log.info("[Scheduler] Deleted {} expired & unsuccessful sessions", expiredOrFailedSessions.size());
+//        log.info("[Scheduler] Deleted {} expired & unsuccessful sessions", expiredOrFailedSessions.size());
     }
 }

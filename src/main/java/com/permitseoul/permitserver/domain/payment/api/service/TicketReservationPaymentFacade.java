@@ -45,7 +45,7 @@ public class TicketReservationPaymentFacade {
                                          final long reservationId,
                                          final TossPaymentResponse tossPaymentResponse) {
 
-        final ReservationSessionEntity reservationSessionEntity = reservationSessionRetriever.findReservationSessionEntityById(reservationSessionId);
+        final ReservationSessionEntity reservationSessionEntity = reservationSessionRetriever.findReservationSessionEntityByIdAfterPaymentSuccess(reservationSessionId);
         final ReservationEntity reservationEntity = reservationRetriever.findReservationEntityById(reservationId);
 
         savePaymentInfo(reservationEntity, tossPaymentResponse);

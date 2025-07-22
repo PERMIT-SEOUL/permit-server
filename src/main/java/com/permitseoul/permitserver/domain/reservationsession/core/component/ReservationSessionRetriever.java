@@ -2,6 +2,7 @@ package com.permitseoul.permitserver.domain.reservationsession.core.component;
 
 import com.permitseoul.permitserver.domain.reservationsession.core.domain.ReservationSession;
 import com.permitseoul.permitserver.domain.reservationsession.core.domain.entity.ReservationSessionEntity;
+import com.permitseoul.permitserver.domain.reservationsession.core.exception.ReservationSessionNotFoundAfterPaymentSuccessException;
 import com.permitseoul.permitserver.domain.reservationsession.core.exception.ReservationSessionNotFoundException;
 import com.permitseoul.permitserver.domain.reservationsession.core.repository.ReservationSessionRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,18 +26,16 @@ public class ReservationSessionRetriever {
         return ReservationSession.fromEntity(reservationSession);
     }
 
-    @Transactional(readOnly = true)
-    public ReservationSessionEntity getValidReservationSessionEntity(final long userId, final String sessionKey, final LocalDateTime now) {
-        return reservationSessionRepository.findValidSessionByUserIdAndSessionKeyAndValidTime(
-                userId,
-                sessionKey,
-                now
-        ).orElseThrow(ReservationSessionNotFoundException::new);
-    }
-
     public ReservationSessionEntity findReservationSessionEntityById(final long reservationSessionId) {
         return reservationSessionRepository.findById(reservationSessionId).orElseThrow(
                 ReservationSessionNotFoundException::new
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public ReservationSessionEntity findReservationSessionEntityByIdAfterPaymentSuccess(final long reservationSessionId) {
+        return reservationSessionRepository.findById(reservationSessionId).orElseThrow(
+                ReservationSessionNotFoundAfterPaymentSuccessException::new
         );
     }
 }
