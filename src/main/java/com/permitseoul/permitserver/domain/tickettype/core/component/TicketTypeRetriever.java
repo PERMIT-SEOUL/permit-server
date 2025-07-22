@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class TicketTypeRetriever {
@@ -33,5 +35,10 @@ public class TicketTypeRetriever {
     public TicketTypeEntity findByIdWithLock(final long ticketTypeId) {
         return ticketTypeRepository.findByIdForUpdate(ticketTypeId)
                 .orElseThrow(TicketTypeNotfoundException::new);
+    }
+
+    @Transactional(readOnly = true)
+    public List<TicketTypeEntity> findAllByIds(final List<Long> ids) {
+        return ticketTypeRepository.findAllById(ids);
     }
 }

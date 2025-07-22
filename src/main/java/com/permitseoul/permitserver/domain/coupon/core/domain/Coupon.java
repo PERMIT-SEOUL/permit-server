@@ -1,0 +1,26 @@
+package com.permitseoul.permitserver.domain.coupon.core.domain;
+
+import com.permitseoul.permitserver.domain.coupon.core.domain.entity.CouponEntity;
+import jakarta.persistence.Column;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
+public class Coupon {
+    private final Long couponId;
+    private final long eventId;
+    private final String couponCode;
+    private final int discountRates;
+    private final boolean used;
+
+    public static Coupon fromEntity(final CouponEntity couponEntity) {
+        return new Coupon(
+                couponEntity.getCouponId(),
+                couponEntity.getEventId(),
+                couponEntity.getCouponCode(),
+                couponEntity.getDiscountRates(),
+                couponEntity.isUsed()
+        );
+    }
+}

@@ -1,6 +1,8 @@
 package com.permitseoul.permitserver.domain.reservation.api.service;
 
 import com.permitseoul.permitserver.domain.coupon.core.component.CouponRetriever;
+import com.permitseoul.permitserver.domain.coupon.core.domain.Coupon;
+import com.permitseoul.permitserver.domain.coupon.core.domain.entity.CouponEntity;
 import com.permitseoul.permitserver.domain.coupon.core.exception.CouponConflictException;
 import com.permitseoul.permitserver.domain.coupon.core.exception.CouponNotfoundException;
 import com.permitseoul.permitserver.domain.event.core.component.EventRetriever;
@@ -62,18 +64,34 @@ public class ReservationService {
                                   final BigDecimal totalAmount,
                                   final String orderId,
                                   final List<ReservationInfoRequest.TicketTypeInfo> requestTicketTypeInfos) {
-        final Map<Long, Integer> requestedTicketTypeAndCountMap;
+        // 1. 요청한 티켓타입 ID 목록 수집
+        final List<Long> requestTicketTypeIds = requestTicketTypeInfos.stream()
+                .map(ReservationInfoRequest.TicketTypeInfo::id)
+                .toList();
+
+        // 2. 요청한 티켓타입 엔티티들
+        final Map<Long, TicketTypeEntity> ticketTypeEntityMap;
+
+        // 레디스에서 재고 감소 티켓타입 정보
+        final Map<Long, Integer> redisDecreasedTicketTypeInfo;
+
         try {
-            validExistUserById(userId);
-            validExistEventById(eventId);
-            validUsableTicketType(requestTicketTypeInfos, eventId);
+            ticketTypeEntityMap = ticketTypeRetriever.findAllByIds(requestTicketTypeIds).stream()
+                    .collect(Collectors.toMap(TicketTypeEntity::getTicketTypeId, it -> it));
+
+            Coupon coupon = null;
+            validateExistUserById(userId);
+            validateExistEventById(eventId);
 
             if(couponCode != null) {
-                validateCouponCode(couponCode, requestTicketTypeInfos);
+                coupon = validateCoupon(couponCode, requestTicketTypeInfos);
             }
 
+            validateUsableTicketType(ticketTypeEntityMap, eventId);
+            validateTotalAmount(ticketTypeEntityMap, requestTicketTypeInfos, totalAmount, coupon);
+
             //redis로 선점 예약 방식 (10분)
-            requestedTicketTypeAndCountMap = decreaseRedisTicketCount(requestTicketTypeInfos);
+            redisDecreasedTicketTypeInfo = decreaseRedisTicketCount(requestTicketTypeInfos);
 
         } catch (EventNotfoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_EVENT);
@@ -93,9 +111,8 @@ public class ReservationService {
             throw new ReservationBadRequestException(ErrorCode.BAD_REQUEST_TICKET_TYPE_DUPLICATED);
         }
 
-        final String sessionKey;
         try {
-            sessionKey = reservationAndReservationTicketFacade.saveReservationWithTicketAndSession(
+            final String sessionKey = reservationAndReservationTicketFacade.saveReservationWithTicketAndSession(
                     userId,
                     eventId,
                     orderId,
@@ -105,11 +122,39 @@ public class ReservationService {
             );
             return sessionKey;
         } catch (DataIntegrityViolationException e) {
-            increaseRedisTicketCount(requestedTicketTypeAndCountMap);
+            increaseRedisTicketCount(redisDecreasedTicketTypeInfo);
             throw e;
         } catch (Exception e) {
-            increaseRedisTicketCount(requestedTicketTypeAndCountMap);
+            increaseRedisTicketCount(redisDecreasedTicketTypeInfo);
             throw new ReservationIllegalException(ErrorCode.INTERNAL_SESSION_ERROR);
+        }
+    }
+
+    private void validateTotalAmount(final Map<Long, TicketTypeEntity> ticketTypeEntityMap,
+                                     final List<ReservationInfoRequest.TicketTypeInfo> requestTicketTypeInfos,
+                                     final BigDecimal totalAmount,
+                                     final Coupon coupon) {
+
+        BigDecimal calculatedAmount = BigDecimal.ZERO;
+
+        for (ReservationInfoRequest.TicketTypeInfo ticketTypeInfo : requestTicketTypeInfos) {
+            final TicketTypeEntity ticketTypeEntity = ticketTypeEntityMap.get(ticketTypeInfo.id());
+            if (ticketTypeEntity == null) {
+                throw new ReservationBadRequestException(ErrorCode.NOT_FOUND_TICKET_TYPE);
+            }
+            BigDecimal price = BigDecimal.valueOf(ticketTypeEntity.getTicketPrice());
+            BigDecimal count = BigDecimal.valueOf(ticketTypeInfo.count());
+            calculatedAmount = calculatedAmount.add(price.multiply(count));
+        }
+
+        if (coupon != null) {
+            final int discountRate = coupon.getDiscountRates();
+            final BigDecimal discount = calculatedAmount.multiply(BigDecimal.valueOf(discountRate)).divide(BigDecimal.valueOf(100));
+            calculatedAmount = calculatedAmount.subtract(discount);
+        }
+
+        if (calculatedAmount.compareTo(totalAmount) != 0) {
+            throw new ReservationBadRequestException(ErrorCode.BAD_REQUEST_AMOUNT_MISMATCH);
         }
     }
 
@@ -146,14 +191,14 @@ public class ReservationService {
 
 
     private Map<Long, Integer> decreaseRedisTicketCount(final List<ReservationInfoRequest.TicketTypeInfo> requestTicketTypeInfos) {
-        final Map<Long, Integer> requestTicketTypeInfoMap = new HashMap<>();
+        final Map<Long, Integer> redisDecreaseAppliedTicketTypeInfoMap = new HashMap<>();
         try {
             requestTicketTypeInfos.forEach(
                     ticketTypeInfo -> {
                         final String redisKey = Constants.REDIS_TICKET_TYPE_KEY_NAME + ticketTypeInfo.id() + Constants.REDIS_TICKET_TYPE_REMAIN;
                         final Long remain = redisTemplate.opsForValue().decrement(redisKey, ticketTypeInfo.count());
 
-                        requestTicketTypeInfoMap.put(ticketTypeInfo.id(), ticketTypeInfo.count());
+                        redisDecreaseAppliedTicketTypeInfoMap.put(ticketTypeInfo.id(), ticketTypeInfo.count());
 
                         if (remain == null || remain < 0) {
                             throw new RedisInSufficientTicketException();
@@ -161,9 +206,9 @@ public class ReservationService {
                     }
             );
 
-            return requestTicketTypeInfoMap;
+            return redisDecreaseAppliedTicketTypeInfoMap;
         } catch (RedisInSufficientTicketException e) {
-            increaseRedisTicketCount(requestTicketTypeInfoMap);
+            increaseRedisTicketCount(redisDecreaseAppliedTicketTypeInfoMap);
             throw new TicketTypeInsufficientCountException();
         }
     }
@@ -178,22 +223,18 @@ public class ReservationService {
         );
     }
 
-    private void validExistUserById(final long userId) {
+    private void validateExistUserById(final long userId) {
         userRetriever.validExistUserById(userId);
     }
 
-    private void validExistEventById(final long eventId) {
+    private void validateExistEventById(final long eventId) {
         eventRetriever.validExistEventById(eventId);
     }
 
-    private void validUsableTicketType(final List<ReservationInfoRequest.TicketTypeInfo> requestTicketTypeInfos, final long eventId) {
-        final Map<Long, Integer> ticketCountMap = requestTicketTypeInfos.stream()
-                .collect(Collectors.toMap(ReservationInfoRequest.TicketTypeInfo::id, ReservationInfoRequest.TicketTypeInfo::count));
-
-        ticketCountMap.forEach((ticketTypeId, requestedCount) -> {
-                    final TicketTypeEntity ticketType = ticketTypeRetriever.findTicketTypeEntityById(ticketTypeId);
+    private void validateUsableTicketType(final Map<Long, TicketTypeEntity> ticketTypeMap, final long eventId) {
+        ticketTypeMap.forEach( (ticketTypeId, ticketTypeEntity) -> {
                     //티켓 구매가능 날짜 검증
-                    final TicketRoundEntity ticketRound = ticketRoundRetriever.findTicketRoundEntityById(ticketType.getTicketRoundId());
+                    final TicketRoundEntity ticketRound = ticketRoundRetriever.findTicketRoundEntityById(ticketTypeEntity.getTicketRoundId());
                     if (ticketRound.getEventId() != eventId) {
                         throw new TicketRoundNotFoundException();
                     }
@@ -203,13 +244,14 @@ public class ReservationService {
         );
     }
 
-    private void validateCouponCode(final String couponCode, final List<ReservationInfoRequest.TicketTypeInfo> ticketTypeInfos) {
-        couponRetriever.isExistCoupon(couponCode);
-        couponRetriever.isCouponValid(couponCode);
-        //쿠폰코드쓰면 티켓 구매 1개만 가능함
+    private Coupon validateCoupon(final String couponCode, final List<ReservationInfoRequest.TicketTypeInfo> ticketTypeInfos) {
         if (ticketTypeInfos == null || ticketTypeInfos.size() != COUPON_CAN_BUY_TICKET_MAX_ || ticketTypeInfos.get(0).count() != COUPON_CAN_BUY_TICKET_MAX_) {
             throw new ReservationBadRequestException(ErrorCode.BAD_REQUEST_COUPON_TICKET_COUNT);
         }
+        final Coupon coupon = couponRetriever.findCouponByCouponCode(couponCode);
+        couponRetriever.isCouponValid(coupon.getCouponCode());
+        //쿠폰코드쓰면 티켓 구매 1개만 가능함
+        return coupon;
     }
 
 }
