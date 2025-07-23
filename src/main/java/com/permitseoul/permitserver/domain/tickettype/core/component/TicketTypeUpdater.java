@@ -14,7 +14,6 @@ public class TicketTypeUpdater {
         ticketTypeEntity.decreaseTicketCount(count);
     }
 
-    @Transactional
     public void increaseTicketCount(final TicketTypeEntity ticketTypeEntity, @Positive(message = "count는 0이상이어야합니다.") final int count) {
         ticketTypeEntity.increaseTicketCount(count);
     }

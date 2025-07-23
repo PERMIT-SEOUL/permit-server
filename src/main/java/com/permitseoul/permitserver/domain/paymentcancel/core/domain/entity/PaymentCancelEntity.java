@@ -22,7 +22,7 @@ public class PaymentCancelEntity {
     @Column(name = "cancel_amount", nullable = false)
     private BigDecimal cancelAmount;
 
-    //결제키
+    //결제키(유니크키)
     @Column(name = "transaction_key", nullable = false)
     private String transactionKey;
 

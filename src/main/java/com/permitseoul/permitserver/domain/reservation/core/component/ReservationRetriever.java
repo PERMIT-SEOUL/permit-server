@@ -34,17 +34,24 @@ public class ReservationRetriever {
 
     @Transactional(readOnly = true)
     public ReservationEntity findReservationEntityById(final long reservationId) {
-         return reservationRepository.findById(reservationId).orElseThrow(ReservationNotFoundException::new);
+         return reservationRepository.findById(reservationId).orElseThrow(
+                 ReservationNotFoundException::new
+         );
     }
 
     @Transactional(readOnly = true)
-    public ReservationEntity findReservationEntityByIdAndUserId(final long reservationId, final long userId) {
-        return reservationRepository.findByReservationIdAndUserId(reservationId, userId).orElseThrow(ReservationNotFoundException::new);
+    public Reservation findReservationByIdAndUserId(final long reservationId, final long userId) {
+        final ReservationEntity reservationEntity = reservationRepository.findByReservationIdAndUserId(reservationId, userId).orElseThrow(
+                ReservationNotFoundException::new
+        );
+        return Reservation.fromEntity(reservationEntity);
     }
 
     @Transactional(readOnly = true)
     public Reservation findReservationByOrderIdAndUserId(final String orderId, final long userId) {
-        final ReservationEntity reservationEntity = reservationRepository.findByOrderIdAndUserId(orderId, userId).orElseThrow(ReservationNotFoundException::new);
+        final ReservationEntity reservationEntity = reservationRepository.findByOrderIdAndUserId(orderId, userId).orElseThrow(
+                ReservationNotFoundException::new
+        );
         return Reservation.fromEntity(reservationEntity);
     }
 }
