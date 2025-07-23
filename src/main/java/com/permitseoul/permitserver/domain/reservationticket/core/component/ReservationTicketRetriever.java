@@ -6,6 +6,7 @@ import com.permitseoul.permitserver.domain.reservationticket.core.exception.Rese
 import com.permitseoul.permitserver.domain.reservationticket.core.repository.ReservationTicketRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -18,7 +19,7 @@ public class ReservationTicketRetriever {
 
     public List<ReservationTicket> findAllByOrderId(final String orderId) {
         final List<ReservationTicketEntity> reservationTicketEntities = reservationTicketRepository.findAllByOrderId(orderId);
-        if (reservationTicketEntities == null || reservationTicketEntities.isEmpty()) {
+        if (ObjectUtils.isEmpty(reservationTicketEntities)) {
             throw new ReservationTicketNotFoundException();
         }
         return reservationTicketEntities.stream()
