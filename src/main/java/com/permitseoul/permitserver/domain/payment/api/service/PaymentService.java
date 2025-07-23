@@ -206,10 +206,10 @@ public class PaymentService {
                     payment.getCurrency()
             );
 
-            final List<Long> TicketEntityIdList = ticketList.stream().map(Ticket::getTicketId).toList();
+            final List<Long> ticketEntityIdList = ticketList.stream().map(Ticket::getTicketId).toList();
 
             ticketReservationPaymentFacade.updateTicketAndReservationStatus(
-                    TicketEntityIdList,
+                    ticketEntityIdList,
                     reservation.getReservationId(),
                     TicketStatus.CANCELED,
                     ReservationStatus.PAYMENT_CANCELED
