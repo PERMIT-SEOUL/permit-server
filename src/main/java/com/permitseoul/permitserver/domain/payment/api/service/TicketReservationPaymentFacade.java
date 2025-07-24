@@ -1,6 +1,5 @@
 package com.permitseoul.permitserver.domain.payment.api.service;
 
-import com.permitseoul.permitserver.domain.payment.api.dto.PaymentCancelRequest;
 import com.permitseoul.permitserver.domain.payment.api.dto.PaymentCancelResponse;
 import com.permitseoul.permitserver.domain.payment.api.dto.TossPaymentResponse;
 import com.permitseoul.permitserver.domain.payment.core.component.PaymentSaver;
@@ -24,7 +23,7 @@ import com.permitseoul.permitserver.domain.tickettype.core.component.TicketTypeR
 import com.permitseoul.permitserver.domain.tickettype.core.component.TicketTypeUpdater;
 import com.permitseoul.permitserver.domain.tickettype.core.domain.entity.TicketTypeEntity;
 import com.permitseoul.permitserver.global.exception.DateFormatException;
-import com.permitseoul.permitserver.global.formatter.DateFormatterUtil;
+import com.permitseoul.permitserver.global.util.DateFormatterUtil;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -35,7 +34,7 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
-import static com.permitseoul.permitserver.global.formatter.DateFormatterUtil.parseDateToLocalDateTime;
+import static com.permitseoul.permitserver.global.util.DateFormatterUtil.parseDateToLocalDateTime;
 
 @Component
 @RequiredArgsConstructor
