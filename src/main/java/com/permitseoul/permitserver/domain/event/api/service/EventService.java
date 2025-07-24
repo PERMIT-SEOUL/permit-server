@@ -45,12 +45,12 @@ public class EventService {
 
     @Transactional(readOnly = true)
     public EventDetailResponse getEventDetail(final long eventId) {
-
         try {
             final Event event = eventRetriever.findEventById(eventId);
+
             final String eventDate = DateFormatterUtil.formatEventDate(event.getStartDate(), event.getEndDate());
             final String eventTime = TimeFormatterUtil.formatEventTime(event.getStartDate(), event.getEndDate());
-            final List<EventDetailResponse.LineupCategory> lineupList = parseLineup(event.getLineUp());
+
             final List<EventImage> eventImageList = eventImageRetriever.findAllEventImagesByEventId(event.getEventId());
             final List<EventDetailResponse.EventImageInfo> imagesInfo = eventImageList.stream()
                     .map(eventImage -> EventDetailResponse.EventImageInfo.of(eventImage.getImageUrl(), eventImage.getSequence()))
@@ -62,7 +62,7 @@ public class EventService {
                     eventDate, eventTime,
                     event.getMinAge(),
                     event.getDetails(),
-                    lineupList,
+                    parseLineup(event.getLineUp()),
                     imagesInfo
             );
         } catch (EventNotfoundException e) {
