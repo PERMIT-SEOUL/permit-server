@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class EventRetriever {
@@ -22,5 +25,13 @@ public class EventRetriever {
     @Transactional(readOnly = true)
     public void validExistEventById(final long eventId) {
         eventRepository.findById(eventId).orElseThrow(EventNotfoundException::new);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Event> findAllVisibleEvents(final LocalDateTime now) {
+        List<EventEntity> events = eventRepository.findVisibleEvents(now);
+        return events.stream()
+                .map(Event::fromEntity)
+                .toList();
     }
 }

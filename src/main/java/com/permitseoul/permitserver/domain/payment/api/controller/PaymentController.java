@@ -8,7 +8,7 @@ import com.permitseoul.permitserver.domain.payment.api.dto.PaymentConfirmRequest
 import com.permitseoul.permitserver.domain.payment.api.dto.PaymentConfirmResponse;
 import com.permitseoul.permitserver.domain.reservation.api.exception.ReservationSessionCookieException;
 import com.permitseoul.permitserver.global.domain.CookieType;
-import com.permitseoul.permitserver.global.resolver.user.UserId;
+import com.permitseoul.permitserver.global.resolver.user.UserIdHeader;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
@@ -31,7 +31,7 @@ public class PaymentController {
     //결제 승인 api
     @PostMapping("/confirm")
     public ResponseEntity<BaseResponse<?>> getConfirmToPayment(
-            @UserId final Long userId,
+            @UserIdHeader final Long userId,
             @RequestBody @Valid final PaymentConfirmRequest paymentConfirmRequest,
             final HttpServletRequest request
     ) {
@@ -54,7 +54,7 @@ public class PaymentController {
     //결제 취소 api
     @PostMapping("/cancel")
     public ResponseEntity<BaseResponse<?>> cancelPayment(
-            @UserId final Long userId,
+            @UserIdHeader final Long userId,
             @RequestBody @Valid final PaymentCancelRequest paymentCancelRequest
     ) {
         paymentService.cancelPayment(userId, paymentCancelRequest.orderId());

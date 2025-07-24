@@ -23,6 +23,8 @@ public enum ErrorCode implements ApiCode {
     BAD_REQUEST_SESSION_ORDER_ID(HttpStatus.BAD_REQUEST, 40009, "예약 세션에 있는 orderId와 요청하신 orderId가 다릅니다."),
     BAD_REQUEST_TICKET_COUNT_ZERO(HttpStatus.BAD_REQUEST, 40010, "구매하려는 티켓 개수가 1보다 작습니다."),
     BAD_REQUEST_AMOUNT_MISMATCH(HttpStatus.BAD_REQUEST, 40011, "구매하려는 티켓들의 가격과 totalAmount가 다릅니다."),
+    BAD_REQUEST_ID_DECODE_ERROR(HttpStatus.BAD_REQUEST, 40012, "해당 객체 id를 decode 할 수 없습니다."),
+
 
     /**
      * 401 Unauthorized
@@ -61,6 +63,8 @@ public enum ErrorCode implements ApiCode {
     NOT_FOUND_RESERVATION_SESSION(HttpStatus.NOT_FOUND, 40413, "예약 세션이 없습니다."),
     NOT_FOUND_RESERVATION_SESSION_AFTER_PAYMENT_SUCCESS(HttpStatus.NOT_FOUND, 40414, "결제 완료 후, 예약 세션이 없습니다."),
     NOT_FOUND_RESERVATION_SESSION_COOKIE(HttpStatus.NOT_FOUND, 40414, "세션 쿠키가 없습니다."),
+    NOT_FOUND_EVENT_IMAGE(HttpStatus.NOT_FOUND, 40415, "해당 이벤트 이미지가 없습니다."),
+
 
 
     /**
@@ -88,6 +92,8 @@ public enum ErrorCode implements ApiCode {
     INTERNAL_ISO_DATE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50005, "iso date string에서 localdate로 변환 과정 에러입니다."),
     INTERNAL_TRANSITION_ENUM_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50006, "enum status 변환 과정 에러입니다."),
     INTERNAL_SESSION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50007, "reservation session 저장 과정 에러입니다."),
+    INTERNAL_ID_ENCODE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50008, "객체 id Encoding 에러입니다."),
+
 
 
     ;

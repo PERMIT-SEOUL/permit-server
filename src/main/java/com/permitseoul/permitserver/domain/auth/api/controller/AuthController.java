@@ -6,12 +6,11 @@ import com.permitseoul.permitserver.domain.auth.api.dto.SignUpRequest;
 import com.permitseoul.permitserver.domain.auth.core.jwt.CookieCreatorUtil;
 import com.permitseoul.permitserver.domain.auth.api.service.AuthService;
 import com.permitseoul.permitserver.global.Constants;
-import com.permitseoul.permitserver.global.resolver.user.UserId;
+import com.permitseoul.permitserver.global.resolver.user.UserIdHeader;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.SuccessCode;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -65,7 +64,7 @@ public class AuthController {
     //로그아웃
     @PostMapping("/logout")
     public ResponseEntity<BaseResponse<?>> logout(
-            @UserId final Long userId,
+            @UserIdHeader final Long userId,
             @CookieValue(name = Constants.REFRESH_TOKEN) final Cookie refreshTokenCookie,
             final HttpServletResponse response
     ) {
