@@ -1,4 +1,4 @@
 package com.permitseoul.permitserver.domain.event;
 
-public class EventBaseException extends RuntimeException {
+public abstract class EventBaseException extends RuntimeException {
 }
