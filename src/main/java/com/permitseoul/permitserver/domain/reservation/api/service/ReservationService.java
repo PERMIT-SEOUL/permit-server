@@ -17,6 +17,8 @@ import com.permitseoul.permitserver.domain.reservation.core.domain.Reservation;
 import com.permitseoul.permitserver.domain.reservation.core.exception.ReservationNotFoundException;
 import com.permitseoul.permitserver.domain.reservationsession.core.component.ReservationSessionRetriever;
 import com.permitseoul.permitserver.domain.reservationsession.core.domain.ReservationSession;
+import com.permitseoul.permitserver.domain.reservationsession.core.exception.ReservationSessionNotFoundAfterPaymentSuccessException;
+import com.permitseoul.permitserver.domain.reservationsession.core.exception.ReservationSessionNotFoundException;
 import com.permitseoul.permitserver.domain.ticketround.core.component.TicketRoundRetriever;
 import com.permitseoul.permitserver.domain.ticketround.core.domain.entity.TicketRoundEntity;
 import com.permitseoul.permitserver.domain.ticketround.core.exception.TicketRoundExpiredException;
@@ -153,6 +155,8 @@ public class ReservationService {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_USER);
         } catch (ReservationNotFoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_RESERVATION);
+        } catch (ReservationSessionNotFoundException e) {
+            throw new NotfoundReservationException(ErrorCode.NOT_FOUND_RESERVATION_SESSION);
         }
     }
 

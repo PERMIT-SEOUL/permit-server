@@ -2,13 +2,17 @@ package com.permitseoul.permitserver.domain.reservation.api.controller;
 
 import com.permitseoul.permitserver.domain.auth.core.jwt.CookieCreatorUtil;
 import com.permitseoul.permitserver.domain.auth.core.jwt.CookieExtractor;
+import com.permitseoul.permitserver.domain.payment.api.exception.NotFoundPaymentException;
 import com.permitseoul.permitserver.domain.reservation.api.dto.ReservationInfoRequest;
 import com.permitseoul.permitserver.domain.reservation.api.dto.*;
+import com.permitseoul.permitserver.domain.reservation.api.exception.NotfoundReservationException;
+import com.permitseoul.permitserver.domain.reservation.api.exception.ReservationSessionCookieException;
 import com.permitseoul.permitserver.domain.reservation.api.service.ReservationService;
 import com.permitseoul.permitserver.global.domain.CookieType;
 import com.permitseoul.permitserver.global.resolver.user.UserIdHeader;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
+import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import com.permitseoul.permitserver.global.response.code.SuccessCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -49,8 +53,13 @@ public class ReservationController {
     public ResponseEntity<BaseResponse<?>> getReadyToPayment(
             @UserIdHeader final Long userId,
             final HttpServletRequest request
-            ) {
-        final String reservationSessionKey = CookieExtractor.extractCookie(request, CookieType.RESERVATION_SESSION).getValue();
+    ) {
+        String reservationSessionKey;
+        try {
+            reservationSessionKey = CookieExtractor.extractCookie(request, CookieType.RESERVATION_SESSION).getValue();
+        } catch (ReservationSessionCookieException e) {
+            throw new NotfoundReservationException(ErrorCode.NOT_FOUND_RESERVATION_SESSION_COOKIE);
+        }
         final ReservationInfoResponse reservationInfoResponse = reservationService.getReservationInfo(userId, reservationSessionKey);
         return ApiResponseUtil.success(SuccessCode.OK, reservationInfoResponse);
     }
