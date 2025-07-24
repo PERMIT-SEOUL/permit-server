@@ -31,7 +31,8 @@ public class SecurityConfig {
             "/api/users/signup",
             "/api/users/login",
             "/api/users/reissue",
-            "/api/events"
+            "/api/events",
+            "/api/events/detail/{eventId}",
     };
 
     private static final String[] adminURIList = {

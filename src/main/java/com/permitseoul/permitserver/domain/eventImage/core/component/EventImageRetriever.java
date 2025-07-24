@@ -8,6 +8,9 @@ import com.permitseoul.permitserver.domain.eventImage.core.repository.EventImage
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -18,5 +21,17 @@ public class EventImageRetriever {
     public EventImage findEventThumbnailImage(final long eventId) {
         final EventImageEntity eventImageEntity = eventImageRepository.findThumbnailImageEntityByEventId(eventId).orElseThrow(EventImageNotFoundException::new);
         return EventImage.fromEntity(eventImageEntity);
+    }
+
+    @Transactional(readOnly = true)
+    public List<EventImage> findAllEventImagesByEventId(final long eventId) {
+        final List<EventImageEntity> eventImageEntityList = eventImageRepository.findAllByEventId(eventId);
+        if (ObjectUtils.isEmpty(eventImageEntityList)) {
+            throw new EventImageNotFoundException();
+        }
+
+        return eventImageEntityList.stream()
+                .map(EventImage::fromEntity)
+                .toList();
     }
 }
