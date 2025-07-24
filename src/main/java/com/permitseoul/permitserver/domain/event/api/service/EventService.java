@@ -56,32 +56,41 @@ public class EventService {
                     .map(eventImage -> EventDetailResponse.EventImageInfo.of(eventImage.getImageUrl(), eventImage.getSequence()))
                     .toList();
 
-            return EventDetailResponse.of(event.getName(), event.getVenue(), eventDate, eventTime, event.getMinAge(), event.getDetails(), lineupList, imagesInfo);
-
+            return EventDetailResponse.of(
+                    event.getName(),
+                    event.getVenue(),
+                    eventDate, eventTime,
+                    event.getMinAge(),
+                    event.getDetails(),
+                    lineupList,
+                    imagesInfo
+            );
         } catch (EventNotfoundException e) {
             throw new NotFoundEventException(ErrorCode.NOT_FOUND_EVENT);
+        } catch (EventImageNotFoundException e) {
+            throw new NotFoundEventException(ErrorCode.NOT_FOUND_EVENT_IMAGE);
         }
     }
 
-    public List<EventDetailResponse.LineupCategory> parseLineup(String rawLineupText) {
+    private List<EventDetailResponse.LineupCategory> parseLineup(final String rawLineupText) {
         List<EventDetailResponse.LineupCategory> result = new ArrayList<>();
         if (rawLineupText == null || rawLineupText.isBlank()) return result;
 
-        String[] lines = rawLineupText.split("\\r?\\n");
+        final String[] lines = rawLineupText.split("\\r?\\n");
 
         for (String line : lines) {
             line = line.trim();
             if (line.isBlank()) continue;
 
-            // [카테고리] 아티스트1 아티스트2 ...
-            int closingBracketIndex = line.indexOf(']');
+            // [카테고리] 아티스트1 아티스트2
+            final int closingBracketIndex = line.indexOf(']');
             if (!line.startsWith("[") || closingBracketIndex == -1) continue;
 
-            String category = line.substring(0, closingBracketIndex + 1); // [Headliner]
-            String artistPart = line.substring(closingBracketIndex + 1).trim();
+            final String category = line.substring(0, closingBracketIndex + 1);
+            final String artistPart = line.substring(closingBracketIndex + 1).trim();
             if (artistPart.isBlank()) continue;
 
-            List<EventDetailResponse.Artist> artists = Arrays.stream(artistPart.split("\\s+"))
+            final List<EventDetailResponse.Artist> artists = Arrays.stream(artistPart.split("\\s+"))
                     .map(EventDetailResponse.Artist::new)
                     .toList();
 
@@ -90,8 +99,6 @@ public class EventService {
 
         return result;
     }
-
-
 
     private List<EventAllResponse.EventInfo> filteringEventByEventType(final List<Event> eventList, final EventType type) {
         try {
