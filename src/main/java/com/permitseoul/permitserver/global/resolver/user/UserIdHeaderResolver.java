@@ -21,11 +21,11 @@ public class UserIdHeaderResolver implements HandlerMethodArgumentResolver {
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return (parameter.getParameterType().equals(Long.class) || parameter.getParameterType().equals(long.class))
-                && parameter.hasParameterAnnotation(UserId.class);
+                && parameter.hasParameterAnnotation(UserIdHeader.class);
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter,
+    public Long resolveArgument(MethodParameter parameter,
                                   ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest,
                                   WebDataBinderFactory binderFactory) {
@@ -38,6 +38,6 @@ public class UserIdHeaderResolver implements HandlerMethodArgumentResolver {
         if (principal == null || principal.equals(ANONY_USER)) {
             throw new ResolverException(ErrorCode.UNAUTHORIZED_SECURITY_ENTRY);
         }
-        return principal;
+        return (Long) principal;
     }
 }

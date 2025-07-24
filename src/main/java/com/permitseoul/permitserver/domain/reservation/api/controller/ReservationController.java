@@ -6,11 +6,10 @@ import com.permitseoul.permitserver.domain.reservation.api.dto.ReservationInfoRe
 import com.permitseoul.permitserver.domain.reservation.api.dto.*;
 import com.permitseoul.permitserver.domain.reservation.api.service.ReservationService;
 import com.permitseoul.permitserver.global.domain.CookieType;
-import com.permitseoul.permitserver.global.resolver.user.UserId;
+import com.permitseoul.permitserver.global.resolver.user.UserIdHeader;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.SuccessCode;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -28,7 +27,7 @@ public class ReservationController {
     //예약 생성 api
     @PostMapping("/ready")
     public ResponseEntity<BaseResponse<?>> saveReservation(
-            @UserId final Long userId,
+            @UserIdHeader final Long userId,
             @RequestBody @Valid final ReservationInfoRequest reservationInfoRequest,
             final HttpServletResponse response
     ) {
@@ -48,7 +47,7 @@ public class ReservationController {
     //예약 조회 api
     @GetMapping("/ready")
     public ResponseEntity<BaseResponse<?>> getReadyToPayment(
-            @UserId final Long userId,
+            @UserIdHeader final Long userId,
             final HttpServletRequest request
             ) {
         final String reservationSessionKey = CookieExtractor.extractCookie(request, CookieType.RESERVATION_SESSION).getValue();
