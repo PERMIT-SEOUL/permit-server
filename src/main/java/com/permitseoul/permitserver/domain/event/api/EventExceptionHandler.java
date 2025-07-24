@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class EventExceptionHandler {
 
     @ExceptionHandler(EventApiException.class)
-    public ResponseEntity<BaseResponse<?>> handlePaymentApiException(final EventApiException e) {
+    public ResponseEntity<BaseResponse<?>> handleEventApiException(final EventApiException e) {
         return ApiResponseUtil.failure(e.getErrorCode());
     }
 }
