@@ -5,12 +5,13 @@ import lombok.*;
 
 @Entity
 @Table(name = "event_images")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EventImageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "image_id", nullable = false)
-    private Long imageId;
+    @Column(name = "event_image_id", nullable = false)
+    private Long eventImageId;
 
     @Column(name = "event_id", nullable = false)
     private long eventId;
@@ -21,14 +22,10 @@ public class EventImageEntity {
     @Column(name = "sequence", nullable = false)
     private int sequence;
 
-    @Column(name = "is_thumbnail", nullable = false)
-    private boolean isThumbnail;
-
-    private EventImageEntity(long eventId, String imageUrl, int sequence, boolean isThumbnail) {
+    private EventImageEntity(long eventId, String imageUrl, int sequence) {
         this.eventId = eventId;
         this.imageUrl = imageUrl;
         this.sequence = sequence;
-        this.isThumbnail = isThumbnail;
     }
 }
 
