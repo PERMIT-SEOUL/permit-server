@@ -23,6 +23,8 @@ public enum ErrorCode implements ApiCode {
     BAD_REQUEST_SESSION_ORDER_ID(HttpStatus.BAD_REQUEST, 40009, "예약 세션에 있는 orderId와 요청하신 orderId가 다릅니다."),
     BAD_REQUEST_TICKET_COUNT_ZERO(HttpStatus.BAD_REQUEST, 40010, "구매하려는 티켓 개수가 1보다 작습니다."),
     BAD_REQUEST_AMOUNT_MISMATCH(HttpStatus.BAD_REQUEST, 40011, "구매하려는 티켓들의 가격과 totalAmount가 다릅니다."),
+    BAD_REQUEST_ID_DECODE_ERROR(HttpStatus.BAD_REQUEST, 40012, "해당 객체 id를 decode 할 수 없습니다."),
+
 
     /**
      * 401 Unauthorized

@@ -3,7 +3,9 @@ package com.permitseoul.permitserver.global.handler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.permitseoul.permitserver.global.exception.FilterException;
+import com.permitseoul.permitserver.global.exception.PermitGlobalException;
 import com.permitseoul.permitserver.global.exception.ResolverException;
+import com.permitseoul.permitserver.global.exception.UrlDecodeException;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
@@ -48,6 +50,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(JsonProcessingException.class)
     public ResponseEntity<BaseResponse<?>> handleJsonProcessingException(final JsonProcessingException e) {
         return ApiResponseUtil.failure(ErrorCode.INTERNAL_JSON_FORMAT_ERROR);
+    }
+
+    @ExceptionHandler(PermitGlobalException.class)
+    public ResponseEntity<BaseResponse<?>> handlePermitGlobalException(final PermitGlobalException e) {
+        return ApiResponseUtil.failure(ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage());
+    }
+
+    @ExceptionHandler(UrlDecodeException.class)
+    public ResponseEntity<BaseResponse<?>> handleUrlDecodeException(final UrlDecodeException e) {
+        return ApiResponseUtil.failure(e.getErrorCode());
     }
 
     /**
