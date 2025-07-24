@@ -1,4 +1,4 @@
-package com.permitseoul.permitserver.global.formatter;
+package com.permitseoul.permitserver.global.util;
 
 import com.permitseoul.permitserver.domain.payment.api.dto.PaymentCancelResponse;
 import com.permitseoul.permitserver.global.exception.DateFormatException;
@@ -13,8 +13,8 @@ import java.util.Locale;
 import java.util.Optional;
 
 public abstract class DateFormatterUtil {
-    private static final DateTimeFormatter DAY_FORMATTER = DateTimeFormatter.ofPattern("E", Locale.ENGLISH);         //Sun
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd", Locale.ENGLISH);       //25
+    private static final DateTimeFormatter DAY_FORMATTER = DateTimeFormatter.ofPattern("E", Locale.ENGLISH);   //Sun
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd", Locale.ENGLISH);  //25
     private static final DateTimeFormatter MONTH_YEAR_FORMATTER = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.ENGLISH); //May 2025
 
     public static String formatEventDate(final LocalDateTime startDate, final LocalDateTime endDate) {
