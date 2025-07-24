@@ -12,6 +12,7 @@ import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import com.permitseoul.permitserver.global.util.SecureUrlUtil;
 import io.netty.util.internal.ObjectUtil;
 import lombok.RequiredArgsConstructor;
+import org.hashids.Hashids;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -24,6 +25,7 @@ import java.util.List;
 public class EventService {
     private final EventRetriever eventRetriever;
     private final EventImageRetriever eventImageRetriever;
+    private final SecureUrlUtil secureUrlUtil;
 
     public EventAllResponse getAllVisibleEvents() {
         final LocalDateTime now = LocalDateTime.now();
@@ -46,7 +48,7 @@ public class EventService {
                     .map(event -> {
                         final EventImage thumbnailImage = eventImageRetriever.findEventThumbnailImage(event.getEventId());
                         return EventAllResponse.EventInfo.of(
-                                SecureUrlUtil.encodeUrl(event.getEventId()),
+                                secureUrlUtil.encode(event.getEventId()),
                                 event.getName(),
                                 thumbnailImage.getImageUrl()
                         );

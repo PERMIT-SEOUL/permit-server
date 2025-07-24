@@ -66,7 +66,6 @@ import java.util.List;
 
 @Slf4j
 @Service
-@EnableConfigurationProperties(TossProperties.class)
 public class PaymentService {
     private static final String COLON = ":";
     private static final String AUTH_TYPE_BASIC = "Basic ";
@@ -78,7 +77,6 @@ public class PaymentService {
     private final EventRetriever eventRetriever;
     private final TossPaymentClient tossPaymentClient;
     private final ReservationRetriever reservationRetriever;
-    private final TossProperties tossProperties;
     private final String authorizationHeader;
     private final TicketTypeRetriever ticketTypeRetriever;
     private final PaymentRetriever paymentRetriever;
@@ -104,7 +102,6 @@ public class PaymentService {
         this.eventRetriever = eventRetriever;
         this.tossPaymentClient = tossPaymentClient;
         this.reservationRetriever = reservationRetriever;
-        this.tossProperties = tossProperties;
         this.authorizationHeader = buildAuthHeader(tossProperties.apiSecretKey());
         this.ticketTypeRetriever = ticketTypeRetriever;
         this.paymentRetriever = paymentRetriever;
