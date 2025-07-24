@@ -131,6 +131,31 @@ public class ReservationService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public ReservationInfoResponse getReservationInfo(final long userId, final String sessionKey) {
+        try {
+            final String orderId = getOrderIdWithValidateSessionKey(userId,sessionKey);
+            final User user = userRetriever.findUserById(userId);
+            final Reservation reservation = reservationRetriever.findReservationByOrderIdAndUserId(orderId, userId);
+            final Event event = eventRetriever.findEventById(reservation.getEventId());
+
+            return ReservationInfoResponse.of(
+                    event.getName(),
+                    reservation.getOrderId(),
+                    user.getName(),
+                    user.getEmail(),
+                    reservation.getTotalAmount(),
+                    user.getSocialId()
+            );
+        } catch (EventNotfoundException e) {
+            throw new NotfoundReservationException(ErrorCode.NOT_FOUND_EVENT);
+        } catch (UserNotFoundException e) {
+            throw new NotfoundReservationException(ErrorCode.NOT_FOUND_USER);
+        } catch (ReservationNotFoundException e) {
+            throw new NotfoundReservationException(ErrorCode.NOT_FOUND_RESERVATION);
+        }
+    }
+
     private void validateTotalAmount(final Map<Long, TicketTypeEntity> ticketTypeEntityMap,
                                      final List<ReservationInfoRequest.TicketTypeInfo> requestTicketTypeInfos,
                                      final BigDecimal totalAmount,
@@ -156,31 +181,6 @@ public class ReservationService {
 
         if (calculatedAmount.compareTo(totalAmount) != 0) {
             throw new ReservationBadRequestException(ErrorCode.BAD_REQUEST_AMOUNT_MISMATCH);
-        }
-    }
-
-    @Transactional(readOnly = true)
-    public ReservationInfoResponse getReservationInfo(final long userId, final String sessionKey) {
-        try {
-            final String orderId = getOrderIdWithValidateSessionKey(userId,sessionKey);
-            final User user = userRetriever.findUserById(userId);
-            final Reservation reservation = reservationRetriever.findReservationByOrderIdAndUserId(orderId, userId);
-            final Event event = eventRetriever.findEventById(reservation.getEventId());
-
-            return ReservationInfoResponse.of(
-                    event.getName(),
-                    reservation.getOrderId(),
-                    user.getName(),
-                    user.getEmail(),
-                    reservation.getTotalAmount(),
-                    user.getSocialId()
-            );
-        } catch (EventNotfoundException e) {
-            throw new NotfoundReservationException(ErrorCode.NOT_FOUND_EVENT);
-        } catch (UserNotFoundException e) {
-            throw new NotfoundReservationException(ErrorCode.NOT_FOUND_USER);
-        } catch (ReservationNotFoundException e) {
-            throw new NotfoundReservationException(ErrorCode.NOT_FOUND_RESERVATION);
         }
     }
 

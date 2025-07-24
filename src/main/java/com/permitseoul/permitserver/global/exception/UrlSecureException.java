@@ -4,10 +4,10 @@ import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import lombok.Getter;
 
 @Getter
-public class UrlDecodeException extends PermitGlobalException {
+public class UrlSecureException extends PermitGlobalException {
 
     private final ErrorCode errorCode;
-    public UrlDecodeException(ErrorCode errorCode) {
+    public UrlSecureException(ErrorCode errorCode) {
         this.errorCode = errorCode;
     }
 }
