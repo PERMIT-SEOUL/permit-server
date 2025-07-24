@@ -15,11 +15,13 @@ public record EventAllResponse(
     }
 
     public record EventInfo(
-        String eventId,
-        String eventName,
-        String thumbnailImageUrl) {
+            String eventId,
+            String eventName,
+            String thumbnailImageUrl) {
+
         public static EventInfo of(final String eventId, final String eventName, final String thumbnailImageUrl) {
             return new EventInfo(eventId, eventName, thumbnailImageUrl);
+
         }
     }
 }

@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class EventApiException extends EventBaseException {
+public abstract class EventApiException extends EventBaseException {
   private final ErrorCode errorCode;
-
 }

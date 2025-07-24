@@ -1,6 +1,6 @@
-package com.permitseoul.permitserver.domain.event;
+package com.permitseoul.permitserver.domain.event.api;
 
-import com.permitseoul.permitserver.domain.payment.api.exception.PaymentApiException;
+import com.permitseoul.permitserver.domain.event.api.exception.EventApiException;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import org.springframework.http.ResponseEntity;
@@ -9,8 +9,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice(basePackages = "com.permitseoul.permitserver.domain.event")
 public class EventExceptionHandler {
-    @ExceptionHandler(PaymentApiException.class)
-    public ResponseEntity<BaseResponse<?>> handlePaymentApiException(final PaymentApiException e) {
+
+    @ExceptionHandler(EventApiException.class)
+    public ResponseEntity<BaseResponse<?>> handlePaymentApiException(final EventApiException e) {
         return ApiResponseUtil.failure(e.getErrorCode());
     }
 }
