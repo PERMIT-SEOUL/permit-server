@@ -1,13 +1,12 @@
 package com.permitseoul.permitserver.domain.ticket.api.dto;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public record EventTicketInfoResponse(
         List<Round> rounds
 ) {
     public record Round(
-            String roundId,
+            long roundId,
             boolean roundAvailable,
             String roundPrice,
             String roundName,

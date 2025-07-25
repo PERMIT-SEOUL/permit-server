@@ -1,5 +1,7 @@
 package com.permitseoul.permitserver.global.util;
 
+import com.permitseoul.permitserver.global.exception.PriceFormatException;
+
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.List;
@@ -14,9 +16,11 @@ public abstract class PriceFormatterUtil {
         return DECIMAL_FORMAT.format(price);
     }
 
-    // 한 라운드 내에 티켓타입들의 "최저가 ~ 최고가" 또는 단일가격(티켓타입 하나일 때) 반환
+    // 한 라운드 내에 티켓타입들의 "최저가 ~ 최고가" or 단일가격(티켓타입 하나일 때) 반환
     public static String formatRoundPrice(final List<BigDecimal> prices) {
-        if (prices == null || prices.isEmpty()) return "-";
+        if (prices == null || prices.isEmpty()) {
+            throw new PriceFormatException();
+        }
 
         final List<BigDecimal> sorted = prices.stream()
                 .sorted()

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -16,4 +17,9 @@ public interface TicketTypeRepository extends JpaRepository<TicketTypeEntity, Lo
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT t FROM TicketTypeEntity t WHERE t.ticketTypeId = :ticketTypeId")
     Optional<TicketTypeEntity> findByIdForUpdate(@Param("ticketTypeId") long ticketTypeId);
+
+
+    List<TicketTypeEntity> findByTicketRoundIdIn(final List<Long> ticketRoundIds);
+
+    List<TicketTypeEntity> findByTicketRoundId(final long ticketRoundId);
 }

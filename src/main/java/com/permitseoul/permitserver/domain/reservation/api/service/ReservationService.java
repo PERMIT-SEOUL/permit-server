@@ -65,7 +65,8 @@ public class ReservationService {
                                   final String couponCode,
                                   final BigDecimal totalAmount,
                                   final String orderId,
-                                  final List<ReservationInfoRequest.TicketTypeInfo> requestTicketTypeInfos) {
+                                  final List<ReservationInfoRequest.TicketTypeInfo> requestTicketTypeInfos,
+                                  final LocalDateTime now) {
         // 1. 요청한 티켓타입 ID 목록 수집
         final List<Long> requestTicketTypeIds = requestTicketTypeInfos.stream()
                 .map(ReservationInfoRequest.TicketTypeInfo::id)
@@ -89,7 +90,7 @@ public class ReservationService {
                 coupon = validateCoupon(couponCode, requestTicketTypeInfos);
             }
 
-            validateUsableTicketType(ticketTypeEntityMap, eventId);
+            validateUsableTicketType(ticketTypeEntityMap, eventId, now);
             validateTotalAmount(ticketTypeEntityMap, requestTicketTypeInfos, totalAmount, coupon);
 
             //redis로 선점 예약 방식 (7분)
@@ -172,7 +173,7 @@ public class ReservationService {
             if (ticketTypeEntity == null) {
                 throw new ReservationBadRequestException(ErrorCode.NOT_FOUND_TICKET_TYPE);
             }
-            BigDecimal price = BigDecimal.valueOf(ticketTypeEntity.getTicketPrice());
+            BigDecimal price = ticketTypeEntity.getTicketPrice();
             BigDecimal count = BigDecimal.valueOf(ticketTypeInfo.count());
             calculatedAmount = calculatedAmount.add(price.multiply(count));
         }
@@ -236,15 +237,14 @@ public class ReservationService {
         eventRetriever.validExistEventById(eventId);
     }
 
-    private void validateUsableTicketType(final Map<Long, TicketTypeEntity> ticketTypeMap, final long eventId) {
+    private void validateUsableTicketType(final Map<Long, TicketTypeEntity> ticketTypeMap, final long eventId, final LocalDateTime now) {
         ticketTypeMap.forEach( (ticketTypeId, ticketTypeEntity) -> {
                     //티켓 구매가능 날짜 검증
-                    final TicketRoundEntity ticketRound = ticketRoundRetriever.findTicketRoundEntityById(ticketTypeEntity.getTicketRoundId());
-                    if (ticketRound.getEventId() != eventId) {
+                    final TicketRoundEntity ticketRoundEntity = ticketRoundRetriever.findTicketRoundEntityById(ticketTypeEntity.getTicketRoundId());
+                    if (ticketRoundEntity.getEventId() != eventId) {
                         throw new TicketRoundNotFoundException();
                     }
-                    final LocalDateTime now = LocalDateTime.now();
-                    ticketRound.verifyTicketSalesAvailable(now);
+                    ticketRoundEntity.verifyTicketSalesAvailable(now);
                 }
         );
     }
