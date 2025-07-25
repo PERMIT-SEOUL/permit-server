@@ -1,11 +1,13 @@
 package com.permitseoul.permitserver.domain.tickettype.core.component;
 
+import com.permitseoul.permitserver.domain.tickettype.core.domain.TicketType;
 import com.permitseoul.permitserver.domain.tickettype.core.domain.entity.TicketTypeEntity;
 import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeNotfoundException;
 import com.permitseoul.permitserver.domain.tickettype.core.repository.TicketTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 
@@ -41,4 +43,16 @@ public class TicketTypeRetriever {
     public List<TicketTypeEntity> findAllByIds(final List<Long> ids) {
         return ticketTypeRepository.findAllById(ids);
     }
+
+    @Transactional(readOnly = true)
+    public List<TicketType> findTicketTypeListByRoundIdList(final List<Long> roundIds) {
+        final List<TicketTypeEntity> ticketTypeEntityList = ticketTypeRepository.findByTicketRoundIdIn(roundIds);
+        if (ObjectUtils.isEmpty(ticketTypeEntityList)) {
+            throw new TicketTypeNotfoundException();
+        }
+        return ticketTypeEntityList.stream()
+                .map(TicketType::fromEntity)
+                .toList();
+    }
+
 }

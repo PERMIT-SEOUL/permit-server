@@ -5,6 +5,7 @@ import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeT
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -24,7 +25,7 @@ public class TicketTypeEntity {
     private String ticketTypeName;
 
     @Column(name = "ticket_price", nullable = false)
-    private int ticketPrice;
+    private BigDecimal ticketPrice;
 
     @Column(name = "total_ticket_count", nullable = false)
     private int totalTicketCount;
@@ -40,7 +41,7 @@ public class TicketTypeEntity {
 
     private TicketTypeEntity(long ticketRoundId,
                             String ticketTypeName,
-                            int ticketPrice,
+                            BigDecimal ticketPrice,
                             int totalTicketCount,
                             int remainTicketCount,
                             LocalDateTime ticketStartDate,

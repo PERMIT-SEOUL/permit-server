@@ -4,6 +4,7 @@ import com.permitseoul.permitserver.domain.tickettype.core.domain.entity.TicketT
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -11,7 +12,8 @@ import java.time.LocalDateTime;
 public class TicketType {
     private final Long ticketTypeId;
     private final long ticketRoundId;
-    private final int ticketPrice;
+    private final String ticketTypeName;
+    private final BigDecimal ticketPrice;
     private final int totalTicketCount;
     private final int remainTicketCount;
     private final LocalDateTime ticketStartDate;
@@ -21,6 +23,7 @@ public class TicketType {
         return new TicketType(
                 ticketTypeEntity.getTicketTypeId(),
                 ticketTypeEntity.getTicketRoundId(),
+                ticketTypeEntity.getTicketTypeName(),
                 ticketTypeEntity.getTicketPrice(),
                 ticketTypeEntity.getTotalTicketCount(),
                 ticketTypeEntity.getRemainTicketCount(),

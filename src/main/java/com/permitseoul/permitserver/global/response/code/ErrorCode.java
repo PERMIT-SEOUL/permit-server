@@ -64,6 +64,8 @@ public enum ErrorCode implements ApiCode {
     NOT_FOUND_RESERVATION_SESSION_AFTER_PAYMENT_SUCCESS(HttpStatus.NOT_FOUND, 40414, "결제 완료 후, 예약 세션이 없습니다."),
     NOT_FOUND_RESERVATION_SESSION_COOKIE(HttpStatus.NOT_FOUND, 40414, "세션 쿠키가 없습니다."),
     NOT_FOUND_EVENT_IMAGE(HttpStatus.NOT_FOUND, 40415, "해당 이벤트 이미지가 없습니다."),
+    NOT_FOUND_TICKET_TYPE_PRICE(HttpStatus.NOT_FOUND, 40416, "해당 티켓 라운드의 티켓타입 가격이 없습니다."),
+
 
 
 
@@ -93,6 +95,7 @@ public enum ErrorCode implements ApiCode {
     INTERNAL_TRANSITION_ENUM_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50006, "enum status 변환 과정 에러입니다."),
     INTERNAL_SESSION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50007, "reservation session 저장 과정 에러입니다."),
     INTERNAL_ID_ENCODE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50008, "객체 id Encoding 에러입니다."),
+
 
 
 
