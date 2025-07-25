@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/tickets")
@@ -22,6 +24,6 @@ public class TicketController {
     public ResponseEntity<BaseResponse<?>> getEventTicketInfo(
             @EventIdPathVariable final Long eventId
     ) {
-        return ApiResponseUtil.success(SuccessCode.OK, ticketService.getEventTicketInfo(eventId));
+        return ApiResponseUtil.success(SuccessCode.OK, ticketService.getEventTicketInfo(eventId, LocalDateTime.now()));
     }
 }

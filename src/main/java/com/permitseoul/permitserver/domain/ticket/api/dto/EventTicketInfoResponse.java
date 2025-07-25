@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.domain.ticket.api.dto;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public record EventTicketInfoResponse(
@@ -7,7 +8,7 @@ public record EventTicketInfoResponse(
 ) {
     public record Round(
             String roundId,
-            String roundAvailable,
+            boolean roundAvailable,
             String roundPrice,
             String roundName,
             List<TicketType> ticketTypes

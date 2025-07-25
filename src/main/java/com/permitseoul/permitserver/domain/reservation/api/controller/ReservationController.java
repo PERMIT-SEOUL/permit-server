@@ -22,6 +22,8 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/reservations")
@@ -41,7 +43,8 @@ public class ReservationController {
                 reservationInfoRequest.couponCode(),
                 reservationInfoRequest.totalAmount(),
                 reservationInfoRequest.orderId(),
-                reservationInfoRequest.ticketTypeInfos()
+                reservationInfoRequest.ticketTypeInfos(),
+                LocalDateTime.now()
         );
         final ResponseCookie reservationSessionCookie = CookieCreatorUtil.createReservationSessionCookie(sessionKey);
         response.setHeader("Set-Cookie", reservationSessionCookie.toString());
