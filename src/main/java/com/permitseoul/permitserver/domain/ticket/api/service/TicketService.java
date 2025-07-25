@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -44,27 +45,12 @@ public class TicketService {
                     .stream()
                     .collect(Collectors.groupingBy(TicketType::getTicketRoundId));
 
-            //라운드별로 티켓타입 최소 하나씩은 있는지 검증
+            // 라운드별로 티켓타입 최소 하나씩은 있는지 검증
             verifyEveryRoundHasTicketType(ticketTypesByTicketRoundIdMap, ticketRoundIdList);
 
-
-            // Round DTO 리스트 생성
             final List<EventTicketInfoResponse.Round> roundDtoList = ticketRoundList.stream()
-                    .map(round -> {
-                        boolean isAvailable = !now.isBefore(round.getSalesStartDate()) && !now.isAfter(round.getSalesEndDate());
-                        final List<TicketType> ticketTypeListInMap = Objects.requireNonNull(ticketTypesByTicketRoundIdMap.get(round.getTicketRoundId()));
-                        final String roundPrice = formatRoundPrice(ticketTypeListInMap);
-
-                        final List<EventTicketInfoResponse.TicketType> ticketTypeDtoList = getTicketTypeIfTicketRoundAvailableOrEmptyList(isAvailable, ticketTypeListInMap);
-
-                        return new EventTicketInfoResponse.Round(
-                                round.getTicketRoundId(),
-                                isAvailable,
-                                roundPrice,
-                                round.getTicketRoundTitle(),
-                                ticketTypeDtoList
-                        );
-                    }).toList();
+                    .sorted(Comparator.comparing(TicketRound::getTicketRoundId))
+                    .map(round -> createRoundDto(round, ticketTypesByTicketRoundIdMap, now)).toList();
 
             return new EventTicketInfoResponse(roundDtoList);
         } catch (TicketTypeNotfoundException e) {
@@ -72,6 +58,27 @@ public class TicketService {
         } catch (PriceFormatException e) {
             throw new NotFoundTicketException(ErrorCode.NOT_FOUND_TICKET_TYPE_PRICE);
         }
+    }
+
+    private EventTicketInfoResponse.Round createRoundDto(final TicketRound round,
+                                                         final Map<Long, List<TicketType>> ticketTypesByTicketRoundIdMap,
+                                                         final LocalDateTime now ) {
+        final boolean isAvailable = isRoundAvailable(round, now);
+        final List<TicketType> ticketTypeListInMap = Objects.requireNonNull(ticketTypesByTicketRoundIdMap.get(round.getTicketRoundId()));
+        final String roundPrice = formatRoundPrice(ticketTypeListInMap);
+        final List<EventTicketInfoResponse.TicketType> ticketTypeDtoList = getTicketTypeIfTicketRoundAvailableOrEmptyList(isAvailable, ticketTypeListInMap);
+
+        return new EventTicketInfoResponse.Round(
+                round.getTicketRoundId(),
+                isAvailable,
+                roundPrice,
+                round.getTicketRoundTitle(),
+                ticketTypeDtoList
+        );
+    }
+
+    private boolean isRoundAvailable(final TicketRound round, final LocalDateTime now) {
+        return !now.isBefore(round.getSalesStartDate()) && !now.isAfter(round.getSalesEndDate());
     }
 
     private void verifyEveryRoundHasTicketType(final Map<Long, List<TicketType>> ticketTypesByTicketRoundIdMap,
@@ -90,6 +97,7 @@ public class TicketService {
     private List<EventTicketInfoResponse.TicketType> getTicketTypeIfTicketRoundAvailableOrEmptyList(final boolean isAvailable, final List<TicketType> ticketTypeListInMap) {
         return isAvailable
                 ? ticketTypeListInMap.stream()
+                .sorted(Comparator.comparing(TicketType::getTicketTypeId))
                 .map(this::makeFormattedTicketTypeDto)
                 .toList()
                 : List.of();

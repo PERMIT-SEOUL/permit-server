@@ -8,12 +8,12 @@ import java.util.List;
 
 public abstract class PriceFormatterUtil {
 
-    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#,###");
+    private static final String DECIMAL_PATTERN = "#,###";
 
     // BigDecimal타입 가격을 60,000 형태로 변환
     public static String formatPrice(final BigDecimal price) {
         if (price == null) return "-";
-        return DECIMAL_FORMAT.format(price);
+        return new DecimalFormat(DECIMAL_PATTERN).format(price);
     }
 
     // 한 라운드 내에 티켓타입들의 "최저가 ~ 최고가" or 단일가격(티켓타입 하나일 때) 반환
