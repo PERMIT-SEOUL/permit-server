@@ -12,4 +12,6 @@ public interface CouponRepository extends JpaRepository<CouponEntity, Long> {
     boolean existsByCouponCode(final String couponCode);
     boolean existsByCouponCodeAndUsedFalse(final String couponCode);
     Optional<CouponEntity> findByCouponCode(final String couponCode);
+    Optional<CouponEntity> findByCouponCodeAndEventIdAndUsedFalse(final String couponCode, final long eventId);
+
 }

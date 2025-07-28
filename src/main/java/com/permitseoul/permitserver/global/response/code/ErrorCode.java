@@ -81,6 +81,7 @@ public enum ErrorCode implements ApiCode {
     INTEGRITY_CONFLICT(HttpStatus.CONFLICT, 40901, "데이터 무결성 위반입니다."),
     CONFLICT_INSUFFICIENT_TICKET(HttpStatus.CONFLICT, 40902, "구매하려는 티켓의 티켓 개수가 부족합니다."),
     CONFLICT_ALREADY_USED_COUPON_CODE(HttpStatus.CONFLICT, 40903, "이미 사용한 쿠폰코드입니다."),
+    CONFLICT_USER_EMAIL(HttpStatus.CONFLICT, 40904, "이미 존재하는 이메일입니다.."),
 
 
     /**
