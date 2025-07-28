@@ -46,6 +46,7 @@ public class SecurityConfig {
             "/api/reservations/ready/*",
             "/api/payments/confirm",
             "/api/payments/cancel",
+            "/api/coupons/validate/*"
     };
 
     @Bean

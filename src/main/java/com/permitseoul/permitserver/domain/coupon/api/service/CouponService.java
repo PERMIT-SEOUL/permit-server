@@ -14,9 +14,9 @@ import org.springframework.stereotype.Service;
 public class CouponService {
     private final CouponRetriever couponRetriever;
 
-    public CouponValidateResponse validateCoupon(final String couponCode) {
+    public CouponValidateResponse validateCoupon(final String couponCode, final long eventId) {
         try {
-            final Coupon coupon = couponRetriever.findCouponByCouponCode(couponCode);
+            final Coupon coupon = couponRetriever.findValidCouponByCodeAndEvent(couponCode, eventId);
             return CouponValidateResponse.of(coupon.getDiscountRates());
         } catch (CouponNotfoundException e) {
             throw new NotFoundCouponException(ErrorCode.NOT_FOUND_COUPON_CODE);

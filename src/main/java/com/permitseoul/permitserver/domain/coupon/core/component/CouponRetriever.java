@@ -33,4 +33,13 @@ public class CouponRetriever {
             throw new CouponConflictException();
         };
     }
+
+    @Transactional(readOnly = true)
+    public Coupon findValidCouponByCodeAndEvent(final String couponCode, final long eventId) {
+        final CouponEntity couponEntity = couponRepository
+                .findByCouponCodeAndEventIdAndUsedFalse(couponCode, eventId)
+                .orElseThrow(CouponNotfoundException::new);
+
+        return Coupon.fromEntity(couponEntity);
+    }
 }

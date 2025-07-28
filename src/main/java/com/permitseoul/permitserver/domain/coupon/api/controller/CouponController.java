@@ -2,11 +2,10 @@ package com.permitseoul.permitserver.domain.coupon.api.controller;
 
 import com.permitseoul.permitserver.domain.coupon.api.dto.CouponValidateRequest;
 import com.permitseoul.permitserver.domain.coupon.api.service.CouponService;
-import com.permitseoul.permitserver.global.resolver.user.UserIdHeader;
+import com.permitseoul.permitserver.global.resolver.event.EventIdPathVariable;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.SuccessCode;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,10 +21,11 @@ public class CouponController {
     private final CouponService couponService;
 
     //쿠폰 검증 api
-    @PostMapping("/validate")
+    @PostMapping("/validate/{eventId}")
     public ResponseEntity<BaseResponse<?>> validateCouponCode(
-            @RequestBody @Valid final CouponValidateRequest couponValidateRequest
+            @RequestBody @Valid final CouponValidateRequest couponValidateRequest,
+            @EventIdPathVariable final Long eventId
     ) {
-        return ApiResponseUtil.success(SuccessCode.OK, couponService.validateCoupon(couponValidateRequest.couponCode()));
+        return ApiResponseUtil.success(SuccessCode.OK, couponService.validateCoupon(couponValidateRequest.couponCode(), eventId));
     }
 }
