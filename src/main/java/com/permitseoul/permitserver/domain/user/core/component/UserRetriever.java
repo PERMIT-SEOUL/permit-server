@@ -40,6 +40,7 @@ public class UserRetriever {
         return User.fromEntity(userEntity);
     }
 
+    @Transactional(readOnly = true)
     public void validEmailDuplicated(final String userEmail) {
         if (userRepository.existsByEmail(userEmail)) {
             throw new UserDuplicateException();

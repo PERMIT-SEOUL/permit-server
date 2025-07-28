@@ -6,12 +6,14 @@ import com.permitseoul.permitserver.domain.user.core.exception.UserDuplicateExce
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
 public class UserService {
     private final UserRetriever userRetriever;
 
+    @Transactional(readOnly = true)
     public void checkEmailDuplicated(final String userEmail) {
        try {
            userRetriever.validEmailDuplicated(userEmail);

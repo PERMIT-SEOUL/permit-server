@@ -8,12 +8,14 @@ import com.permitseoul.permitserver.domain.coupon.core.exception.CouponNotfoundE
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
 public class CouponService {
     private final CouponRetriever couponRetriever;
 
+    @Transactional(readOnly = true)
     public CouponValidateResponse validateCoupon(final String couponCode, final long eventId) {
         try {
             final Coupon coupon = couponRetriever.findValidCouponByCodeAndEvent(couponCode, eventId);

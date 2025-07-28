@@ -19,7 +19,7 @@ public class UserController {
 
     //유저 이메일 중복 체크 API
     @PostMapping("/email-check")
-    public ResponseEntity<BaseResponse<?>> getEventTicketInfo(
+    public ResponseEntity<BaseResponse<?>> checkEmailDuplicated(
             @RequestBody @Valid final UserEmailCheckRequest userEmailCheckRequest
             ) {
         userService.checkEmailDuplicated(userEmailCheckRequest.userEmail());
