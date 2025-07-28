@@ -13,7 +13,7 @@ import com.permitseoul.permitserver.domain.auth.core.exception.AuthWrongJwtExcep
 import com.permitseoul.permitserver.domain.auth.core.jwt.JwtProvider;
 import com.permitseoul.permitserver.domain.auth.core.jwt.RTCacheManager;
 import com.permitseoul.permitserver.domain.auth.core.strategy.LoginStrategyManager;
-import com.permitseoul.permitserver.domain.user.api.exception.UserNotFoundApiException;
+import com.permitseoul.permitserver.domain.user.api.exception.UserSocialNotFoundApiException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import com.permitseoul.permitserver.domain.user.core.component.UserCreator;
 import com.permitseoul.permitserver.domain.user.core.component.UserRetriever;
@@ -75,7 +75,7 @@ public class AuthService {
         } catch (AuthFeignException e) {
             throw new AuthUnAuthorizedFeignException(ErrorCode.UNAUTHORIZED_FEIGN, e.getMessage());
         } catch (UserNotFoundException e ) {
-            throw new UserNotFoundApiException(ErrorCode.NOT_FOUND_USER, socialAccessToken);
+            throw new UserSocialNotFoundApiException(ErrorCode.NOT_FOUND_USER, socialAccessToken);
         }
     }
 

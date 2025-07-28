@@ -2,6 +2,11 @@ package com.permitseoul.permitserver.domain.ticket.api.service;
 
 import com.permitseoul.permitserver.domain.event.core.component.EventRetriever;
 import com.permitseoul.permitserver.domain.event.core.domain.Event;
+import com.permitseoul.permitserver.domain.payment.core.component.PaymentRetriever;
+import com.permitseoul.permitserver.domain.payment.core.domain.Payment;
+import com.permitseoul.permitserver.domain.payment.core.domain.entity.PaymentEntity;
+import com.permitseoul.permitserver.domain.payment.core.repository.PaymentRepository;
+import com.permitseoul.permitserver.domain.reservation.core.component.ReservationRetriever;
 import com.permitseoul.permitserver.domain.ticket.api.dto.EventTicketInfoResponse;
 import com.permitseoul.permitserver.domain.ticket.api.dto.UserBuyTicketInfo;
 import com.permitseoul.permitserver.domain.ticket.api.exception.NotFoundTicketException;
@@ -22,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -35,6 +41,7 @@ public class TicketService {
     private final TicketTypeRetriever ticketTypeRetriever;
     private final TicketRetriever ticketRetriever;
     private final EventRetriever eventRetriever;
+    private final PaymentRetriever paymentRetriever;
 
     private static final String ORDER_DATE_FORMAT = "yyyy-MM-dd";
 
@@ -83,17 +90,22 @@ public class TicketService {
 
             final Map<String, List<Ticket>> TicketListGroupedByOrderIdMap = ticketList.stream()
                     .collect(Collectors.groupingBy(Ticket::getOrderId));
-            final List<UserBuyTicketInfo.Order> orders = convertToOrderList(TicketListGroupedByOrderIdMap, eventMap, ticketTypeMap);
+
+            final Map<String, BigDecimal> refundAmountByOrderId = findRefundAmountsFromPaymentIfAllTicketsCanceled(TicketListGroupedByOrderIdMap);
+
+            final List<UserBuyTicketInfo.Order> orders = convertToOrderList(TicketListGroupedByOrderIdMap, eventMap, ticketTypeMap, refundAmountByOrderId);
 
             return new UserBuyTicketInfo(orders);
         } catch (TicketTypeNotfoundException e) {
             throw new NotFoundTicketException(ErrorCode.NOT_FOUND_TICKET_TYPE);
         }
+
     }
 
     private List<UserBuyTicketInfo.Order> convertToOrderList(final Map<String, List<Ticket>> ticketsGroupedByOrderId,
                                                              final Map<Long, Event> eventMap,
-                                                             final Map<Long, TicketType> ticketTypeMap) {
+                                                             final Map<Long, TicketType> ticketTypeMap,
+                                                             final Map<String, BigDecimal> refundAmountByOrderId) {
         return ticketsGroupedByOrderId.entrySet().stream()
                 .map(entry -> {
                     final String orderId = entry.getKey();
@@ -103,6 +115,7 @@ public class TicketService {
 
                     final long eventId = ticketsInOrder.get(0).getEventId();
                     final String eventName = eventMap.get(eventId).getName();
+                    final String eventVenue = eventMap.get(eventId).getVenue();
 
                     final List<UserBuyTicketInfo.TicketInfo> ticketInfos = ticketsInOrder.stream()
                             .map(ticket -> {
@@ -122,7 +135,10 @@ public class TicketService {
                     final boolean canCancel = ticketInfos.stream()
                             .allMatch(info -> info.ticketStatus() == UserBuyTicketInfo.TicketStatusForUi.USABLE);
 
-                    return new UserBuyTicketInfo.Order(orderDate, orderId, eventName, canCancel, ticketInfos);
+                    final BigDecimal refundAmount = refundAmountByOrderId.get(orderId);
+                    final String formattedRefund = refundAmount != null ? PriceFormatterUtil.formatPrice(refundAmount) : null;
+
+                    return new UserBuyTicketInfo.Order(orderDate, orderId, eventName, eventVenue, formattedRefund,canCancel, ticketInfos);
                 })
                 .sorted(Comparator.comparing(UserBuyTicketInfo.Order::orderDate).reversed())
                 .toList();
@@ -140,7 +156,7 @@ public class TicketService {
         return switch (status) {
             case RESERVED -> UserBuyTicketInfo.TicketStatusForUi.USABLE;
             case USED -> UserBuyTicketInfo.TicketStatusForUi.USED;
-            case CANCELED -> UserBuyTicketInfo.TicketStatusForUi.CANCELED;
+            case CANCELED -> UserBuyTicketInfo.TicketStatusForUi.REFUNDED;
         };
     }
 
@@ -238,5 +254,25 @@ public class TicketService {
                 formattedTime,
                 PriceFormatterUtil.formatPrice(ticketType.getTicketPrice())
         );
+    }
+
+    private Map<String, BigDecimal> findRefundAmountsFromPaymentIfAllTicketsCanceled(final Map<String, List<Ticket>> ticketsGroupedByOrderId) {
+        final Set<String> canceledOrderIds = ticketsGroupedByOrderId.entrySet().stream()
+                .filter(entry -> entry.getValue().stream()
+                        .allMatch(ticket -> ticket.getStatus() == TicketStatus.CANCELED))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+
+        if (canceledOrderIds.isEmpty()) {
+            return Map.of();
+        }
+
+        final List<Payment> paymentEntities = paymentRetriever.findPaymentByOrderIdIn(canceledOrderIds);
+
+        return paymentEntities.stream()
+                .collect(Collectors.toMap(
+                        Payment::getOrderId,
+                        Payment::getTotalAmount
+                ));
     }
 }

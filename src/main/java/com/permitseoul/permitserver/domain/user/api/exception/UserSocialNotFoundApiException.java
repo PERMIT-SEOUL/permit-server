@@ -4,10 +4,10 @@ import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import lombok.Getter;
 
 @Getter
-public class UserNotFoundApiException extends UserApiException {
+public class UserSocialNotFoundApiException extends UserApiException {
     private final String socialAccessToken;
 
-    public UserNotFoundApiException(ErrorCode errorCode, String socialAccessToken) {
+    public UserSocialNotFoundApiException(ErrorCode errorCode, String socialAccessToken) {
         super(errorCode);
         this.socialAccessToken = socialAccessToken;
     }

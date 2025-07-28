@@ -2,7 +2,7 @@ package com.permitseoul.permitserver.domain.auth.api;
 
 import com.permitseoul.permitserver.domain.auth.api.exception.AuthApiException;
 import com.permitseoul.permitserver.domain.auth.api.exception.AuthUnAuthorizedFeignException;
-import com.permitseoul.permitserver.domain.user.api.exception.UserNotFoundApiException;
+import com.permitseoul.permitserver.domain.user.api.exception.UserSocialNotFoundApiException;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +22,8 @@ public class AuthExceptionHandler {
         return ApiResponseUtil.failure(e.getErrorCode(), e.getFeignErrorMessage());
     }
 
-    @ExceptionHandler(UserNotFoundApiException.class)
-    public ResponseEntity<BaseResponse<?>> handleUserNotFoundApiException(final UserNotFoundApiException e) {
+    @ExceptionHandler(UserSocialNotFoundApiException.class)
+    public ResponseEntity<BaseResponse<?>> handleUserSocialNotFoundApiException(final UserSocialNotFoundApiException e) {
         return ApiResponseUtil.failure(e.getErrorCode(), e.getSocialAccessToken());
     }
 }

@@ -62,5 +62,13 @@ public class UserEntity extends BaseTimeEntity {
                                     final UserRole userType) {
         return new UserEntity(name, gender, age, email, socialId, socialType, userType);
     }
+
+    public void updateUserInfo(final String name,
+                               final Gender gender,
+                               final String email) {
+        this.name = name;
+        this.gender = gender;
+        this.email = email;
+    }
 }
 
