@@ -1,6 +1,5 @@
 package com.permitseoul.permitserver.domain.ticket.core.component;
 
-import com.permitseoul.permitserver.domain.payment.api.service.TicketReservationPaymentFacade;
 import com.permitseoul.permitserver.domain.ticket.core.domain.Ticket;
 import com.permitseoul.permitserver.domain.ticket.core.domain.entity.TicketEntity;
 import com.permitseoul.permitserver.domain.ticket.core.exception.TicketNotFoundException;
@@ -45,5 +44,4 @@ public class TicketRetriever {
                 .map(Ticket::fromEntity)
                 .toList();
     }
-
 }

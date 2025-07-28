@@ -1,6 +1,5 @@
 package com.permitseoul.permitserver.domain.ticket.api.dto;
 
-import com.permitseoul.permitserver.domain.ticket.core.domain.TicketStatus;
 
 import java.util.List;
 
@@ -11,12 +10,14 @@ public record UserBuyTicketInfo(
             String orderDate,
             String orderId,
             String eventName,
+            String eventVenue,
+            String refundedPrice,
             boolean canCancel,
             List<TicketInfo> ticketInfo
     ) { }
 
     public enum TicketStatusForUi {
-        USABLE, USED, CANCELED, EXPIRED
+        USABLE, USED, REFUNDED, EXPIRED
     }
 
     public record TicketInfo(

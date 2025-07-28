@@ -7,6 +7,10 @@ import com.permitseoul.permitserver.domain.payment.core.repository.PaymentReposi
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
+
+import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Component
@@ -22,6 +26,14 @@ public class PaymentRetriever {
     @Transactional(readOnly = true)
     public PaymentEntity findPaymentEntityByOrderId(final String orderId) {
         return paymentRepository.findByOrderId(orderId).orElseThrow(PaymentNotFoundException::new);
+    }
+
+    public List<Payment> findPaymentByOrderIdIn(final Set<String> orderIds) {
+        final List<PaymentEntity> paymentEntities = paymentRepository.findByOrderIdIn(orderIds);
+        if (ObjectUtils.isEmpty(paymentEntities)) {
+            throw new PaymentNotFoundException();
+        }
+        return paymentEntities.stream().map(Payment::fromEntity).toList();
     }
 
 }
