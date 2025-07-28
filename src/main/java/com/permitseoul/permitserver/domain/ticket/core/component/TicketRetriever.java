@@ -38,4 +38,12 @@ public class TicketRetriever {
         return ticketEntityList;
     }
 
+    @Transactional(readOnly = true)
+    public List<Ticket> findAllTicketsByUserId(final long userId) {
+        final List<TicketEntity> ticketEntityList = ticketRepository.findAllByUserId(userId);
+        return ticketEntityList.stream()
+                .map(Ticket::fromEntity)
+                .toList();
+    }
+
 }

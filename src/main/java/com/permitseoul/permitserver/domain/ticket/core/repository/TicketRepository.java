@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface TicketRepository extends JpaRepository<TicketEntity, Long> {
     List<TicketEntity> findAllByOrderIdAndUserId(final String orderId, final long userId);
+
+    List<TicketEntity> findAllByUserId(final long userId);
 }

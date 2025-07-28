@@ -2,7 +2,6 @@ package com.permitseoul.permitserver.domain.reservation.api.service;
 
 import com.permitseoul.permitserver.domain.coupon.core.component.CouponRetriever;
 import com.permitseoul.permitserver.domain.coupon.core.domain.Coupon;
-import com.permitseoul.permitserver.domain.coupon.core.domain.entity.CouponEntity;
 import com.permitseoul.permitserver.domain.coupon.core.exception.CouponConflictException;
 import com.permitseoul.permitserver.domain.coupon.core.exception.CouponNotfoundException;
 import com.permitseoul.permitserver.domain.event.core.component.EventRetriever;
@@ -17,7 +16,6 @@ import com.permitseoul.permitserver.domain.reservation.core.domain.Reservation;
 import com.permitseoul.permitserver.domain.reservation.core.exception.ReservationNotFoundException;
 import com.permitseoul.permitserver.domain.reservationsession.core.component.ReservationSessionRetriever;
 import com.permitseoul.permitserver.domain.reservationsession.core.domain.ReservationSession;
-import com.permitseoul.permitserver.domain.reservationsession.core.exception.ReservationSessionNotFoundAfterPaymentSuccessException;
 import com.permitseoul.permitserver.domain.reservationsession.core.exception.ReservationSessionNotFoundException;
 import com.permitseoul.permitserver.domain.ticketround.core.component.TicketRoundRetriever;
 import com.permitseoul.permitserver.domain.ticketround.core.domain.entity.TicketRoundEntity;
@@ -79,7 +77,7 @@ public class ReservationService {
         final Map<Long, Integer> redisDecreasedTicketTypeInfo;
 
         try {
-            ticketTypeEntityMap = ticketTypeRetriever.findAllByIds(requestTicketTypeIds).stream()
+            ticketTypeEntityMap = ticketTypeRetriever.findAllTicketTypeEntityByIds(requestTicketTypeIds).stream()
                     .collect(Collectors.toMap(TicketTypeEntity::getTicketTypeId, it -> it));
 
             Coupon coupon = null;

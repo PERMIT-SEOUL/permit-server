@@ -11,6 +11,6 @@ public abstract class TimeFormatterUtil {
         if (startDateTime == null || endDateTime == null) {
             throw new IllegalArgumentException("DateTime parameters cannot be null");
         }
-        return startDateTime.format(TIME_FORMATTER) + " - " + endDateTime.format(TIME_FORMATTER);
+        return startDateTime.format(TIME_FORMATTER) + "-" + endDateTime.format(TIME_FORMATTER);
     }
 }
