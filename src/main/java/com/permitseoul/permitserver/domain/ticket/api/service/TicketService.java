@@ -127,7 +127,7 @@ public class TicketService {
                 .sorted(Comparator.comparing(UserBuyTicketInfo.Order::orderDate).reversed())
                 .toList();
     }
-    
+
     private boolean isTicketDateExpired(final LocalDateTime endDate) {
         return LocalDateTime.now().isAfter(endDate);
     }
