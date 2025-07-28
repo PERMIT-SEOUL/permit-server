@@ -23,7 +23,7 @@ public class AuthExceptionHandler {
     }
 
     @ExceptionHandler(UserSocialNotFoundApiException.class)
-    public ResponseEntity<BaseResponse<?>> handleUserNotFoundApiException(final UserSocialNotFoundApiException e) {
+    public ResponseEntity<BaseResponse<?>> handleUserSocialNotFoundApiException(final UserSocialNotFoundApiException e) {
         return ApiResponseUtil.failure(e.getErrorCode(), e.getSocialAccessToken());
     }
 }

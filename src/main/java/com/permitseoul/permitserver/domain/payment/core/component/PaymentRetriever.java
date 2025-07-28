@@ -28,6 +28,7 @@ public class PaymentRetriever {
         return paymentRepository.findByOrderId(orderId).orElseThrow(PaymentNotFoundException::new);
     }
 
+    @Transactional(readOnly = true)
     public List<Payment> findPaymentByOrderIdIn(final Set<String> orderIds) {
         final List<PaymentEntity> paymentEntities = paymentRepository.findByOrderIdIn(orderIds);
         if (ObjectUtils.isEmpty(paymentEntities)) {

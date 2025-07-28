@@ -44,9 +44,12 @@ public class UserService {
         final UserEntity userEntity;
         try {
             userEntity = userRetriever.findUserEntityById(userId);
+            userRetriever.validEmailDuplicated(userEntity.getEmail());
             userEntity.updateUserInfo(name, gender, email);
         } catch (UserNotFoundException e) {
             throw new NotfoundUserException(ErrorCode.NOT_FOUND_USER);
+        } catch (UserDuplicateException e) {
+            throw new ConflictUserException(ErrorCode.CONFLICT_USER_EMAIL);
         }
     }
 }
