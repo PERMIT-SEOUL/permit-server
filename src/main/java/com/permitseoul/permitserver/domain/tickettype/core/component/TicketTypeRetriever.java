@@ -40,9 +40,20 @@ public class TicketTypeRetriever {
     }
 
     @Transactional(readOnly = true)
-    public List<TicketTypeEntity> findAllByIds(final List<Long> ids) {
+    public List<TicketTypeEntity> findAllTicketTypeEntityByIds(final List<Long> ids) {
         return ticketTypeRepository.findAllById(ids);
     }
+    @Transactional(readOnly = true)
+    public List<TicketType> findAllTicketTypeById(final List<Long> ids) {
+        final List<TicketTypeEntity> ticketTypeEntityList = ticketTypeRepository.findAllById(ids);
+        if (ObjectUtils.isEmpty(ticketTypeEntityList)) {
+            throw new TicketTypeNotfoundException();
+        }
+        return ticketTypeEntityList.stream()
+                .map(TicketType::fromEntity)
+                .toList();
+    }
+
 
     @Transactional(readOnly = true)
     public List<TicketType> findTicketTypeListByRoundIdList(final List<Long> roundIds) {

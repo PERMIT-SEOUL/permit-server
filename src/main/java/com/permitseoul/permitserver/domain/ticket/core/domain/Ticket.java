@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @RequiredArgsConstructor
 @Builder
@@ -16,6 +18,7 @@ public class Ticket {
     private final long eventId;
     private final String ticketCode;
     private final TicketStatus status;
+    private final LocalDateTime createdAt;
 
     public static Ticket fromEntity(final TicketEntity entity) {
         return new Ticket(
@@ -25,7 +28,8 @@ public class Ticket {
                 entity.getTicketTypeId(),
                 entity.getEventId(),
                 entity.getTicketCode(),
-                entity.getStatus()
+                entity.getStatus(),
+                entity.getCreatedAt()
         );
     }
 }

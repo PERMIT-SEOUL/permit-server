@@ -28,6 +28,14 @@ public class EventRetriever {
     }
 
     @Transactional(readOnly = true)
+    public List<Event> findAllEventsById(final List<Long> eventIds) {
+        final List<EventEntity> eventEntityList = eventRepository.findAllById(eventIds);
+        return eventEntityList.stream()
+                .map(Event::fromEntity)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
     public List<Event> findAllVisibleEvents(final LocalDateTime now) {
         List<EventEntity> events = eventRepository.findVisibleEvents(now);
         return events.stream()
