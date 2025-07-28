@@ -39,4 +39,10 @@ public class UserRetriever {
         final UserEntity userEntity = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         return User.fromEntity(userEntity);
     }
+
+    public void validEmailDuplicated(final String userEmail) {
+        if (userRepository.existsByEmail(userEmail)) {
+            throw new UserDuplicateException();
+        }
+    }
 }

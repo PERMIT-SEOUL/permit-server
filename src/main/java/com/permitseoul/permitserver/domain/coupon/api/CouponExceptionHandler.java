@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice(basePackages = "com.permitseoul.permitserver.domain.coupon")
 public class CouponExceptionHandler {
-    
+
     @ExceptionHandler(CouponApiException.class)
     public ResponseEntity<BaseResponse<?>> handleCouponApiException(final CouponApiException e) {
         return ApiResponseUtil.failure(e.getErrorCode());
