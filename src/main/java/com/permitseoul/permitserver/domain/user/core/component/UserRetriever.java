@@ -41,6 +41,11 @@ public class UserRetriever {
     }
 
     @Transactional(readOnly = true)
+    public UserEntity findUserEntityById(final long userId) {
+        return userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+    }
+
+    @Transactional(readOnly = true)
     public void validEmailDuplicated(final String userEmail) {
         if (userRepository.existsByEmail(userEmail)) {
             throw new UserDuplicateException();
