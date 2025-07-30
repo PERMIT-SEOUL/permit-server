@@ -14,7 +14,7 @@ public record EventTicketInfoResponse(
     ) { }
 
     public record TicketType(
-            String ticketTypeId,
+            long ticketTypeId,
             String ticketTypeName,
             String ticketTypeDate,
             String ticketTypeTime,

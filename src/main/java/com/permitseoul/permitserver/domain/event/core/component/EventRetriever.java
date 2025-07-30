@@ -24,7 +24,9 @@ public class EventRetriever {
 
     @Transactional(readOnly = true)
     public void validExistEventById(final long eventId) {
-        eventRepository.findById(eventId).orElseThrow(EventNotfoundException::new);
+        if (!eventRepository.existsById(eventId)) {
+            throw new EventNotfoundException();
+        }
     }
 
     @Transactional(readOnly = true)

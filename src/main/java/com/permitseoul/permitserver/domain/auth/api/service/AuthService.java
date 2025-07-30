@@ -6,6 +6,7 @@ import com.permitseoul.permitserver.domain.auth.api.exception.AuthUnAuthorizedFe
 import com.permitseoul.permitserver.domain.auth.core.domain.Token;
 import com.permitseoul.permitserver.domain.auth.api.dto.TokenDto;
 import com.permitseoul.permitserver.domain.auth.core.dto.UserSocialInfoDto;
+import com.permitseoul.permitserver.domain.user.core.domain.User;
 import com.permitseoul.permitserver.domain.user.core.exception.UserDuplicateException;
 import com.permitseoul.permitserver.domain.auth.core.exception.AuthFeignException;
 import com.permitseoul.permitserver.domain.auth.core.exception.AuthRTCacheException;
@@ -50,7 +51,7 @@ public class AuthService {
             final String userSocialId = getUserSocialId(socialType, socialAccessToken);
             validDuplicatedUserBySocial(socialType, userSocialId);
             final UserEntity newUserEntity = createUser(userName, userAge, userGender, userEmail, userSocialId, socialType);
-            final Token newToken = GetJwtToken(newUserEntity.getUserId());
+            final Token newToken = GetSignUpJwtToken(newUserEntity.getUserId());
             return TokenDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
         } catch (AuthFeignException e) {
             throw new AuthUnAuthorizedFeignException(ErrorCode.UNAUTHORIZED_FEIGN, e.getMessage());
@@ -69,8 +70,8 @@ public class AuthService {
                     .filter(token -> !token.isBlank())
                     .orElseThrow(() -> new AuthUnAuthorizedException(ErrorCode.UNAUTHORIZED_FEIGN)
                     );
-            final long userId = getUserIdIfUserExist(socialType, userSocialInfoDto.userSocialId());
-            final Token newToken = GetJwtToken(userId);
+            final User user = getUserBySocialInfo(socialType, userSocialInfoDto.userSocialId());
+            final Token newToken = getLoginOrReissueJwtToken(user.getUserId(), user.getUserRole());
             return TokenDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
         } catch (AuthFeignException e) {
             throw new AuthUnAuthorizedFeignException(ErrorCode.UNAUTHORIZED_FEIGN, e.getMessage());
@@ -87,7 +88,8 @@ public class AuthService {
             if (!refreshToken.equals(refreshTokenFromCache)) {
                 throw new AuthUnAuthorizedException(ErrorCode.UNAUTHORIZED_WRONG_RT);
             }
-            final Token newToken = GetJwtToken(userId);
+            final User user = userRetriever.findUserById(userId);
+            final Token newToken = getLoginOrReissueJwtToken(user.getUserId(), user.getUserRole());
             return TokenDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
         } catch (AuthWrongJwtException e) {
             throw new AuthUnAuthorizedException(ErrorCode.UNAUTHORIZED_WRONG_RT);
@@ -135,15 +137,19 @@ public class AuthService {
         return loginStrategyManager.getStrategy(socialType).getUserSocialInfo(authorizationCode, redirectUrl);
     }
 
-    private long getUserIdIfUserExist(final SocialType socialType, final String socialId) {
-        return userRetriever.getUserIdBySocialInfo(socialType, socialId);
+    private User getUserBySocialInfo(final SocialType socialType, final String socialId) {
+        return userRetriever.getUserBySocialInfo(socialType, socialId);
     }
 
     private void validDuplicatedUserBySocial(final SocialType socialType, final String socialId) {
         userRetriever.validDuplicatedUserBySocial(socialType, socialId);
     }
 
-    private Token GetJwtToken(final long userId) {
+    private Token GetSignUpJwtToken(final long userId) {
         return jwtProvider.issueToken(userId, UserRole.USER);
+    }
+
+    private Token getLoginOrReissueJwtToken(final long userId, final UserRole userRole) {
+        return jwtProvider.issueToken(userId, userRole);
     }
 }
