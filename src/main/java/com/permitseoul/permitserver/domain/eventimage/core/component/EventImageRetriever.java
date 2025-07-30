@@ -1,10 +1,9 @@
-package com.permitseoul.permitserver.domain.eventImage.core.component;
+package com.permitseoul.permitserver.domain.eventimage.core.component;
 
-import com.permitseoul.permitserver.domain.eventImage.EventImageBaseException;
-import com.permitseoul.permitserver.domain.eventImage.core.domain.EventImage;
-import com.permitseoul.permitserver.domain.eventImage.core.domain.entity.EventImageEntity;
-import com.permitseoul.permitserver.domain.eventImage.core.exception.EventImageNotFoundException;
-import com.permitseoul.permitserver.domain.eventImage.core.repository.EventImageRepository;
+import com.permitseoul.permitserver.domain.eventimage.core.domain.EventImage;
+import com.permitseoul.permitserver.domain.eventimage.core.domain.entity.EventImageEntity;
+import com.permitseoul.permitserver.domain.eventimage.core.exception.EventImageNotFoundException;
+import com.permitseoul.permitserver.domain.eventimage.core.repository.EventImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,6 +1,6 @@
-package com.permitseoul.permitserver.domain.eventImage.core.domain;
+package com.permitseoul.permitserver.domain.eventimage.core.domain;
 
-import com.permitseoul.permitserver.domain.eventImage.core.domain.entity.EventImageEntity;
+import com.permitseoul.permitserver.domain.eventimage.core.domain.entity.EventImageEntity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

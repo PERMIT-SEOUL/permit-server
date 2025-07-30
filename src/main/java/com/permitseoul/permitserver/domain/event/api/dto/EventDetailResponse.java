@@ -1,7 +1,5 @@
 package com.permitseoul.permitserver.domain.event.api.dto;
 
-import com.permitseoul.permitserver.domain.eventImage.core.domain.EventImage;
-
 import java.util.List;
 
 public record EventDetailResponse(

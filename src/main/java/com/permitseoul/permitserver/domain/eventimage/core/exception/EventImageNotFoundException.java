@@ -1,4 +1,4 @@
-package com.permitseoul.permitserver.domain.eventImage.core.exception;
+package com.permitseoul.permitserver.domain.eventimage.core.exception;
 
 public class EventImageNotFoundException extends EventImageCoreException {
 }

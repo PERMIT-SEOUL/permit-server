@@ -1,4 +1,4 @@
-package com.permitseoul.permitserver.domain.eventImage.core.domain.entity;
+package com.permitseoul.permitserver.domain.eventimage.core.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

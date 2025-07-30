@@ -8,5 +8,5 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/event-timetable")
 public class EventTimeTableController {
-
+    
 }
