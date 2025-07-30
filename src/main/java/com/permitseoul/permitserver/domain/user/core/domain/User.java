@@ -14,7 +14,7 @@ public class User {
     private final String email;
     private final String socialId;
     private final SocialType socialType;
-    private final UserRole userType;
+    private final UserRole userRole;
 
     public static User fromEntity(final UserEntity userEntity) {
         return new User(
@@ -25,7 +25,7 @@ public class User {
                 userEntity.getEmail(),
                 userEntity.getSocialId(),
                 userEntity.getSocialType(),
-                userEntity.getUserType()
+                userEntity.getUserRole()
         );
     }
 }

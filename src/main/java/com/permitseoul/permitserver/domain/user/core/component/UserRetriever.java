@@ -16,8 +16,9 @@ public class UserRetriever {
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public long getUserIdBySocialInfo(final SocialType socialType, final String socialId) {
-        return userRepository.findUserIdBySocialTypeAndSocialId(socialType, socialId).orElseThrow(UserNotFoundException::new);
+    public User getUserBySocialInfo(final SocialType socialType, final String socialId) {
+        final UserEntity user = userRepository.findUserBySocialTypeAndSocialId(socialType, socialId).orElseThrow(UserNotFoundException::new);
+        return User.fromEntity(user);
     }
 
     @Transactional(readOnly = true)

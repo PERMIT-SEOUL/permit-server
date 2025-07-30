@@ -40,17 +40,17 @@ public class UserEntity extends BaseTimeEntity {
     private SocialType socialType;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "user_type", nullable = false)
-    private UserRole userType;
+    @Column(name = "user_role", nullable = false)
+    private UserRole userRole;
 
-    private UserEntity(String name, Gender gender, int age, String email, String socialId, SocialType socialType, UserRole userType) {
+    private UserEntity(String name, Gender gender, int age, String email, String socialId, SocialType socialType, UserRole userRole) {
         this.name = name;
         this.gender = gender;
         this.age = age;
         this.email = email;
         this.socialId = socialId;
         this.socialType = socialType;
-        this.userType = userType;
+        this.userRole = userRole;
     }
 
     public static UserEntity create(final String name,
