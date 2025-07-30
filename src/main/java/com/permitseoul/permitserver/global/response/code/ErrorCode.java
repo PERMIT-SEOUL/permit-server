@@ -38,6 +38,7 @@ public enum ErrorCode implements ApiCode {
     UNAUTHORIZED_SECURITY_ENTRY(HttpStatus.UNAUTHORIZED, 40106, "시큐리티 필터 혹은 SecurityContext 오류입니다."),
     UNAUTHORIZED_FEIGN(HttpStatus.UNAUTHORIZED, 40107, "auth feign 오류입니다."),
     UNAUTHORIZED_CANCEL_PAYMENT(HttpStatus.UNAUTHORIZED, 40108, "결제 취소 userID 인증 오류입니다."),
+    UNAUTHORIZED_ADMIN_ACCESS_CODE(HttpStatus.UNAUTHORIZED, 40109, "Admin 접근 코드 인증 오류입니다."),
 
     /**
      * 403 Forbidden

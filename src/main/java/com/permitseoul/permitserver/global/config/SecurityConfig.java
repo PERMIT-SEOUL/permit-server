@@ -38,7 +38,7 @@ public class SecurityConfig {
     };
 
     private static final String[] adminURIList = {
-            "/admin/**"
+            "/api/admin/**"
     };
 
     private static final String[] authRequiredURIList = {
