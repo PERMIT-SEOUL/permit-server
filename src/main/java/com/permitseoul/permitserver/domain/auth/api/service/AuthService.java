@@ -51,7 +51,7 @@ public class AuthService {
             final String userSocialId = getUserSocialId(socialType, socialAccessToken);
             validDuplicatedUserBySocial(socialType, userSocialId);
             final UserEntity newUserEntity = createUser(userName, userAge, userGender, userEmail, userSocialId, socialType);
-            final Token newToken = GetSignUpJwtToken(newUserEntity.getUserId());
+            final Token newToken = getSignUpJwtToken(newUserEntity.getUserId());
             return TokenDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
         } catch (AuthFeignException e) {
             throw new AuthUnAuthorizedFeignException(ErrorCode.UNAUTHORIZED_FEIGN, e.getMessage());
@@ -145,7 +145,7 @@ public class AuthService {
         userRetriever.validDuplicatedUserBySocial(socialType, socialId);
     }
 
-    private Token GetSignUpJwtToken(final long userId) {
+    private Token getSignUpJwtToken(final long userId) {
         return jwtProvider.issueToken(userId, UserRole.USER);
     }
 
