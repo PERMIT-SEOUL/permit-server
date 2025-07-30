@@ -52,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String token = CookieExtractor.extractCookie(request, CookieType.ACCESS_TOKEN).getValue(); ///accessToken 쿠키 뽑음
         final long userId = jwtProvider.extractUserIdFromToken(token);
         final String userRole = jwtProvider.extractUserRoleFromToken(token);
-        final List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(userRole));
+        final List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + userRole));
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(userId, null, authorities));
     }

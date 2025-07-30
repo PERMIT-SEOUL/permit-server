@@ -1,9 +1,11 @@
 package com.permitseoul.permitserver;
 
+import com.permitseoul.permitserver.domain.admin.api.AdminProperties;
 import com.permitseoul.permitserver.domain.auth.core.jwt.JwtProperties;
 import com.permitseoul.permitserver.domain.auth.core.external.google.GoogleProperties;
 import com.permitseoul.permitserver.domain.auth.core.external.kakao.KakaoProperties;
 import com.permitseoul.permitserver.domain.reservation.api.TossProperties;
+import com.permitseoul.permitserver.domain.reservationsession.core.domain.SessionProperties;
 import com.permitseoul.permitserver.global.util.HashIdProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,7 +18,9 @@ import org.springframework.cache.annotation.EnableCaching;
 		KakaoProperties.class,
 		JwtProperties.class,
 		TossProperties.class,
-		HashIdProperties.class
+		HashIdProperties.class,
+		SessionProperties.class,
+		AdminProperties.class
 })
 @SpringBootApplication
 public class PermitServerApplication {

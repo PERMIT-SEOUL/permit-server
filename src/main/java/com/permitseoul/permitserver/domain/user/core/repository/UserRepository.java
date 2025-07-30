@@ -12,8 +12,9 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
-    @Query("SELECT u.userId FROM UserEntity u WHERE u.socialType = :socialType AND u.socialId = :socialId")
-    Optional<Long> findUserIdBySocialTypeAndSocialId(@Param("socialType")final SocialType socialType, @Param("socialId")final String socialId);
+    @Query("SELECT u FROM UserEntity u WHERE u.socialType = :socialType AND u.socialId = :socialId")
+    Optional<UserEntity> findUserBySocialTypeAndSocialId(@Param("socialType") final SocialType socialType,
+                                                         @Param("socialId") final String socialId);
 
     boolean existsBySocialTypeAndSocialId(final SocialType socialType, final String socialId);
 

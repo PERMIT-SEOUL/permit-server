@@ -22,7 +22,6 @@ import java.util.Map;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@EnableConfigurationProperties(SessionProperties.class)
 public class ReservationSessionCleanupScheduler {
 
     private final ReservationSessionRepository reservationSessionRepository;

@@ -248,7 +248,7 @@ public class TicketService {
                 .format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"));
 
         return new EventTicketInfoResponse.TicketType(
-                String.valueOf(ticketType.getTicketTypeId()),
+                ticketType.getTicketTypeId(),
                 ticketType.getTicketTypeName(),
                 formattedDate,
                 formattedTime,
