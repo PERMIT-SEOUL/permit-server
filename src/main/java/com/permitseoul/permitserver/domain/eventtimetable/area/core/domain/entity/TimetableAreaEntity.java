@@ -1,6 +1,5 @@
 package com.permitseoul.permitserver.domain.eventtimetable.area.core.domain.entity;
 
-import com.permitseoul.permitserver.global.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -10,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "event_timetable_area")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class TimetableAreaEntity extends BaseTimeEntity {
+public class TimetableAreaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -6,24 +6,24 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "event_timetable_user_likes")
+@Table(name = "timetable_user_likes")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class TimetableUserLikeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "event_timetable_user_like_id", nullable = false)
-    private Long eventTimetableUserLikeId;
+    @Column(name = "timetable_user_like_id", nullable = false)
+    private Long timetableUserLikeId; 
 
     @Column(name = "user_id", nullable = false)
     private long userId;
 
-    @Column(name = "event_timetable_block_id", nullable = false)
-    private long eventTimetableBlockId;
+    @Column(name = "timetable_block_id", nullable = false)
+    private long timetableBlockId;
 
-    private TimetableUserLikeEntity(long userId, long eventTimetableBlockId) {
+    private TimetableUserLikeEntity(long userId, long timetableBlockId) {
         this.userId = userId;
-        this.eventTimetableBlockId = eventTimetableBlockId;
+        this.timetableBlockId = timetableBlockId;
     }
 
     public static TimetableUserLikeEntity create(final long userId, final long eventTimetableBlockId) {
