@@ -20,6 +20,7 @@ public class TimetableBlock {
     private final String artist;
     private final String imageUrl;
     private final String information;
+    private final String blockInfoRedirectUrl;
 
     public static TimetableBlock fromEntity(final TimetableBlockEntity timetableBlockEntity) {
         return new TimetableBlock(
@@ -32,7 +33,8 @@ public class TimetableBlock {
                 timetableBlockEntity.getBlockName(),
                 timetableBlockEntity.getArtist(),
                 timetableBlockEntity.getImageUrl(),
-                timetableBlockEntity.getInformation()
+                timetableBlockEntity.getInformation(),
+                timetableBlockEntity.getBlockInfoRedirectUrl()
         );
     }
 }

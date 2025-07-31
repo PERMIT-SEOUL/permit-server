@@ -9,6 +9,7 @@ import com.permitseoul.permitserver.domain.eventtimetable.block.core.exception.T
 import com.permitseoul.permitserver.domain.eventtimetable.category.core.component.TimetableCategoryRetriever;
 import com.permitseoul.permitserver.domain.eventtimetable.category.core.domain.TimetableCategory;
 import com.permitseoul.permitserver.domain.eventtimetable.category.core.exception.TimetableCategoryNotfoundException;
+import com.permitseoul.permitserver.domain.eventtimetable.timetable.api.dto.TimetableDetailResponse;
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.api.dto.TimetableResponse;
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.api.exception.NotfoundTimetableException;
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.component.TimetableRetriever;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
 @RequiredArgsConstructor
 @Service
 public class TimetableService {
@@ -36,60 +38,138 @@ public class TimetableService {
 
     @Transactional(readOnly = true)
     public TimetableResponse getEventTimetable(final long eventId, final Long userId) {
+        final Timetable timetable = getTimetableByEventId(eventId);
+        final List<TimetableArea> areaList = getAreaListByTimetableId(timetable.getTimetableId());
+        final List<TimetableCategory> categoryList = getCategoryListByTimetableId(timetable.getTimetableId());
+        final List<TimetableBlock> blockList = getBlockListByTimetableId(timetable.getTimetableId());
+
+        final List<Long> blockIds = blockList.stream()
+                .map(TimetableBlock::getTimetableBlockId)
+                .toList();
+        final Set<Long> likedBlockIds = (userId == null)
+                ? Set.of()
+                : new HashSet<>(timetableUserLikeRetriever.findLikedBlockIdsIn(userId, blockIds));
+
+        final Map<Long, String> categoryColorMap = mapCategoryColors(categoryList);
+        final List<TimetableResponse.Area> areaResponses = mapAreasToResponse(areaList);
+        final List<TimetableResponse.Block> blockResponses = mapBlocksToResponse(blockList, categoryColorMap, likedBlockIds);
+
+        return TimetableResponse.of(
+                timetable.getStartDate(),
+                timetable.getEndDate(),
+                areaResponses,
+                blockResponses
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public TimetableDetailResponse getEventTimetableDetail(final long blockId, final Long userId) {
+        final TimetableBlock timetableBlock;
+        final TimetableCategory timetableCategory;
+        final TimetableArea timetableArea;
         try {
-            final Timetable timetable = timetableRetriever.getTimetableByEventId(eventId);
-            final List<TimetableArea> timetableAreaList = timetableAreaRetriever.findTimetableAreaListByTimetableId(timetable.getTimetableId());
-            final List<TimetableCategory> timetableCategoryList = timetableCategoryRetriever.findAllTimetableCategory(timetable.getTimetableId());
-            final List<TimetableBlock> timetableBlockList = timetableBlockRetriever.findAllTimetableBlockByTimetableId(timetable.getTimetableId());
-
-            final Map<Long, String> timetableCategoryColorMap = timetableCategoryList.stream()
-                    .collect(Collectors.toMap(
-                            TimetableCategory::getTimetableCategoryId,
-                            TimetableCategory::getCategoryColor)
-                    );
-
-            final Set<Long> likedBlockIds = (userId == null)
-                    ? Set.of()
-                    :new HashSet<>(timetableUserLikeRetriever.findAllBlockIdsLikedByUserId(userId));
-
-            final List<TimetableResponse.Area> areaResponses = timetableAreaList.stream()
-                    .sorted(Comparator.comparingInt(TimetableArea::getSequence))
-                    .map(area -> new TimetableResponse.Area(
-                            area.getTimetableAreaId(),
-                            area.getAreaName(),
-                            area.getSequence())
-                    ).toList();
-            final List<TimetableResponse.Block> blockResponses = timetableBlockList.stream()
-                    .sorted(Comparator.comparing(TimetableBlock::getStartDate))
-                    .map(timetableBlock -> {
-                        final String categoryColor = Optional.ofNullable(timetableCategoryColorMap.get(timetableBlock.getTimetableCategoryId()))
-                                .orElseThrow(() -> new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_CATEGORY_COLOR));
-                        final String encodedTimetableBlockId = secureUrlUtil.encode(timetableBlock.getTimetableBlockId());
-
-                        return new TimetableResponse.Block(
-                                encodedTimetableBlockId,
-                                timetableBlock.getBlockName(),
-                                categoryColor,
-                                timetableBlock.getStartDate(),
-                                timetableBlock.getEndDate(),
-                                timetableBlock.getTimetableAreaId(),
-                                likedBlockIds.contains(timetableBlock.getTimetableBlockId()));
-                    }).toList();
-
-            return new TimetableResponse(
-                    timetable.getStartDate(),
-                    timetable.getEndDate(),
-                    areaResponses,
-                    blockResponses
-            );
-        } catch (TimetableNotFoundException e) {
-            throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE);
-        } catch (TimetableAreaNotFoundException e) {
-            throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_AREA);
+            timetableBlock = timetableBlockRetriever.findTimetableBlockById(blockId);
+            timetableCategory = timetableCategoryRetriever.findTimetableCategoryById(timetableBlock.getTimetableCategoryId());
+            timetableArea = timetableAreaRetriever.findTimetableAreaById(timetableBlock.getTimetableAreaId());
+        } catch (TimetableBlockNotfoundException e) {
+            throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_BLOCK);
         } catch (TimetableCategoryNotfoundException e) {
             throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_CATEGORY);
+        } catch (TimetableAreaNotFoundException e) {
+            throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_AREA);
+        }
+
+        final boolean isUserLiked;
+        if (userId == null) {
+            isUserLiked = false;
+        } else {
+            isUserLiked = timetableUserLikeRetriever.isExistUserLikeByIdAndUserId(timetableBlock.getTimetableBlockId(), userId);
+        }
+
+        return TimetableDetailResponse.of(
+                timetableBlock.getBlockName(),
+                timetableCategory.getCategoryName(),
+                timetableCategory.getCategoryColor(),
+                isUserLiked,
+                timetableBlock.getInformation(),
+                timetableArea.getAreaName(),
+                timetableBlock.getImageUrl(),
+                timetableBlock.getBlockInfoRedirectUrl()
+        );
+    }
+
+    private Timetable getTimetableByEventId(final long eventId) {
+        try {
+            return timetableRetriever.getTimetableByEventId(eventId);
+        } catch (TimetableNotFoundException e) {
+            throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE);
+        }
+    }
+
+    private List<TimetableArea> getAreaListByTimetableId(final long timetableId) {
+        try {
+            return timetableAreaRetriever.findTimetableAreaListByTimetableId(timetableId);
+        } catch (TimetableAreaNotFoundException e) {
+            throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_AREA);
+        }
+    }
+
+    private List<TimetableCategory> getCategoryListByTimetableId(final long timetableId) {
+        try {
+            return timetableCategoryRetriever.findAllTimetableCategory(timetableId);
+        } catch (TimetableCategoryNotfoundException e) {
+            throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_CATEGORY);
+        }
+    }
+
+    private List<TimetableBlock> getBlockListByTimetableId(final long timetableId) {
+        try {
+            return timetableBlockRetriever.findAllTimetableBlockByTimetableId(timetableId);
         } catch (TimetableBlockNotfoundException e) {
             throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_BLOCK);
         }
     }
+
+    private Map<Long, String> mapCategoryColors(final List<TimetableCategory> categoryList) {
+        return categoryList.stream()
+                .collect(Collectors.toMap(
+                        TimetableCategory::getTimetableCategoryId,
+                        TimetableCategory::getCategoryColor
+                ));
+    }
+
+    private List<TimetableResponse.Area> mapAreasToResponse(final List<TimetableArea> areaList) {
+        return areaList.stream()
+                .sorted(Comparator.comparingInt(TimetableArea::getSequence))
+                .map(area -> TimetableResponse.Area.of(
+                        area.getTimetableAreaId(),
+                        area.getAreaName(),
+                        area.getSequence())
+                ).toList();
+    }
+
+    private List<TimetableResponse.Block> mapBlocksToResponse(
+            final List<TimetableBlock> blockList,
+            final Map<Long, String> categoryColorMap,
+            final Set<Long> likedBlockIds
+    ) {
+        return blockList.stream()
+                .sorted(Comparator.comparing(TimetableBlock::getStartDate))
+                .map(block -> {
+                    final String categoryColor = Optional.ofNullable(
+                                    categoryColorMap.get(block.getTimetableCategoryId()))
+                            .orElseThrow(() -> new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_CATEGORY_COLOR));
+
+                    final String encodedBlockId = secureUrlUtil.encode(block.getTimetableBlockId());
+
+                    return TimetableResponse.Block.of(encodedBlockId,block.getBlockName(),
+                            categoryColor,
+                            block.getStartDate(),
+                            block.getEndDate(),
+                            block.getTimetableAreaId(),
+                            likedBlockIds.contains(block.getTimetableBlockId())
+                    );
+                }).toList();
+    }
 }
+

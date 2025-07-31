@@ -45,6 +45,10 @@ public class TimetableBlockEntity {
     @Column(name = "information", nullable = false)
     private String information;
 
+    @Column(name = "block_info_redirect_url")
+    private String blockInfoRedirectUrl;
+
+
     private TimetableBlockEntity(
             long timetableId,
             long timetableCategoryId,
@@ -54,7 +58,8 @@ public class TimetableBlockEntity {
             String blockName,
             String artist,
             String imageUrl,
-            String information
+            String information,
+            String blockInfoRedirectUrl
     ) {
         this.timetableId = timetableId;
         this.timetableCategoryId = timetableCategoryId;
@@ -65,6 +70,7 @@ public class TimetableBlockEntity {
         this.artist = artist;
         this.imageUrl = imageUrl;
         this.information = information;
+        this.blockInfoRedirectUrl = blockInfoRedirectUrl;
     }
 
     public static TimetableBlockEntity create(final long timetableId,
@@ -75,7 +81,8 @@ public class TimetableBlockEntity {
                                               final String blockName,
                                               final String artist,
                                               final String imageUrl,
-                                              final String information) {
-        return new TimetableBlockEntity(timetableId, timetableCategoryId, timetableAreaId, startDate, endDate, blockName, artist, imageUrl, information);
+                                              final String information,
+                                              final String blockInfoRedirectUrl) {
+        return new TimetableBlockEntity(timetableId, timetableCategoryId, timetableAreaId, startDate, endDate, blockName, artist, imageUrl, information, blockInfoRedirectUrl);
     }
 }

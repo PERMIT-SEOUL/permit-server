@@ -25,4 +25,10 @@ public class TimetableAreaRetriever {
                 .map(TimetableArea::fromEntity)
                 .toList();
     }
+
+    @Transactional(readOnly = true)
+    public TimetableArea findTimetableAreaById(final long timetableAreaId) {
+        final TimetableAreaEntity timetableAreaEntity = timetableAreaRepository.findById(timetableAreaId).orElseThrow(TimetableAreaNotFoundException::new);
+        return TimetableArea.fromEntity(timetableAreaEntity);
+    }
 }

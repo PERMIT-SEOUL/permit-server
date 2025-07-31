@@ -26,4 +26,10 @@ public class TimetableCategoryRetriever {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public TimetableCategory findTimetableCategoryById(final long timetableId) {
+        final TimetableCategoryEntity timetableCategoryEntity = timetableCategoryRepository.findById(timetableId).orElseThrow(TimetableCategoryNotfoundException::new);
+        return TimetableCategory.fromEntity(timetableCategoryEntity);
+    }
+
 }
