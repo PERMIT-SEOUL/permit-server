@@ -9,6 +9,7 @@ import com.permitseoul.permitserver.domain.eventtimetable.block.core.exception.T
 import com.permitseoul.permitserver.domain.eventtimetable.category.core.component.TimetableCategoryRetriever;
 import com.permitseoul.permitserver.domain.eventtimetable.category.core.domain.TimetableCategory;
 import com.permitseoul.permitserver.domain.eventtimetable.category.core.exception.TimetableCategoryNotfoundException;
+import com.permitseoul.permitserver.domain.eventtimetable.timetable.api.dto.TimetableDetailResponse;
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.api.dto.TimetableResponse;
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.api.exception.NotfoundTimetableException;
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.component.TimetableRetriever;
@@ -48,12 +49,16 @@ public class TimetableService {
         final List<TimetableResponse.Area> areaResponses = mapAreasToResponse(areaList);
         final List<TimetableResponse.Block> blockResponses = mapBlocksToResponse(blockList, categoryColorMap, likedBlockIds);
 
-        return new TimetableResponse(
+        return TimetableResponse.of(
                 timetable.getStartDate(),
                 timetable.getEndDate(),
                 areaResponses,
                 blockResponses
         );
+    }
+
+    @Transactional(readOnly = true)
+    public TimetableDetailResponse getEventTimetableDetail(final long blockId, final Long userId) {
     }
 
     private Timetable getTimetableByEventId(final long eventId) {
@@ -104,7 +109,7 @@ public class TimetableService {
     private List<TimetableResponse.Area> mapAreasToResponse(final List<TimetableArea> areaList) {
         return areaList.stream()
                 .sorted(Comparator.comparingInt(TimetableArea::getSequence))
-                .map(area -> new TimetableResponse.Area(
+                .map(area -> TimetableResponse.Area.of(
                         area.getTimetableAreaId(),
                         area.getAreaName(),
                         area.getSequence())
@@ -125,14 +130,13 @@ public class TimetableService {
 
                     final String encodedBlockId = secureUrlUtil.encode(block.getTimetableBlockId());
 
-                    return new TimetableResponse.Block(
-                            encodedBlockId,
-                            block.getBlockName(),
+                    return TimetableResponse.Block.of(encodedBlockId,block.getBlockName(),
                             categoryColor,
                             block.getStartDate(),
                             block.getEndDate(),
                             block.getTimetableAreaId(),
-                            likedBlockIds.contains(block.getTimetableBlockId()));
+                            likedBlockIds.contains(block.getTimetableBlockId())
+                    );
                 }).toList();
     }
 }
