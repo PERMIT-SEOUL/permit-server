@@ -32,9 +32,9 @@ public class TimetableBlockPathVariableResolver implements  HandlerMethodArgumen
         final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         final Map<String, String> pathVariables = (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 
-        final String eventId = pathVariables.get(BLOCK_ID_PATH_VARIABLE);
+        final String blockId = pathVariables.get(BLOCK_ID_PATH_VARIABLE);
         try {
-            return secureUrlUtil.decode(eventId);
+            return secureUrlUtil.decode(blockId);
         } catch (Exception e) {
             throw new UrlSecureException(ErrorCode.BAD_REQUEST_ID_DECODE_ERROR);
         }

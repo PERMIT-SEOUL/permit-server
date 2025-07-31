@@ -26,7 +26,7 @@ public class TimetableController {
         return ApiResponseUtil.success(SuccessCode.OK, timeTableService.getEventTimetable(eventId, userId));
     }
 
-    //행사 타임테이블 전체 조회 API
+    //행사 타임테이블 상세 조회 API
     @GetMapping("/timetables/{blockId}")
     public ResponseEntity<BaseResponse<?>> getEventTimetableDetail(
             @UserIdHeader final Long userId,
