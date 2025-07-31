@@ -10,25 +10,29 @@ import lombok.NoArgsConstructor;
 @Table(name = "event_timetable_area")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class EventTimetableAreaEntity extends BaseTimeEntity {
+public class TimetableAreaEntity extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "event_timetable_area_id", nullable = false)
-    private Long eventTimetableAreaId;
+    @Column(name = "timetable_area_id", nullable = false)
+    private Long timetableAreaId;
 
     @Column(name = "event_timetable_id", nullable = false)
-    private long eventTimetableId;
+    private long timetableId;
 
     @Column(name = "area_name", nullable = false)
     private String areaName;
 
-    private EventTimetableAreaEntity(long eventTimetableId, String areaName) {
-        this.eventTimetableId = eventTimetableId;
+    @Column(name = "sequence", nullable = false)
+    private int sequence;
+
+    private TimetableAreaEntity(long timetableId, String areaName, int sequence) {
+        this.timetableId = timetableId;
         this.areaName = areaName;
+        this.sequence = sequence;
     }
 
-    public static EventTimetableAreaEntity create(final long eventTimetableId, final String areaName) {
-        return new EventTimetableAreaEntity(eventTimetableId, areaName);
+    public static TimetableAreaEntity create(final long eventTimetableId, final String areaName, final int sequence) {
+        return new TimetableAreaEntity(eventTimetableId, areaName, sequence);
     }
 }
