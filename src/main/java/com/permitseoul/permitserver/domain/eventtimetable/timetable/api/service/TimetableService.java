@@ -64,19 +64,38 @@ public class TimetableService {
 
     @Transactional(readOnly = true)
     public TimetableDetailResponse getEventTimetableDetail(final long blockId, final Long userId) {
-        final TimetableBlock timetableBlock = getTimetableBlockById(blockId);
-        if (userId == null) {
-            return TimetableDetailResponse.of()
-        }
-    }
-
-    private TimetableBlock getTimetableBlockById(final long blockId) {
+        final TimetableBlock timetableBlock;
+        final TimetableCategory timetableCategory;
+        final TimetableArea timetableArea;
         try {
-            return timetableBlockRetriever.findTimetableBlockById(blockId);
+            timetableBlock = timetableBlockRetriever.findTimetableBlockById(blockId);
+            timetableCategory = timetableCategoryRetriever.findTimetableById(timetableBlock.getTimetableCategoryId());
+            timetableArea = timetableAreaRetriever.findTimetableAreaById(timetableBlock.getTimetableAreaId());
         } catch (TimetableBlockNotfoundException e) {
             throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_BLOCK);
+        } catch (TimetableCategoryNotfoundException e) {
+            throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_CATEGORY);
+        } catch (TimetableAreaNotFoundException e) {
+            throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_AREA);
         }
 
+        final boolean isUserLiked;
+        if (userId == null) {
+            isUserLiked = false;
+        } else {
+            isUserLiked = timetableUserLikeRetriever.isExistUserLikeByIdAndUserId(timetableBlock.getTimetableBlockId(), userId);
+        }
+
+        return TimetableDetailResponse.of(
+                timetableBlock.getBlockName(),
+                timetableCategory.getCategoryName(),
+                timetableCategory.getCategoryColor(),
+                isUserLiked,
+                timetableBlock.getInformation(),
+                timetableArea.getAreaName(),
+                timetableBlock.getImageUrl(),
+                timetableBlock.getImageUrl()
+        );
     }
 
     private Timetable getTimetableByEventId(final long eventId) {

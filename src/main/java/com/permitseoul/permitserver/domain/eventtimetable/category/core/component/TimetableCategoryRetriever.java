@@ -4,6 +4,8 @@ import com.permitseoul.permitserver.domain.eventtimetable.category.core.domain.T
 import com.permitseoul.permitserver.domain.eventtimetable.category.core.domain.entity.TimetableCategoryEntity;
 import com.permitseoul.permitserver.domain.eventtimetable.category.core.exception.TimetableCategoryNotfoundException;
 import com.permitseoul.permitserver.domain.eventtimetable.category.core.repository.TimetableCategoryRepository;
+import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.domain.Timetable;
+import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.domain.entity.TimetableEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,12 @@ public class TimetableCategoryRetriever {
         return timetableCategoryEntityList.stream()
                 .map(TimetableCategory::fromEntity)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public TimetableCategory findTimetableById(final long timetableId) {
+        final TimetableCategoryEntity timetableCategoryEntity = timetableCategoryRepository.findById(timetableId).orElseThrow(TimetableCategoryNotfoundException::new);
+        return TimetableCategory.fromEntity(timetableCategoryEntity);
     }
 
 }
