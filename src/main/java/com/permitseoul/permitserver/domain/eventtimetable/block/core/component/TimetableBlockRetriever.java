@@ -25,4 +25,10 @@ public class TimetableBlockRetriever {
                 .map(TimetableBlock::fromEntity)
                 .toList();
     }
+
+    @Transactional(readOnly = true)
+    public TimetableBlock findTimetableBlockById(final long timetableBlockId) {
+        final TimetableBlockEntity timetableBlockEntity = timetableBlockRepository.findById(timetableBlockId).orElseThrow(TimetableBlockNotfoundException::new);
+        return TimetableBlock.fromEntity(timetableBlockEntity);
+    }
 }

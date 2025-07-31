@@ -11,7 +11,7 @@ import java.util.List;
 public class TimetableUserLikeRetriever {
     private final TimetableUserLikeRepository userLikeRepository;
 
-    public List<Long> findAllBlockIdsLikedByUserId(final long userId) {
-        return userLikeRepository.findAllBlockIdsLikedByUser(userId);
+    public List<Long> findLikedBlockIdsIn(long userId, final List<Long> blockIds) {
+        return userLikeRepository.findLikedBlockIdsIn(userId, blockIds);
     }
 }

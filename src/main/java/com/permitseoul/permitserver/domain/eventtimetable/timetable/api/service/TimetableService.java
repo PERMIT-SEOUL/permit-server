@@ -43,9 +43,14 @@ public class TimetableService {
         final List<TimetableCategory> categoryList = getCategoryListByTimetableId(timetable.getTimetableId());
         final List<TimetableBlock> blockList = getBlockListByTimetableId(timetable.getTimetableId());
 
-        final Map<Long, String> categoryColorMap = mapCategoryColors(categoryList);
-        final Set<Long> likedBlockIds = getLikedBlockIdList(userId);
+        final List<Long> blockIds = blockList.stream()
+                .map(TimetableBlock::getTimetableBlockId)
+                .toList();
+        final Set<Long> likedBlockIds = (userId == null)
+                ? Set.of()
+                : new HashSet<>(timetableUserLikeRetriever.findLikedBlockIdsIn(userId, blockIds));
 
+        final Map<Long, String> categoryColorMap = mapCategoryColors(categoryList);
         final List<TimetableResponse.Area> areaResponses = mapAreasToResponse(areaList);
         final List<TimetableResponse.Block> blockResponses = mapBlocksToResponse(blockList, categoryColorMap, likedBlockIds);
 
@@ -59,6 +64,19 @@ public class TimetableService {
 
     @Transactional(readOnly = true)
     public TimetableDetailResponse getEventTimetableDetail(final long blockId, final Long userId) {
+        final TimetableBlock timetableBlock = getTimetableBlockById(blockId);
+        if (userId == null) {
+            return TimetableDetailResponse.of()
+        }
+    }
+
+    private TimetableBlock getTimetableBlockById(final long blockId) {
+        try {
+            return timetableBlockRetriever.findTimetableBlockById(blockId);
+        } catch (TimetableBlockNotfoundException e) {
+            throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_BLOCK);
+        }
+
     }
 
     private Timetable getTimetableByEventId(final long eventId) {
@@ -99,11 +117,6 @@ public class TimetableService {
                         TimetableCategory::getTimetableCategoryId,
                         TimetableCategory::getCategoryColor
                 ));
-    }
-
-    private Set<Long> getLikedBlockIdList(final Long userId) {
-        if (userId == null) return Set.of();
-        return new HashSet<>(timetableUserLikeRetriever.findAllBlockIdsLikedByUserId(userId));
     }
 
     private List<TimetableResponse.Area> mapAreasToResponse(final List<TimetableArea> areaList) {

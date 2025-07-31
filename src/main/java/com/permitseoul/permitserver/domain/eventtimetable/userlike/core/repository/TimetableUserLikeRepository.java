@@ -9,6 +9,10 @@ import java.util.List;
 
 public interface TimetableUserLikeRepository extends JpaRepository<TimetableUserLikeEntity, Long> {
 
-    @Query("SELECT l.timetableBlockId FROM TimetableUserLikeEntity l WHERE l.userId = :userId")
-    List<Long> findAllBlockIdsLikedByUser(@Param("userId") final long userId);
+    @Query("""
+    SELECT tul.timetableBlockId
+    FROM TimetableUserLikeEntity tul
+    WHERE tul.userId = :userId AND tul.timetableBlockId IN :blockIds
+""")
+    List<Long> findLikedBlockIdsIn(@Param("userId") Long userId, @Param("blockIds") List<Long> blockIds);
 }
