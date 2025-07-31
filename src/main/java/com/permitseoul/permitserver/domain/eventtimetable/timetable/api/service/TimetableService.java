@@ -38,7 +38,7 @@ public class TimetableService {
     public TimetableResponse getEventTimetable(final long eventId, final Long userId) {
         try {
             final Timetable timetable = timetableRetriever.getTimetableByEventId(eventId);
-            final List<TimetableArea> timetableAreaList = timetableAreaRetriever.findTimetableListByTimetableId(timetable.getTimetableId());
+            final List<TimetableArea> timetableAreaList = timetableAreaRetriever.findTimetableAreaListByTimetableId(timetable.getTimetableId());
             final List<TimetableCategory> timetableCategoryList = timetableCategoryRetriever.findAllTimetableCategory(timetable.getTimetableId());
             final List<TimetableBlock> timetableBlockList = timetableBlockRetriever.findAllTimetableBlockByTimetableId(timetable.getTimetableId());
 

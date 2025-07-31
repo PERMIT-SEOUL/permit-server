@@ -13,7 +13,7 @@ public class TimetableUserLikeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "timetable_user_like_id", nullable = false)
-    private Long timetableUserLikeId; 
+    private Long timetableUserLikeId;
 
     @Column(name = "user_id", nullable = false)
     private long userId;
@@ -26,7 +26,7 @@ public class TimetableUserLikeEntity {
         this.timetableBlockId = timetableBlockId;
     }
 
-    public static TimetableUserLikeEntity create(final long userId, final long eventTimetableBlockId) {
-        return new TimetableUserLikeEntity(userId, eventTimetableBlockId);
+    public static TimetableUserLikeEntity create(final long userId, final long timetableBlockId) {
+        return new TimetableUserLikeEntity(userId, timetableBlockId);
     }
 }

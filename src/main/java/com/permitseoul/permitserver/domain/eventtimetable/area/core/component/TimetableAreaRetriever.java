@@ -16,7 +16,7 @@ public class TimetableAreaRetriever {
     private final TimetableAreaRepository timetableAreaRepository;
 
     @Transactional(readOnly = true)
-    public List<TimetableArea> findTimetableListByTimetableId(final long timeTableId) {
+    public List<TimetableArea> findTimetableAreaListByTimetableId(final long timeTableId) {
         final List<TimetableAreaEntity> timetableEntityList = timetableAreaRepository.findAllByTimetableId(timeTableId);
         if(timetableEntityList.isEmpty()) {
             throw new TimetableAreaNotFoundException();

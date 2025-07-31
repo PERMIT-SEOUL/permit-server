@@ -6,6 +6,7 @@ import com.permitseoul.permitserver.domain.eventtimetable.block.core.exception.T
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.repository.TimetableBlockRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
 public class TimetableBlockRetriever {
     private final TimetableBlockRepository timetableBlockRepository;
 
+    @Transactional(readOnly = true)
     public List<TimetableBlock> findAllTimetableBlockByTimetableId(final long timetableId) {
         final List<TimetableBlockEntity> timetableBlockEntityList = timetableBlockRepository.findAllByTimetableId(timetableId);
         if (timetableBlockEntityList.isEmpty()) {
