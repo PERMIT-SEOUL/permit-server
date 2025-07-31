@@ -13,6 +13,7 @@ public class TimetableBlock {
     private final Long timetableBlockId;
     private final long timetableId;
     private final long timetableCategoryId;
+    private final long timetableAreaId;
     private final LocalDateTime startDate;
     private final LocalDateTime endDate;
     private final String blockName;
@@ -25,6 +26,7 @@ public class TimetableBlock {
                 timetableBlockEntity.getTimetableBlockId(),
                 timetableBlockEntity.getTimetableId(),
                 timetableBlockEntity.getTimetableCategoryId(),
+                timetableBlockEntity.getTimetableAreaId(),
                 timetableBlockEntity.getStartDate(),
                 timetableBlockEntity.getEndDate(),
                 timetableBlockEntity.getBlockName(),

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "event_timetable_user_likes")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class EventTimetableUserLikeEntity {
+public class TimetableUserLikeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_timetable_user_like_id", nullable = false)
@@ -21,12 +21,12 @@ public class EventTimetableUserLikeEntity {
     @Column(name = "event_timetable_block_id", nullable = false)
     private long eventTimetableBlockId;
 
-    private EventTimetableUserLikeEntity(long userId, long eventTimetableBlockId) {
+    private TimetableUserLikeEntity(long userId, long eventTimetableBlockId) {
         this.userId = userId;
         this.eventTimetableBlockId = eventTimetableBlockId;
     }
 
-    public static EventTimetableUserLikeEntity create(final long userId, final long eventTimetableBlockId) {
-        return new EventTimetableUserLikeEntity(userId, eventTimetableBlockId);
+    public static TimetableUserLikeEntity create(final long userId, final long eventTimetableBlockId) {
+        return new TimetableUserLikeEntity(userId, eventTimetableBlockId);
     }
 }

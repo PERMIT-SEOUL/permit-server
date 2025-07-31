@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public class TimetableArea {
-    private final Long eventTimetableAreaId;
-    private final long eventTimetableId;
+    private final long timetableAreaId;
+    private final long timetableId;
     private final String areaName;
     private final int sequence;
 

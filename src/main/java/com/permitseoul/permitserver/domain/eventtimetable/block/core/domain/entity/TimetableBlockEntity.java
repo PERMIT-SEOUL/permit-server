@@ -25,6 +25,9 @@ public class TimetableBlockEntity extends BaseTimeEntity {
     @Column(name = "timetable_category_id", nullable = false)
     private long timetableCategoryId;
 
+    @Column(name = "timetable_area_id", nullable = false)
+    private long timetableAreaId;
+
     @Column(name = "start_date", nullable = false)
     private LocalDateTime startDate;
 
@@ -46,6 +49,7 @@ public class TimetableBlockEntity extends BaseTimeEntity {
     private TimetableBlockEntity(
             long timetableId,
             long timetableCategoryId,
+            long timetableAreaId,
             LocalDateTime startDate,
             LocalDateTime endDate,
             String blockName,
@@ -55,6 +59,7 @@ public class TimetableBlockEntity extends BaseTimeEntity {
     ) {
         this.timetableId = timetableId;
         this.timetableCategoryId = timetableCategoryId;
+        this.timetableAreaId = timetableAreaId;
         this.startDate = startDate;
         this.endDate = endDate;
         this.blockName = blockName;
@@ -65,12 +70,13 @@ public class TimetableBlockEntity extends BaseTimeEntity {
 
     public static TimetableBlockEntity create(final long timetableId,
                                               final long timetableCategoryId,
+                                              final long timetableAreaId,
                                               final LocalDateTime startDate,
                                               final LocalDateTime endDate,
                                               final String blockName,
                                               final String artist,
                                               final String imageUrl,
                                               final String information) {
-        return new TimetableBlockEntity(timetableId, timetableCategoryId, startDate, endDate, blockName, artist, imageUrl, information);
+        return new TimetableBlockEntity(timetableId, timetableCategoryId, timetableAreaId, startDate, endDate, blockName, artist, imageUrl, information);
     }
 }

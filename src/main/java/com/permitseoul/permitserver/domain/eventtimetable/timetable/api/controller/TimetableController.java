@@ -2,6 +2,7 @@ package com.permitseoul.permitserver.domain.eventtimetable.timetable.api.control
 
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.api.service.TimetableService;
 import com.permitseoul.permitserver.global.resolver.event.EventIdPathVariable;
+import com.permitseoul.permitserver.global.resolver.user.UserIdHeader;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.SuccessCode;
@@ -20,8 +21,9 @@ public class TimetableController {
     //행사 타임테이블 전체 조회 API
     @PostMapping("/{eventId}/timetable")
     public ResponseEntity<BaseResponse<?>> getEventTimetable(
+            @UserIdHeader final Long userId,
             @EventIdPathVariable final Long eventId
     ) {
-        return ApiResponseUtil.success(SuccessCode.OK, timeTableService.getEventTimetable(eventId));
+        return ApiResponseUtil.success(SuccessCode.OK, timeTableService.getEventTimetable(eventId, userId));
     }
 }

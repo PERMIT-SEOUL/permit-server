@@ -15,6 +15,7 @@ public record TimetableResponse(
         List<Block> blocks
 ) {
     public record Area(
+            long areaId,
             String areaName,
             int sequence
     ) { }
@@ -27,6 +28,7 @@ public record TimetableResponse(
             LocalDateTime blockStartDate,
             @JsonFormat(pattern = "yyyy.MM.dd HH:mm")
             LocalDateTime blockEndDate,
-            String blockArea
+            long blockAreaId,
+            boolean isUserLiked
     ) { }
 }

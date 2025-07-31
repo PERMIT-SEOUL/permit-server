@@ -70,6 +70,8 @@ public enum ErrorCode implements ApiCode {
     NOT_FOUND_TIMETABLE_CATEGORY(HttpStatus.NOT_FOUND, 40418, "타임테이블 카테고리를 찾을 수 없습니다."),
     NOT_FOUND_TIMETABLE(HttpStatus.NOT_FOUND, 40419, "타임테이블을 찾을 수 없습니다."),
     NOT_FOUND_TIMETABLE_BLOCK(HttpStatus.NOT_FOUND, 40420, "타임테이블 블록을 찾을 수 없습니다."),
+    NOT_FOUND_TIMETABLE_CATEGORY_COLOR(HttpStatus.NOT_FOUND, 40421, "타임테이블 카테고리 색깔을 찾을 수 없습니다."),
+
 
 
 
