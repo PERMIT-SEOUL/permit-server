@@ -8,18 +8,16 @@ import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/event")
+@RequestMapping("/api/events")
 public class TimetableController {
     private final TimetableService timeTableService;
 
     //행사 타임테이블 전체 조회 API
-    @PostMapping("/{eventId}/timetable")
+    @GetMapping("/{eventId}/timetable")
     public ResponseEntity<BaseResponse<?>> getEventTimetable(
             @UserIdHeader final Long userId,
             @EventIdPathVariable final Long eventId
