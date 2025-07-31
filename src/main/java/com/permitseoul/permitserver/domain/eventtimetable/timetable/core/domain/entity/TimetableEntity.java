@@ -9,12 +9,13 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "event_timetable")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class EventTimetableEntity {
+public class TimetableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "event_timetable_id", nullable = false)
-    private Long eventTimetableId;
+    @Column(name = "timetable_id", nullable = false)
+    private Long timetableId;
 
     @Column(name = "event_id", nullable = false)
     private long eventId;
@@ -25,13 +26,13 @@ public class EventTimetableEntity {
     @Column(name = "end_date", nullable = false)
     private LocalDateTime endDate;
 
-    private EventTimetableEntity(long eventId, LocalDateTime startDate, LocalDateTime endDate) {
+    private TimetableEntity(long eventId, LocalDateTime startDate, LocalDateTime endDate) {
         this.eventId = eventId;
         this.startDate = startDate;
         this.endDate = endDate;
     }
 
-    public static EventTimetableEntity create(final long eventId, final LocalDateTime startDate, final LocalDateTime endDate) {
-        return new EventTimetableEntity(eventId, startDate, endDate);
+    public static TimetableEntity create(final long eventId, final LocalDateTime startDate, final LocalDateTime endDate) {
+        return new TimetableEntity(eventId, startDate, endDate);
     }
 }
