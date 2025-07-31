@@ -1,6 +1,7 @@
 package com.permitseoul.permitserver.global.config;
 
 import com.permitseoul.permitserver.global.resolver.event.EventIdPathVariableResolver;
+import com.permitseoul.permitserver.global.resolver.timetableblock.TimetableBlockPathVariableResolver;
 import com.permitseoul.permitserver.global.resolver.user.UserIdHeaderResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -15,10 +16,12 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final UserIdHeaderResolver userIdHeaderResolver;
     private final EventIdPathVariableResolver eventIdPathVariableResolver;
+    private final TimetableBlockPathVariableResolver timetableBlockPathVariableResolver;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(userIdHeaderResolver);
         resolvers.add(eventIdPathVariableResolver);
+        resolvers.add(timetableBlockPathVariableResolver);
     }
 }

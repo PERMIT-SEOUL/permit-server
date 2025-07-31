@@ -17,11 +17,22 @@ public class TimetableController {
     private final TimetableService timeTableService;
 
     //행사 타임테이블 전체 조회 API
-    @GetMapping("/{eventId}/timetable")
+    @GetMapping("/{eventId}/timetables")
     public ResponseEntity<BaseResponse<?>> getEventTimetable(
             @UserIdHeader final Long userId,
             @EventIdPathVariable final Long eventId
     ) {
         return ApiResponseUtil.success(SuccessCode.OK, timeTableService.getEventTimetable(eventId, userId));
     }
+
+    //행사 타임테이블 전체 조회 API
+    @GetMapping("/timetables/{blockId}")
+    public ResponseEntity<BaseResponse<?>> getEventTimetableDetail(
+            @UserIdHeader final Long userId,
+            @EventIdPathVariable final Long eventId
+    ) {
+        return ApiResponseUtil.success(SuccessCode.OK, timeTableService.getEventTimetable(eventId, userId));
+    }
+
+
 }
