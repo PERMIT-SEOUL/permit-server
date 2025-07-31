@@ -17,7 +17,7 @@ public record TimetableDetailResponse(
                                              final String information,
                                              final String area,
                                              final String imageUrl,
-                                             final String blockInfoUrl) {
+                                             final String blockInfoRedirectUrl) {
         return new TimetableDetailResponse(
                 blockName,
                 blockCategory,
@@ -26,7 +26,7 @@ public record TimetableDetailResponse(
                 information,
                 area,
                 imageUrl,
-                blockInfoUrl
+                blockInfoRedirectUrl
         );
     }
 }

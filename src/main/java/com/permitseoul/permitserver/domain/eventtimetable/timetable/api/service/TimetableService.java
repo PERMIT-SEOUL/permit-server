@@ -69,7 +69,7 @@ public class TimetableService {
         final TimetableArea timetableArea;
         try {
             timetableBlock = timetableBlockRetriever.findTimetableBlockById(blockId);
-            timetableCategory = timetableCategoryRetriever.findTimetableById(timetableBlock.getTimetableCategoryId());
+            timetableCategory = timetableCategoryRetriever.findTimetableCategoryById(timetableBlock.getTimetableCategoryId());
             timetableArea = timetableAreaRetriever.findTimetableAreaById(timetableBlock.getTimetableAreaId());
         } catch (TimetableBlockNotfoundException e) {
             throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_BLOCK);
@@ -94,7 +94,7 @@ public class TimetableService {
                 timetableBlock.getInformation(),
                 timetableArea.getAreaName(),
                 timetableBlock.getImageUrl(),
-                timetableBlock.getImageUrl()
+                timetableBlock.getBlockInfoRedirectUrl()
         );
     }
 
