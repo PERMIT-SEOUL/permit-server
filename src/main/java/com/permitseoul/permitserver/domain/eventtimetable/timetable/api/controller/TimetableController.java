@@ -2,6 +2,7 @@ package com.permitseoul.permitserver.domain.eventtimetable.timetable.api.control
 
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.api.service.TimetableService;
 import com.permitseoul.permitserver.global.resolver.event.EventIdPathVariable;
+import com.permitseoul.permitserver.global.resolver.timetableblock.TimetableBlockIdPathVariable;
 import com.permitseoul.permitserver.global.resolver.user.UserIdHeader;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
@@ -29,9 +30,9 @@ public class TimetableController {
     @GetMapping("/timetables/{blockId}")
     public ResponseEntity<BaseResponse<?>> getEventTimetableDetail(
             @UserIdHeader final Long userId,
-            @EventIdPathVariable final Long eventId
+            @TimetableBlockIdPathVariable final Long blockId
     ) {
-        return ApiResponseUtil.success(SuccessCode.OK, timeTableService.getEventTimetable(eventId, userId));
+        return ApiResponseUtil.success(SuccessCode.OK, timeTableService.getEventTimetableDetail(blockId, userId));
     }
 
 
