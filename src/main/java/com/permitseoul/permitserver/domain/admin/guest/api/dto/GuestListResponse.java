@@ -12,7 +12,7 @@ public record GuestListResponse(
     }
 
     public record GuestInfo(
-            long id,
+            long guestId,
             String guestName,
             String guestType,
             String affiliation,
@@ -20,13 +20,13 @@ public record GuestListResponse(
             String email
     ) {
         public static GuestInfo of(
-                final long id,
+                final long guestId,
                 final String guestName,
                 final String guestType,
                 final String affiliation,
                 final String phoneNumber,
                 final String email) {
-            return new GuestInfo(id, guestName, guestType, affiliation, phoneNumber, email);
+            return new GuestInfo(guestId, guestName, guestType, affiliation, phoneNumber, email);
         }
     }
 }
