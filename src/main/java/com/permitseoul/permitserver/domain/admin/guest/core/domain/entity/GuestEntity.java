@@ -35,4 +35,8 @@ public class GuestEntity {
         this.phoneNumber = phoneNumber;
         this.email = email;
     }
+
+    public static GuestEntity create(final String name, final String guestType, final String affiliation, final String phoneNumber, final String email) {
+        return new GuestEntity(name, guestType, affiliation, phoneNumber, email);
+    }
 }
