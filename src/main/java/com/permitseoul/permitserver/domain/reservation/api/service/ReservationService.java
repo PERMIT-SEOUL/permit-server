@@ -91,7 +91,7 @@ public class ReservationService {
             validateUsableTicketType(ticketTypeEntityMap, eventId, now);
             validateTotalAmount(ticketTypeEntityMap, requestTicketTypeInfos, totalAmount, coupon);
 
-            //redis로 선점 예약 방식 (7분)
+            //redis로 선점 예약 방식
             redisDecreasedTicketTypeInfo = decreaseRedisTicketCount(requestTicketTypeInfos);
 
         } catch (EventNotfoundException e) {
