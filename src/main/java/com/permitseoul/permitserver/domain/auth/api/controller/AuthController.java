@@ -72,8 +72,8 @@ public class AuthController {
         // 쿠키 삭제
         final ResponseCookie deleteAccessToken = CookieCreatorUtil.deleteAccessTokenCookie();
         final ResponseCookie deleteRefreshToken = CookieCreatorUtil.deleteRefreshTokenCookie();
-        response.setHeader("Set-Cookie", deleteAccessToken.toString());
-        response.addHeader("Set-Cookie", deleteRefreshToken.toString());
+        response.setHeader(Constants.SET_COOKIE, deleteAccessToken.toString());
+        response.addHeader(Constants.SET_COOKIE, deleteRefreshToken.toString());
         return ApiResponseUtil.success(SuccessCode.OK);
     }
 
@@ -81,8 +81,8 @@ public class AuthController {
                                                                         final TokenDto tokenDto) {
         final ResponseCookie accessTokenCookie = CookieCreatorUtil.createAccessTokenCookie(tokenDto.accessToken());
         final ResponseCookie refreshTokenCookie = CookieCreatorUtil.createRefreshTokenCookie(tokenDto.refreshToken());
-        response.setHeader("Set-Cookie", accessTokenCookie.toString());
-        response.addHeader("Set-Cookie", refreshTokenCookie.toString());
+        response.setHeader(Constants.SET_COOKIE, accessTokenCookie.toString());
+        response.addHeader(Constants.SET_COOKIE, refreshTokenCookie.toString());
 
         return ApiResponseUtil.success(SuccessCode.CREATED);
     }
