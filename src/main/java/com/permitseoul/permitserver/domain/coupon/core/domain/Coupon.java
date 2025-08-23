@@ -4,6 +4,9 @@ import com.permitseoul.permitserver.domain.coupon.core.domain.entity.CouponEntit
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Getter
 @RequiredArgsConstructor
 public class Coupon {
@@ -11,7 +14,9 @@ public class Coupon {
     private final long eventId;
     private final String couponCode;
     private final int discountRates;
+    private final String memo;
     private final boolean used;
+    private final LocalDateTime createAt;
 
     public static Coupon fromEntity(final CouponEntity couponEntity) {
         return new Coupon(
@@ -19,7 +24,9 @@ public class Coupon {
                 couponEntity.getEventId(),
                 couponEntity.getCouponCode(),
                 couponEntity.getDiscountRates(),
-                couponEntity.isUsed()
+                couponEntity.getMemo(),
+                couponEntity.isUsed(),
+                couponEntity.getCreatedAt()
         );
     }
 }
