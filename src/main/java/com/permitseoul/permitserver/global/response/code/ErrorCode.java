@@ -103,6 +103,7 @@ public enum ErrorCode implements ApiCode {
     INTERNAL_TRANSITION_ENUM_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50006, "enum status 변환 과정 에러입니다."),
     INTERNAL_SESSION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50007, "reservation session 저장 과정 에러입니다."),
     INTERNAL_ID_ENCODE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50008, "객체 id Encoding 에러입니다."),
+    INTERNAL_TIME_FORMAT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50009, "time format 에러입니다."),
 
 
 

@@ -10,7 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class TicketCodeGenerator {
+public final class TicketCodeGenerator {
     private static final String SHA_256_ALGORITHM = "SHA-256";
 
     public static String generateTicketCode() {

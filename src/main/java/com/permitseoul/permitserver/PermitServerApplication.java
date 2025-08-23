@@ -6,7 +6,7 @@ import com.permitseoul.permitserver.domain.auth.core.external.google.GooglePrope
 import com.permitseoul.permitserver.domain.auth.core.external.kakao.KakaoProperties;
 import com.permitseoul.permitserver.domain.reservation.api.TossProperties;
 import com.permitseoul.permitserver.domain.reservationsession.core.domain.SessionProperties;
-import com.permitseoul.permitserver.global.util.HashIdProperties;
+import com.permitseoul.permitserver.global.HashIdProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

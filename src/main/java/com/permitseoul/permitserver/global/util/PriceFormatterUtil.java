@@ -1,12 +1,15 @@
 package com.permitseoul.permitserver.global.util;
 
 import com.permitseoul.permitserver.global.exception.PriceFormatException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.List;
 
-public abstract class PriceFormatterUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class PriceFormatterUtil {
 
     private static final String DECIMAL_PATTERN = "#,###";
 

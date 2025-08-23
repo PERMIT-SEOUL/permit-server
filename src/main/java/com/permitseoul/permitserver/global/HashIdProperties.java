@@ -1,4 +1,4 @@
-package com.permitseoul.permitserver.global.util;
+package com.permitseoul.permitserver.global;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
