@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 public record CouponIssueRequest(
-        @Positive(message = "eventId가 양수가 아닙니다.")
         @Min(value = 1, message = "eventId가 1보다 작습니다.")
         long eventId,
 
