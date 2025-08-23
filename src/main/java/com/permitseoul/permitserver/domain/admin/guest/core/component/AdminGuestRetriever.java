@@ -3,6 +3,7 @@ package com.permitseoul.permitserver.domain.admin.guest.core.component;
 import com.permitseoul.permitserver.domain.admin.guest.api.dto.GuestListResponse;
 import com.permitseoul.permitserver.domain.admin.guest.core.domain.Guest;
 import com.permitseoul.permitserver.domain.admin.guest.core.domain.entity.GuestEntity;
+import com.permitseoul.permitserver.domain.admin.guest.core.exception.AdminGuestNotfoundException;
 import com.permitseoul.permitserver.domain.admin.guest.core.repository.GuestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -23,5 +24,10 @@ public class AdminGuestRetriever {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public Guest findById(final long guestId) {
+        final GuestEntity guestEntity = guestRepository.findById(guestId).orElseThrow(AdminGuestNotfoundException::new);
+        return Guest.fromEntity(guestEntity);
+    }
 
 }
