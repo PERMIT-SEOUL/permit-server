@@ -1,6 +1,6 @@
 package com.permitseoul.permitserver.domain.admin.coupon.api.controller;
 
-import com.permitseoul.permitserver.domain.admin.coupon.api.dto.CouponIssueRequest;
+import com.permitseoul.permitserver.domain.admin.coupon.api.dto.request.CouponIssueRequest;
 import com.permitseoul.permitserver.domain.admin.coupon.api.service.AdminCouponService;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
@@ -8,10 +8,7 @@ import com.permitseoul.permitserver.global.response.code.SuccessCode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin/coupons")
@@ -26,5 +23,12 @@ public class AdminCouponController {
     ) {
         adminCouponService.issueCoupons(couponIssueRequest.eventId(), couponIssueRequest.discountRate(), couponIssueRequest.count());
         return ApiResponseUtil.success(SuccessCode.OK);
+    }
+
+    @GetMapping("/{eventId}")
+    public ResponseEntity<BaseResponse<?>> getCoupons(
+            @PathVariable("eventId") long eventId
+    ) {
+        return ApiResponseUtil.success(SuccessCode.OK, adminCouponService.getCouponsByEventId(eventId));
     }
 }
