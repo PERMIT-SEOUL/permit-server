@@ -27,7 +27,7 @@ public class AdminCouponService {
                 .map(coupon -> CouponResponse.of(
                                 coupon.getCouponId(),
                                 coupon.getCreateAt(),
-                                coupon.getDiscountRates(),
+                                coupon.getDiscountRate(),
                                 coupon.getCouponCode(),
                                 coupon.getMemo(),
                                 coupon.isUsed()
