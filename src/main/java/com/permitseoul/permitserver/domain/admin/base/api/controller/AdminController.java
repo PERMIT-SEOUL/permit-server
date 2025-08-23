@@ -1,7 +1,7 @@
-package com.permitseoul.permitserver.domain.admin.api.controller;
+package com.permitseoul.permitserver.domain.admin.base.api.controller;
 
-import com.permitseoul.permitserver.domain.admin.api.dto.AdminValidateRequest;
-import com.permitseoul.permitserver.domain.admin.api.service.AdminService;
+import com.permitseoul.permitserver.domain.admin.base.api.dto.AdminValidateRequest;
+import com.permitseoul.permitserver.domain.admin.base.api.service.AdminService;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.SuccessCode;

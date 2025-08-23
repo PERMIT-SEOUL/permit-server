@@ -1,4 +1,4 @@
-package com.permitseoul.permitserver.domain.admin.api.dto;
+package com.permitseoul.permitserver.domain.admin.base.api.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
