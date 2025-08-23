@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.domain.coupon.core.domain.entity;
 
+import com.permitseoul.permitserver.global.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,7 +9,7 @@ import lombok.*;
 @Getter
 @Table(name = "coupons")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CouponEntity {
+public class CouponEntity extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +25,9 @@ public class CouponEntity {
     @Column(name = "discount_rates")
     private int discountRates;
 
+    @Column(name = "memo")
+    private String memo;
+
     @Getter
     @Column(name = "is_used")
     private boolean used;
@@ -33,5 +37,11 @@ public class CouponEntity {
         this.couponCode = couponCode;
         this.discountRates = discountRates;
         this.used = false;
+    }
+
+    public static CouponEntity create(final long eventId,
+                                      final String couponCode,
+                                      final int discountRates) {
+        return new CouponEntity(eventId, couponCode, discountRates);
     }
 }
