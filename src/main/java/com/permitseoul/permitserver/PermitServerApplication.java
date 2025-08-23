@@ -1,6 +1,6 @@
 package com.permitseoul.permitserver;
 
-import com.permitseoul.permitserver.domain.admin.api.AdminProperties;
+import com.permitseoul.permitserver.domain.admin.base.api.AdminProperties;
 import com.permitseoul.permitserver.domain.auth.core.jwt.JwtProperties;
 import com.permitseoul.permitserver.domain.auth.core.external.google.GoogleProperties;
 import com.permitseoul.permitserver.domain.auth.core.external.kakao.KakaoProperties;

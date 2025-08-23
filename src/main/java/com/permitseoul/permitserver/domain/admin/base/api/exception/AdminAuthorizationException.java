@@ -1,4 +1,4 @@
-package com.permitseoul.permitserver.domain.admin.api.exception;
+package com.permitseoul.permitserver.domain.admin.base.api.exception;
 
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 

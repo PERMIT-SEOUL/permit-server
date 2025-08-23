@@ -8,12 +8,14 @@ import com.permitseoul.permitserver.domain.reservation.api.dto.*;
 import com.permitseoul.permitserver.domain.reservation.api.exception.NotfoundReservationException;
 import com.permitseoul.permitserver.domain.reservation.api.exception.ReservationSessionCookieException;
 import com.permitseoul.permitserver.domain.reservation.api.service.ReservationService;
+import com.permitseoul.permitserver.global.Constants;
 import com.permitseoul.permitserver.global.domain.CookieType;
 import com.permitseoul.permitserver.global.resolver.user.UserIdHeader;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import com.permitseoul.permitserver.global.response.code.SuccessCode;
+import com.permitseoul.permitserver.global.util.SecureUrlUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -29,6 +31,7 @@ import java.time.LocalDateTime;
 @RequestMapping("/api/reservations")
 public class ReservationController {
     private final ReservationService reservationService;
+    private final SecureUrlUtil secureUrlUtil;
 
     //예약 생성 api
     @PostMapping("/ready")
@@ -39,7 +42,7 @@ public class ReservationController {
     ) {
         final String sessionKey = reservationService.saveReservation(
                 userId,
-                reservationInfoRequest.eventId(),
+                secureUrlUtil.decode(reservationInfoRequest.eventId()),
                 reservationInfoRequest.couponCode(),
                 reservationInfoRequest.totalAmount(),
                 reservationInfoRequest.orderId(),
@@ -47,7 +50,7 @@ public class ReservationController {
                 LocalDateTime.now()
         );
         final ResponseCookie reservationSessionCookie = CookieCreatorUtil.createReservationSessionCookie(sessionKey);
-        response.setHeader("Set-Cookie", reservationSessionCookie.toString());
+        response.setHeader(Constants.SET_COOKIE, reservationSessionCookie.toString());
         return ApiResponseUtil.success(SuccessCode.OK);
     }
 

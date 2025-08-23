@@ -1,7 +1,7 @@
-package com.permitseoul.permitserver.domain.admin.api.service;
+package com.permitseoul.permitserver.domain.admin.base.api.service;
 
-import com.permitseoul.permitserver.domain.admin.api.AdminProperties;
-import com.permitseoul.permitserver.domain.admin.api.exception.AdminAuthorizationException;
+import com.permitseoul.permitserver.domain.admin.base.api.AdminProperties;
+import com.permitseoul.permitserver.domain.admin.base.api.exception.AdminAuthorizationException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

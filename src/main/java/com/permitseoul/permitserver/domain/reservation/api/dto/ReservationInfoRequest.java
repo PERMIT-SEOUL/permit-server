@@ -11,8 +11,8 @@ import java.util.List;
 
 public record ReservationInfoRequest(
 
-        @Positive(message = "eventId는 양수여야 합니다.")
-        long eventId,
+        @NotBlank(message = "eventId가 비어있습니다.")
+        String eventId,
 
         @Nullable
         String couponCode,
@@ -20,11 +20,11 @@ public record ReservationInfoRequest(
         @Positive(message = "총 가격은 양수여야합니다.")
         BigDecimal totalAmount,
 
-        @NotBlank
+        @NotBlank(message = "orderId가 비어있습니다.")
         String orderId,
 
         @Valid
-        @NotNull
+        @NotNull(message = "ticketTypeInfo가 비어있습니다.")
         List<TicketTypeInfo> ticketTypeInfos
 ) {
     public record TicketTypeInfo(

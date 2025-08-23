@@ -1,7 +1,6 @@
-package com.permitseoul.permitserver.domain.admin.api;
+package com.permitseoul.permitserver.domain.admin.base.api;
 
-import com.permitseoul.permitserver.domain.admin.api.exception.AdminApiException;
-import com.permitseoul.permitserver.domain.auth.api.exception.AuthApiException;
+import com.permitseoul.permitserver.domain.admin.base.api.exception.AdminApiException;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import org.springframework.http.ResponseEntity;
