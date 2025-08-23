@@ -177,7 +177,7 @@ public class ReservationService {
         }
 
         if (coupon != null) {
-            final int discountRate = coupon.getDiscountRates();
+            final int discountRate = coupon.getDiscountRate();
             final BigDecimal discount = calculatedAmount.multiply(BigDecimal.valueOf(discountRate)).divide(BigDecimal.valueOf(100));
             calculatedAmount = calculatedAmount.subtract(discount);
         }

@@ -19,7 +19,7 @@ public class CouponService {
     public CouponValidateResponse validateCoupon(final String couponCode, final long eventId) {
         try {
             final Coupon coupon = couponRetriever.findValidCouponByCodeAndEvent(couponCode, eventId);
-            return CouponValidateResponse.of(coupon.getDiscountRates());
+            return CouponValidateResponse.of(coupon.getDiscountRate());
         } catch (CouponNotfoundException e) {
             throw new NotFoundCouponException(ErrorCode.NOT_FOUND_COUPON_CODE);
         }
