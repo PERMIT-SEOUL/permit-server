@@ -20,7 +20,7 @@ public record ReservationInfoRequest(
         @Positive(message = "총 가격은 양수여야합니다.")
         BigDecimal totalAmount,
 
-        @NotBlank(message = "orederId가 비어있습니다.")
+        @NotBlank(message = "orderId가 비어있습니다.")
         String orderId,
 
         @Valid

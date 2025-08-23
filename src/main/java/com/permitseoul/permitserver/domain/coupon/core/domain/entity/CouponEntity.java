@@ -22,7 +22,7 @@ public class CouponEntity extends BaseTimeEntity {
     @Column(name = "coupon_code", nullable = false)
     private String couponCode;
 
-    @Column(name = "discount_rates")
+    @Column(name = "discount_rates", nullable = false)
     private int discountRates;
 
     @Column(name = "memo")
