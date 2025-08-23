@@ -23,7 +23,7 @@ public class CouponEntity extends BaseTimeEntity {
     private String couponCode;
 
     @Column(name = "discount_rates", nullable = false)
-    private int discountRates;
+    private int discountRate;
 
     @Column(name = "memo")
     private String memo;
@@ -32,16 +32,16 @@ public class CouponEntity extends BaseTimeEntity {
     @Column(name = "is_used")
     private boolean used;
 
-    private CouponEntity(long eventId, String couponCode, int discountRates) {
+    private CouponEntity(long eventId, String couponCode, int discountRate) {
         this.eventId = eventId;
         this.couponCode = couponCode;
-        this.discountRates = discountRates;
+        this.discountRate = discountRate;
         this.used = false;
     }
 
     public static CouponEntity create(final long eventId,
                                       final String couponCode,
-                                      final int discountRates) {
-        return new CouponEntity(eventId, couponCode, discountRates);
+                                      final int discountRate) {
+        return new CouponEntity(eventId, couponCode, discountRate);
     }
 }

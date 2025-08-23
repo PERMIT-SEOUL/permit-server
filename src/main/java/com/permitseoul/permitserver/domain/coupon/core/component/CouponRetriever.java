@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class CouponRetriever {
@@ -41,5 +43,13 @@ public class CouponRetriever {
                 .orElseThrow(CouponNotfoundException::new);
 
         return Coupon.fromEntity(couponEntity);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Coupon> getCouponsByEventId(final long eventId) {
+        final List<CouponEntity> couponEntities = couponRepository.findAllByEventId(eventId);
+        return couponEntities.stream()
+                .map(Coupon::fromEntity)
+                .toList();
     }
 }

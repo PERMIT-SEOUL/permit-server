@@ -1,8 +1,7 @@
-package com.permitseoul.permitserver.domain.admin.coupon.api.dto;
+package com.permitseoul.permitserver.domain.admin.coupon.api.dto.request;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 public record CouponIssueRequest(
