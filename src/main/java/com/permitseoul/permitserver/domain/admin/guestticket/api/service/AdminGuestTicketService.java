@@ -49,7 +49,7 @@ public class AdminGuestTicketService {
 
                 sendGuestTicketMail(guest.getEmail(), guest.getName(), event.getName(), event.getEventType(), guestTicketCodes, qrPngs);
             }
-        } catch (AdminGuestNotfoundException e) {
+        } catch (AdminGuestNotFoundException e) {
             throw new AdminGuestTicketApiException(ErrorCode.NOT_FOUND_GUEST);
         } catch (EventNotfoundException e) {
             throw new AdminGuestTicketApiException(ErrorCode.NOT_FOUND_EVENT);
