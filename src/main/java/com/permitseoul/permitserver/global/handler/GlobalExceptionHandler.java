@@ -241,10 +241,11 @@ public class GlobalExceptionHandler {
         if (e.getCause() == null) {
             log.error(e.getMessage());
         } else {
+
             log.error("------------------------------------------------------------------------------------------");
             log.error(e.getMessage() + "\n" + e.getCause().getMessage());
             log.error("------------------------------------------------------------------------------------------");
         }
-        return ApiResponseUtil.failure(ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage());
+        return ApiResponseUtil.failure(ErrorCode.INTERNAL_SERVER_ERROR, e.getCause().getMessage());
     }
 }
