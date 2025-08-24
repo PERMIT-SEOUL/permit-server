@@ -1,4 +1,4 @@
-package com.permitseoul.permitserver.domain.admin;
+package com.permitseoul.permitserver.domain.admin.property;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

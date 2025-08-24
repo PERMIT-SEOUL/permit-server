@@ -105,6 +105,7 @@ public enum ErrorCode implements ApiCode {
     INTERNAL_ID_ENCODE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50008, "객체 id Encoding 에러입니다."),
     INTERNAL_TIME_FORMAT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50009, "time format 에러입니다."),
     INTERNAL_QRCODE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50010, "qrCode 생성 에러입니다."),
+    INTERNAL_EMAIL_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50011, "이메일 전송 에러입니다."),
 
     ;
 
