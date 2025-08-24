@@ -179,7 +179,8 @@ public class PaymentService {
         } catch (IllegalEnumTransitionException e) { //결제는 됐는데, 티켓 발급 과정에서 실패했으므로, 따로 알림 구축해놔야될듯
             logPaymentSuccessButTicketIssueFailed(userId, reservationSessionKey, orderId, totalAmount, paymentKey);
             throw new ReservationIllegalException(ErrorCode.INTERNAL_TRANSITION_ENUM_ERROR);
-        } catch(ReservationSessionNotFoundAfterPaymentSuccessException e) {  //결제는 됐는데, 티켓 발급 과정에서 실패했으므로, 따로 알림 구축해놔야될듯
+
+        } catch (ReservationSessionNotFoundAfterPaymentSuccessException e) {  //결제는 됐는데, 티켓 발급 과정에서 실패했으므로, 따로 알림 구축해놔야될듯
             logPaymentSuccessButTicketIssueFailed(userId, reservationSessionKey, orderId, totalAmount, paymentKey);
             throw new NotFoundPaymentException(ErrorCode.NOT_FOUND_RESERVATION_SESSION_AFTER_PAYMENT_SUCCESS);
         }

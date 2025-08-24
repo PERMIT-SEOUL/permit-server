@@ -30,7 +30,7 @@ public class AdminCouponService {
                                 coupon.getDiscountRate(),
                                 coupon.getCouponCode(),
                                 coupon.getMemo(),
-                                coupon.isUsed()
+                                coupon.isUsable()
                         )
                 )
                 .toList();

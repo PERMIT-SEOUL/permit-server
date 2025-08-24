@@ -1,4 +1,4 @@
-package com.permitseoul.permitserver.domain.guestticket.core.domain.entity;
+package com.permitseoul.permitserver.domain.admin.guestticket.core.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,6 +9,7 @@ import lombok.*;
 public class GuestTicketEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
     @Column(name = "guest_ticket_id")
     private Long guestTicketId;
 
@@ -19,15 +20,27 @@ public class GuestTicketEntity {
     private long guestId;
 
     @Column(name = "guest_ticket_code", nullable = false)
+    @Getter
     private String guestTicketCode;
 
-    @Column(name = "is_used")
-    private boolean isUsed;
+    @Column(name = "usable")
+    private boolean usable;
 
     private GuestTicketEntity(long eventId, long guestId, String guestTicketCode) {
         this.eventId = eventId;
         this.guestId = guestId;
         this.guestTicketCode = guestTicketCode;
-        this.isUsed = false;
+        this.usable = false;
     }
+
+    public static GuestTicketEntity create(final long eventId,
+                                           final long guestId,
+                                           final String guestTicketCode) {
+        return new GuestTicketEntity(eventId, guestId, guestTicketCode);
+    }
+
+    public void updateUsable(final boolean usable) {
+        this.usable = usable;
+    }
+
 }

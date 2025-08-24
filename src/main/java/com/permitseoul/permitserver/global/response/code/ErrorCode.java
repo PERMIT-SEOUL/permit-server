@@ -71,11 +71,7 @@ public enum ErrorCode implements ApiCode {
     NOT_FOUND_TIMETABLE(HttpStatus.NOT_FOUND, 40419, "타임테이블을 찾을 수 없습니다."),
     NOT_FOUND_TIMETABLE_BLOCK(HttpStatus.NOT_FOUND, 40420, "타임테이블 블록을 찾을 수 없습니다."),
     NOT_FOUND_TIMETABLE_CATEGORY_COLOR(HttpStatus.NOT_FOUND, 40421, "타임테이블 카테고리 색깔을 찾을 수 없습니다."),
-
-
-
-
-
+    NOT_FOUND_GUEST(HttpStatus.NOT_FOUND, 40422, "게스트를 찾을 수 없습니다."),
 
 
 
@@ -106,10 +102,10 @@ public enum ErrorCode implements ApiCode {
     INTERNAL_ISO_DATE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50005, "iso date string에서 localdate로 변환 과정 에러입니다."),
     INTERNAL_TRANSITION_ENUM_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50006, "enum status 변환 과정 에러입니다."),
     INTERNAL_SESSION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50007, "reservation session 저장 과정 에러입니다."),
-    INTERNAL_ID_ENCODE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50008, "객체 id Encoding 에러입니다."),
-
-
-
+    INTERNAL_ID_ENCODE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50008, "객체 guestId Encoding 에러입니다."),
+    INTERNAL_TIME_FORMAT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50009, "time format 에러입니다."),
+    INTERNAL_QRCODE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50010, "qrCode 생성 에러입니다."),
+    INTERNAL_EMAIL_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50011, "이메일 전송 에러입니다."),
 
     ;
 

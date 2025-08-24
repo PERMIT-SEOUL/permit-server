@@ -34,7 +34,7 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
-import static com.permitseoul.permitserver.global.util.DateFormatterUtil.parseDateToLocalDateTime;
+import static com.permitseoul.permitserver.global.util.DateFormatterUtil.parseTossDateToLocalDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -110,7 +110,7 @@ public class TicketReservationPaymentFacade {
                 paymentId,
                 latestCancelPayment.cancelAmount(),
                 latestCancelPayment.transactionKey(),
-                parseDateToLocalDateTime(latestCancelPayment.canceledAt())
+                parseTossDateToLocalDateTime(latestCancelPayment.canceledAt())
         );
     }
 
@@ -139,8 +139,8 @@ public class TicketReservationPaymentFacade {
                 tossPaymentResponse.paymentKey(),
                 reservation.getTotalAmount(),
                 tossPaymentResponse.currency(),
-                parseDateToLocalDateTime(tossPaymentResponse.requestedAt()),
-                parseDateToLocalDateTime(tossPaymentResponse.approvedAt())
+                parseTossDateToLocalDateTime(tossPaymentResponse.requestedAt()),
+                parseTossDateToLocalDateTime(tossPaymentResponse.approvedAt())
         );
     }
     private void decreaseTicketCountAtTicketTypeDBWithLock(final List<ReservationTicket> reservationTicketList) {

@@ -3,6 +3,8 @@ package com.permitseoul.permitserver.global.util;
 import com.permitseoul.permitserver.domain.payment.api.dto.PaymentCancelResponse;
 import com.permitseoul.permitserver.global.exception.DateFormatException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -12,36 +14,40 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
-public abstract class DateFormatterUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DateFormatterUtil {
     private static final DateTimeFormatter DAY_FORMATTER = DateTimeFormatter.ofPattern("E", Locale.ENGLISH);   //Sun
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd", Locale.ENGLISH);  //25
     private static final DateTimeFormatter MONTH_YEAR_FORMATTER = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.ENGLISH); //May 2025
+    private static final String COMMA_AND_SPACE = ", ";
+    private static final String SPACE = " ";
+    private static final String DASH = "-";
 
     public static String formatEventDate(final LocalDateTime startDate, final LocalDateTime endDate) {
         final StringBuilder sb = new StringBuilder();
         // 시작날짜와 종료날짜가 같을 때, "Sun, 25 May 2025" 형식으로 포맷팅
         if (startDate.toLocalDate().equals(endDate.toLocalDate())) {
             sb.append(startDate.format(DAY_FORMATTER))
-                    .append(", ")
+                    .append(COMMA_AND_SPACE)
                     .append(startDate.format(DATE_FORMATTER))
-                    .append(" ")
+                    .append(SPACE)
                     .append(startDate.format(MONTH_YEAR_FORMATTER));
         } else { // 시작날짜와 종료날짜가 다를 때, "Sun–Mon, 25–26 May 2025" 형식으로 포맷팅
             sb.append(startDate.format(DAY_FORMATTER))
-                    .append("–")
+                    .append(DASH)
                     .append(endDate.format(DAY_FORMATTER))
-                    .append(", ")
+                    .append(COMMA_AND_SPACE)
                     .append(startDate.format(DATE_FORMATTER))
-                    .append("–")
+                    .append(DASH)
                     .append(endDate.format(DATE_FORMATTER))
-                    .append(" ")
+                    .append(SPACE)
                     .append(endDate.format(MONTH_YEAR_FORMATTER));
         }
         return sb.toString();
     }
 
     // 토스에서 주는 날짜 형식 ISO 8601을 LocalDateTime로 변환
-    public static LocalDateTime parseDateToLocalDateTime(final String isoDate) {
+    public static LocalDateTime parseTossDateToLocalDateTime(final String isoDate) {
         if (isoDate == null || isoDate.isBlank()) {
             throw new DateFormatException(ErrorCode.INTERNAL_ISO_DATE_ERROR);
         }
@@ -52,6 +58,6 @@ public abstract class DateFormatterUtil {
     public static Optional<PaymentCancelResponse.CancelDetail> getLatestCancelPaymentByDate(final List<PaymentCancelResponse.CancelDetail> cancels) {
         return cancels.stream()
                 .filter(cancel -> cancel.canceledAt() != null)
-                .max(Comparator.comparing(cancel -> parseDateToLocalDateTime(cancel.canceledAt())));
+                .max(Comparator.comparing(cancel -> parseTossDateToLocalDateTime(cancel.canceledAt())));
     }
 }

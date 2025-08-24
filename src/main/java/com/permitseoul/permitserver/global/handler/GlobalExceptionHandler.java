@@ -238,13 +238,12 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<BaseResponse<?>> handleAllExceptions(final Exception e) {
-        if (e.getCause() == null) {
-            log.error(e.getMessage());
+        final Throwable cause = e.getCause();
+        if (cause == null) {
+            log.error("500 exception", e);
         } else {
-            log.error("------------------------------------------------------------------------------------------");
-            log.error(e.getMessage() + "\n" + e.getCause().getMessage());
-            log.error("------------------------------------------------------------------------------------------");
+            log.error("500 exception (cause: {}): {}", cause.getClass().getSimpleName(), cause.getMessage(), e);
         }
-        return ApiResponseUtil.failure(ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage());
+        return ApiResponseUtil.failure(ErrorCode.INTERNAL_SERVER_ERROR);
     }
 }

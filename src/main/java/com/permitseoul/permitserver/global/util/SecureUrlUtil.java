@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.global.util;
 
+import com.permitseoul.permitserver.global.HashIdProperties;
 import com.permitseoul.permitserver.global.exception.UrlSecureException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import org.hashids.Hashids;
