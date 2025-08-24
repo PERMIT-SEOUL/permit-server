@@ -29,14 +29,14 @@ public class CouponEntity extends BaseTimeEntity {
     private String memo;
 
     @Getter
-    @Column(name = "is_used")
-    private boolean used;
+    @Column(name = "usable")
+    private boolean usable;
 
     private CouponEntity(long eventId, String couponCode, int discountRate) {
         this.eventId = eventId;
         this.couponCode = couponCode;
         this.discountRate = discountRate;
-        this.used = false;
+        this.usable = true;
     }
 
     public static CouponEntity create(final long eventId,

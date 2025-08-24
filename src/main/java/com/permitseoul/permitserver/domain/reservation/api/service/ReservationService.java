@@ -65,12 +65,12 @@ public class ReservationService {
                                   final String orderId,
                                   final List<ReservationInfoRequest.TicketTypeInfo> requestTicketTypeInfos,
                                   final LocalDateTime now) {
-        // 1. 요청한 티켓타입 ID 목록 수집
+        // 요청한 티켓타입 ID 목록 수집
         final List<Long> requestTicketTypeIds = requestTicketTypeInfos.stream()
                 .map(ReservationInfoRequest.TicketTypeInfo::id)
                 .toList();
 
-        // 2. 요청한 티켓타입 엔티티들
+        // 요청한 티켓타입 엔티티들
         final Map<Long, TicketTypeEntity> ticketTypeEntityMap;
 
         // 레디스에서 재고 감소 티켓타입 정보
@@ -91,7 +91,7 @@ public class ReservationService {
             validateUsableTicketType(ticketTypeEntityMap, eventId, now);
             validateTotalAmount(ticketTypeEntityMap, requestTicketTypeInfos, totalAmount, coupon);
 
-            //redis로 선점 예약 방식
+            // redis로 선점 예약 방식
             redisDecreasedTicketTypeInfo = decreaseRedisTicketCount(requestTicketTypeInfos);
 
         } catch (EventNotfoundException e) {

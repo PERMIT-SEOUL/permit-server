@@ -12,15 +12,15 @@ public record CouponResponse(
         int discountRate,
         String couponCode,
         String memo,
-        boolean isUsed
+        boolean usable
 ) {
     public static CouponResponse of(final long couponId,
                                   final LocalDateTime createDate,
                                   final int discountRate,
                                   final String couponCode,
                                   final String memo,
-                                  final boolean isUsed
+                                  final boolean usable
     ) {
-        return new CouponResponse(couponId, createDate, discountRate, couponCode, memo, isUsed);
+        return new CouponResponse(couponId, createDate, discountRate, couponCode, memo, usable);
     }
 }
