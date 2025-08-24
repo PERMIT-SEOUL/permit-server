@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver;
 
+import com.permitseoul.permitserver.domain.admin.QrCodeProperties;
 import com.permitseoul.permitserver.domain.admin.base.api.AdminProperties;
 import com.permitseoul.permitserver.domain.auth.core.jwt.JwtProperties;
 import com.permitseoul.permitserver.domain.auth.core.external.google.GoogleProperties;
@@ -20,7 +21,8 @@ import org.springframework.cache.annotation.EnableCaching;
 		TossProperties.class,
 		HashIdProperties.class,
 		SessionProperties.class,
-		AdminProperties.class
+		AdminProperties.class,
+		QrCodeProperties.class,
 })
 @SpringBootApplication
 public class PermitServerApplication {

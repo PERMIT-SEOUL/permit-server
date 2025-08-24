@@ -71,4 +71,11 @@ dependencies {
 	//hashids
 	implementation 'org.hashids:hashids:1.0.3'
 
+	//qr
+	implementation 'com.google.zxing:core:3.5.3'
+	implementation 'com.google.zxing:javase:3.5.3'
+
+	//email
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
 }

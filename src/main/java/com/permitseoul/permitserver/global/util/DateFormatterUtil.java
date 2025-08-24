@@ -47,7 +47,7 @@ public final class DateFormatterUtil {
     }
 
     // 토스에서 주는 날짜 형식 ISO 8601을 LocalDateTime로 변환
-    public static LocalDateTime parseDateToLocalDateTime(final String isoDate) {
+    public static LocalDateTime parseTossDateToLocalDateTime(final String isoDate) {
         if (isoDate == null || isoDate.isBlank()) {
             throw new DateFormatException(ErrorCode.INTERNAL_ISO_DATE_ERROR);
         }
@@ -58,6 +58,6 @@ public final class DateFormatterUtil {
     public static Optional<PaymentCancelResponse.CancelDetail> getLatestCancelPaymentByDate(final List<PaymentCancelResponse.CancelDetail> cancels) {
         return cancels.stream()
                 .filter(cancel -> cancel.canceledAt() != null)
-                .max(Comparator.comparing(cancel -> parseDateToLocalDateTime(cancel.canceledAt())));
+                .max(Comparator.comparing(cancel -> parseTossDateToLocalDateTime(cancel.canceledAt())));
     }
 }

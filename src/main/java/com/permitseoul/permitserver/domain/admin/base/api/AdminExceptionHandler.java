@@ -14,4 +14,6 @@ public class AdminExceptionHandler {
     public ResponseEntity<BaseResponse<?>> handleAdminApiException(final AdminApiException e) {
         return ApiResponseUtil.failure(e.getErrorCode());
     }
+
+
 }
