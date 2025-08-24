@@ -2,6 +2,7 @@ package com.permitseoul.permitserver.domain.payment.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.permitseoul.permitserver.domain.coupon.core.domain.Coupon;
 import com.permitseoul.permitserver.domain.event.core.component.EventRetriever;
 import com.permitseoul.permitserver.domain.event.core.domain.Event;
 import com.permitseoul.permitserver.domain.event.core.exception.EventNotfoundException;

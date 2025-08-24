@@ -44,4 +44,8 @@ public class CouponEntity extends BaseTimeEntity {
                                       final int discountRate) {
         return new CouponEntity(eventId, couponCode, discountRate);
     }
+
+    public void updateCouponUsable(final boolean usable) {
+        this.usable = usable;
+    }
 }
