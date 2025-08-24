@@ -19,7 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-@Component("guestTicketMailer")
+@Component("guestTicketEmailSender")
 @RequiredArgsConstructor
 public class GuestTicketEmailSender {
     private final JavaMailSender mailSender;
@@ -27,7 +27,6 @@ public class GuestTicketEmailSender {
     private final EmailProperties emailProperties;
 
     private final static String SENDER_NAME = "Ticket";
-    private final static String EMAIL_SUBJECT = "[PERMIT] Guest Ticket Info";
     private final static String CONTEXT_GUEST_NAME = "guestName";
     private final static String CONTEXT_EVENT_NAME = "eventName";
     private final static String CONTEXT_EVENT_TYPE = "eventType";
@@ -48,7 +47,7 @@ public class GuestTicketEmailSender {
             final Context context = new Context();
             context.setVariable(CONTEXT_GUEST_NAME, guestName);
             context.setVariable(CONTEXT_EVENT_NAME, eventName);
-            context.setVariable(CONTEXT_EVENT_TYPE, eventType);
+            context.setVariable(CONTEXT_EVENT_TYPE, eventType.name());
             context.setVariable(CONTEXT_TICKET_CODES, ticketCodes);
             final String html = templateEngine.process(TEMPLATE_NAME, context);
 
@@ -56,7 +55,7 @@ public class GuestTicketEmailSender {
             final MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, StandardCharsets.UTF_8.name()); //multipart:true는 인라인 이미지 추가
             helper.setFrom(emailProperties.sender(), SENDER_NAME);
             helper.setTo(toEmail);
-            helper.setSubject(EMAIL_SUBJECT);
+            helper.setSubject("[" + eventType.name() + "] Guest Ticket Info");
             helper.setText(html, true);
 
             for (int i = 0; i < qrPngs.size(); i++) {
