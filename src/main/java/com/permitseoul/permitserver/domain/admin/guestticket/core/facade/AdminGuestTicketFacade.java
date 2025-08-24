@@ -4,6 +4,7 @@ import com.permitseoul.permitserver.domain.admin.guestticket.core.component.Admi
 import com.permitseoul.permitserver.domain.admin.guestticket.core.component.AdminGuestTicketSaver;
 import com.permitseoul.permitserver.domain.admin.guestticket.core.component.AdminGuestTicketUpdater;
 import com.permitseoul.permitserver.domain.admin.guestticket.core.domain.entity.GuestTicketEntity;
+import com.permitseoul.permitserver.domain.admin.guestticket.core.exception.GuestTicketNotFoundException;
 import com.permitseoul.permitserver.global.TicketOrCouponCodeGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -27,6 +28,9 @@ public class AdminGuestTicketFacade {
     @Transactional
     public void updateGuestTicketUsable(final List<Long> guestTicketIds, final boolean usable) {
         final List<GuestTicketEntity> guestTicketEntities = adminGuestTicketRetriever.findAllGuestTicketsById(guestTicketIds);
+        if (guestTicketEntities.size() != guestTicketIds.size()) {
+            throw new GuestTicketNotFoundException();
+        }
         guestTicketEntities.forEach(guestTicketEntity -> adminGuestTicketUpdater.updateGuestTicketUsable(guestTicketEntity, usable));
     }
 
