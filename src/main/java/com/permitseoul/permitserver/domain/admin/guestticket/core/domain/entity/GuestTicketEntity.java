@@ -9,6 +9,7 @@ import lombok.*;
 public class GuestTicketEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
     @Column(name = "guest_ticket_id")
     private Long guestTicketId;
 
@@ -29,7 +30,7 @@ public class GuestTicketEntity {
         this.eventId = eventId;
         this.guestId = guestId;
         this.guestTicketCode = guestTicketCode;
-        this.usable = true;
+        this.usable = false;
     }
 
     public static GuestTicketEntity create(final long eventId,
@@ -37,4 +38,9 @@ public class GuestTicketEntity {
                                            final String guestTicketCode) {
         return new GuestTicketEntity(eventId, guestId, guestTicketCode);
     }
+
+    public void updateUsable(final boolean usable) {
+        this.usable = usable;
+    }
+
 }

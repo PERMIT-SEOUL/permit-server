@@ -4,7 +4,7 @@ import com.permitseoul.permitserver.domain.reservation.core.domain.Reservation;
 import com.permitseoul.permitserver.domain.reservationticket.core.domain.ReservationTicket;
 import com.permitseoul.permitserver.domain.ticket.core.domain.Ticket;
 import com.permitseoul.permitserver.domain.ticket.core.domain.TicketStatus;
-import com.permitseoul.permitserver.global.TicketCodeGenerator;
+import com.permitseoul.permitserver.global.TicketOrCouponCodeGenerator;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -20,7 +20,7 @@ public abstract class TicketGenerator {
                                         .orderId(reservationTicket.getOrderId())
                                         .ticketTypeId(reservationTicket.getTicketTypeId())
                                         .eventId(reservation.getEventId())
-                                        .ticketCode(TicketCodeGenerator.generateTicketCode())
+                                        .ticketCode(TicketOrCouponCodeGenerator.generateCode())
                                         .status(TicketStatus.RESERVED)
                                         .build()
                                 )

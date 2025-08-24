@@ -18,12 +18,12 @@ public record GuestTicketIssueRequest(
 
     public record GuestTicket(
             @Positive(message = "Guest_id가 음수입니다.")
-            long id,
+            long guestId,
             @Positive(message = "ticketCount가 음수입니다.")
             int ticketCount
     ) {
-        public static GuestTicket of(final long id, final int ticketCount) {
-            return new GuestTicket(id, ticketCount);
+        public static GuestTicket of(final long guestId, final int ticketCount) {
+            return new GuestTicket(guestId, ticketCount);
         }
     }
 }

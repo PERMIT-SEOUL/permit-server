@@ -10,10 +10,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TicketCodeGenerator {
+public final class TicketOrCouponCodeGenerator {
     private static final String SHA_256_ALGORITHM = "SHA-256";
 
-    public static String generateTicketCode() {
+    public static String generateCode() {
         final String uuid = UUID.randomUUID().toString();
 
         try {
