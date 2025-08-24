@@ -52,7 +52,6 @@ public class AdminGuestTicketService {
         }
     }
 
-
     private List<String> getGuestTicketCodes(final List<GuestTicketEntity> guestTicketEntities) {
         return guestTicketEntities.stream()
                 .map(GuestTicketEntity::getGuestTicketCode)
@@ -83,7 +82,7 @@ public class AdminGuestTicketService {
 
     private void updateGuestTicketUsable(final List<GuestTicketEntity> guestTicketEntities) {
         final List<Long> ids = guestTicketEntities.stream()
-                .map(GuestTicketEntity::getGuestTicketId) // guestTicketId getter 필요 (@Getter)
+                .map(GuestTicketEntity::getGuestTicketId)
                 .toList();
         adminGuestTicketFacade.updateGuestTicketUsable(ids, true);
     }
