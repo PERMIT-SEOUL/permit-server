@@ -20,6 +20,7 @@ public class AdminGuestTicketController {
     private final AdminGuestTicketService adminGuestTicketService;
 
 
+    //게스트 티켓 생성 API
     @PostMapping()
     public ResponseEntity<BaseResponse<?>> issueGuestTickets(
             @RequestBody @Valid GuestTicketIssueRequest guestTicketIssueRequest

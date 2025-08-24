@@ -19,6 +19,7 @@ public class GuestTicketEntity {
     private long guestId;
 
     @Column(name = "guest_ticket_code", nullable = false)
+    @Getter
     private String guestTicketCode;
 
     @Column(name = "usable")
