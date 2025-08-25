@@ -8,7 +8,7 @@ import com.permitseoul.permitserver.domain.auth.api.dto.TokenDto;
 import com.permitseoul.permitserver.domain.auth.core.dto.UserSocialInfoDto;
 import com.permitseoul.permitserver.domain.user.core.domain.User;
 import com.permitseoul.permitserver.domain.user.core.exception.UserDuplicateException;
-import com.permitseoul.permitserver.domain.auth.core.exception.AuthFeignException;
+import com.permitseoul.permitserver.domain.auth.core.exception.AuthPlatformFeignException;
 import com.permitseoul.permitserver.domain.auth.core.exception.AuthRTCacheException;
 import com.permitseoul.permitserver.domain.auth.core.exception.AuthWrongJwtException;
 import com.permitseoul.permitserver.domain.auth.core.jwt.JwtProvider;
@@ -53,8 +53,8 @@ public class AuthService {
             final UserEntity newUserEntity = createUser(userName, userAge, userGender, userEmail, userSocialId, socialType);
             final Token newToken = getSignUpJwtToken(newUserEntity.getUserId());
             return TokenDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
-        } catch (AuthFeignException e) {
-            throw new AuthUnAuthorizedFeignException(ErrorCode.UNAUTHORIZED_FEIGN, e.getCause().toString());
+        } catch (AuthPlatformFeignException e) {
+            throw new AuthUnAuthorizedFeignException(ErrorCode.UNAUTHORIZED_FEIGN, e.getPlatformErrorCode());
         } catch (UserDuplicateException e ) {
             throw new AuthUnAuthorizedException(ErrorCode.CONFLICT);
         }
@@ -73,8 +73,8 @@ public class AuthService {
             final User user = getUserBySocialInfo(socialType, userSocialInfoDto.userSocialId());
             final Token newToken = getLoginOrReissueJwtToken(user.getUserId(), user.getUserRole());
             return TokenDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
-        } catch (AuthFeignException e) {
-            throw new AuthUnAuthorizedFeignException(ErrorCode.UNAUTHORIZED_FEIGN, e.getCause().toString());
+        } catch (AuthPlatformFeignException e) {
+            throw new AuthUnAuthorizedFeignException(ErrorCode.UNAUTHORIZED_FEIGN, e.getPlatformErrorCode());
         } catch (UserNotFoundException e ) {
             throw new UserSocialNotFoundApiException(ErrorCode.NOT_FOUND_USER, socialAccessToken);
         }

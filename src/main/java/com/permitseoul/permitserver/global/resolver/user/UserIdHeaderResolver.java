@@ -36,7 +36,7 @@ public class UserIdHeaderResolver implements HandlerMethodArgumentResolver {
         final Object principal = authentication.getPrincipal();
 
         if (principal == null || principal.equals(ANONY_USER)) {
-            throw new ResolverException(ErrorCode.UNAUTHORIZED_SECURITY_ENTRY);
+            throw new ResolverException(ErrorCode.UNAUTHORIZED_PRINCIPLE);
         }
         return (Long) principal;
     }

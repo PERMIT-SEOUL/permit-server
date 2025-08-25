@@ -12,15 +12,17 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice(basePackages = "com.permitseoul.permitserver.domain.auth")
 public class AuthExceptionHandler {
 
+    @ExceptionHandler(AuthUnAuthorizedFeignException.class)
+    public ResponseEntity<BaseResponse<?>> handleAuthUnAuthorizedFeignException(final AuthUnAuthorizedFeignException e) {
+        return ApiResponseUtil.failure(e.getErrorCode(), e.getFeignErrorMessage());
+    }
+
     @ExceptionHandler(AuthApiException.class)
     public ResponseEntity<BaseResponse<?>> handleAuthApiException(final AuthApiException e) {
         return ApiResponseUtil.failure(e.getErrorCode());
     }
 
-    @ExceptionHandler(AuthUnAuthorizedFeignException.class)
-    public ResponseEntity<BaseResponse<?>> handleAuthUnAuthorizedFeignException(final AuthUnAuthorizedFeignException e) {
-        return ApiResponseUtil.failure(e.getErrorCode(), e.getFeignErrorMessage());
-    }
+
 
     @ExceptionHandler(UserSocialNotFoundApiException.class)
     public ResponseEntity<BaseResponse<?>> handleUserSocialNotFoundApiException(final UserSocialNotFoundApiException e) {
