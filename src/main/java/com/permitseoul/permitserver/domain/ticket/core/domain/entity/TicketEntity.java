@@ -5,6 +5,8 @@ import com.permitseoul.permitserver.global.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "tickets")
 @Getter
@@ -33,6 +35,9 @@ public class TicketEntity extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TicketStatus status;
+
+    @Column(name = "used_time")
+    private LocalDateTime usedTime;
 
     private TicketEntity(final long userId,
                         final String orderId,
