@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CouponUpdater {
-    public void updateCouponUsable(final CouponEntity couponEntity) {
-        couponEntity.updateCouponUsable(false);
+    public void updateCouponUsed(final CouponEntity couponEntity, final boolean used) {
+        couponEntity.updateCouponUsed(used);
     }
 }

@@ -80,16 +80,11 @@ public class ReservationService {
             ticketTypeEntityMap = ticketTypeRetriever.findAllTicketTypeEntityByIds(requestTicketTypeIds).stream()
                     .collect(Collectors.toMap(TicketTypeEntity::getTicketTypeId, it -> it));
 
-            Coupon coupon = null;
             validateExistUserById(userId);
             validateExistEventById(eventId);
-
-            if(couponCode != null) {
-                coupon = validateCoupon(couponCode, requestTicketTypeInfos);
-            }
-
+            final Coupon validatedcoupon = validateCouponCode(couponCode, requestTicketTypeInfos, eventId);
             validateUsableTicketType(ticketTypeEntityMap, eventId, now);
-            validateTotalAmount(ticketTypeEntityMap, requestTicketTypeInfos, totalAmount, coupon);
+            validateTotalAmount(ticketTypeEntityMap, requestTicketTypeInfos, totalAmount, validatedcoupon);
 
             // redis로 선점 예약 방식
             redisDecreasedTicketTypeInfo = decreaseRedisTicketCount(requestTicketTypeInfos);
@@ -247,14 +242,18 @@ public class ReservationService {
         );
     }
 
-    private Coupon validateCoupon(final String couponCode, final List<ReservationInfoRequest.TicketTypeInfo> ticketTypeInfos) {
-        if (ticketTypeInfos == null || ticketTypeInfos.size() != COUPON_CAN_BUY_TICKET_MAX_ || ticketTypeInfos.get(0).count() != COUPON_CAN_BUY_TICKET_MAX_) {
+    private Coupon validateCouponCode(final String couponCode,
+                                      final List<ReservationInfoRequest.TicketTypeInfo> ticketTypeInfos,
+                                      final long eventId) {
+        if(couponCode == null || couponCode.isEmpty()) {
+            throw new ReservationBadRequestException(ErrorCode.NOT_FOUND_COUPON_CODE);
+        }
+        //쿠폰코드쓰면 티켓 구매 1개만 가능함
+        if(ticketTypeInfos == null || ticketTypeInfos.size() != COUPON_CAN_BUY_TICKET_MAX_ || ticketTypeInfos.get(0).count() != COUPON_CAN_BUY_TICKET_MAX_) {
             throw new ReservationBadRequestException(ErrorCode.BAD_REQUEST_COUPON_TICKET_COUNT);
         }
-        final Coupon coupon = couponRetriever.findCouponByCouponCode(couponCode);
-        couponRetriever.isCouponValid(coupon.getCouponCode());
-        //쿠폰코드쓰면 티켓 구매 1개만 가능함
-        return coupon;
+
+        return couponRetriever.findValidCouponByCodeAndEvent(couponCode, eventId);
     }
 
 }

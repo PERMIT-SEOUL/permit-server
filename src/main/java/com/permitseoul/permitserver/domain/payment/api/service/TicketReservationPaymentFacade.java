@@ -72,7 +72,9 @@ public class TicketReservationPaymentFacade {
         ticketSaver.saveTickets(newTicketList);
         updateReservationStatus(reservationEntity, ReservationStatus.TICKET_ISSUED);
         reservationSessionUpdater.updateReservationSessionStatus(reservationSessionEntity);
-        updateCouponUsable(reservationEntity.getCouponCode());
+        if (!(reservationEntity.getCouponCode() == null) && !(reservationEntity.getCouponCode().isEmpty())) {
+            updateCouponUsable(reservationEntity.getCouponCode());
+        }
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -164,6 +166,6 @@ public class TicketReservationPaymentFacade {
 
     private void updateCouponUsable(final String couponCode) {
         final CouponEntity couponEntity = couponRetriever.findCouponEntityByCouponCode(couponCode);
-        couponUpdater.updateCouponUsable(couponEntity);
+        couponUpdater.updateCouponUsed(couponEntity, true);
     }
 }

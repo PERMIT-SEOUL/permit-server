@@ -36,7 +36,7 @@ public class CouponRetriever {
 
     @Transactional(readOnly = true)
     public void isCouponValid(final String couponCode) {
-        if(!couponRepository.existsByCouponCodeAndUsableTrue(couponCode)) {
+        if(!couponRepository.existsByCouponCodeAndUsedFalse(couponCode)) {
             throw new CouponConflictException();
         };
     }
@@ -44,7 +44,7 @@ public class CouponRetriever {
     @Transactional(readOnly = true)
     public Coupon findValidCouponByCodeAndEvent(final String couponCode, final long eventId) {
         final CouponEntity couponEntity = couponRepository
-                .findByCouponCodeAndEventIdAndUsableTrue(couponCode, eventId)
+                .findByCouponCodeAndEventIdAndUsedFalse(couponCode, eventId)
                 .orElseThrow(CouponNotfoundException::new);
 
         return Coupon.fromEntity(couponEntity);
