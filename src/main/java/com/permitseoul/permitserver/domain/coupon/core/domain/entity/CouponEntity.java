@@ -51,7 +51,8 @@ public class CouponEntity extends BaseTimeEntity {
         return new CouponEntity(eventId, couponCode, discountRate);
     }
 
-    public void updateCouponUsed(final boolean isUsed) {
+    public void updateCouponUsed(final boolean isUsed, final LocalDateTime usedTime) {
         this.used = isUsed;
+        this.usedTime = usedTime;
     }
 }

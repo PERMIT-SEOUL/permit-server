@@ -73,7 +73,7 @@ public class TicketReservationPaymentFacade {
         updateReservationStatus(reservationEntity, ReservationStatus.TICKET_ISSUED);
         reservationSessionUpdater.updateReservationSessionStatus(reservationSessionEntity);
         if (!(reservationEntity.getCouponCode() == null) && !(reservationEntity.getCouponCode().isEmpty())) {
-            updateCouponUsable(reservationEntity.getCouponCode());
+            updateCouponToUsedTrue(reservationEntity.getCouponCode());
         }
     }
 
@@ -164,7 +164,7 @@ public class TicketReservationPaymentFacade {
         reservationUpdater.updateReservationStatus(reservationEntity, reservationStatus);
     }
 
-    private void updateCouponUsable(final String couponCode) {
+    private void updateCouponToUsedTrue(final String couponCode) {
         final CouponEntity couponEntity = couponRetriever.findCouponEntityByCouponCode(couponCode);
         couponUpdater.updateCouponUsed(couponEntity, true);
     }
