@@ -39,6 +39,8 @@ public enum ErrorCode implements ApiCode {
     UNAUTHORIZED_FEIGN(HttpStatus.UNAUTHORIZED, 40107, "auth feign 오류입니다."),
     UNAUTHORIZED_CANCEL_PAYMENT(HttpStatus.UNAUTHORIZED, 40108, "결제 취소 userID 인증 오류입니다."),
     UNAUTHORIZED_ADMIN_ACCESS_CODE(HttpStatus.UNAUTHORIZED, 40109, "Admin 접근 코드 인증 오류입니다."),
+    UNAUTHORIZED_PRINCIPLE(HttpStatus.UNAUTHORIZED, 40110, "UNAUTHORIZED_PRINCIPLE 오류입니다."),
+
 
     /**
      * 403 Forbidden
@@ -72,6 +74,7 @@ public enum ErrorCode implements ApiCode {
     NOT_FOUND_TIMETABLE_BLOCK(HttpStatus.NOT_FOUND, 40420, "타임테이블 블록을 찾을 수 없습니다."),
     NOT_FOUND_TIMETABLE_CATEGORY_COLOR(HttpStatus.NOT_FOUND, 40421, "타임테이블 카테고리 색깔을 찾을 수 없습니다."),
     NOT_FOUND_GUEST(HttpStatus.NOT_FOUND, 40422, "게스트를 찾을 수 없습니다."),
+    NOT_FOUND_GUEST_TICKET(HttpStatus.NOT_FOUND, 40423, "게스트 티켓을 찾을 수 없습니다."),
 
 
 

@@ -2,12 +2,14 @@ package com.permitseoul.permitserver.domain.auth.core.strategy;
 
 import com.permitseoul.permitserver.domain.auth.core.dto.UserSocialInfoDto;
 import com.permitseoul.permitserver.domain.auth.core.exception.AuthFeignException;
+import com.permitseoul.permitserver.domain.auth.core.exception.AuthPlatformFeignException;
 import com.permitseoul.permitserver.domain.auth.core.external.kakao.KakaoKApiClient;
 import com.permitseoul.permitserver.domain.auth.core.external.kakao.KakaoKAuthClient;
 import com.permitseoul.permitserver.domain.auth.core.external.kakao.KakaoProperties;
 import com.permitseoul.permitserver.domain.auth.core.external.kakao.dto.KakaoAccessTokenResponse;
 import com.permitseoul.permitserver.global.Constants;
 import com.permitseoul.permitserver.domain.user.core.domain.SocialType;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -26,8 +28,8 @@ public class KakaoLoginStrategy implements LoginStrategy {
         try {
             final String kakaoAccessToken = getKakaoAccessToken(authorizationCode, redirectUrl);
             return UserSocialInfoDto.of(SocialType.KAKAO, getKakaoSocialId(kakaoAccessToken), kakaoAccessToken);
-        } catch (Exception e ) {
-            throw new AuthFeignException();
+        } catch (FeignException e) {
+            throw new AuthPlatformFeignException(e.contentUTF8());
         }
     }
 

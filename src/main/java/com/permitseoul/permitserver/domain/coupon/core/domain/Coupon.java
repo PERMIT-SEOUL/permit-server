@@ -14,7 +14,7 @@ public class Coupon {
     private final String couponCode;
     private final int discountRate;
     private final String memo;
-    private final boolean usable;
+    private final boolean used;
     private final LocalDateTime createAt;
 
     public static Coupon fromEntity(final CouponEntity couponEntity) {
@@ -24,7 +24,7 @@ public class Coupon {
                 couponEntity.getCouponCode(),
                 couponEntity.getDiscountRate(),
                 couponEntity.getMemo(),
-                couponEntity.isUsable(),
+                couponEntity.isUsed(),
                 couponEntity.getCreatedAt()
         );
     }

@@ -3,6 +3,7 @@ package com.permitseoul.permitserver.domain.admin.guestticket.core.facade;
 import com.permitseoul.permitserver.domain.admin.guestticket.core.component.AdminGuestTicketRetriever;
 import com.permitseoul.permitserver.domain.admin.guestticket.core.component.AdminGuestTicketSaver;
 import com.permitseoul.permitserver.domain.admin.guestticket.core.component.AdminGuestTicketUpdater;
+import com.permitseoul.permitserver.domain.admin.guestticket.core.domain.GuestTicketStatus;
 import com.permitseoul.permitserver.domain.admin.guestticket.core.domain.entity.GuestTicketEntity;
 import com.permitseoul.permitserver.domain.admin.guestticket.core.exception.GuestTicketNotFoundException;
 import com.permitseoul.permitserver.global.TicketOrCouponCodeGenerator;
@@ -26,12 +27,12 @@ public class AdminGuestTicketFacade {
     }
 
     @Transactional
-    public void updateGuestTicketUsable(final List<Long> guestTicketIds, final boolean usable) {
-        final List<GuestTicketEntity> guestTicketEntities = adminGuestTicketRetriever.findAllGuestTicketsById(guestTicketIds);
-        if (guestTicketEntities.size() != guestTicketIds.size()) {
+    public void updateGuestTicketStatus(final List<Long> guestTicketIds, final GuestTicketStatus guestTicketStatus) {
+        final List<GuestTicketEntity> guestTicketEntityList = adminGuestTicketRetriever.findAllGuestTicketsById(guestTicketIds);
+        if (guestTicketEntityList.size() != guestTicketIds.size()) {
             throw new GuestTicketNotFoundException();
         }
-        guestTicketEntities.forEach(guestTicketEntity -> adminGuestTicketUpdater.updateGuestTicketUsable(guestTicketEntity, usable));
+        guestTicketEntityList.forEach(guestTicketEntity -> adminGuestTicketUpdater.updateGuestTicketStatus(guestTicketEntity, guestTicketStatus));
     }
 
     private List<GuestTicketEntity> generateGuestTickets(final long eventId,

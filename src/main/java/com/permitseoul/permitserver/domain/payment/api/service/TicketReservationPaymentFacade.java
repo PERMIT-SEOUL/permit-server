@@ -1,5 +1,8 @@
 package com.permitseoul.permitserver.domain.payment.api.service;
 
+import com.permitseoul.permitserver.domain.coupon.core.component.CouponRetriever;
+import com.permitseoul.permitserver.domain.coupon.core.component.CouponUpdater;
+import com.permitseoul.permitserver.domain.coupon.core.domain.entity.CouponEntity;
 import com.permitseoul.permitserver.domain.payment.api.dto.PaymentCancelResponse;
 import com.permitseoul.permitserver.domain.payment.api.dto.TossPaymentResponse;
 import com.permitseoul.permitserver.domain.payment.core.component.PaymentSaver;
@@ -51,6 +54,8 @@ public class TicketReservationPaymentFacade {
     private final PaymentCancelSaver paymentCancelSaver;
     private final TicketRetriever ticketRetriever;
     private final ReservationTicketRetriever reservationTicketRetriever;
+    private final CouponRetriever couponRetriever;
+    private final CouponUpdater couponUpdater;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void savePaymentAndAllTickets(final List<Ticket> newTicketList,
@@ -67,6 +72,9 @@ public class TicketReservationPaymentFacade {
         ticketSaver.saveTickets(newTicketList);
         updateReservationStatus(reservationEntity, ReservationStatus.TICKET_ISSUED);
         reservationSessionUpdater.updateReservationSessionStatus(reservationSessionEntity);
+        if (!(reservationEntity.getCouponCode() == null) && !(reservationEntity.getCouponCode().isEmpty())) {
+            updateCouponToUsedTrue(reservationEntity.getCouponCode());
+        }
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -154,5 +162,10 @@ public class TicketReservationPaymentFacade {
 
     private void updateReservationStatus(final ReservationEntity reservationEntity, final ReservationStatus reservationStatus) {
         reservationUpdater.updateReservationStatus(reservationEntity, reservationStatus);
+    }
+
+    private void updateCouponToUsedTrue(final String couponCode) {
+        final CouponEntity couponEntity = couponRetriever.findCouponEntityByCouponCode(couponCode);
+        couponUpdater.updateCouponUsed(couponEntity, true);
     }
 }

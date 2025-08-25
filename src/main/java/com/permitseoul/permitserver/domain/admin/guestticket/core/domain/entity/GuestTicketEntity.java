@@ -1,7 +1,10 @@
 package com.permitseoul.permitserver.domain.admin.guestticket.core.domain.entity;
 
+import com.permitseoul.permitserver.domain.admin.guestticket.core.domain.GuestTicketStatus;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "guests_tickets")
@@ -23,14 +26,18 @@ public class GuestTicketEntity {
     @Getter
     private String guestTicketCode;
 
-    @Column(name = "usable")
-    private boolean usable;
+    @Column(name = "guest_ticket_status")
+    @Enumerated(EnumType.STRING)
+    private GuestTicketStatus status;
+
+    @Column(name = "used_time")
+    private LocalDateTime usedTime;
 
     private GuestTicketEntity(long eventId, long guestId, String guestTicketCode) {
         this.eventId = eventId;
         this.guestId = guestId;
         this.guestTicketCode = guestTicketCode;
-        this.usable = false;
+        this.status = GuestTicketStatus.ISSUED;
     }
 
     public static GuestTicketEntity create(final long eventId,
@@ -39,8 +46,8 @@ public class GuestTicketEntity {
         return new GuestTicketEntity(eventId, guestId, guestTicketCode);
     }
 
-    public void updateUsable(final boolean usable) {
-        this.usable = usable;
+    public void updateStatus(final GuestTicketStatus guestTicketStatus) {
+        this.status = guestTicketStatus;
     }
 
 }

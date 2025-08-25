@@ -11,9 +11,9 @@ import java.util.Optional;
 @Repository
 public interface CouponRepository extends JpaRepository<CouponEntity, Long> {
     boolean existsByCouponCode(final String couponCode);
-    boolean existsByCouponCodeAndUsableTrue(final String couponCode);
+    boolean existsByCouponCodeAndUsedFalse(final String couponCode);
     Optional<CouponEntity> findByCouponCode(final String couponCode);
-    Optional<CouponEntity> findByCouponCodeAndEventIdAndUsableTrue(final String couponCode, final long eventId);
+    Optional<CouponEntity> findByCouponCodeAndEventIdAndUsedFalse(final String couponCode, final long eventId);
     List<CouponEntity> findAllByEventId(final long eventId);
 
 }
