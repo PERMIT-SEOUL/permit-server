@@ -1,5 +1,7 @@
 package com.permitseoul.permitserver.domain.admin.guestticket.api.service;
 
+import com.permitseoul.permitserver.domain.admin.guestticket.core.domain.GuestTicketStatus;
+import com.permitseoul.permitserver.domain.admin.guestticket.core.exception.GuestTicketNotFoundException;
 import com.permitseoul.permitserver.domain.admin.guestticket.core.facade.AdminGuestTicketFacade;
 import com.permitseoul.permitserver.domain.admin.property.QrCodeProperties;
 import com.permitseoul.permitserver.domain.admin.guest.core.component.AdminGuestRetriever;
@@ -37,18 +39,20 @@ public class AdminGuestTicketService {
                 final int count = guestTicket.ticketCount();
                 final Guest guest = adminGuestRetriever.findById(guestId);
 
-                final List<GuestTicketEntity> savedTickets = adminGuestTicketFacade.saveGuestTickets(eventId, guestId, count);
+                final List<GuestTicketEntity> savedTickets = adminGuestTicketFacade.saveGuestTickets(event.getEventId(), guestId, count);
 
                 final List<String> guestTicketCodes = getGuestTicketCodes(savedTickets);
                 final List<byte[]> qrPngs = getQrCodePngs(guestTicketCodes);
                 sendGuestTicketMail(guest.getEmail(), guest.getName(), event.getName(), event.getEventType(), guestTicketCodes, qrPngs);
 
-                updateGuestTicketUsable(savedTickets);
+                updateGuestTicketToReadyStatus(savedTickets);
             }
         } catch (AdminGuestNotFoundException e) {
             throw new AdminGuestTicketApiException(ErrorCode.NOT_FOUND_GUEST);
         } catch (EventNotfoundException e) {
             throw new AdminGuestTicketApiException(ErrorCode.NOT_FOUND_EVENT);
+        } catch (GuestTicketNotFoundException e) {
+            throw new AdminGuestTicketApiException(ErrorCode.NOT_FOUND_GUEST_TICKET);
         }
     }
 
@@ -80,10 +84,10 @@ public class AdminGuestTicketService {
         );
     }
 
-    private void updateGuestTicketUsable(final List<GuestTicketEntity> guestTicketEntities) {
+    private void updateGuestTicketToReadyStatus(final List<GuestTicketEntity> guestTicketEntities) {
         final List<Long> ids = guestTicketEntities.stream()
                 .map(GuestTicketEntity::getGuestTicketId)
                 .toList();
-        adminGuestTicketFacade.updateGuestTicketUsable(ids, true);
+        adminGuestTicketFacade.updateGuestTicketStatus(ids, GuestTicketStatus.READY);
     }
 }
