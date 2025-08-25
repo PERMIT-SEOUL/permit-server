@@ -82,9 +82,9 @@ public class ReservationService {
 
             validateExistUserById(userId);
             validateExistEventById(eventId);
-            final Coupon validatedcoupon = validateCouponCode(couponCode, requestTicketTypeInfos, eventId);
+            final Coupon validatedCoupon = validateCouponCode(couponCode, requestTicketTypeInfos, eventId);
             validateUsableTicketType(ticketTypeEntityMap, eventId, now);
-            validateTotalAmount(ticketTypeEntityMap, requestTicketTypeInfos, totalAmount, validatedcoupon);
+            validateTotalAmount(ticketTypeEntityMap, requestTicketTypeInfos, totalAmount, validatedCoupon);
 
             // redis로 선점 예약 방식
             redisDecreasedTicketTypeInfo = decreaseRedisTicketCount(requestTicketTypeInfos);
@@ -246,7 +246,7 @@ public class ReservationService {
                                       final List<ReservationInfoRequest.TicketTypeInfo> ticketTypeInfos,
                                       final long eventId) {
         if(couponCode == null || couponCode.isEmpty()) {
-            throw new ReservationBadRequestException(ErrorCode.NOT_FOUND_COUPON_CODE);
+            return null;
         }
         //쿠폰코드쓰면 티켓 구매 1개만 가능함
         if(ticketTypeInfos == null || ticketTypeInfos.size() != COUPON_CAN_BUY_TICKET_MAX_ || ticketTypeInfos.get(0).count() != COUPON_CAN_BUY_TICKET_MAX_) {
