@@ -54,7 +54,7 @@ public class AuthService {
             final Token newToken = getSignUpJwtToken(newUserEntity.getUserId());
             return TokenDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
         } catch (AuthFeignException e) {
-            throw new AuthUnAuthorizedFeignException(ErrorCode.UNAUTHORIZED_FEIGN, e.getMessage());
+            throw new AuthUnAuthorizedFeignException(ErrorCode.UNAUTHORIZED_FEIGN, e.getCause().toString());
         } catch (UserDuplicateException e ) {
             throw new AuthUnAuthorizedException(ErrorCode.CONFLICT);
         }
@@ -74,7 +74,7 @@ public class AuthService {
             final Token newToken = getLoginOrReissueJwtToken(user.getUserId(), user.getUserRole());
             return TokenDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
         } catch (AuthFeignException e) {
-            throw new AuthUnAuthorizedFeignException(ErrorCode.UNAUTHORIZED_FEIGN, e.getMessage());
+            throw new AuthUnAuthorizedFeignException(ErrorCode.UNAUTHORIZED_FEIGN, e.getCause().toString());
         } catch (UserNotFoundException e ) {
             throw new UserSocialNotFoundApiException(ErrorCode.NOT_FOUND_USER, socialAccessToken);
         }
