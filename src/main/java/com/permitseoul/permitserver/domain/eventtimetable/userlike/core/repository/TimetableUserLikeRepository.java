@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TimetableUserLikeRepository extends JpaRepository<TimetableUserLikeEntity, Long> {
@@ -16,5 +17,6 @@ public interface TimetableUserLikeRepository extends JpaRepository<TimetableUser
     WHERE tul.userId = :userId AND tul.timetableBlockId IN :blockIds
 """)
     List<Long> findLikedBlockIdsIn(@Param("userId") Long userId, @Param("blockIds") List<Long> blockIds);
-    boolean existsByTimetableBlockIdAndUserId(final long timetableBlockId, final long userId);
+    boolean existsByUserIdAndTimetableBlockId(final long userId, final long timetableBlockId);
+    Optional<TimetableUserLikeEntity> findByUserIdAndTimetableBlockId(final long userId, final long timetableBlockId);
 }

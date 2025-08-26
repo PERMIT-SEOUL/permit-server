@@ -50,7 +50,8 @@ public class SecurityConfig {
             "/api/reservations/ready/*",
             "/api/payments/confirm",
             "/api/payments/cancel",
-            "/api/coupons/validate/*"
+            "/api/coupons/validate/*",
+            "/api/events/timetables/likes/*"
     };
 
     @Bean

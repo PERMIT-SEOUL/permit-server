@@ -83,7 +83,7 @@ public class TimetableService {
         if (userId == null) {
             isUserLiked = false;
         } else {
-            isUserLiked = timetableUserLikeRetriever.isExistUserLikeByIdAndUserId(timetableBlock.getTimetableBlockId(), userId);
+            isUserLiked = timetableUserLikeRetriever.isExistUserLikeByUserIdAndBlockId(userId, timetableBlock.getTimetableBlockId());
         }
 
         return TimetableDetailResponse.of(
