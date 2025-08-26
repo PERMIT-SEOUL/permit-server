@@ -65,16 +65,17 @@ public enum ErrorCode implements ApiCode {
     NOT_FOUND_RESERVATION_TICKET(HttpStatus.NOT_FOUND, 40412, "예약된 티켓이 없습니다."),
     NOT_FOUND_RESERVATION_SESSION(HttpStatus.NOT_FOUND, 40413, "예약 세션이 없습니다."),
     NOT_FOUND_RESERVATION_SESSION_AFTER_PAYMENT_SUCCESS(HttpStatus.NOT_FOUND, 40414, "결제 완료 후, 예약 세션이 없습니다."),
-    NOT_FOUND_RESERVATION_SESSION_COOKIE(HttpStatus.NOT_FOUND, 40414, "세션 쿠키가 없습니다."),
-    NOT_FOUND_EVENT_IMAGE(HttpStatus.NOT_FOUND, 40415, "해당 이벤트 이미지가 없습니다."),
-    NOT_FOUND_TICKET_TYPE_PRICE(HttpStatus.NOT_FOUND, 40416, "해당 티켓 라운드의 티켓타입 가격이 없습니다."),
-    NOT_FOUND_TIMETABLE_AREA(HttpStatus.NOT_FOUND, 40417, "타임테이블 장소를 찾을 수 없습니다."),
-    NOT_FOUND_TIMETABLE_CATEGORY(HttpStatus.NOT_FOUND, 40418, "타임테이블 카테고리를 찾을 수 없습니다."),
-    NOT_FOUND_TIMETABLE(HttpStatus.NOT_FOUND, 40419, "타임테이블을 찾을 수 없습니다."),
-    NOT_FOUND_TIMETABLE_BLOCK(HttpStatus.NOT_FOUND, 40420, "타임테이블 블록을 찾을 수 없습니다."),
-    NOT_FOUND_TIMETABLE_CATEGORY_COLOR(HttpStatus.NOT_FOUND, 40421, "타임테이블 카테고리 색깔을 찾을 수 없습니다."),
-    NOT_FOUND_GUEST(HttpStatus.NOT_FOUND, 40422, "게스트를 찾을 수 없습니다."),
-    NOT_FOUND_GUEST_TICKET(HttpStatus.NOT_FOUND, 40423, "게스트 티켓을 찾을 수 없습니다."),
+    NOT_FOUND_RESERVATION_SESSION_COOKIE(HttpStatus.NOT_FOUND, 40415, "세션 쿠키가 없습니다."),
+    NOT_FOUND_EVENT_IMAGE(HttpStatus.NOT_FOUND, 40416, "해당 이벤트 이미지가 없습니다."),
+    NOT_FOUND_TICKET_TYPE_PRICE(HttpStatus.NOT_FOUND, 40417, "해당 티켓 라운드의 티켓타입 가격이 없습니다."),
+    NOT_FOUND_TIMETABLE_AREA(HttpStatus.NOT_FOUND, 40418, "타임테이블 장소를 찾을 수 없습니다."),
+    NOT_FOUND_TIMETABLE_CATEGORY(HttpStatus.NOT_FOUND, 40419, "타임테이블 카테고리를 찾을 수 없습니다."),
+    NOT_FOUND_TIMETABLE(HttpStatus.NOT_FOUND, 40420, "타임테이블을 찾을 수 없습니다."),
+    NOT_FOUND_TIMETABLE_BLOCK(HttpStatus.NOT_FOUND, 40421, "타임테이블 블록을 찾을 수 없습니다."),
+    NOT_FOUND_TIMETABLE_CATEGORY_COLOR(HttpStatus.NOT_FOUND, 40422, "타임테이블 카테고리 색깔을 찾을 수 없습니다."),
+    NOT_FOUND_GUEST(HttpStatus.NOT_FOUND, 40423, "게스트를 찾을 수 없습니다."),
+    NOT_FOUND_GUEST_TICKET(HttpStatus.NOT_FOUND, 40424, "게스트 티켓을 찾을 수 없습니다."),
+    NOT_FOUND_TIMETABLE_USER_LIKE(HttpStatus.NOT_FOUND, 40425, "유저 좋아요 타임테이블을 찾을 수 없습니다."),
 
 
 
@@ -91,7 +92,8 @@ public enum ErrorCode implements ApiCode {
     INTEGRITY_CONFLICT(HttpStatus.CONFLICT, 40901, "데이터 무결성 위반입니다."),
     CONFLICT_INSUFFICIENT_TICKET(HttpStatus.CONFLICT, 40902, "구매하려는 티켓의 티켓 개수가 부족합니다."),
     CONFLICT_ALREADY_USED_COUPON_CODE(HttpStatus.CONFLICT, 40903, "이미 사용한 쿠폰코드입니다."),
-    CONFLICT_USER_EMAIL(HttpStatus.CONFLICT, 40904, "이미 존재하는 이메일입니다.."),
+    CONFLICT_USER_EMAIL(HttpStatus.CONFLICT, 40904, "이미 존재하는 이메일입니다."),
+    CONFLICT_TIMETABLE_USER_LIKE(HttpStatus.CONFLICT, 40905, "이미 존재하는 타임테이블 유저 좋아요입니다."),
 
 
     /**

@@ -31,4 +31,11 @@ public class TimetableBlockRetriever {
         final TimetableBlockEntity timetableBlockEntity = timetableBlockRepository.findById(timetableBlockId).orElseThrow(TimetableBlockNotfoundException::new);
         return TimetableBlock.fromEntity(timetableBlockEntity);
     }
+
+    @Transactional(readOnly = true)
+    public void validExistTimetableBlock(final long timetableBlockId) {
+        if (!timetableBlockRepository.existsById(timetableBlockId)) {
+            throw new TimetableBlockNotfoundException();
+        }
+    }
 }

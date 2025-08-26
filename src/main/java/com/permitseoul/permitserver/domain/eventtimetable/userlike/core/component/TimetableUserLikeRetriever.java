@@ -1,13 +1,13 @@
 package com.permitseoul.permitserver.domain.eventtimetable.userlike.core.component;
 
 import com.permitseoul.permitserver.domain.eventtimetable.userlike.core.domain.entity.TimetableUserLikeEntity;
+import com.permitseoul.permitserver.domain.eventtimetable.userlike.core.exception.TimetableUserLikeNotfoundException;
 import com.permitseoul.permitserver.domain.eventtimetable.userlike.core.repository.TimetableUserLikeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -20,7 +20,14 @@ public class TimetableUserLikeRetriever {
     }
 
     @Transactional(readOnly = true)
-    public boolean isExistUserLikeByIdAndUserId(final long blockId, final long  userId) {
-        return timetableUserLikeRepository.existsByTimetableBlockIdAndUserId(blockId, userId);
+    public boolean isExistUserLikeByUserIdAndBlockId(final long  userId, final long blockId) {
+        return timetableUserLikeRepository.existsByUserIdAndTimetableBlockId(userId, blockId);
     }
+
+    @Transactional(readOnly = true)
+    public TimetableUserLikeEntity findByUserIdAndBlockId(final long userId, final long blockId) {
+        return timetableUserLikeRepository.findByUserIdAndTimetableBlockId(userId, blockId).orElseThrow(TimetableUserLikeNotfoundException::new);
+    }
+
+
 }
