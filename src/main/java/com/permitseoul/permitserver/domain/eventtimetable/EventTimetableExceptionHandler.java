@@ -1,6 +1,5 @@
 package com.permitseoul.permitserver.domain.eventtimetable;
 
-import com.permitseoul.permitserver.domain.event.api.exception.EventApiException;
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.api.exception.TimetableApiException;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
