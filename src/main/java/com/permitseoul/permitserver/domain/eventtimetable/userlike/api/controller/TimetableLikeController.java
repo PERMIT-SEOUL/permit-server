@@ -6,7 +6,6 @@ import com.permitseoul.permitserver.global.resolver.user.UserIdHeader;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.SuccessCode;
-import com.permitseoul.permitserver.global.util.SecureUrlUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

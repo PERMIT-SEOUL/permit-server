@@ -28,9 +28,6 @@ public class TimetableLikeService {
         try {
             validExistUserById(userId);
             validExistBlockById(blockId);
-            if (timetableUserLikeRetriever.isExistUserLikeByUserIdAndBlockId(userId, blockId)) {
-                throw new ConflictTimetableException(ErrorCode.CONFLICT_TIMETABLE_USER_LIKE);
-            }
             timetableUserLikeSaver.saveTimetableBlockLike(userId, blockId);
 
         } catch (UserNotFoundException e) {

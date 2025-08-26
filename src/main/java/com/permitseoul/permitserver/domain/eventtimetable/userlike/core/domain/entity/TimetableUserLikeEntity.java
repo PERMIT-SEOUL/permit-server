@@ -6,7 +6,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "timetable_user_likes")
+@Table(name = "timetable_user_likes",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_timetable_user_like_user_block",
+                        columnNames = {"user_id", "timetable_block_id"}
+                )
+        }
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class TimetableUserLikeEntity {
