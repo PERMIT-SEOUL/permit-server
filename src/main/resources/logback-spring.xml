@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds">
+
+    <!-- LOCAL: 콘솔로 INFO 이상 -->
+    <springProfile name="local">
+<!--        <include resource="logback/logback-local.xml"/>-->
+        <include resource="logback/logback-dev.xml"/>
+        <root level="INFO">
+            <appender-ref ref="DEVROLLFILE"/>
+        </root>
+    </springProfile>
+
+    <!-- DEV(EC2): 파일로 ERROR 이상 -->
+    <springProfile name="dev">
+        <include resource="logback/logback-dev.xml"/>
+        <root level="ERROR">
+            <appender-ref ref="DEVROLLFILE"/>
+        </root>
+    </springProfile>
+
+</configuration>

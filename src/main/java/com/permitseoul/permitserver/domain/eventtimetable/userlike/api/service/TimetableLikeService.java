@@ -2,7 +2,6 @@ package com.permitseoul.permitserver.domain.eventtimetable.userlike.api.service;
 
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.component.TimetableBlockRetriever;
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.exception.TimetableBlockNotfoundException;
-import com.permitseoul.permitserver.domain.eventtimetable.timetable.api.exception.ConflictTimetableException;
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.api.exception.NotfoundTimetableException;
 import com.permitseoul.permitserver.domain.eventtimetable.userlike.core.component.TimetableUserLikeRemover;
 import com.permitseoul.permitserver.domain.eventtimetable.userlike.core.component.TimetableUserLikeRetriever;
