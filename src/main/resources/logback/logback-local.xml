@@ -1,9 +1,6 @@
-<!-- 로컬 - console -->
 <appender name="LOCALCONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-    <!-- 콘솔은 즉시 flush -->
     <immediateFlush>true</immediateFlush>
     <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-        <!-- traceId(MDC) 포함 -->
-        <pattern>%d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level) %cyan(%logger{0}) - traceId=%X{traceId:-} - %msg%n</pattern>
+        <pattern>%green(%d{yyyy-MM-dd HH:mm:ss.SSS}) %magenta([%thread]) %highlight(%-5level) %cyan(%logger{0}) %msg%n</pattern>
     </encoder>
 </appender>
