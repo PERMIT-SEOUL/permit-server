@@ -12,6 +12,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.MDC;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,10 +33,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull final HttpServletRequest request,
+                                    @NonNull final HttpServletResponse response,
+                                    @NonNull final FilterChain filterChain) {
         try {
             setAuthentication(request);
-            MDC.put("traceId", java.util.UUID.randomUUID().toString());
             filterChain.doFilter(request, response);
         } catch (AuthCookieException e) {
             if(!isWhiteListUrl(request.getRequestURI())) {
@@ -47,8 +49,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throw new FilterException(ErrorCode.UNAUTHORIZED);
         } catch (Exception e) {
             throw new FilterException(ErrorCode.INTERNAL_SERVER_ERROR);
-        } finally {
-            MDC.clear();
         }
     }
 

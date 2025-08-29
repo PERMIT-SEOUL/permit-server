@@ -10,7 +10,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.keyValue;
 
@@ -23,7 +22,7 @@ public class RedisTicketTypeCountInitializer implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        List<TicketTypeEntity> ticketTypes = ticketTypeRepository.findAll();
+        final List<TicketTypeEntity> ticketTypes = ticketTypeRepository.findAll();
 
         ticketTypes.forEach(ticketType -> {
             String key = Constants.REDIS_TICKET_TYPE_KEY_NAME  + ticketType.getTicketTypeId() + Constants.REDIS_TICKET_TYPE_REMAIN;

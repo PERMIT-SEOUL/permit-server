@@ -8,7 +8,9 @@ import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.units.qual.N;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -23,7 +25,9 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter { //필터 내�
     private final ObjectMapper objectMapper;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException {
+    protected void doFilterInternal(@NonNull final HttpServletRequest request,
+                                    @NonNull final HttpServletResponse response,
+                                    @NonNull final FilterChain filterChain) throws IOException {
         try {
             filterChain.doFilter(request, response);
         } catch (FilterException e) {
