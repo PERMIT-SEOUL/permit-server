@@ -13,6 +13,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.MDC;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -34,6 +35,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             setAuthentication(request);
+            MDC.put("traceId", java.util.UUID.randomUUID().toString());
+            filterChain.doFilter(request, response);
         } catch (AuthCookieException e) {
             if(!isWhiteListUrl(request.getRequestURI())) {
                 throw new FilterException(ErrorCode.NOT_FOUND_AT_COOKIE);
@@ -44,8 +47,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throw new FilterException(ErrorCode.UNAUTHORIZED);
         } catch (Exception e) {
             throw new FilterException(ErrorCode.INTERNAL_SERVER_ERROR);
+        } finally {
+            MDC.clear();
         }
-        filterChain.doFilter(request, response);
     }
 
     private void setAuthentication(final HttpServletRequest request) {
