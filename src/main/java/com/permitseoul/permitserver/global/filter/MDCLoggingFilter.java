@@ -26,7 +26,7 @@ class MDCLoggingFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull final HttpServletRequest request,
                                     @NonNull final HttpServletResponse response,
                                     @NonNull final FilterChain filterChain) {
-        String traceId = request.getHeader(NGINX_REQUEST_ID);
+        final String traceId = request.getHeader(NGINX_REQUEST_ID);
 
         MDC.put(TRACE_ID, Objects.requireNonNullElse(traceId, UUID.randomUUID().toString().replaceAll("-", "")));
         try {
