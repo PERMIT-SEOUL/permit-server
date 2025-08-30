@@ -1,0 +1,27 @@
+<appender name="DEVINFOROLLFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!-- 파일 위치 -->
+    <file>/home/ubuntu/logs/PERMIT-INFO-LOG.log</file>
+
+    <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+        <providers>
+            <timestamp>
+                <timeZone>Asia/Seoul</timeZone>
+                <pattern>yyyy-MM-dd HH:mm:ss.SSS</pattern>
+                <fieldName>time</fieldName>
+            </timestamp>
+            <threadName/>
+            <logLevel/>
+            <loggerName/>
+            <mdc/>
+            <arguments/>
+            <message/>ㅡ
+        </providers>
+    </encoder>
+
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <fileNamePattern>/home/ubuntu/logs/PERMIT-INFO-LOG-%d{yyyy-MM-dd}-%i-log.zip</fileNamePattern>
+        <maxFileSize>50MB</maxFileSize>
+        <maxHistory>30</maxHistory>
+        <totalSizeCap>3GB</totalSizeCap>
+    </rollingPolicy>
+</appender>
