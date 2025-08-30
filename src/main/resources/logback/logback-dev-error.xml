@@ -1,4 +1,4 @@
-<appender name="ERRORROLLFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+<appender name="DEVERRORROLLFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <immediateFlush>true</immediateFlush>
 
     <file>${LOG_PATH}/PERMIT-ERROR-LOG.log</file>
