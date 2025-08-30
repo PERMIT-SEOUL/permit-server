@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="60 seconds">
 
-    <!-- LOCAL: 콘솔로 INFO 이상 -->
     <springProfile name="local">
         <include resource="logback/logback-local.xml"/>
         <root level="INFO">
@@ -9,7 +8,6 @@
         </root>
     </springProfile>
 
-    <!-- DEV(EC2): 파일로 ERROR 이상 -->
     <springProfile name="dev">
         <include resource="logback/logback-dev-info.xml"/>
         <include resource="logback/logback-dev-error.xml"/>
