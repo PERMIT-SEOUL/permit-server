@@ -1,23 +1,7 @@
 <appender name="LOCALCONSOLE" class="ch.qos.logback.core.ConsoleAppender">
 
-<!--    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">-->
-<!--        <pattern>%green(%d{yyyy-MM-dd HH:mm:ss.SSS}) %magenta([%thread]) %highlight(%-5level) %boldMagenta(%F) %yellow(%M) %cyan(%logger{0}) %msg%n</pattern>-->
-<!--    </encoder>-->
-
-    <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
-        <providers>
-            <timestamp>
-                <timeZone>Asia/Seoul</timeZone>
-                <pattern>yyyy-MM-dd HH:mm:ss.SSS</pattern>
-                <fieldName>time</fieldName>
-            </timestamp>
-            <threadName/>
-            <logLevel/>
-            <loggerName/>
-            <mdc/>
-            <arguments/>
-            <message/>
-        </providers>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+        <pattern>%green(%d{yyyy-MM-dd HH:mm:ss.SSS}) %magenta([%thread]) %highlight(%-5level) %boldMagenta(%F) %yellow(%M) %cyan(%logger{0}) %msg%n</pattern>
     </encoder>
 
 </appender>

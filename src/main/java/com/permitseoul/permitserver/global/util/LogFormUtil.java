@@ -22,9 +22,20 @@ public final class LogFormUtil {
         return new StructuredArgument[] {
                 keyValue(Constants.USER_ID, userId),
                 keyValue(Constants.ORDER_ID, orderId),
-                keyValue(Constants.PAYMENT_KEY, paymentKey),
+                keyValue(Constants.PAYMENT_KEY, maskMiddle(paymentKey,5)),
                 keyValue(Constants.RESERVATION_ID, reservationId),
                 keyValue(Constants.TOTAL_AMOUNT, totalAmount)
         };
+    }
+
+    public static String maskMiddle(final String input, final int visible) {
+        if (input == null || input.length() <= visible * 2) {
+            return input;
+        }
+        final String prefix = input.substring(0, visible);
+        final String suffix = input.substring(input.length() - visible);
+        final String masked = "*".repeat(input.length() - (visible * 2));
+
+        return prefix + masked + suffix;
     }
 }
