@@ -6,6 +6,7 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -17,6 +18,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Component
+@Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)
 class MDCLoggingFilter extends OncePerRequestFilter {
     private final static String NGINX_REQUEST_ID = "X-RequestID";
@@ -27,7 +29,7 @@ class MDCLoggingFilter extends OncePerRequestFilter {
                                     @NonNull final HttpServletResponse response,
                                     @NonNull final FilterChain filterChain) {
         final String traceId = request.getHeader(NGINX_REQUEST_ID);
-
+        log.info(traceId); //todo: 추후 삭제(테스트용)
         MDC.put(TRACE_ID, Objects.requireNonNullElse(traceId, UUID.randomUUID().toString().replaceAll("-", "")));
         try {
             filterChain.doFilter(request, response);

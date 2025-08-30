@@ -1,7 +1,7 @@
-<appender name="DEVERRORROLLFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+<appender name="ERRORROLLFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <immediateFlush>true</immediateFlush>
-    <!-- 파일 위치 -->
-    <file>/home/ubuntu/logs/PERMIT-ERROR-LOG.log</file>
+
+    <file>${LOG_PATH}/PERMIT-ERROR-LOG.log</file>
 
     <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
         <providers>
@@ -16,6 +16,13 @@
             <mdc/>
             <arguments/>
             <message/>
+            <stackTrace>
+                <fieldName>stack</fieldName>
+                <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                    <maxDepthPerThrowable>10</maxDepthPerThrowable>
+                    <rootCauseFirst>true</rootCauseFirst>
+                </throwableConverter>
+            </stackTrace>
         </providers>
     </encoder>
 
@@ -26,7 +33,7 @@
     </filter>
 
     <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-        <fileNamePattern>/home/ubuntu/logs/PERMIT-ERROR-LOG-%d{yyyy-MM-dd}-%i-log.zip</fileNamePattern>
+        <fileNamePattern>${LOG_PATH}/PERMIT-ERROR-LOG-%d{yyyy-MM-dd}-%i-log.zip</fileNamePattern>
         <maxFileSize>20MB</maxFileSize>
         <maxHistory>30</maxHistory>
         <totalSizeCap>3GB</totalSizeCap>

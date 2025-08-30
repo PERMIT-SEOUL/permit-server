@@ -11,6 +11,7 @@ import static net.logstash.logback.argument.StructuredArguments.keyValue;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LogFormUtil {
+    private final static String MASKING_STAR = "*";
 
     public static StructuredArgument[] paymentLog(
             final long userId,
@@ -34,7 +35,7 @@ public final class LogFormUtil {
         }
         final String prefix = input.substring(0, visible);
         final String suffix = input.substring(input.length() - visible);
-        final String masked = "*".repeat(input.length() - (visible * 2));
+        final String masked = MASKING_STAR.repeat(input.length() - (visible * 2));
 
         return prefix + masked + suffix;
     }
