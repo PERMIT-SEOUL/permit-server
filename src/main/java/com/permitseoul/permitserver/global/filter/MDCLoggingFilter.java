@@ -21,7 +21,7 @@ import java.util.UUID;
 @Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)
 class MDCLoggingFilter extends OncePerRequestFilter {
-    private final static String NGINX_REQUEST_ID = "X-RequestID";
+    private final static String NGINX_REQUEST_ID = "X-Request-ID";
     private final static String TRACE_ID = "trace_id";
 
     @Override
