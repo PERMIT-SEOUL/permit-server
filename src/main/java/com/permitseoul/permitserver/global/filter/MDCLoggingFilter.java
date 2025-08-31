@@ -17,12 +17,15 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
 
+import static java.util.Calendar.PM;
+
 @Component
 @Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)
 class MDCLoggingFilter extends OncePerRequestFilter {
     private final static String NGINX_REQUEST_ID = "X-Request-ID";
     private final static String TRACE_ID = "trace_id";
+    private final static String HEALTH_CHECK_URL = "/actuator/health";
 
     @Override
     protected void doFilterInternal(@NonNull final HttpServletRequest request,
@@ -38,5 +41,10 @@ class MDCLoggingFilter extends OncePerRequestFilter {
         } finally {
             MDC.clear();
         }
+    }
+
+    @Override
+    protected boolean shouldNotFilter(@NonNull final HttpServletRequest request) {
+        return HEALTH_CHECK_URL.equals(request.getRequestURI());
     }
 }
