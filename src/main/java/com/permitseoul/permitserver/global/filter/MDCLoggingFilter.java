@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
 
+import static java.util.Calendar.PM;
 
 @Component
 @Slf4j
@@ -30,10 +31,13 @@ class MDCLoggingFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull final HttpServletRequest request,
                                     @NonNull final HttpServletResponse response,
                                     @NonNull final FilterChain filterChain) throws ServletException, IOException {
-        final String traceId = request.getHeader(NGINX_REQUEST_ID);
-        log.info(traceId); //todo: 추후 삭제(테스트용)
-        MDC.put(TRACE_ID, Objects.requireNonNullElse(traceId, UUID.randomUUID().toString().replaceAll("-", "")));
         try {
+            String traceId = request.getHeader(NGINX_REQUEST_ID);
+            if (traceId == null || traceId.isBlank()) {
+                traceId = UUID.randomUUID().toString().replaceAll("-", "");
+            }
+            MDC.put(TRACE_ID, traceId);
+
             filterChain.doFilter(request, response);
         } finally {
             MDC.clear();
