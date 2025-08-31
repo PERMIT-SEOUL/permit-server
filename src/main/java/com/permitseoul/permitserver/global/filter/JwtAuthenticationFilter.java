@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -34,7 +35,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(@NonNull final HttpServletRequest request,
                                     @NonNull final HttpServletResponse response,
-                                    @NonNull final FilterChain filterChain) {
+                                    @NonNull final FilterChain filterChain) throws ServletException, IOException {
+        final String uri = request.getRequestURI();
+
+        if (isWhiteListUrl(uri)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         try {
             setAuthentication(request);
             filterChain.doFilter(request, response);
