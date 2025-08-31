@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.global.filter;
 
+import com.permitseoul.permitserver.global.Constants;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,14 +22,13 @@ import java.util.UUID;
 class MDCLoggingFilter extends OncePerRequestFilter {
     private final static String NGINX_REQUEST_ID = "X-Request-ID";
     private final static String TRACE_ID = "trace_id";
-    private final static String HEALTH_CHECK_URL = "/actuator/health";
 
     @Override
     protected void doFilterInternal(@NonNull final HttpServletRequest request,
                                     @NonNull final HttpServletResponse response,
                                     @NonNull final FilterChain filterChain) throws ServletException, IOException {
         final String uri = request.getRequestURI();
-        if (uri != null && uri.contains(HEALTH_CHECK_URL)) {
+        if (uri != null && uri.contains(Constants.HEALTH_CHECK_URL)) {
             filterChain.doFilter(request, response);
             return;
         }

@@ -5,6 +5,7 @@ import com.permitseoul.permitserver.domain.auth.core.exception.AuthExpiredJwtExc
 import com.permitseoul.permitserver.domain.auth.core.exception.AuthWrongJwtException;
 import com.permitseoul.permitserver.domain.auth.core.jwt.CookieExtractor;
 import com.permitseoul.permitserver.domain.auth.core.jwt.JwtProvider;
+import com.permitseoul.permitserver.global.Constants;
 import com.permitseoul.permitserver.global.domain.CookieType;
 import com.permitseoul.permitserver.global.exception.FilterException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
@@ -38,7 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull final FilterChain filterChain) throws ServletException, IOException {
         final String uri = request.getRequestURI();
 
-        if (isWhiteListUrl(uri)) {
+        if (uri.contains(Constants.HEALTH_CHECK_URL)) {
             filterChain.doFilter(request, response);
             return;
         }
