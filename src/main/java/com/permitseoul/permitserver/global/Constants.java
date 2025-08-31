@@ -17,6 +17,8 @@ public abstract class Constants {
     public static final String PAYMENT_KEY = "paymentKey";
     public static final String RESERVATION_ID = "reservationId";
     public static final String TOTAL_AMOUNT = "totalAmount";
+    public static final String HEALTH_CHECK_URL = "/actuator/health";
+
 
 
 }
