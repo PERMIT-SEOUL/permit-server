@@ -14,10 +14,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Objects;
 import java.util.UUID;
 
-import static java.util.Calendar.PM;
 
 @Component
 @Slf4j
@@ -31,6 +29,12 @@ class MDCLoggingFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull final HttpServletRequest request,
                                     @NonNull final HttpServletResponse response,
                                     @NonNull final FilterChain filterChain) throws ServletException, IOException {
+        final String uri = request.getRequestURI();
+        if (uri != null && uri.contains(HEALTH_CHECK_URL)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         try {
             String traceId = request.getHeader(NGINX_REQUEST_ID);
             if (traceId == null || traceId.isBlank()) {
@@ -42,10 +46,5 @@ class MDCLoggingFilter extends OncePerRequestFilter {
         } finally {
             MDC.clear();
         }
-    }
-
-    @Override
-    protected boolean shouldNotFilter(@NonNull final HttpServletRequest request) {
-        return request.getRequestURI().startsWith(HEALTH_CHECK_URL);
     }
 }
