@@ -1,0 +1,24 @@
+package com.permitseoul.permitserver.domain.admin.event.api.controller;
+
+import com.permitseoul.permitserver.domain.admin.event.api.service.AdminEventService;
+import com.permitseoul.permitserver.global.response.ApiResponseUtil;
+import com.permitseoul.permitserver.global.response.BaseResponse;
+import com.permitseoul.permitserver.global.response.code.SuccessCode;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/admin/events")
+@RequiredArgsConstructor
+public class AdminEventController {
+    private final AdminEventService adminEventService;
+
+    @PostMapping
+    public ResponseEntity<BaseResponse<?>> getEvents(
+    ) {
+        return ApiResponseUtil.success(SuccessCode.OK, adminEventService.getEvents());
+    }
+}
