@@ -1,6 +1,7 @@
 package com.permitseoul.permitserver.domain.admin.event.api.service;
 
-import com.permitseoul.permitserver.domain.admin.event.api.dto.res.EventListResponse;
+import com.permitseoul.permitserver.domain.admin.event.api.dto.res.AdminEventDetailResponse;
+import com.permitseoul.permitserver.domain.admin.event.api.dto.res.AdminEventListResponse;
 import com.permitseoul.permitserver.domain.admin.event.core.component.AdminEventRetriever;
 import com.permitseoul.permitserver.domain.admin.ticketround.core.AdminTicketRoundRetriever;
 import com.permitseoul.permitserver.domain.admin.tickettype.core.component.AdminTicketTypeRetriever;
@@ -25,7 +26,7 @@ public class AdminEventService {
     private final AdminTicketTypeRetriever adminTicketTypeRetriever;
 
     @Transactional(readOnly = true)
-    public List<EventListResponse> getEvents() {
+    public List<AdminEventListResponse> getEvents() {
         final List<Event> events = adminEventRetriever.getAllEvents();
         if (isEmpty(events)) return List.of();
 
@@ -35,13 +36,18 @@ public class AdminEventService {
         aggregateSoldCounts(events, eventIdToSoldTicketCount);
 
         final List<Event> sorted = sortEventsByStartDateDesc(events);
-        final Map<String, List<EventListResponse.EventInfo>> groupedByYearMonth = groupEventsByYearMonth(sorted, eventIdToSoldTicketCount);
+        final Map<String, List<AdminEventListResponse.AdminEventInfo>> groupedByYearMonth = groupEventsByYearMonth(sorted, eventIdToSoldTicketCount);
 
-        final List<EventListResponse> result = new ArrayList<>();
-        for (Map.Entry<String, List<EventListResponse.EventInfo>> entry : groupedByYearMonth.entrySet()) {
-            result.add(new EventListResponse(entry.getKey(), entry.getValue()));
+        final List<AdminEventListResponse> result = new ArrayList<>();
+        for (Map.Entry<String, List<AdminEventListResponse.AdminEventInfo>> entry : groupedByYearMonth.entrySet()) {
+            result.add(AdminEventListResponse.of(entry.getKey(), entry.getValue()));
         }
         return result;
+    }
+
+    @Transactional(readOnly = true)
+    public AdminEventDetailResponse getEventDetail(final long eventId) {
+
     }
 
     private Map<Long, Integer> initSoldTicketCountZero(final List<Event> events) {
@@ -120,18 +126,18 @@ public class AdminEventService {
         return sorted;
     }
 
-    private Map<String, List<EventListResponse.EventInfo>> groupEventsByYearMonth(
+    private Map<String, List<AdminEventListResponse.AdminEventInfo>> groupEventsByYearMonth(
             final List<Event> sortedEvents,
             final Map<Long, Integer> soldByEventId
     ) {
-        final Map<String, List<EventListResponse.EventInfo>> grouped = new LinkedHashMap<>();
+        final Map<String, List<AdminEventListResponse.AdminEventInfo>> grouped = new LinkedHashMap<>();
         for (Event e : sortedEvents) {
             final LocalDateTime start = e.getStartDate();
             final String yearAndMonth = DateFormatterUtil.formatYearMonth(start);   // "yyyy.MM"
             final String day = DateFormatterUtil.formatDayWithDate(start); // "E, dd"
 
             grouped.computeIfAbsent(yearAndMonth, k -> new ArrayList<>())
-                    .add(new EventListResponse.EventInfo(
+                    .add(AdminEventListResponse.AdminEventInfo.of(
                             e.getEventId(),
                             e.getName(),
                             e.getVenue(),

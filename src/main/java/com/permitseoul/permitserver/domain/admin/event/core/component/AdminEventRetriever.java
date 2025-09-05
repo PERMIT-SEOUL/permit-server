@@ -5,6 +5,7 @@ import com.permitseoul.permitserver.domain.event.core.domain.entity.EventEntity;
 import com.permitseoul.permitserver.domain.event.core.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
 public class AdminEventRetriever {
     private final EventRepository eventRepository;
 
+    @Transactional(readOnly = true)
     public List<Event> getAllEvents() {
         final List<EventEntity> eventEntities = eventRepository.findAll();
         return eventEntities.stream()
@@ -20,5 +22,4 @@ public class AdminEventRetriever {
                 .toList();
 
     }
-
 }
