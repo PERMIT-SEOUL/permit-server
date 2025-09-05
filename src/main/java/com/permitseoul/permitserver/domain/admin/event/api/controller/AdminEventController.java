@@ -6,7 +6,7 @@ import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminEventController {
     private final AdminEventService adminEventService;
 
-    @PostMapping
+    @GetMapping
     public ResponseEntity<BaseResponse<?>> getEvents(
     ) {
         return ApiResponseUtil.success(SuccessCode.OK, adminEventService.getEvents());

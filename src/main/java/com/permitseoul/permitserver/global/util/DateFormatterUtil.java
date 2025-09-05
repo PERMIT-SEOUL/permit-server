@@ -16,9 +16,11 @@ import java.util.Optional;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DateFormatterUtil {
-    private static final DateTimeFormatter DAY_FORMATTER = DateTimeFormatter.ofPattern("E", Locale.ENGLISH);   //Sun
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd", Locale.ENGLISH);  //25
-    private static final DateTimeFormatter MONTH_YEAR_FORMATTER = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.ENGLISH); //May 2025
+    private static final DateTimeFormatter DAY_FORMATTER = DateTimeFormatter.ofPattern("E", Locale.ENGLISH);   // Sun
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd", Locale.ENGLISH); // 25
+    private static final DateTimeFormatter MONTH_YEAR_FORMATTER = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.ENGLISH); // May 2025
+    private static final DateTimeFormatter DAY_DD_FORMATTER = DateTimeFormatter.ofPattern("E, dd", Locale.ENGLISH); // Fri, 04
+    private static final DateTimeFormatter YEAR_MONTH_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM", Locale.ENGLISH); // 2025.09
     private static final String COMMA_AND_SPACE = ", ";
     private static final String SPACE = " ";
     private static final String DASH = "-";
@@ -44,6 +46,16 @@ public final class DateFormatterUtil {
                     .append(endDate.format(MONTH_YEAR_FORMATTER));
         }
         return sb.toString();
+    }
+
+    // "Fri, 04" 포맷팅
+    public static String formatDayWithDate(final LocalDateTime dateTime) {
+        return dateTime.format(DAY_DD_FORMATTER);
+    }
+
+    // "2025.08" 포맷팅
+    public static String formatYearMonth(final LocalDateTime dateTime) {
+        return dateTime.format(YEAR_MONTH_FORMATTER);
     }
 
     // 토스에서 주는 날짜 형식 ISO 8601을 LocalDateTime로 변환

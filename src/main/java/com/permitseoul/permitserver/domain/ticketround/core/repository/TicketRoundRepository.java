@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -14,4 +15,5 @@ public interface TicketRoundRepository extends JpaRepository<TicketRoundEntity, 
     List<TicketRoundEntity> findByEventIdAndSalesStartDateLessThanEqualOrderBySalesStartDateAsc(final long eventId,
                                                                                                 final LocalDateTime now);
 
+    List<TicketRoundEntity> findByEventIdIn(final List<Long> eventIds);
 }
