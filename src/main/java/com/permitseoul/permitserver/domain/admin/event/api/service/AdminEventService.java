@@ -59,6 +59,7 @@ public class AdminEventService {
             final List<EventImage> eventImages = adminEventImageRetriever.findAllEventImagesByEventId(event.getEventId());
 
             final List<AdminEventDetailResponse.AdminEventImageInfo> adminEventImageInfos = eventImages.stream()
+                    .sorted(Comparator.comparingInt(EventImage::getSequence)) 
                     .map(eventImage -> AdminEventDetailResponse.AdminEventImageInfo.of(eventImage.getImageUrl()))
                     .toList();
 
