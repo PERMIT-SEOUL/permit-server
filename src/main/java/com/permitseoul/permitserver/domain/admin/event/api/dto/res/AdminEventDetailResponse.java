@@ -3,7 +3,7 @@ package com.permitseoul.permitserver.domain.admin.event.api.dto.res;
 import java.util.List;
 
 public record AdminEventDetailResponse(
-        String eventId,
+        long eventId,
         String eventExposureStartDate,
         String eventExposureStartTime,
         String eventExposureEndDate,
@@ -17,11 +17,11 @@ public record AdminEventDetailResponse(
         String venue,
         String lineup,
         String details,
-        List<ImageInfo> images,
+        List<AdminEventImageInfo> images,
         Integer minAge
 ) {
 
-    public static AdminEventDetailResponse of(final String eventId,
+    public static AdminEventDetailResponse of(final long eventId,
                                               final String eventExposureStartDate,
                                               final String eventExposureStartTime,
                                               final String eventExposureEndDate,
@@ -35,7 +35,7 @@ public record AdminEventDetailResponse(
                                               final String venue,
                                               final String lineup,
                                               final String details,
-                                              final List<ImageInfo> images,
+                                              final List<AdminEventImageInfo> images,
                                               final Integer minAge) {
         return new AdminEventDetailResponse(
                 eventId,
@@ -57,11 +57,11 @@ public record AdminEventDetailResponse(
         );
     }
 
-    public record ImageInfo(
+    public record AdminEventImageInfo(
             String imageUrl
     ) {
-        public static ImageInfo of(final String imageUrl) {
-            return new ImageInfo(imageUrl);
+        public static AdminEventImageInfo of(final String imageUrl) {
+            return new AdminEventImageInfo(imageUrl);
         }
     }
 }

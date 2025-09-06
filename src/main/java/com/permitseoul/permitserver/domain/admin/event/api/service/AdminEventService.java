@@ -1,13 +1,19 @@
 package com.permitseoul.permitserver.domain.admin.event.api.service;
 
+import com.permitseoul.permitserver.domain.admin.base.AdminBaseException;
+import com.permitseoul.permitserver.domain.admin.base.api.exception.AdminApiException;
 import com.permitseoul.permitserver.domain.admin.event.api.dto.res.AdminEventDetailResponse;
 import com.permitseoul.permitserver.domain.admin.event.api.dto.res.AdminEventListResponse;
 import com.permitseoul.permitserver.domain.admin.event.core.component.AdminEventRetriever;
+import com.permitseoul.permitserver.domain.admin.event.core.exception.AdminEventNotFoundException;
+import com.permitseoul.permitserver.domain.admin.eventimage.core.component.AdminEventImageRetriever;
 import com.permitseoul.permitserver.domain.admin.ticketround.core.AdminTicketRoundRetriever;
 import com.permitseoul.permitserver.domain.admin.tickettype.core.component.AdminTicketTypeRetriever;
 import com.permitseoul.permitserver.domain.event.core.domain.Event;
+import com.permitseoul.permitserver.domain.eventimage.core.domain.EventImage;
 import com.permitseoul.permitserver.domain.ticketround.core.domain.TicketRound;
 import com.permitseoul.permitserver.domain.tickettype.core.domain.TicketType;
+import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import com.permitseoul.permitserver.global.util.DateFormatterUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +30,7 @@ public class AdminEventService {
     private final AdminEventRetriever adminEventRetriever;
     private final AdminTicketRoundRetriever adminTicketRoundRetriever;
     private final AdminTicketTypeRetriever adminTicketTypeRetriever;
+    private final AdminEventImageRetriever adminEventImageRetriever;
 
     @Transactional(readOnly = true)
     public List<AdminEventListResponse> getEvents() {
@@ -47,7 +54,36 @@ public class AdminEventService {
 
     @Transactional(readOnly = true)
     public AdminEventDetailResponse getEventDetail(final long eventId) {
+        try {
+            final Event event = adminEventRetriever.findEventById(eventId);
+            final List<EventImage> eventImages = adminEventImageRetriever.findAllEventImagesByEventId(event.getEventId());
 
+            final List<AdminEventDetailResponse.AdminEventImageInfo> adminEventImageInfos = eventImages.stream()
+                    .map(eventImage -> AdminEventDetailResponse.AdminEventImageInfo.of(eventImage.getImageUrl()))
+                    .toList();
+
+            return AdminEventDetailResponse.of(
+                    event.getEventId(),
+                    DateFormatterUtil.formatyyyyMMdd(event.getVisibleStartDate()),
+                    DateFormatterUtil.formatHHmm(event.getVisibleStartDate()),
+                    DateFormatterUtil.formatyyyyMMdd(event.getVisibleEndDate()),
+                    DateFormatterUtil.formatHHmm(event.getVisibleEndDate()),
+                    event.getTicketCheckCode(),
+                    event.getName(),
+                    DateFormatterUtil.formatyyyyMMdd(event.getStartDate()),
+                    DateFormatterUtil.formatHHmm(event.getStartDate()),
+                    DateFormatterUtil.formatyyyyMMdd(event.getEndDate()),
+                    DateFormatterUtil.formatHHmm(event.getEndDate()),
+                    event.getVenue(),
+                    event.getLineUp(),
+                    event.getDetails(),
+                    adminEventImageInfos,
+                    event.getMinAge()
+            );
+
+        } catch(AdminEventNotFoundException e) {
+            throw new AdminApiException(ErrorCode.NOT_FOUND_EVENT);
+        }
     }
 
     private Map<Long, Integer> initSoldTicketCountZero(final List<Event> events) {
