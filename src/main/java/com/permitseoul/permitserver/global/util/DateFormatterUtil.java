@@ -21,6 +21,8 @@ public final class DateFormatterUtil {
     private static final DateTimeFormatter MONTH_YEAR_FORMATTER = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.ENGLISH); // May 2025
     private static final DateTimeFormatter DAY_DD_FORMATTER = DateTimeFormatter.ofPattern("E, dd", Locale.ENGLISH); // Fri, 04
     private static final DateTimeFormatter YEAR_MONTH_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM", Locale.ENGLISH); // 2025.09
+    private static final DateTimeFormatter DATE = DateTimeFormatter.ofPattern("yyyy.MM.dd"); // 2025.08.15
+    private static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("HH:mm"); //17:30
     private static final String COMMA_AND_SPACE = ", ";
     private static final String SPACE = " ";
     private static final String DASH = "-";
@@ -57,6 +59,18 @@ public final class DateFormatterUtil {
     public static String formatYearMonth(final LocalDateTime dateTime) {
         return dateTime.format(YEAR_MONTH_FORMATTER);
     }
+
+    // "2025.08.15" 포맷팅
+    public static String formatyyyyMMdd(final LocalDateTime dateTime) {
+        return dateTime.format(DATE);
+    }
+
+    // "17:30" 포맷팅
+    public static String formatHHmm(final LocalDateTime dateTime) {
+        return dateTime.format(TIME);
+    }
+
+
 
     // 토스에서 주는 날짜 형식 ISO 8601을 LocalDateTime로 변환
     public static LocalDateTime parseTossDateToLocalDateTime(final String isoDate) {

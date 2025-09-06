@@ -4,6 +4,7 @@ import com.permitseoul.permitserver.domain.tickettype.core.domain.TicketType;
 import com.permitseoul.permitserver.domain.tickettype.core.repository.TicketTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ import java.util.List;
 public class AdminTicketTypeRetriever {
     private final TicketTypeRepository ticketTypeRepository;
 
+    @Transactional(readOnly = true)
     public List<TicketType> getTicketTypesByTicketRounds(final List<Long> ticketRoundIds) {
         return ticketTypeRepository.findByTicketRoundIdIn(ticketRoundIds).stream()
                 .map(TicketType::fromEntity)
