@@ -18,7 +18,7 @@ public record AdminEventDetailResponse(
         String lineup,
         String details,
         List<AdminEventImageInfo> images,
-        Integer minAge
+        int minAge
 ) {
 
     public static AdminEventDetailResponse of(final long eventId,
@@ -36,7 +36,7 @@ public record AdminEventDetailResponse(
                                               final String lineup,
                                               final String details,
                                               final List<AdminEventImageInfo> images,
-                                              final Integer minAge) {
+                                              final int minAge) {
         return new AdminEventDetailResponse(
                 eventId,
                 eventExposureStartDate,

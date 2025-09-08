@@ -40,7 +40,7 @@ public class EventEntity extends BaseTimeEntity {
     private String details;
 
     @Column(name = "min_age")
-    private Integer minAge;
+    private int minAge;
 
     @Column(name = "visible_end_date", nullable = false)
     private LocalDateTime visibleEndDate;
@@ -58,7 +58,7 @@ public class EventEntity extends BaseTimeEntity {
                         String venue,
                         String lineUp,
                         String details,
-                        Integer minAge,
+                        int minAge,
                         LocalDateTime visibleEndDate,
                         String ticketCheckCode,
                         LocalDateTime visibleStartDate) {

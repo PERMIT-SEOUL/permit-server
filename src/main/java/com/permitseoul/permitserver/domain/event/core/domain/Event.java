@@ -17,7 +17,7 @@ public class Event {
     private final String venue;
     private final String lineUp;
     private final String details;
-    private final Integer minAge;
+    private final int minAge;
     private final LocalDateTime visibleEndDate;
     private final String ticketCheckCode;
     private final LocalDateTime visibleStartDate;
