@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "events")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE) // Builder 및 create()에서만 사용
+@Builder
 @Getter
 public class EventEntity extends BaseTimeEntity {
     @Id
@@ -51,28 +53,31 @@ public class EventEntity extends BaseTimeEntity {
     @Column(name = "visible_start_date")
     private LocalDateTime visibleStartDate;
 
-    private EventEntity(String name,
-                        EventType eventType,
-                        LocalDateTime startDate,
-                        LocalDateTime endDate,
-                        String venue,
-                        String lineUp,
-                        String details,
-                        int minAge,
-                        LocalDateTime visibleEndDate,
-                        String ticketCheckCode,
-                        LocalDateTime visibleStartDate) {
-        this.name = name;
-        this.eventType = eventType;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.venue = venue;
-        this.lineUp = lineUp;
-        this.details = details;
-        this.minAge = minAge;
-        this.visibleEndDate = visibleEndDate;
-        this.ticketCheckCode = ticketCheckCode;
-        this.visibleStartDate = visibleStartDate;
+
+    public static EventEntity creat(final String name,
+                                    final EventType eventType,
+                                    final LocalDateTime startDate,
+                                    final LocalDateTime endDate,
+                                    final String venue,
+                                    final String lineUp,
+                                    final String details,
+                                    final int minAge,
+                                    final LocalDateTime visibleEndDate,
+                                    final String ticketCheckCode,
+                                    final LocalDateTime visibleStartDate) {
+        return EventEntity.builder()
+                .name(name)
+                .eventType(eventType)
+                .startDate(startDate)
+                .endDate(endDate)
+                .venue(venue)
+                .lineUp(lineUp)
+                .details(details)
+                .minAge(minAge)
+                .visibleEndDate(visibleEndDate)
+                .ticketCheckCode(ticketCheckCode)
+                .visibleStartDate(visibleStartDate)
+                .build();
     }
 }
 
