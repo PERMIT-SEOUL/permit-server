@@ -38,7 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull final FilterChain filterChain) throws ServletException, IOException {
         final String uri = request.getRequestURI();
 
-        if (uri.contains(Constants.HEALTH_CHECK_URL) || isWhiteListUrl(uri)) {
+        if (pathMatcher.match(Constants.HEALTH_CHECK_URL, uri) || isWhiteListUrl(uri)) {
             filterChain.doFilter(request, response);
             return;
         }
