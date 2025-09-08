@@ -6,13 +6,12 @@ import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DateFormatterUtil {
@@ -70,7 +69,12 @@ public final class DateFormatterUtil {
         return dateTime.format(TIME);
     }
 
-
+    public static LocalDateTime combine(final LocalDate date, final LocalTime time) {
+        return LocalDateTime.of(
+                Objects.requireNonNull(date, "date가 null입니다."),
+                Objects.requireNonNull(time, "time이 null입니다.")
+        );
+    }
 
     // 토스에서 주는 날짜 형식 ISO 8601을 LocalDateTime로 변환
     public static LocalDateTime parseTossDateToLocalDateTime(final String isoDate) {

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "events")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE) // Builder 및 create()에서만 사용
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Getter
 public class EventEntity extends BaseTimeEntity {
@@ -53,18 +53,17 @@ public class EventEntity extends BaseTimeEntity {
     @Column(name = "visible_start_date")
     private LocalDateTime visibleStartDate;
 
-
-    public static EventEntity creat(final String name,
-                                    final EventType eventType,
-                                    final LocalDateTime startDate,
-                                    final LocalDateTime endDate,
-                                    final String venue,
-                                    final String lineUp,
-                                    final String details,
-                                    final int minAge,
-                                    final LocalDateTime visibleEndDate,
-                                    final String ticketCheckCode,
-                                    final LocalDateTime visibleStartDate) {
+    public static EventEntity create(final String name,
+                                     final EventType eventType,
+                                     final LocalDateTime startDate,
+                                     final LocalDateTime endDate,
+                                     final String venue,
+                                     final String lineUp,
+                                     final String details,
+                                     final int minAge,
+                                     final LocalDateTime visibleStartDate,
+                                     final LocalDateTime visibleEndDate,
+                                     final String ticketCheckCode) {
         return EventEntity.builder()
                 .name(name)
                 .eventType(eventType)
@@ -74,9 +73,9 @@ public class EventEntity extends BaseTimeEntity {
                 .lineUp(lineUp)
                 .details(details)
                 .minAge(minAge)
+                .visibleStartDate(visibleStartDate)
                 .visibleEndDate(visibleEndDate)
                 .ticketCheckCode(ticketCheckCode)
-                .visibleStartDate(visibleStartDate)
                 .build();
     }
 }
