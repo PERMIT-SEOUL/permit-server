@@ -1,28 +1,32 @@
 package com.permitseoul.permitserver.domain.admin.event.api.dto.req;
 
-import com.permitseoul.permitserver.domain.admin.event.api.dto.res.AdminEventDetailResponse;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.permitseoul.permitserver.domain.event.core.domain.EventType;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 public record AdminEventWithTicketCreateRequest(
 
-        @NotBlank(message = "행사 노출 시작일은 필수입니다.")
-        String eventExposureStartDate,
+        @NotNull(message = "행사 노출 시작일은 필수입니다.")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+        LocalDate eventExposureStartDate,
 
-        @NotBlank(message = "행사 노출 시작 시간은 필수입니다.")
-        String eventExposureStartTime,
+        @NotNull(message = "행사 노출 시작 시간은 필수입니다.")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
+        LocalTime eventExposureStartTime,
 
-        @NotBlank(message = "행사 노출 종료일은 필수입니다.")
-        String eventExposureEndDate,
+        @NotNull(message = "행사 노출 종료일은 필수입니다.")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+        LocalDate eventExposureEndDate,
 
-        @NotBlank(message = "행사 노출 종료 시간은 필수입니다.")
-        String eventExposureEndTime,
+        @NotNull(message = "행사 노출 종료 시간은 필수입니다.")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
+        LocalTime eventExposureEndTime,
 
         @NotBlank(message = "검증 코드는 필수입니다.")
         @Size(max = 30, message = "검증 코드는 30자를 초과할 수 없습니다.")
@@ -31,43 +35,55 @@ public record AdminEventWithTicketCreateRequest(
         @NotBlank(message = "행사명은 필수입니다.")
         String name,
 
-        @NotBlank(message = "행사 시작일은 필수입니다.")
-        String startDate,
+        @NotNull(message = "행사 타입은 필수입니다.")
+        EventType eventType,
 
-        @NotBlank(message = "행사 시작 시간은 필수입니다.")
-        String startTime,
+        @NotNull(message = "행사 시작일은 필수입니다.")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+        LocalDate startDate,
 
-        @NotBlank(message = "행사 종료일은 필수입니다.")
-        String endDate,
+        @NotNull(message = "행사 시작 시간은 필수입니다.")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
+        LocalTime startTime,
 
-        @NotBlank(message = "행사 종료 시간은 필수입니다.")
-        String endTime,
+        @NotNull(message = "행사 종료일은 필수입니다.")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+        LocalDate endDate,
+
+        @NotNull(message = "행사 종료 시간은 필수입니다.")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
+        LocalTime endTime,
 
         @NotBlank(message = "행사 장소는 필수입니다.")
         String venue,
+
         String lineup,
         String details,
 
         @NotEmpty(message = "행사 이미지는 최소 1개 이상이어야 합니다.")
         List<AdminEventImageInfo> images,
 
-        @NotNull(message = "최소 나이는 필수입니다.")
+        @Min(value = 0, message = "최소 나이는 0 이상이어야 합니다.")
         int minAge,
 
         @NotBlank(message = "티켓 차수 이름은 필수입니다.")
         String ticketRoundName,
 
-        @NotBlank(message = "티켓 차수 시작일은 필수입니다.")
-        String roundExposureStartDate,
+        @NotNull(message = "티켓 차수 시작일은 필수입니다.")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+        LocalDate roundSalesStartDate,
 
-        @NotBlank(message = "티켓 차수 시작 시간은 필수입니다.")
-        String roundExposureStartTime,
+        @NotNull(message = "티켓 차수 시작 시간은 필수입니다.")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
+        LocalTime roundSalesStartTime,
 
-        @NotBlank(message = "티켓 차수 종료일은 필수입니다.")
-        String roundExposureEndDate,
+        @NotNull(message = "티켓 차수 종료일은 필수입니다.")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+        LocalDate roundSalesEndDate,
 
-        @NotBlank(message = "티켓 차수 종료 시간은 필수입니다.")
-        String roundExposureEndTime,
+        @NotNull(message = "티켓 차수 종료 시간은 필수입니다.")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
+        LocalTime roundSalesEndTime,
 
         @NotEmpty(message = "티켓 정보는 최소 1개 이상이어야 합니다.")
         @Valid
@@ -80,20 +96,24 @@ public record AdminEventWithTicketCreateRequest(
                 @NotNull(message = "가격은 필수입니다.")
                 BigDecimal price,
 
-                @NotNull(message = "티켓 개수는 필수입니다.")
+                @Min(value = 1, message = "티켓 개수는 1 이상이어야 합니다.")
                 int ticketCount,
 
-                @NotBlank(message = "티켓 시작일은 필수입니다.")
-                String ticketStartDate,
+                @NotNull(message = "티켓 시작일은 필수입니다.")
+                @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+                LocalDate ticketStartDate,
 
-                @NotBlank(message = "티켓 시작 시간은 필수입니다.")
-                String ticketStartTime,
+                @NotNull(message = "티켓 시작 시간은 필수입니다.")
+                @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
+                LocalTime ticketStartTime,
 
-                @NotBlank(message = "티켓 종료일은 필수입니다.")
-                String ticketEndDate,
+                @NotNull(message = "티켓 종료일은 필수입니다.")
+                @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+                LocalDate ticketEndDate,
 
-                @NotBlank(message = "티켓 종료 시간은 필수입니다.")
-                String ticketEndTime
+                @NotNull(message = "티켓 종료 시간은 필수입니다.")
+                @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
+                LocalTime ticketEndTime
         ) { }
 
         public record AdminEventImageInfo(
