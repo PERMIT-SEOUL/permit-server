@@ -39,6 +39,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String uri = request.getRequestURI();
 
         if (pathMatcher.match(Constants.HEALTH_CHECK_URL, uri) || isWhiteListUrl(uri)) {
+            SecurityContextHolder.getContext().setAuthentication(
+                    new UsernamePasswordAuthenticationToken(null, null, null));
             filterChain.doFilter(request, response);
             return;
         }
