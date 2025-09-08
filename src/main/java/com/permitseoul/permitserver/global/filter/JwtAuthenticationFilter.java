@@ -37,32 +37,33 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull final HttpServletResponse response,
                                     @NonNull final FilterChain filterChain) throws ServletException, IOException {
         final String uri = request.getRequestURI();
-
-        if (pathMatcher.match(Constants.HEALTH_CHECK_URL, uri) || isWhiteListUrl(uri)) {
-            SecurityContextHolder.getContext().setAuthentication(
-                    new UsernamePasswordAuthenticationToken(null, null, null));
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         try {
+            if(isHealthCheckUri(uri)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
             setAuthentication(request);
             filterChain.doFilter(request, response);
         } catch (AuthCookieException e) {
-            if(!isWhiteListUrl(uri)) {
+            if(isWhiteListUrl(uri)) {
+                SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(null, null, null));
+                filterChain.doFilter(request, response);
+            } else {
                 throw new FilterException(ErrorCode.NOT_FOUND_AT_COOKIE);
             }
         } catch (AuthExpiredJwtException e) {
             throw new FilterException(ErrorCode.UNAUTHORIZED_AT_EXPIRED);
         } catch (AuthWrongJwtException e) {
             throw new FilterException(ErrorCode.UNAUTHORIZED);
+        } catch (ServletException | IOException e) {
+            throw new FilterException(ErrorCode.INTERNAL_FILTER_ERROR);
         } catch (Exception e) {
             throw new FilterException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 
     private void setAuthentication(final HttpServletRequest request) {
-        final String token = CookieExtractor.extractCookie(request, CookieType.ACCESS_TOKEN).getValue(); ///accessToken 쿠키 뽑음
+        final String token = CookieExtractor.extractCookie(request, CookieType.ACCESS_TOKEN).getValue();
         final long userId = jwtProvider.extractUserIdFromToken(token);
         final String userRole = jwtProvider.extractUserRoleFromToken(token);
         final List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + userRole));
@@ -72,6 +73,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private boolean isWhiteListUrl(final String requestURI) {
         return whiteURIList.stream().anyMatch(pattern -> pathMatcher.match(pattern, requestURI));
+    }
+
+    private boolean isHealthCheckUri(final String uri) {
+        return pathMatcher.match(Constants.HEALTH_CHECK_URL, uri);
     }
 }
 
