@@ -17,7 +17,6 @@ import java.util.Optional;
 @Component
 public class UserIdHeaderResolver implements HandlerMethodArgumentResolver {
 
-    private static final String ANONY_USER = "anonymousUser";
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return (parameter.getParameterType().equals(Long.class) || parameter.getParameterType().equals(long.class))
@@ -33,11 +32,6 @@ public class UserIdHeaderResolver implements HandlerMethodArgumentResolver {
                 .map(SecurityContext::getAuthentication)
                 .filter(Authentication::isAuthenticated)
                 .orElseThrow(() -> new ResolverException(ErrorCode.UNAUTHORIZED_SECURITY_ENTRY));
-        final Object principal = authentication.getPrincipal();
-
-        if (principal == null || principal.equals(ANONY_USER)) {
-            throw new ResolverException(ErrorCode.UNAUTHORIZED_PRINCIPLE);
-        }
-        return (Long) principal;
+        return (Long) authentication.getPrincipal();
     }
 }
