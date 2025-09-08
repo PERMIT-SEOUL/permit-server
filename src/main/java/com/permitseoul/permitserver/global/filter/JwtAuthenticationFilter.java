@@ -15,7 +15,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.MDC;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -39,7 +38,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull final FilterChain filterChain) throws ServletException, IOException {
         final String uri = request.getRequestURI();
 
-        if (uri.contains(Constants.HEALTH_CHECK_URL)) {
+        if (pathMatcher.match(Constants.HEALTH_CHECK_URL, uri) || isWhiteListUrl(uri)) {
+            SecurityContextHolder.getContext().setAuthentication(
+                    new UsernamePasswordAuthenticationToken(null, null, null));
             filterChain.doFilter(request, response);
             return;
         }
@@ -48,7 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             setAuthentication(request);
             filterChain.doFilter(request, response);
         } catch (AuthCookieException e) {
-            if(!isWhiteListUrl(request.getRequestURI())) {
+            if(!isWhiteListUrl(uri)) {
                 throw new FilterException(ErrorCode.NOT_FOUND_AT_COOKIE);
             }
         } catch (AuthExpiredJwtException e) {
