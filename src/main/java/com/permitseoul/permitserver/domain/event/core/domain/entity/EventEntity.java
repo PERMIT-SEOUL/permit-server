@@ -26,11 +26,11 @@ public class EventEntity extends BaseTimeEntity {
     @Column(name = "event_type", nullable = false)
     private EventType eventType;
 
-    @Column(name = "start_date", nullable = false)
-    private LocalDateTime startDate;
+    @Column(name = "start_at", nullable = false)
+    private LocalDateTime startAt;
 
-    @Column(name = "end_date", nullable = false)
-    private LocalDateTime endDate;
+    @Column(name = "end_at", nullable = false)
+    private LocalDateTime endAt;
 
     @Column(name = "venue", nullable = false)
     private String venue;
@@ -44,14 +44,14 @@ public class EventEntity extends BaseTimeEntity {
     @Column(name = "min_age")
     private int minAge;
 
-    @Column(name = "visible_end_date", nullable = false)
-    private LocalDateTime visibleEndDate;
+    @Column(name = "visible_end_at", nullable = false)
+    private LocalDateTime visibleEndAt;
 
     @Column(name = "ticket_check_code", length = 30, nullable = false)
     private String ticketCheckCode;
 
-    @Column(name = "visible_start_date")
-    private LocalDateTime visibleStartDate;
+    @Column(name = "visible_start_at")
+    private LocalDateTime visibleStartAt;
 
     public static EventEntity create(final String name,
                                      final EventType eventType,
@@ -61,20 +61,20 @@ public class EventEntity extends BaseTimeEntity {
                                      final String lineUp,
                                      final String details,
                                      final int minAge,
-                                     final LocalDateTime visibleStartDate,
-                                     final LocalDateTime visibleEndDate,
+                                     final LocalDateTime visibleStartAt,
+                                     final LocalDateTime visibleEndAt,
                                      final String ticketCheckCode) {
         return EventEntity.builder()
                 .name(name)
                 .eventType(eventType)
-                .startDate(startDate)
-                .endDate(endDate)
+                .startAt(startDate)
+                .endAt(endDate)
                 .venue(venue)
                 .lineUp(lineUp)
                 .details(details)
                 .minAge(minAge)
-                .visibleStartDate(visibleStartDate)
-                .visibleEndDate(visibleEndDate)
+                .visibleStartAt(visibleStartAt)
+                .visibleEndAt(visibleEndAt)
                 .ticketCheckCode(ticketCheckCode)
                 .build();
     }

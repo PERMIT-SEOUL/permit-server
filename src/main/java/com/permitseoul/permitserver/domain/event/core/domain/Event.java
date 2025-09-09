@@ -12,30 +12,30 @@ public class Event {
     private final long eventId;
     private final String name;
     private final EventType eventType;
-    private final LocalDateTime startDate;
-    private final LocalDateTime endDate;
+    private final LocalDateTime startAt;
+    private final LocalDateTime endAt;
     private final String venue;
     private final String lineUp;
     private final String details;
     private final int minAge;
-    private final LocalDateTime visibleEndDate;
+    private final LocalDateTime visibleStartAt;
+    private final LocalDateTime visibleEndAt;
     private final String ticketCheckCode;
-    private final LocalDateTime visibleStartDate;
 
     public static Event fromEntity(final EventEntity entity) {
         return new Event(
                 entity.getEventId(),
                 entity.getName(),
                 entity.getEventType(),
-                entity.getStartDate(),
-                entity.getEndDate(),
+                entity.getStartAt(),
+                entity.getEndAt(),
                 entity.getVenue(),
                 entity.getLineUp(),
                 entity.getDetails(),
                 entity.getMinAge(),
-                entity.getVisibleEndDate(),
-                entity.getTicketCheckCode(),
-                entity.getVisibleStartDate()
+                entity.getVisibleStartAt(),
+                entity.getVisibleEndAt(),
+                entity.getTicketCheckCode()
         );
     }
 }
