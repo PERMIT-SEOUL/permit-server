@@ -43,16 +43,24 @@ public class TicketTypeEntity {
                             String ticketTypeName,
                             BigDecimal ticketPrice,
                             int totalTicketCount,
-                            int remainTicketCount,
                             LocalDateTime ticketStartDate,
                             LocalDateTime ticketEndDate) {
         this.ticketRoundId = ticketRoundId;
         this.ticketTypeName = ticketTypeName;
         this.ticketPrice = ticketPrice;
         this.totalTicketCount = totalTicketCount;
-        this.remainTicketCount = remainTicketCount;
+        this.remainTicketCount = totalTicketCount;
         this.ticketStartDate = ticketStartDate;
         this.ticketEndDate = ticketEndDate;
+    }
+
+    public static TicketTypeEntity create(final long ticketRoundId,
+                                          final String ticketTypeName,
+                                          final BigDecimal ticketPrice,
+                                          final int totalTicketCount,
+                                          final LocalDateTime ticketStartDate,
+                                          final LocalDateTime ticketEndDate) {
+        return new TicketTypeEntity(ticketRoundId, ticketTypeName, ticketPrice, totalTicketCount, ticketStartDate, ticketEndDate);
     }
 
     public void verifyTicketCount(final int buyTicketCount) {

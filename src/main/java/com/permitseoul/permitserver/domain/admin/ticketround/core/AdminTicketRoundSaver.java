@@ -17,6 +17,8 @@ public class AdminTicketRoundSaver {
                                        final String ticketRoundTitle,
                                        final LocalDateTime salesStartDate,
                                        final LocalDateTime salesEndDate ) {
-        return TicketRound.fromEntity(TicketRoundEntity.create(eventId, ticketRoundTitle, salesStartDate, salesEndDate));
+        return TicketRound.fromEntity(
+                ticketRoundRepository.save(TicketRoundEntity.create(eventId, ticketRoundTitle, salesStartDate, salesEndDate))
+        );
     }
 }

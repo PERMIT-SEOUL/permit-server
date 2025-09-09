@@ -27,5 +27,11 @@ public class EventImageEntity {
         this.imageUrl = imageUrl;
         this.sequence = sequence;
     }
+
+    public static EventImageEntity create(final long eventId,
+                                          final String imageUrl,
+                                          final int sequence) {
+        return new EventImageEntity(eventId, imageUrl, sequence);
+    }
 }
 

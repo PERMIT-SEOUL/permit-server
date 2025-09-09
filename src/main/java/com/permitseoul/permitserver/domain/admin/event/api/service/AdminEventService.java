@@ -1,26 +1,35 @@
 package com.permitseoul.permitserver.domain.admin.event.api.service;
 
-import com.permitseoul.permitserver.domain.admin.base.AdminBaseException;
 import com.permitseoul.permitserver.domain.admin.base.api.exception.AdminApiException;
+import com.permitseoul.permitserver.domain.admin.event.api.dto.req.AdminEventWithTicketCreateRequest;
 import com.permitseoul.permitserver.domain.admin.event.api.dto.res.AdminEventDetailResponse;
 import com.permitseoul.permitserver.domain.admin.event.api.dto.res.AdminEventListResponse;
 import com.permitseoul.permitserver.domain.admin.event.core.component.AdminEventRetriever;
+import com.permitseoul.permitserver.domain.admin.event.core.component.AdminEventSaver;
 import com.permitseoul.permitserver.domain.admin.event.core.exception.AdminEventNotFoundException;
 import com.permitseoul.permitserver.domain.admin.eventimage.core.component.AdminEventImageRetriever;
+import com.permitseoul.permitserver.domain.admin.eventimage.core.component.AdminEventImageSaver;
 import com.permitseoul.permitserver.domain.admin.ticketround.core.AdminTicketRoundRetriever;
+import com.permitseoul.permitserver.domain.admin.ticketround.core.AdminTicketRoundSaver;
 import com.permitseoul.permitserver.domain.admin.tickettype.core.component.AdminTicketTypeRetriever;
+import com.permitseoul.permitserver.domain.admin.tickettype.core.component.AdminTicketTypeSaver;
 import com.permitseoul.permitserver.domain.event.core.domain.Event;
 import com.permitseoul.permitserver.domain.eventimage.core.domain.EventImage;
+import com.permitseoul.permitserver.domain.eventimage.core.domain.entity.EventImageEntity;
 import com.permitseoul.permitserver.domain.ticketround.core.domain.TicketRound;
 import com.permitseoul.permitserver.domain.tickettype.core.domain.TicketType;
+import com.permitseoul.permitserver.domain.tickettype.core.domain.entity.TicketTypeEntity;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import com.permitseoul.permitserver.global.util.DateFormatterUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.IntStream;
 
 
 @Service
@@ -31,6 +40,10 @@ public class AdminEventService {
     private final AdminTicketRoundRetriever adminTicketRoundRetriever;
     private final AdminTicketTypeRetriever adminTicketTypeRetriever;
     private final AdminEventImageRetriever adminEventImageRetriever;
+    private final AdminEventSaver adminEventSaver;
+    private final AdminEventImageSaver adminEventImageSaver;
+    private final AdminTicketRoundSaver adminTicketRoundSaver;
+    private final AdminTicketTypeSaver adminTicketTypeSaver;
 
     @Transactional(readOnly = true)
     public List<AdminEventListResponse> getEvents() {
@@ -59,7 +72,7 @@ public class AdminEventService {
             final List<EventImage> eventImages = adminEventImageRetriever.findAllEventImagesByEventId(event.getEventId());
 
             final List<AdminEventDetailResponse.AdminEventImageInfo> adminEventImageInfos = eventImages.stream()
-                    .sorted(Comparator.comparingInt(EventImage::getSequence)) 
+                    .sorted(Comparator.comparingInt(EventImage::getSequence))
                     .map(eventImage -> AdminEventDetailResponse.AdminEventImageInfo.of(eventImage.getImageUrl()))
                     .toList();
 
@@ -85,6 +98,90 @@ public class AdminEventService {
         } catch(AdminEventNotFoundException e) {
             throw new AdminApiException(ErrorCode.NOT_FOUND_EVENT);
         }
+    }
+
+    @Transactional
+    public void createEventWithTickets(final AdminEventWithTicketCreateRequest req) {
+        final LocalDateTime eventStartDateTime = combineDateTime(req.startDate(), req.startTime());
+        final LocalDateTime eventEndDateTime = combineDateTime(req.endDate(), req.endTime());
+
+        final LocalDateTime eventExposureStartDateTime = combineDateTime(req.eventExposureStartDate(), req.eventExposureStartTime());
+        final LocalDateTime eventExposureEndDateTime = combineDateTime(req.eventExposureEndDate(), req.eventExposureEndTime());
+
+        final LocalDateTime ticketRoundSalesStartDateTime = combineDateTime(req.roundSalesStartDate(), req.roundSalesStartTime());
+        final LocalDateTime ticketRoundSalesEndDateTime = combineDateTime(req.roundSalesEndDate(), req.roundSalesEndTime());
+
+        final Event savedEvent = saveEvent(req, eventStartDateTime, eventEndDateTime, eventExposureStartDateTime, eventExposureEndDateTime);
+        saveEventImages(savedEvent.getEventId(), req.images());
+
+        final TicketRound savedTicketRound = saveTicketRound(
+                savedEvent.getEventId(),
+                req.ticketRoundName(),
+                ticketRoundSalesStartDateTime,
+                ticketRoundSalesEndDateTime
+        );
+        saveTicketTypes(req.ticketTypes(), savedTicketRound.getTicketRoundId());
+    }
+
+    private void saveEventImages(final long eventId,
+                                 List<AdminEventWithTicketCreateRequest.AdminEventImageInfo> eventImages) {
+        final List<EventImageEntity> eventImageEntityList = IntStream.range(0, eventImages.size())
+                        .mapToObj(i -> EventImageEntity.create(
+                                eventId,
+                                eventImages.get(i).imageUrl().trim(),
+                                i+1
+                        )).toList();
+        adminEventImageSaver.saveEventImages(eventImageEntityList);
+    }
+
+    private void saveTicketTypes(final List<AdminEventWithTicketCreateRequest.TicketTypeRequest> ticketTypes,
+                                                             final long ticketRoundId) {
+        final List<TicketTypeEntity> ticketTypeEntityList = ticketTypes.stream()
+                .map(ticketType -> TicketTypeEntity.create(
+                                ticketRoundId,
+                                ticketType.ticketName(),
+                                ticketType.price(),
+                                ticketType.ticketCount(),
+                                LocalDateTime.of(ticketType.ticketStartDate(), ticketType.ticketStartTime()),
+                                LocalDateTime.of(ticketType.ticketEndDate(), ticketType.ticketEndTime())
+                )).toList();
+        adminTicketTypeSaver.saveAllTicketTypes(ticketTypeEntityList);
+    }
+
+    private TicketRound saveTicketRound(final long eventId,
+                                        final String ticketRoundName,
+                                        final LocalDateTime salesStartDateTime,
+                                        final LocalDateTime salesEndDateTime) {
+        return adminTicketRoundSaver.saveTicketRound(
+                eventId,
+                ticketRoundName,
+                salesStartDateTime,
+                salesEndDateTime
+        );
+    }
+
+    private Event saveEvent(final AdminEventWithTicketCreateRequest req,
+                            final LocalDateTime eventStartDateTime,
+                            final LocalDateTime eventEndDateTime,
+                            final LocalDateTime eventExposureStartDateTime,
+                            final LocalDateTime eventExposureEndDateTime) {
+        return adminEventSaver.saveEvent(
+                req.name(),
+                req.eventType(),
+                eventStartDateTime,
+                eventEndDateTime,
+                req.venue(),
+                req.lineup(),
+                req.details(),
+                req.minAge(),
+                eventExposureStartDateTime,
+                eventExposureEndDateTime,
+                req.verificationCode()
+        );
+    }
+
+    private LocalDateTime combineDateTime(final LocalDate date, final LocalTime time) {
+        return LocalDateTime.of(date, time);
     }
 
     private Map<Long, Integer> initSoldTicketCountZero(final List<Event> events) {
@@ -185,7 +282,7 @@ public class AdminEventService {
         return grouped;
     }
 
-    private boolean isEmpty(final Collection<?> c) {
-        return c == null || c.isEmpty();
+    private boolean isEmpty(final List<?> list) {
+        return list == null || list.isEmpty();
     }
 }

@@ -39,7 +39,7 @@ public class EventService {
         return new EventAllResponse(
                 filteringEventByEventType(eventList, EventType.PERMIT),
                 filteringEventByEventType(eventList, EventType.CEILING),
-                filteringEventByEventType(eventList, EventType.FESTIVAL)
+                filteringEventByEventType(eventList, EventType.OLYMPAN)
         );
     }
 

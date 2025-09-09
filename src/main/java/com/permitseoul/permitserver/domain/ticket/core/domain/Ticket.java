@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @Builder
 public class Ticket {
-    private final Long ticketId;
+    private final long ticketId;
     private final long userId;
     private final String orderId;
     private final long ticketTypeId;
