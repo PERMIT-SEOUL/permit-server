@@ -30,5 +30,8 @@ public class AdminEventRetriever {
         return Event.fromEntity(eventEntity);
     }
 
-
+    @Transactional(readOnly = true)
+    public EventEntity findEventEntityById(final long eventId) {
+        return eventRepository.findById(eventId).orElseThrow(AdminEventNotFoundException::new);
+    }
 }
