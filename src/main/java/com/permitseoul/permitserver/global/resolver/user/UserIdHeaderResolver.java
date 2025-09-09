@@ -31,7 +31,7 @@ public class UserIdHeaderResolver implements HandlerMethodArgumentResolver {
         final Authentication authentication = Optional.ofNullable(SecurityContextHolder.getContext())
                 .map(SecurityContext::getAuthentication)
                 .filter(Authentication::isAuthenticated)
-                .orElseThrow(() -> new ResolverException(ErrorCode.UNAUTHORIZED_SECURITY_ENTRY));
+                .orElseThrow(() -> new ResolverException(ErrorCode.UNAUTHORIZED_USERID_RESOLVER));
         return (Long) authentication.getPrincipal();
     }
 }
