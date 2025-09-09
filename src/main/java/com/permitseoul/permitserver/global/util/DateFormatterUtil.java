@@ -69,17 +69,27 @@ public final class DateFormatterUtil {
         return dateTime.format(TIME);
     }
 
-    public static LocalDateTime combine(final LocalDate date, final LocalTime time) {
+    public static LocalDateTime combineDateAndTime(final LocalDate date, final LocalTime time) {
         return LocalDateTime.of(
                 Objects.requireNonNull(date, "date가 null입니다."),
                 Objects.requireNonNull(time, "time이 null입니다.")
         );
     }
 
+    // update할 때, 결합
+    public static LocalDateTime combineDateAndTimeForUpdate(final LocalDate date, final LocalTime time, final LocalDateTime originalDateTime) {
+        if (date == null && time == null) {
+            return originalDateTime;
+        }
+        final LocalDate localDate = date == null ? originalDateTime.toLocalDate() : date;
+        final LocalTime localTime = time == null ? originalDateTime.toLocalTime() : time;
+        return LocalDateTime.of(localDate, localTime);
+    }
+
     // 토스에서 주는 날짜 형식 ISO 8601을 LocalDateTime로 변환
     public static LocalDateTime parseTossDateToLocalDateTime(final String isoDate) {
         if (isoDate == null || isoDate.isBlank()) {
-            throw new DateFormatException(ErrorCode.INTERNAL_ISO_DATE_ERROR);
+            throw new DateFormatException();
         }
         return OffsetDateTime.parse(isoDate).toLocalDateTime();
     }
