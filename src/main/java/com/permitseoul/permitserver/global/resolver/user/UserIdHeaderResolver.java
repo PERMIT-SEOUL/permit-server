@@ -25,13 +25,13 @@ public class UserIdHeaderResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public Long resolveArgument(MethodParameter parameter,
-                                  ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest,
-                                  WebDataBinderFactory binderFactory) {
+                                ModelAndViewContainer mavContainer,
+                                NativeWebRequest webRequest,
+                                WebDataBinderFactory binderFactory) {
         final Authentication authentication = Optional.ofNullable(SecurityContextHolder.getContext())
                 .map(SecurityContext::getAuthentication)
                 .filter(Authentication::isAuthenticated)
-                .orElseThrow(() -> new ResolverException(ErrorCode.UNAUTHORIZED_SECURITY_ENTRY));
+                .orElseThrow(() -> new ResolverException(ErrorCode.UNAUTHORIZED_USERID_RESOLVER));
         return (Long) authentication.getPrincipal();
     }
 }

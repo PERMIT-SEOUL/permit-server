@@ -40,6 +40,8 @@ public enum ErrorCode implements ApiCode {
     UNAUTHORIZED_CANCEL_PAYMENT(HttpStatus.UNAUTHORIZED, 40108, "결제 취소 userID 인증 오류입니다."),
     UNAUTHORIZED_ADMIN_ACCESS_CODE(HttpStatus.UNAUTHORIZED, 40109, "Admin 접근 코드 인증 오류입니다."),
     UNAUTHORIZED_PRINCIPLE(HttpStatus.UNAUTHORIZED, 40110, "UNAUTHORIZED_PRINCIPLE 오류입니다."),
+    UNAUTHORIZED_USERID_RESOLVER(HttpStatus.UNAUTHORIZED, 40111, "userID Resolver 오류입니다."),
+
 
 
     /**
@@ -111,6 +113,7 @@ public enum ErrorCode implements ApiCode {
     INTERNAL_TIME_FORMAT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50009, "time format 에러입니다."),
     INTERNAL_QRCODE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50010, "qrCode 생성 에러입니다."),
     INTERNAL_EMAIL_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50011, "이메일 전송 에러입니다."),
+    INTERNAL_FILTER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50012, "filter 에러입니다."),
 
     ;
 

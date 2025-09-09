@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @RequiredArgsConstructor
 public class TicketType {
-    private final Long ticketTypeId;
+    private final long ticketTypeId;
     private final long ticketRoundId;
     private final String ticketTypeName;
     private final BigDecimal ticketPrice;

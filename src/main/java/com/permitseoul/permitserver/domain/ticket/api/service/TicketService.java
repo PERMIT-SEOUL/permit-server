@@ -78,7 +78,10 @@ public class TicketService {
     }
 
     @Transactional(readOnly = true)
-    public UserBuyTicketInfo getUserBuyTicketInfo(final long userId) {
+    public UserBuyTicketInfo getUserBuyTicketInfo(final Long userId) {
+        if (userId == null) {
+            return new UserBuyTicketInfo(List.of());
+        }
         try {
             final List<Ticket> ticketList = ticketRetriever.findAllTicketsByUserId(userId);
             if (ticketList.isEmpty()) {

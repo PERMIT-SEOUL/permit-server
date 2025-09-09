@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @RequiredArgsConstructor
 public class TicketRound {
-    private final Long ticketRoundId;
+    private final long ticketRoundId;
     private final long eventId;
     private final String ticketRoundTitle;
     private final LocalDateTime salesStartDate;
