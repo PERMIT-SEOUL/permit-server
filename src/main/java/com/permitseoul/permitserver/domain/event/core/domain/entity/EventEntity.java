@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Table(name = "events")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 @Getter
 public class EventEntity extends BaseTimeEntity {
     @Id

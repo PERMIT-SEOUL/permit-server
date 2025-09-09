@@ -60,6 +60,7 @@ public record AdminEventWithTicketCreateRequest(
         String lineup,
         String details,
 
+        @Valid
         @NotEmpty(message = "행사 이미지는 최소 1개 이상이어야 합니다.")
         List<AdminEventImageInfo> images,
 
@@ -93,6 +94,7 @@ public record AdminEventWithTicketCreateRequest(
                 @NotBlank(message = "티켓 이름은 필수입니다.")
                 String ticketName,
 
+                @Min(value = 1, message = "가격은 0원보다 커야합니다.")
                 @NotNull(message = "가격은 필수입니다.")
                 BigDecimal price,
 
@@ -117,6 +119,7 @@ public record AdminEventWithTicketCreateRequest(
         ) { }
 
         public record AdminEventImageInfo(
+                @NotBlank(message = "이미지 url은 필수입니다.")
                 String imageUrl
         ) { }
 }
