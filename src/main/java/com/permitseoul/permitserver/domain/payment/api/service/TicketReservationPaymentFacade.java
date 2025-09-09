@@ -124,7 +124,7 @@ public class TicketReservationPaymentFacade {
 
     private PaymentCancelResponse.CancelDetail getLatestCancelPayment(final List<PaymentCancelResponse.CancelDetail> paymentCancelResponse) {
         return  DateFormatterUtil.getLatestCancelPaymentByDate(paymentCancelResponse).orElseThrow(
-                () -> new DateFormatException(ErrorCode.INTERNAL_ISO_DATE_ERROR)
+                DateFormatException::new
         );
     }
 
