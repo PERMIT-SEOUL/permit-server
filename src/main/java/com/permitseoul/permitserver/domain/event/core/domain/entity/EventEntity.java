@@ -44,14 +44,14 @@ public class EventEntity extends BaseTimeEntity {
     @Column(name = "min_age")
     private int minAge;
 
+    @Column(name = "visible_start_at")
+    private LocalDateTime visibleStartAt;
+
     @Column(name = "visible_end_at", nullable = false)
     private LocalDateTime visibleEndAt;
 
     @Column(name = "ticket_check_code", length = 30, nullable = false)
     private String ticketCheckCode;
-
-    @Column(name = "visible_start_at")
-    private LocalDateTime visibleStartAt;
 
     public static EventEntity create(final String name,
                                      final EventType eventType,
@@ -77,6 +77,30 @@ public class EventEntity extends BaseTimeEntity {
                 .visibleEndAt(visibleEndAt)
                 .ticketCheckCode(ticketCheckCode)
                 .build();
+    }
+
+    public void updateEvent(final String name,
+                             final EventType eventType,
+                             final LocalDateTime startAt,
+                             final LocalDateTime endAt,
+                             final String venue,
+                             final String lineUp,
+                             final String details,
+                             final int minAge,
+                             final LocalDateTime visibleStartAt,
+                             final LocalDateTime visibleEndAt,
+                             final String ticketCheckCode) {
+        this.name = name;
+        this.eventType = eventType;
+        this.startAt = startAt;
+        this.endAt = endAt;
+        this.venue = venue;
+        this.lineUp = lineUp;
+        this.details = details;
+        this.minAge = minAge;
+        this.visibleStartAt = visibleStartAt;
+        this.visibleEndAt = visibleEndAt;
+        this.ticketCheckCode = ticketCheckCode;
     }
 }
 
