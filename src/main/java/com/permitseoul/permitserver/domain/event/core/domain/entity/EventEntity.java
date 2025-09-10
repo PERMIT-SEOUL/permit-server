@@ -109,7 +109,7 @@ public class EventEntity extends BaseTimeEntity {
 
     private void validateDate(final LocalDateTime startDate,
                               final LocalDateTime endDate) {
-        if (endDate.isBefore(startDate)) {
+        if (startDate.isAfter(endDate)) {
             throw new EventIllegalArgumentException();
         }
     }

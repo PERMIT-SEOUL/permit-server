@@ -90,7 +90,7 @@ public class TimetableBlockEntity {
     }
 
     private void validateDateTime(final LocalDateTime startAt, final LocalDateTime endAt) {
-        if (startAt.isBefore(endAt)) {
+        if (startAt.isAfter(endAt)) {
             throw new TimeTableIllegalArgumentException();
         }
     }
