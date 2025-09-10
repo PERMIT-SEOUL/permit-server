@@ -16,8 +16,8 @@ public class TicketType {
     private final BigDecimal ticketPrice;
     private final int totalTicketCount;
     private final int remainTicketCount;
-    private final LocalDateTime ticketStartDate;
-    private final LocalDateTime ticketEndDate;
+    private final LocalDateTime ticketStartAt;
+    private final LocalDateTime ticketEndAt;
 
     public static TicketType fromEntity(final TicketTypeEntity ticketTypeEntity) {
         return new TicketType(
@@ -27,8 +27,8 @@ public class TicketType {
                 ticketTypeEntity.getTicketPrice(),
                 ticketTypeEntity.getTotalTicketCount(),
                 ticketTypeEntity.getRemainTicketCount(),
-                ticketTypeEntity.getTicketStartDate(),
-                ticketTypeEntity.getTicketEndDate()
+                ticketTypeEntity.getTicketStartAt(),
+                ticketTypeEntity.getTicketEndAt()
         );
     }
 }

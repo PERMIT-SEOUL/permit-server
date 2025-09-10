@@ -3,7 +3,6 @@ package com.permitseoul.permitserver.domain.coupon.core.domain.entity;
 import com.permitseoul.permitserver.global.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
@@ -35,8 +34,8 @@ public class CouponEntity extends BaseTimeEntity {
     @Column(name = "is_used")
     private boolean used;
 
-    @Column(name = "used_time")
-    private LocalDateTime usedTime;
+    @Column(name = "used_at")
+    private LocalDateTime usedAt;
 
     private CouponEntity(long eventId, String couponCode, int discountRate) {
         this.eventId = eventId;
@@ -51,8 +50,8 @@ public class CouponEntity extends BaseTimeEntity {
         return new CouponEntity(eventId, couponCode, discountRate);
     }
 
-    public void updateCouponUsed(final boolean isUsed, final LocalDateTime usedTime) {
+    public void updateCouponUsed(final boolean isUsed, final LocalDateTime usedAt) {
         this.used = isUsed;
-        this.usedTime = usedTime;
+        this.usedAt = usedAt;
     }
 }
