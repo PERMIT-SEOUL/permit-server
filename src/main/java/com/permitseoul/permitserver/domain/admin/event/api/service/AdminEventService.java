@@ -143,8 +143,16 @@ public class AdminEventService {
     public void updateEvent(final AdminEventUpdateRequest updateRequest) {
         try {
             final EventEntity eventEntity = adminEventRetriever.findEventEntityById(updateRequest.eventId());
-            final LocalDateTime visibleStartAt = combineDateAndTimeForUpdate(updateRequest.eventExposureStartDate(), updateRequest.eventExposureStartTime(), eventEntity.getVisibleStartAt());
-            final LocalDateTime visibleEndAt = combineDateAndTimeForUpdate(updateRequest.eventExposureEndDate(), updateRequest.eventExposureEndTime(), eventEntity.getVisibleEndAt());
+            final LocalDateTime visibleStartAt = combineDateAndTimeForUpdate(
+                    updateRequest.eventExposureStartDate(),
+                    updateRequest.eventExposureStartTime(),
+                    eventEntity.getVisibleStartAt()
+            );
+            final LocalDateTime visibleEndAt = combineDateAndTimeForUpdate(
+                    updateRequest.eventExposureEndDate(),
+                    updateRequest.eventExposureEndTime(),
+                    eventEntity.getVisibleEndAt()
+            );
 
             final LocalDateTime startAt = combineDateAndTimeForUpdate(updateRequest.startDate(), updateRequest.startTime(), eventEntity.getStartAt());
             final LocalDateTime endAt = combineDateAndTimeForUpdate(updateRequest.endDate(), updateRequest.endTime(), eventEntity.getEndAt());
@@ -172,7 +180,10 @@ public class AdminEventService {
         }
     }
 
-    private LocalDateTime combineDateAndTimeForUpdate(final LocalDate date, final LocalTime time, final LocalDateTime originalDateTime) {
+    private LocalDateTime combineDateAndTimeForUpdate(final LocalDate date,
+                                                      final LocalTime time,
+                                                      final LocalDateTime originalDateTime
+    ) {
         return DateFormatterUtil.combineDateAndTimeForUpdate(date, time, originalDateTime);
     }
 
@@ -193,7 +204,8 @@ public class AdminEventService {
     private TicketRound saveTicketRound(final long eventId,
                                         final String ticketRoundName,
                                         final LocalDateTime salesStartDateTime,
-                                        final LocalDateTime salesEndDateTime) {
+                                        final LocalDateTime salesEndDateTime
+    ) {
         return adminTicketRoundSaver.saveTicketRound(
                 eventId,
                 ticketRoundName,
@@ -206,7 +218,8 @@ public class AdminEventService {
                             final LocalDateTime eventStartDateTime,
                             final LocalDateTime eventEndDateTime,
                             final LocalDateTime eventExposureStartDateTime,
-                            final LocalDateTime eventExposureEndDateTime) {
+                            final LocalDateTime eventExposureEndDateTime
+    ) {
         return adminEventSaver.saveEvent(
                 req.name(),
                 req.eventType(),
@@ -297,7 +310,8 @@ public class AdminEventService {
     //타입단위로 팔린 티켓 개수 구함
     private void computeSoldByEvent(final List<TicketType> ticketTypes,
                                     final Map<Long, Long> roundToEvent,
-                                    final Map<Long, Integer> soldByEventId) {
+                                    final Map<Long, Integer> soldByEventId
+    ) {
         for (TicketType ticketType : ticketTypes) {
             final long eventId = roundToEvent.get(ticketType.getTicketRoundId());
             final int total = Math.max(0, ticketType.getTotalTicketCount());
