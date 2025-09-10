@@ -20,19 +20,19 @@ public class TimetableEntity {
     @Column(name = "event_id", nullable = false)
     private long eventId;
 
-    @Column(name = "start_date", nullable = false)
-    private LocalDateTime startDate;
+    @Column(name = "start_at", nullable = false)
+    private LocalDateTime startAt;
 
-    @Column(name = "end_date", nullable = false)
-    private LocalDateTime endDate;
+    @Column(name = "end_at", nullable = false)
+    private LocalDateTime endAt;
 
-    private TimetableEntity(long eventId, LocalDateTime startDate, LocalDateTime endDate) {
+    private TimetableEntity(long eventId, LocalDateTime startAt, LocalDateTime endAt) {
         this.eventId = eventId;
-        this.startDate = startDate;
-        this.endDate = endDate;
+        this.startAt = startAt;
+        this.endAt = endAt;
     }
 
-    public static TimetableEntity create(final long eventId, final LocalDateTime startDate, final LocalDateTime endDate) {
-        return new TimetableEntity(eventId, startDate, endDate);
+    public static TimetableEntity create(final long eventId, final LocalDateTime startAt, final LocalDateTime endAt) {
+        return new TimetableEntity(eventId, startAt, endAt);
     }
 }

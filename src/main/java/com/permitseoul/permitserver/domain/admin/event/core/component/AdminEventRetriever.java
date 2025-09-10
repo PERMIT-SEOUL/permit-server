@@ -3,7 +3,6 @@ package com.permitseoul.permitserver.domain.admin.event.core.component;
 import com.permitseoul.permitserver.domain.admin.event.core.exception.AdminEventNotFoundException;
 import com.permitseoul.permitserver.domain.event.core.domain.Event;
 import com.permitseoul.permitserver.domain.event.core.domain.entity.EventEntity;
-import com.permitseoul.permitserver.domain.event.core.exception.EventNotfoundException;
 import com.permitseoul.permitserver.domain.event.core.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -30,5 +29,8 @@ public class AdminEventRetriever {
         return Event.fromEntity(eventEntity);
     }
 
-
+    @Transactional(readOnly = true)
+    public EventEntity findEventEntityById(final long eventId) {
+        return eventRepository.findById(eventId).orElseThrow(AdminEventNotFoundException::new);
+    }
 }

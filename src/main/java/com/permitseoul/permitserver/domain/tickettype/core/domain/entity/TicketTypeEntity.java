@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.domain.tickettype.core.domain.entity;
 
+import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeIllegalException;
 import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeInsufficientCountException;
 import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeTicketZeroException;
 import jakarta.persistence.*;
@@ -33,34 +34,36 @@ public class TicketTypeEntity {
     @Column(name = "remain_ticket_count", nullable = false)
     private int remainTicketCount;
 
-    @Column(name = "ticket_start_date", nullable = false)
-    private LocalDateTime ticketStartDate;
+    @Column(name = "ticket_start_at", nullable = false)
+    private LocalDateTime ticketStartAt;
 
-    @Column(name = "ticket_end_date", nullable = false)
-    private LocalDateTime ticketEndDate;
+    @Column(name = "ticket_end_at", nullable = false)
+    private LocalDateTime ticketEndAt;
 
     private TicketTypeEntity(long ticketRoundId,
                             String ticketTypeName,
                             BigDecimal ticketPrice,
                             int totalTicketCount,
-                            LocalDateTime ticketStartDate,
-                            LocalDateTime ticketEndDate) {
+                            LocalDateTime ticketStartAt,
+                            LocalDateTime ticketEndAt) {
+        validateDatTime(ticketStartAt, ticketEndAt);
+
         this.ticketRoundId = ticketRoundId;
         this.ticketTypeName = ticketTypeName;
         this.ticketPrice = ticketPrice;
         this.totalTicketCount = totalTicketCount;
         this.remainTicketCount = totalTicketCount;
-        this.ticketStartDate = ticketStartDate;
-        this.ticketEndDate = ticketEndDate;
+        this.ticketStartAt = ticketStartAt;
+        this.ticketEndAt = ticketEndAt;
     }
 
     public static TicketTypeEntity create(final long ticketRoundId,
                                           final String ticketTypeName,
                                           final BigDecimal ticketPrice,
                                           final int totalTicketCount,
-                                          final LocalDateTime ticketStartDate,
-                                          final LocalDateTime ticketEndDate) {
-        return new TicketTypeEntity(ticketRoundId, ticketTypeName, ticketPrice, totalTicketCount, ticketStartDate, ticketEndDate);
+                                          final LocalDateTime ticketStartAt,
+                                          final LocalDateTime ticketEndAt) {
+        return new TicketTypeEntity(ticketRoundId, ticketTypeName, ticketPrice, totalTicketCount, ticketStartAt, ticketEndAt);
     }
 
     public void verifyTicketCount(final int buyTicketCount) {
@@ -83,6 +86,12 @@ public class TicketTypeEntity {
     private void checkBuyTicketCountZero(final int buyTicketCount) {
         if ( buyTicketCount <= 0) {
             throw new TicketTypeTicketZeroException();
+        }
+    }
+
+    private void validateDatTime(final LocalDateTime ticketStartAt, final LocalDateTime ticketEndAt) {
+        if (ticketStartAt.isAfter(ticketEndAt)) {
+            throw new TicketTypeIllegalException();
         }
     }
 }

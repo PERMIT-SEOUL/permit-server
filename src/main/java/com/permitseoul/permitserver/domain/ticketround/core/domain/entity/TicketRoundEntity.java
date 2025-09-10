@@ -1,6 +1,7 @@
 package com.permitseoul.permitserver.domain.ticketround.core.domain.entity;
 
 import com.permitseoul.permitserver.domain.ticketround.core.exception.TicketRoundExpiredException;
+import com.permitseoul.permitserver.domain.ticketround.core.exception.TicketRoundIllegalArgumentException;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,29 +24,37 @@ public class TicketRoundEntity {
     @Column(name = "ticket_round_title", nullable = false)
     private String ticketRoundTitle;
 
-    @Column(name = "sales_start_date", nullable = false)
-    private LocalDateTime salesStartDate;
+    @Column(name = "sales_start_at", nullable = false)
+    private LocalDateTime salesStartAt;
 
-    @Column(name = "sales_end_date", nullable = false)
-    private LocalDateTime salesEndDate;
+    @Column(name = "sales_end_at", nullable = false)
+    private LocalDateTime salesEndAt;
 
-    private TicketRoundEntity(long eventId, String ticketRoundTitle, LocalDateTime salesStartDate, LocalDateTime salesEndDate) {
+    private TicketRoundEntity(long eventId, String ticketRoundTitle, LocalDateTime salesStartAt, LocalDateTime salesEndAt) {
+        validateDateTIme(salesStartAt, salesEndAt);
+
         this.eventId = eventId;
         this.ticketRoundTitle = ticketRoundTitle;
-        this.salesStartDate = salesStartDate;
-        this.salesEndDate = salesEndDate;
+        this.salesStartAt = salesStartAt;
+        this.salesEndAt = salesEndAt;
     }
 
     public static TicketRoundEntity create(final long eventId,
                                            final String ticketRoundTitle,
-                                           final LocalDateTime salesStartDate,
-                                           final LocalDateTime salesEndDate) {
-        return new TicketRoundEntity(eventId, ticketRoundTitle, salesStartDate, salesEndDate);
+                                           final LocalDateTime salesStartAt,
+                                           final LocalDateTime salesEndAt) {
+        return new TicketRoundEntity(eventId, ticketRoundTitle, salesStartAt, salesEndAt);
     }
 
     public void verifyTicketSalesAvailable(final LocalDateTime now) {
-        if (now.isBefore(this.salesStartDate) || now.isAfter(this.salesEndDate)) {
+        if (now.isBefore(this.salesStartAt) || now.isAfter(this.salesEndAt)) {
             throw new TicketRoundExpiredException();
+        }
+    }
+
+    private void validateDateTIme(final LocalDateTime salesStartAt, final LocalDateTime salesEndAt) {
+        if (salesStartAt.isAfter(salesEndAt)) {
+            throw new TicketRoundIllegalArgumentException();
         }
     }
 }

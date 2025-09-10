@@ -1,7 +1,6 @@
 package com.permitseoul.permitserver.domain.eventtimetable.block.core.domain;
 
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.domain.entity.TimetableBlockEntity;
-import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -14,8 +13,8 @@ public class TimetableBlock {
     private final long timetableId;
     private final long timetableCategoryId;
     private final long timetableAreaId;
-    private final LocalDateTime startDate;
-    private final LocalDateTime endDate;
+    private final LocalDateTime startAt;
+    private final LocalDateTime endAt;
     private final String blockName;
     private final String artist;
     private final String imageUrl;
@@ -28,8 +27,8 @@ public class TimetableBlock {
                 timetableBlockEntity.getTimetableId(),
                 timetableBlockEntity.getTimetableCategoryId(),
                 timetableBlockEntity.getTimetableAreaId(),
-                timetableBlockEntity.getStartDate(),
-                timetableBlockEntity.getEndDate(),
+                timetableBlockEntity.getStartAt(),
+                timetableBlockEntity.getEndAt(),
                 timetableBlockEntity.getBlockName(),
                 timetableBlockEntity.getArtist(),
                 timetableBlockEntity.getImageUrl(),

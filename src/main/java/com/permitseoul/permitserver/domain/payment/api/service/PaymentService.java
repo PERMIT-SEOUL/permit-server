@@ -44,6 +44,7 @@ import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeI
 import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeTicketZeroException;
 import com.permitseoul.permitserver.global.Constants;
 import com.permitseoul.permitserver.global.exception.AlgorithmException;
+import com.permitseoul.permitserver.global.exception.DateFormatException;
 import com.permitseoul.permitserver.global.exception.IllegalEnumTransitionException;
 import com.permitseoul.permitserver.global.util.DateFormatterUtil;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
@@ -148,7 +149,7 @@ public class PaymentService {
 
             return PaymentConfirmResponse.of(
                     event.getName(),
-                    DateFormatterUtil.formatEventDate(event.getStartDate(), event.getEndDate())
+                    DateFormatterUtil.formatEventDate(event.getStartAt(), event.getEndAt())
             );
         } catch (ReservationSessionBadRequestException e) {
             logRollbackFailed(userId, reservationSessionKey, orderId, totalAmount, paymentKey);
@@ -240,6 +241,8 @@ public class PaymentService {
         } catch (DataIntegrityViolationException e) {
             log.error("[PAYMENT CANCEL] DB는 재고 복구 완료, redis 복구 실패 userID={}, orderId={}", userId, orderId, e.getCause());
             throw e;
+        } catch(DateFormatException e) {
+            throw new PaymentBadRequestException(ErrorCode.INTERNAL_ISO_DATE_ERROR);
         }
     }
 

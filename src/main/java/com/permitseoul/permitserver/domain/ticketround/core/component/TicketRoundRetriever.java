@@ -23,7 +23,7 @@ public class TicketRoundRetriever {
 
     @Transactional(readOnly = true)
     public List<TicketRound> findSalesOrSalesEndTicketRoundByEventId(final long eventId, final LocalDateTime now) {
-        final List<TicketRoundEntity> ticketRoundEntityList = ticketRoundRepository.findByEventIdAndSalesStartDateLessThanEqualOrderBySalesStartDateAsc(eventId, now);
+        final List<TicketRoundEntity> ticketRoundEntityList = ticketRoundRepository.findByEventIdAndSalesStartAtLessThanEqualOrderBySalesStartAtAsc(eventId, now);
         return ticketRoundEntityList.stream()
                 .map(TicketRound::fromEntity)
                 .toList();

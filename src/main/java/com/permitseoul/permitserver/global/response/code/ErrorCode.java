@@ -24,6 +24,7 @@ public enum ErrorCode implements ApiCode {
     BAD_REQUEST_TICKET_COUNT_ZERO(HttpStatus.BAD_REQUEST, 40010, "구매하려는 티켓 개수가 1보다 작습니다."),
     BAD_REQUEST_AMOUNT_MISMATCH(HttpStatus.BAD_REQUEST, 40011, "구매하려는 티켓들의 가격과 totalAmount가 다릅니다."),
     BAD_REQUEST_ID_DECODE_ERROR(HttpStatus.BAD_REQUEST, 40012, "해당 객체 id를 decode 할 수 없습니다."),
+    BAD_REQUEST_DATE_TIME_ERROR(HttpStatus.BAD_REQUEST, 40013, "잘못된 date, time입니다."),
 
 
     /**
@@ -106,7 +107,7 @@ public enum ErrorCode implements ApiCode {
     INTERNAL_JSON_FORMAT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50002, "json 포맷팅 과정에서 에러가 발생했습니다."),
     INTERNAL_TICKET_ALGORITHM_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50003, "티켓 코드 생성 알고리즘 에러입니다."),
     INTERNAL_PAYMENT_FEIGN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50004, "결제 feign 통신 에러입니다."),
-    INTERNAL_ISO_DATE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50005, "iso date string에서 localdate로 변환 과정 에러입니다."),
+    INTERNAL_ISO_DATE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50005, "Toss iso date string에서 localdate로 변환 과정 에러입니다."),
     INTERNAL_TRANSITION_ENUM_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50006, "enum status 변환 과정 에러입니다."),
     INTERNAL_SESSION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50007, "reservation session 저장 과정 에러입니다."),
     INTERNAL_ID_ENCODE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50008, "객체 guestId Encoding 에러입니다."),

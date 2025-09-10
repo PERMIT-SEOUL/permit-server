@@ -4,9 +4,6 @@ import com.permitseoul.permitserver.domain.event.core.component.EventRetriever;
 import com.permitseoul.permitserver.domain.event.core.domain.Event;
 import com.permitseoul.permitserver.domain.payment.core.component.PaymentRetriever;
 import com.permitseoul.permitserver.domain.payment.core.domain.Payment;
-import com.permitseoul.permitserver.domain.payment.core.domain.entity.PaymentEntity;
-import com.permitseoul.permitserver.domain.payment.core.repository.PaymentRepository;
-import com.permitseoul.permitserver.domain.reservation.core.component.ReservationRetriever;
 import com.permitseoul.permitserver.domain.ticket.api.dto.EventTicketInfoResponse;
 import com.permitseoul.permitserver.domain.ticket.api.dto.UserBuyTicketInfo;
 import com.permitseoul.permitserver.domain.ticket.api.exception.NotFoundTicketException;
@@ -123,14 +120,14 @@ public class TicketService {
                     final List<UserBuyTicketInfo.TicketInfo> ticketInfos = ticketsInOrder.stream()
                             .map(ticket -> {
                                 final TicketType ticketType = ticketTypeMap.get(ticket.getTicketTypeId());
-                                final boolean expired = isTicketDateExpired(ticketType.getTicketEndDate());
+                                final boolean expired = isTicketDateExpired(ticketType.getTicketEndAt());
 
                                 return new UserBuyTicketInfo.TicketInfo(
                                         ticket.getTicketCode(),
                                         ticketType.getTicketTypeName(),
                                         toUiStatus(ticket.getStatus(), expired),
-                                        DateFormatterUtil.formatEventDate(ticketType.getTicketStartDate(), ticketType.getTicketEndDate()),
-                                        TimeFormatterUtil.formatEventTime(ticketType.getTicketStartDate(), ticketType.getTicketEndDate())
+                                        DateFormatterUtil.formatEventDate(ticketType.getTicketStartAt(), ticketType.getTicketEndAt()),
+                                        TimeFormatterUtil.formatEventTime(ticketType.getTicketStartAt(), ticketType.getTicketEndAt())
                                 );
                             }).toList();
 
@@ -209,7 +206,7 @@ public class TicketService {
     }
 
     private boolean isRoundAvailable(final TicketRound round, final LocalDateTime now) {
-        return !now.isBefore(round.getSalesStartDate()) && !now.isAfter(round.getSalesEndDate());
+        return !now.isBefore(round.getSalesStartAt()) && !now.isAfter(round.getSalesEndAt());
     }
 
     private void verifyEveryRoundHasTicketType(final Map<Long, List<TicketType>> ticketTypesByTicketRoundIdMap,
@@ -245,8 +242,8 @@ public class TicketService {
     // 포맷팅된 티켓타입dto로 변환
     private EventTicketInfoResponse.TicketType makeFormattedTicketTypeDto(final TicketType ticketType) {
         final String formattedDate = DateFormatterUtil.formatEventDate(
-                ticketType.getTicketStartDate(), ticketType.getTicketEndDate());
-        final String formattedTime = ticketType.getTicketStartDate()
+                ticketType.getTicketStartAt(), ticketType.getTicketEndAt());
+        final String formattedTime = ticketType.getTicketStartAt()
                 .toLocalTime()
                 .format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"));
 

@@ -48,8 +48,8 @@ public class EventService {
         try {
             final Event event = eventRetriever.findEventById(eventId);
 
-            final String eventDate = DateFormatterUtil.formatEventDate(event.getStartDate(), event.getEndDate());
-            final String eventTime = TimeFormatterUtil.formatEventTime(event.getStartDate(), event.getEndDate());
+            final String eventDate = DateFormatterUtil.formatEventDate(event.getStartAt(), event.getEndAt());
+            final String eventTime = TimeFormatterUtil.formatEventTime(event.getStartAt(), event.getEndAt());
 
             final List<EventImage> eventImageList = eventImageRetriever.findAllEventImagesByEventId(event.getEventId());
             final List<EventDetailResponse.EventImageInfo> imagesInfo = eventImageList.stream()

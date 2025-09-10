@@ -11,15 +11,15 @@ import java.time.LocalDateTime;
 public class Timetable {
     private final Long timetableId;
     private final long eventId;
-    private final LocalDateTime startDate;
-    private final LocalDateTime endDate;
+    private final LocalDateTime startAt;
+    private final LocalDateTime endAt;
 
     public static Timetable fromEntity(final TimetableEntity timetableEntity) {
         return new Timetable(
                 timetableEntity.getTimetableId(),
                 timetableEntity.getEventId(),
-                timetableEntity.getStartDate(),
-                timetableEntity.getEndDate()
+                timetableEntity.getStartAt(),
+                timetableEntity.getEndAt()
         );
     }
 }

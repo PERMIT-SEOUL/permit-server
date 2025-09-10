@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.domain.eventtimetable.block.core.domain.entity;
 
+import com.permitseoul.permitserver.domain.eventtimetable.block.core.exception.TimeTableIllegalArgumentException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,11 +28,11 @@ public class TimetableBlockEntity {
     @Column(name = "timetable_area_id", nullable = false)
     private long timetableAreaId;
 
-    @Column(name = "start_date", nullable = false)
-    private LocalDateTime startDate;
+    @Column(name = "start_at", nullable = false)
+    private LocalDateTime startAt;
 
-    @Column(name = "end_date", nullable = false)
-    private LocalDateTime endDate;
+    @Column(name = "end_at", nullable = false)
+    private LocalDateTime endAt;
 
     @Column(name = "block_name", nullable = false)
     private String blockName;
@@ -53,19 +54,21 @@ public class TimetableBlockEntity {
             long timetableId,
             long timetableCategoryId,
             long timetableAreaId,
-            LocalDateTime startDate,
-            LocalDateTime endDate,
+            LocalDateTime startAt,
+            LocalDateTime endAt,
             String blockName,
             String artist,
             String imageUrl,
             String information,
             String blockInfoRedirectUrl
     ) {
+        validateDateTime(startAt, endAt);
+
         this.timetableId = timetableId;
         this.timetableCategoryId = timetableCategoryId;
         this.timetableAreaId = timetableAreaId;
-        this.startDate = startDate;
-        this.endDate = endDate;
+        this.startAt = startAt;
+        this.endAt = endAt;
         this.blockName = blockName;
         this.artist = artist;
         this.imageUrl = imageUrl;
@@ -76,13 +79,19 @@ public class TimetableBlockEntity {
     public static TimetableBlockEntity create(final long timetableId,
                                               final long timetableCategoryId,
                                               final long timetableAreaId,
-                                              final LocalDateTime startDate,
-                                              final LocalDateTime endDate,
+                                              final LocalDateTime startAt,
+                                              final LocalDateTime endAt,
                                               final String blockName,
                                               final String artist,
                                               final String imageUrl,
                                               final String information,
                                               final String blockInfoRedirectUrl) {
-        return new TimetableBlockEntity(timetableId, timetableCategoryId, timetableAreaId, startDate, endDate, blockName, artist, imageUrl, information, blockInfoRedirectUrl);
+        return new TimetableBlockEntity(timetableId, timetableCategoryId, timetableAreaId, startAt, endAt, blockName, artist, imageUrl, information, blockInfoRedirectUrl);
+    }
+
+    private void validateDateTime(final LocalDateTime startAt, final LocalDateTime endAt) {
+        if (startAt.isAfter(endAt)) {
+            throw new TimeTableIllegalArgumentException();
+        }
     }
 }

@@ -55,8 +55,8 @@ public class TimetableService {
         final List<TimetableResponse.Block> blockResponses = mapBlocksToResponse(blockList, categoryColorMap, likedBlockIds);
 
         return TimetableResponse.of(
-                timetable.getStartDate(),
-                timetable.getEndDate(),
+                timetable.getStartAt(),
+                timetable.getEndAt(),
                 areaResponses,
                 blockResponses
         );
@@ -154,7 +154,7 @@ public class TimetableService {
             final Set<Long> likedBlockIds
     ) {
         return blockList.stream()
-                .sorted(Comparator.comparing(TimetableBlock::getStartDate))
+                .sorted(Comparator.comparing(TimetableBlock::getStartAt))
                 .map(block -> {
                     final String categoryColor = Optional.ofNullable(
                                     categoryColorMap.get(block.getTimetableCategoryId()))
@@ -164,8 +164,8 @@ public class TimetableService {
 
                     return TimetableResponse.Block.of(encodedBlockId,block.getBlockName(),
                             categoryColor,
-                            block.getStartDate(),
-                            block.getEndDate(),
+                            block.getStartAt(),
+                            block.getEndAt(),
                             block.getTimetableAreaId(),
                             likedBlockIds.contains(block.getTimetableBlockId())
                     );

@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.domain.admin.event.api.controller;
 
+import com.permitseoul.permitserver.domain.admin.event.api.dto.req.AdminEventUpdateRequest;
 import com.permitseoul.permitserver.domain.admin.event.api.dto.req.AdminEventWithTicketCreateRequest;
 import com.permitseoul.permitserver.domain.admin.event.api.service.AdminEventService;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
@@ -23,7 +24,7 @@ public class AdminEventController {
         return ApiResponseUtil.success(SuccessCode.OK, adminEventService.getEvents());
     }
 
-    //어드민 행사 리스트 조회 API
+    //어드민 행사 상세 조회 API
     @GetMapping("/{eventId}/details")
     public ResponseEntity<BaseResponse<?>> getEventDetail(
             @PathVariable(value = "eventId") long eventId
@@ -37,6 +38,15 @@ public class AdminEventController {
             @RequestBody @Valid final AdminEventWithTicketCreateRequest adminEventWithTicketCreateRequest
             ) {
         adminEventService.createEventWithTickets(adminEventWithTicketCreateRequest);
+        return ApiResponseUtil.success(SuccessCode.OK);
+    }
+
+    //어드민 행사 수정 API
+    @PatchMapping
+    public ResponseEntity<BaseResponse<?>> updateEvent(
+            @RequestBody @Valid final AdminEventUpdateRequest adminEventUpdateRequest
+    ) {
+        adminEventService.updateEvent(adminEventUpdateRequest);
         return ApiResponseUtil.success(SuccessCode.OK);
     }
 }

@@ -1,6 +1,7 @@
 package com.permitseoul.permitserver.domain.event.core.domain.entity;
 
 import com.permitseoul.permitserver.domain.event.core.domain.EventType;
+import com.permitseoul.permitserver.domain.event.core.exception.EventIllegalArgumentException;
 import com.permitseoul.permitserver.global.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,11 +27,11 @@ public class EventEntity extends BaseTimeEntity {
     @Column(name = "event_type", nullable = false)
     private EventType eventType;
 
-    @Column(name = "start_date", nullable = false)
-    private LocalDateTime startDate;
+    @Column(name = "start_at", nullable = false)
+    private LocalDateTime startAt;
 
-    @Column(name = "end_date", nullable = false)
-    private LocalDateTime endDate;
+    @Column(name = "end_at", nullable = false)
+    private LocalDateTime endAt;
 
     @Column(name = "venue", nullable = false)
     private String venue;
@@ -41,17 +42,17 @@ public class EventEntity extends BaseTimeEntity {
     @Column(name = "details", columnDefinition = "TEXT")
     private String details;
 
-    @Column(name = "min_age")
+    @Column(name = "min_age", nullable = false)
     private int minAge;
 
-    @Column(name = "visible_end_date", nullable = false)
-    private LocalDateTime visibleEndDate;
+    @Column(name = "visible_start_at", nullable = false)
+    private LocalDateTime visibleStartAt;
+
+    @Column(name = "visible_end_at", nullable = false)
+    private LocalDateTime visibleEndAt;
 
     @Column(name = "ticket_check_code", length = 30, nullable = false)
     private String ticketCheckCode;
-
-    @Column(name = "visible_start_date")
-    private LocalDateTime visibleStartDate;
 
     public static EventEntity create(final String name,
                                      final EventType eventType,
@@ -61,22 +62,56 @@ public class EventEntity extends BaseTimeEntity {
                                      final String lineUp,
                                      final String details,
                                      final int minAge,
-                                     final LocalDateTime visibleStartDate,
-                                     final LocalDateTime visibleEndDate,
+                                     final LocalDateTime visibleStartAt,
+                                     final LocalDateTime visibleEndAt,
                                      final String ticketCheckCode) {
         return EventEntity.builder()
                 .name(name)
                 .eventType(eventType)
-                .startDate(startDate)
-                .endDate(endDate)
+                .startAt(startDate)
+                .endAt(endDate)
                 .venue(venue)
                 .lineUp(lineUp)
                 .details(details)
                 .minAge(minAge)
-                .visibleStartDate(visibleStartDate)
-                .visibleEndDate(visibleEndDate)
+                .visibleStartAt(visibleStartAt)
+                .visibleEndAt(visibleEndAt)
                 .ticketCheckCode(ticketCheckCode)
                 .build();
+    }
+
+    public void updateEvent(final String name,
+                            final EventType eventType,
+                            final LocalDateTime startAt,
+                            final LocalDateTime endAt,
+                            final String venue,
+                            final String lineUp,
+                            final String details,
+                            final int minAge,
+                            final LocalDateTime visibleStartAt,
+                            final LocalDateTime visibleEndAt,
+                            final String ticketCheckCode) {
+        validateDate(startAt, endAt);
+        validateDate(visibleStartAt, visibleEndAt);
+
+        this.name = name;
+        this.eventType = eventType;
+        this.startAt = startAt;
+        this.endAt = endAt;
+        this.venue = venue;
+        this.lineUp = lineUp;
+        this.details = details;
+        this.minAge = minAge;
+        this.visibleStartAt = visibleStartAt;
+        this.visibleEndAt = visibleEndAt;
+        this.ticketCheckCode = ticketCheckCode;
+    }
+
+    private void validateDate(final LocalDateTime startDate,
+                              final LocalDateTime endDate) {
+        if (startDate.isAfter(endDate)) {
+            throw new EventIllegalArgumentException();
+        }
     }
 }
 
