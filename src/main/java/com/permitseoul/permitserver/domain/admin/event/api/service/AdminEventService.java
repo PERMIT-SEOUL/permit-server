@@ -9,6 +9,7 @@ import com.permitseoul.permitserver.domain.admin.event.core.component.AdminEvent
 import com.permitseoul.permitserver.domain.admin.event.core.component.AdminEventSaver;
 import com.permitseoul.permitserver.domain.admin.event.core.component.AdminEventUpdater;
 import com.permitseoul.permitserver.domain.admin.event.core.exception.AdminEventNotFoundException;
+import com.permitseoul.permitserver.domain.admin.eventimage.core.component.AdminEventImageRemover;
 import com.permitseoul.permitserver.domain.admin.eventimage.core.component.AdminEventImageRetriever;
 import com.permitseoul.permitserver.domain.admin.eventimage.core.component.AdminEventImageSaver;
 import com.permitseoul.permitserver.domain.admin.ticketround.core.AdminTicketRoundRetriever;
@@ -22,8 +23,11 @@ import com.permitseoul.permitserver.domain.event.core.exception.EventIllegalArgu
 import com.permitseoul.permitserver.domain.eventimage.core.domain.EventImage;
 import com.permitseoul.permitserver.domain.eventimage.core.domain.entity.EventImageEntity;
 import com.permitseoul.permitserver.domain.ticketround.core.domain.TicketRound;
+import com.permitseoul.permitserver.domain.ticketround.core.exception.TicketRoundIllegalArgumentException;
 import com.permitseoul.permitserver.domain.tickettype.core.domain.TicketType;
 import com.permitseoul.permitserver.domain.tickettype.core.domain.entity.TicketTypeEntity;
+import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeIllegalException;
+import com.permitseoul.permitserver.global.exception.DateFormatException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import com.permitseoul.permitserver.global.util.DateFormatterUtil;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +54,7 @@ public class AdminEventService {
     private final AdminTicketRoundSaver adminTicketRoundSaver;
     private final AdminTicketTypeSaver adminTicketTypeSaver;
     private final AdminEventUpdater adminEventUpdater;
+    private final AdminEventImageRemover adminEventImageRemover;
 
     @Transactional(readOnly = true)
     public List<AdminEventListResponse> getEvents() {
@@ -107,63 +112,68 @@ public class AdminEventService {
     }
 
     @Transactional
-    public void createEventWithTickets(final AdminEventWithTicketCreateRequest req) {
-        final LocalDateTime eventStartDateTime = combineDateTime(req.startDate(), req.startTime());
-        final LocalDateTime eventEndDateTime = combineDateTime(req.endDate(), req.endTime());
+    public void createEventWithTickets(final AdminEventWithTicketCreateRequest createDto) {
+        final LocalDateTime eventStartDateTime = combineDateTime(createDto.startDate(), createDto.startTime());
+        final LocalDateTime eventEndDateTime = combineDateTime(createDto.endDate(), createDto.endTime());
 
-        final LocalDateTime eventExposureStartDateTime = combineDateTime(req.eventExposureStartDate(), req.eventExposureStartTime());
-        final LocalDateTime eventExposureEndDateTime = combineDateTime(req.eventExposureEndDate(), req.eventExposureEndTime());
+        final LocalDateTime eventExposureStartDateTime = combineDateTime(createDto.eventExposureStartDate(), createDto.eventExposureStartTime());
+        final LocalDateTime eventExposureEndDateTime = combineDateTime(createDto.eventExposureEndDate(), createDto.eventExposureEndTime());
 
-        final LocalDateTime ticketRoundSalesStartDateTime = combineDateTime(req.roundSalesStartDate(), req.roundSalesStartTime());
-        final LocalDateTime ticketRoundSalesEndDateTime = combineDateTime(req.roundSalesEndDate(), req.roundSalesEndTime());
+        final LocalDateTime ticketRoundSalesStartDateTime = combineDateTime(createDto.roundSalesStartDate(), createDto.roundSalesStartTime());
+        final LocalDateTime ticketRoundSalesEndDateTime = combineDateTime(createDto.roundSalesEndDate(), createDto.roundSalesEndTime());
 
-        final Event savedEvent = saveEvent(req, eventStartDateTime, eventEndDateTime, eventExposureStartDateTime, eventExposureEndDateTime);
-        saveEventImages(savedEvent.getEventId(), req.images());
+        final Event savedEvent = saveEvent(createDto, eventStartDateTime, eventEndDateTime, eventExposureStartDateTime, eventExposureEndDateTime);
+        saveEventImages(savedEvent.getEventId(), createDto.images());
 
-        final TicketRound savedTicketRound = saveTicketRound(
-                savedEvent.getEventId(),
-                req.ticketRoundName(),
-                ticketRoundSalesStartDateTime,
-                ticketRoundSalesEndDateTime
-        );
-        saveTicketTypes(req.ticketTypes(), savedTicketRound.getTicketRoundId());
+        final TicketRound savedTicketRound;
+        try {
+            savedTicketRound = saveTicketRound(
+                    savedEvent.getEventId(),
+                    createDto.ticketRoundName(),
+                    ticketRoundSalesStartDateTime,
+                    ticketRoundSalesEndDateTime
+            );
+            saveTicketTypes(createDto.ticketTypes(), savedTicketRound.getTicketRoundId());
+        } catch (TicketRoundIllegalArgumentException | TicketTypeIllegalException e) {
+            throw new AdminApiException(ErrorCode.BAD_REQUEST_DATE_TIME_ERROR);
+        }
     }
 
     @Transactional
     public void updateEvent(final AdminEventUpdateRequest updateRequest) {
-        final EventEntity eventEntity;
         try {
-            eventEntity = adminEventRetriever.findEventEntityById(updateRequest.eventId());
-        }  catch (AdminEventNotFoundException e) {
-            throw new AdminApiException(ErrorCode.NOT_FOUND_EVENT);
-        }
-        final LocalDateTime visibleStartAt = combineDateAndTimeForUpdate(updateRequest.eventExposureStartDate(), updateRequest.eventExposureStartTime(), eventEntity.getVisibleStartAt());
-        final LocalDateTime visibleEndAt = combineDateAndTimeForUpdate(updateRequest.eventExposureEndDate(), updateRequest.eventExposureEndTime(), eventEntity.getVisibleEndAt());
+            final EventEntity eventEntity = adminEventRetriever.findEventEntityById(updateRequest.eventId());
+            final LocalDateTime visibleStartAt = combineDateAndTimeForUpdate(updateRequest.eventExposureStartDate(), updateRequest.eventExposureStartTime(), eventEntity.getVisibleStartAt());
+            final LocalDateTime visibleEndAt = combineDateAndTimeForUpdate(updateRequest.eventExposureEndDate(), updateRequest.eventExposureEndTime(), eventEntity.getVisibleEndAt());
 
-        final LocalDateTime startAt = combineDateAndTimeForUpdate(updateRequest.startDate(), updateRequest.startTime(), eventEntity.getStartAt());
-        final LocalDateTime endAt = combineDateAndTimeForUpdate(updateRequest.endDate(), updateRequest.endTime(), eventEntity.getEndAt());
-
-        try {
+            final LocalDateTime startAt = combineDateAndTimeForUpdate(updateRequest.startDate(), updateRequest.startTime(), eventEntity.getStartAt());
+            final LocalDateTime endAt = combineDateAndTimeForUpdate(updateRequest.endDate(), updateRequest.endTime(), eventEntity.getEndAt());
             adminEventUpdater.updateEvent(eventEntity, updateRequest, visibleStartAt, visibleEndAt, startAt, endAt);
-        } catch (EventIllegalArgumentException e) {
+            updateEventImages(eventEntity.getEventId(), updateRequest.images());
+
+        } catch(AdminEventNotFoundException e) {
+            throw new AdminApiException(ErrorCode.NOT_FOUND_EVENT);
+        } catch(EventIllegalArgumentException | DateFormatException e) {
             throw new AdminApiException(ErrorCode.BAD_REQUEST_DATE_TIME_ERROR);
+        }
+    }
+
+    private void updateEventImages(final long eventId, final List<AdminEventUpdateRequest.AdminEventUpdateImageInfo> eventImages) {
+        if (eventImages != null && !eventImages.isEmpty()) {
+            adminEventImageRemover.deleteAllByEventId(eventId);
+            final List<EventImageEntity> eventImageEntityList = IntStream.range(0, eventImages.size())
+                    .mapToObj(i -> EventImageEntity.create(
+                            eventId,
+                            eventImages.get(i).imageUrl().trim(),
+                            i
+                    ))
+                    .toList();
+            adminEventImageSaver.saveEventImages(eventImageEntityList);
         }
     }
 
     private LocalDateTime combineDateAndTimeForUpdate(final LocalDate date, final LocalTime time, final LocalDateTime originalDateTime) {
         return DateFormatterUtil.combineDateAndTimeForUpdate(date, time, originalDateTime);
-    }
-
-    private void saveEventImages(final long eventId,
-                                 List<AdminEventWithTicketCreateRequest.AdminEventImageInfo> eventImages) {
-        final List<EventImageEntity> eventImageEntityList = IntStream.range(0, eventImages.size())
-                .mapToObj(i -> EventImageEntity.create(
-                        eventId,
-                        eventImages.get(i).imageUrl().trim(),
-                        i+1
-                ))
-                .toList();
-        adminEventImageSaver.saveEventImages(eventImageEntityList);
     }
 
     private void saveTicketTypes(final List<AdminEventWithTicketCreateRequest.TicketTypeRequest> ticketTypes,
@@ -214,6 +224,18 @@ public class AdminEventService {
 
     private LocalDateTime combineDateTime(final LocalDate date, final LocalTime time) {
         return DateFormatterUtil.combineDateAndTime(date, time);
+    }
+
+    private void saveEventImages(final long eventId,
+                                 List<AdminEventWithTicketCreateRequest.AdminEventImageInfo> eventImages) {
+        final List<EventImageEntity> eventImageEntityList = IntStream.range(0, eventImages.size())
+                .mapToObj(i -> EventImageEntity.create(
+                        eventId,
+                        eventImages.get(i).imageUrl().trim(),
+                        i
+                ))
+                .toList();
+        adminEventImageSaver.saveEventImages(eventImageEntityList);
     }
 
     private Map<Long, Integer> initSoldTicketCountZero(final List<Event> events) {

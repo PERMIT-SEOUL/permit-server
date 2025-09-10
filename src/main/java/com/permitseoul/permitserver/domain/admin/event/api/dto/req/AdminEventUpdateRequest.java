@@ -3,7 +3,6 @@ package com.permitseoul.permitserver.domain.admin.event.api.dto.req;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.permitseoul.permitserver.domain.event.core.domain.EventType;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
@@ -45,12 +44,12 @@ public record AdminEventUpdateRequest(
         String venue,
         String lineup,
         String details,
-        List<AdminEventImageInfo> images,
+        List<AdminEventUpdateImageInfo> images,
 
         @Min(value = 0, message = "최소 나이는 0 이상이어야 합니다.")
         Integer minAge
 ) {
-    public record AdminEventImageInfo(
+    public record AdminEventUpdateImageInfo(
             String imageUrl
     ) { }
 }

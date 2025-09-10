@@ -2,6 +2,7 @@ package com.permitseoul.permitserver.domain.eventimage.core.repository;
 
 import com.permitseoul.permitserver.domain.eventimage.core.domain.entity.EventImageEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -14,4 +15,8 @@ public interface EventImageRepository extends JpaRepository<EventImageEntity, Lo
     Optional<EventImageEntity> findThumbnailImageEntityByEventId(@Param("eventId") long eventId);
 
     List<EventImageEntity> findAllByEventId(final long eventId);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("delete from EventImageEntity e where e.eventId = :eventId")
+    void deleteAllByEventId(@Param("eventId") final long eventId);
 }

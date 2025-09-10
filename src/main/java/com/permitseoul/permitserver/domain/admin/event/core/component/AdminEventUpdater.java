@@ -4,9 +4,9 @@ import com.permitseoul.permitserver.domain.admin.event.api.dto.req.AdminEventUpd
 import com.permitseoul.permitserver.domain.event.core.domain.EventType;
 import com.permitseoul.permitserver.domain.event.core.domain.entity.EventEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Component
 public class AdminEventUpdater {
@@ -28,4 +28,5 @@ public class AdminEventUpdater {
 
         eventEntity.updateEvent(eventName, eventType, startAt, endAt, venue, lineUp, details, minAge, visibleStartAt, visibleEndAt, verificationCode);
     }
+
 }
