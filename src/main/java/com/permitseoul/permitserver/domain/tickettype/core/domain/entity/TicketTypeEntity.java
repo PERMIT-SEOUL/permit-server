@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.domain.tickettype.core.domain.entity;
 
+import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeIllegalException;
 import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeInsufficientCountException;
 import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeTicketZeroException;
 import jakarta.persistence.*;
@@ -45,6 +46,8 @@ public class TicketTypeEntity {
                             int totalTicketCount,
                             LocalDateTime ticketStartAt,
                             LocalDateTime ticketEndAt) {
+        validateDatTime(ticketStartAt, ticketEndAt);
+
         this.ticketRoundId = ticketRoundId;
         this.ticketTypeName = ticketTypeName;
         this.ticketPrice = ticketPrice;
@@ -83,6 +86,12 @@ public class TicketTypeEntity {
     private void checkBuyTicketCountZero(final int buyTicketCount) {
         if ( buyTicketCount <= 0) {
             throw new TicketTypeTicketZeroException();
+        }
+    }
+
+    private void validateDatTime(final LocalDateTime ticketStartAt, final LocalDateTime ticketEndAt) {
+        if (ticketStartAt.isAfter(ticketEndAt)) {
+            throw new TicketTypeIllegalException();
         }
     }
 }

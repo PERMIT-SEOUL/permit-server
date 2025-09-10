@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.domain.eventtimetable.block.core.domain.entity;
 
+import com.permitseoul.permitserver.domain.eventtimetable.block.core.exception.TimeTableIllegalArgumentException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -61,6 +62,8 @@ public class TimetableBlockEntity {
             String information,
             String blockInfoRedirectUrl
     ) {
+        validateDateTime(startAt, endAt);
+
         this.timetableId = timetableId;
         this.timetableCategoryId = timetableCategoryId;
         this.timetableAreaId = timetableAreaId;
@@ -84,5 +87,11 @@ public class TimetableBlockEntity {
                                               final String information,
                                               final String blockInfoRedirectUrl) {
         return new TimetableBlockEntity(timetableId, timetableCategoryId, timetableAreaId, startAt, endAt, blockName, artist, imageUrl, information, blockInfoRedirectUrl);
+    }
+
+    private void validateDateTime(final LocalDateTime startAt, final LocalDateTime endAt) {
+        if (startAt.isBefore(endAt)) {
+            throw new TimeTableIllegalArgumentException();
+        }
     }
 }

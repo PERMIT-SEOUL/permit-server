@@ -78,6 +78,9 @@ public final class DateFormatterUtil {
 
     // update할 때, 결합
     public static LocalDateTime combineDateAndTimeForUpdate(final LocalDate date, final LocalTime time, final LocalDateTime originalDateTime) {
+        if (originalDateTime == null) {
+            throw new DateFormatException();
+        }
         if (date == null && time == null) {
             return originalDateTime;
         }

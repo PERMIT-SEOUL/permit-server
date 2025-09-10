@@ -1,6 +1,7 @@
 package com.permitseoul.permitserver.domain.ticketround.core.domain.entity;
 
 import com.permitseoul.permitserver.domain.ticketround.core.exception.TicketRoundExpiredException;
+import com.permitseoul.permitserver.domain.ticketround.core.exception.TicketRoundIllegalArgumentException;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,6 +31,8 @@ public class TicketRoundEntity {
     private LocalDateTime salesEndAt;
 
     private TicketRoundEntity(long eventId, String ticketRoundTitle, LocalDateTime salesStartAt, LocalDateTime salesEndAt) {
+        validateDateTIme(salesStartAt, salesEndAt);
+
         this.eventId = eventId;
         this.ticketRoundTitle = ticketRoundTitle;
         this.salesStartAt = salesStartAt;
@@ -46,6 +49,12 @@ public class TicketRoundEntity {
     public void verifyTicketSalesAvailable(final LocalDateTime now) {
         if (now.isBefore(this.salesStartAt) || now.isAfter(this.salesEndAt)) {
             throw new TicketRoundExpiredException();
+        }
+    }
+
+    private void validateDateTIme(final LocalDateTime salesStartAt, final LocalDateTime salesEndAt) {
+        if (salesStartAt.isAfter(salesEndAt)) {
+            throw new TicketRoundIllegalArgumentException();
         }
     }
 }
