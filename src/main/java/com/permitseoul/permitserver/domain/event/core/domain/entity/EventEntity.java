@@ -42,7 +42,7 @@ public class EventEntity extends BaseTimeEntity {
     @Column(name = "details", columnDefinition = "TEXT")
     private String details;
 
-    @Column(name = "min_age")
+    @Column(name = "min_age", nullable = false)
     private int minAge;
 
     @Column(name = "visible_start_at", nullable = false)
