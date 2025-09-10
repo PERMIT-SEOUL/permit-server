@@ -12,7 +12,7 @@ import java.util.List;
 public interface TicketRoundRepository extends JpaRepository<TicketRoundEntity, Long> {
 
     // 미래 라운드는 제외: salesStartDate <= now 인 라운드만(진행 중 + 종료된 라운드)
-    List<TicketRoundEntity> findByEventIdAndSalesStartDateLessThanEqualOrderBySalesStartDateAsc(final long eventId,
+    List<TicketRoundEntity> findByEventIdAndSalesStartAtLessThanEqualOrderBySalesStartAtAsc(final long eventId,
                                                                                                 final LocalDateTime now);
 
     List<TicketRoundEntity> findByEventIdIn(final List<Long> eventIds);
