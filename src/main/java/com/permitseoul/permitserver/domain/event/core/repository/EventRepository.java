@@ -13,8 +13,8 @@ import java.util.List;
 public interface EventRepository extends JpaRepository<EventEntity, Long> {
     @Query("""
         SELECT e FROM EventEntity e
-        WHERE e.visibleStartDate <= :now
-          AND e.visibleEndDate >= :now
+        WHERE e.visibleStartAt <= :now
+          AND e.visibleEndAt >= :now
     """)
     List<EventEntity> findVisibleEvents(@Param("now") final LocalDateTime now);
 }

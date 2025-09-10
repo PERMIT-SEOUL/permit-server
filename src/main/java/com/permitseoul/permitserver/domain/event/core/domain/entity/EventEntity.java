@@ -1,6 +1,7 @@
 package com.permitseoul.permitserver.domain.event.core.domain.entity;
 
 import com.permitseoul.permitserver.domain.event.core.domain.EventType;
+import com.permitseoul.permitserver.domain.event.core.exception.EventIllegalArgumentException;
 import com.permitseoul.permitserver.global.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -44,7 +45,7 @@ public class EventEntity extends BaseTimeEntity {
     @Column(name = "min_age")
     private int minAge;
 
-    @Column(name = "visible_start_at")
+    @Column(name = "visible_start_at", nullable = false)
     private LocalDateTime visibleStartAt;
 
     @Column(name = "visible_end_at", nullable = false)
@@ -80,16 +81,19 @@ public class EventEntity extends BaseTimeEntity {
     }
 
     public void updateEvent(final String name,
-                             final EventType eventType,
-                             final LocalDateTime startAt,
-                             final LocalDateTime endAt,
-                             final String venue,
-                             final String lineUp,
-                             final String details,
-                             final int minAge,
-                             final LocalDateTime visibleStartAt,
-                             final LocalDateTime visibleEndAt,
-                             final String ticketCheckCode) {
+                            final EventType eventType,
+                            final LocalDateTime startAt,
+                            final LocalDateTime endAt,
+                            final String venue,
+                            final String lineUp,
+                            final String details,
+                            final int minAge,
+                            final LocalDateTime visibleStartAt,
+                            final LocalDateTime visibleEndAt,
+                            final String ticketCheckCode) {
+        validateDate(startAt, endAt);
+        validateDate(visibleStartAt, visibleEndAt);
+
         this.name = name;
         this.eventType = eventType;
         this.startAt = startAt;
@@ -101,6 +105,13 @@ public class EventEntity extends BaseTimeEntity {
         this.visibleStartAt = visibleStartAt;
         this.visibleEndAt = visibleEndAt;
         this.ticketCheckCode = ticketCheckCode;
+    }
+
+    private void validateDate(final LocalDateTime startDate,
+                              final LocalDateTime endDate) {
+        if (endDate.isBefore(startDate)) {
+            throw new EventIllegalArgumentException();
+        }
     }
 }
 

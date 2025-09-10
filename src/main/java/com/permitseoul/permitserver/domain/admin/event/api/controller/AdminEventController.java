@@ -42,7 +42,7 @@ public class AdminEventController {
     }
 
     //어드민 행사 수정 API
-    @PostMapping
+    @PatchMapping
     public ResponseEntity<BaseResponse<?>> updateEvent(
             @RequestBody @Valid final AdminEventUpdateRequest adminEventUpdateRequest
     ) {
