@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @Component
 public class AdminEventUpdater {
 
-    @Transactional
     public void updateEvent(final EventEntity eventEntity,
                             final AdminEventUpdateRequest eventUpdateRequest,
                             final LocalDateTime visibleStartAt,

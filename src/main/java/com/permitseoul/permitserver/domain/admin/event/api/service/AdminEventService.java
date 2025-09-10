@@ -129,6 +129,7 @@ public class AdminEventService {
         saveTicketTypes(req.ticketTypes(), savedTicketRound.getTicketRoundId());
     }
 
+    @Transactional
     public void updateEvent(final AdminEventUpdateRequest updateRequest) {
         final EventEntity eventEntity;
         try {
