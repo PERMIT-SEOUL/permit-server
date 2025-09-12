@@ -2,6 +2,7 @@ package com.permitseoul.permitserver.domain.auth.core.jwt;
 
 import com.permitseoul.permitserver.domain.auth.core.domain.RefreshToken;
 import com.permitseoul.permitserver.domain.auth.core.exception.AuthRTException;
+import com.permitseoul.permitserver.domain.auth.core.exception.AuthRTNotFoundException;
 import com.permitseoul.permitserver.domain.auth.core.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -25,12 +26,13 @@ public class RefreshTokenManager {
     }
 
     public void deleteRefreshToken(final long userId) {
-            refreshTokenRepository.deleteById(userId);
+        refreshTokenRepository.deleteById(userId);
     }
 
-    public boolean matches(final long userId, final String refreshToken) {
-            final RefreshToken originalRefreshToken = refreshTokenRepository.findById(userId).orElseThrow(AuthRTException::new);
-            return Objects.equals(originalRefreshToken.getRefreshToken(), refreshToken);
+    public void validateSameWithOriginalRefreshToken(final long userId, final String refreshToken) {
+        final RefreshToken originalRefreshToken = refreshTokenRepository.findById(userId).orElseThrow(AuthRTNotFoundException::new);
+        if(!Objects.equals(originalRefreshToken.getRefreshToken(), refreshToken)) {
+            throw new AuthRTException();
+        }
     }
-
 }
