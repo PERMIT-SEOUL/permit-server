@@ -115,6 +115,7 @@ public enum ErrorCode implements ApiCode {
     INTERNAL_QRCODE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50010, "qrCode 생성 에러입니다."),
     INTERNAL_EMAIL_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50011, "이메일 전송 에러입니다."),
     INTERNAL_FILTER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50012, "filter 에러입니다."),
+    INTERNAL_RT_REDIS_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50013, "refreshToken redis 에러입니다."),
 
     ;
 
