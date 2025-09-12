@@ -2,7 +2,6 @@ package com.permitseoul.permitserver.auth.jwt;
 
 import com.permitseoul.permitserver.domain.auth.core.jwt.JwtGenerator;
 import com.permitseoul.permitserver.domain.auth.core.jwt.JwtProvider;
-import com.permitseoul.permitserver.domain.auth.core.jwt.RTCacheManager;
 import com.permitseoul.permitserver.global.Constants;
 import com.permitseoul.permitserver.domain.user.core.domain.UserRole;
 import org.junit.jupiter.api.AfterEach;

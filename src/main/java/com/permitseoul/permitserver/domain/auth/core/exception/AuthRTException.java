@@ -1,4 +1,4 @@
 package com.permitseoul.permitserver.domain.auth.core.exception;
 
-public class AuthRTCacheException extends AuthCoreException {
+public class AuthRTException extends AuthCoreException {
 }
