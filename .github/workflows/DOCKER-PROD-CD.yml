@@ -47,8 +47,9 @@ jobs:
 
       - name: docker image 빌드 및 푸시
         run: |
-          docker build --platform linux/amd64 -t permitseoulprod/prodrepo .
-          docker push permitseoulprod/prodrepo
+          IMAGE_TAG=prod
+          docker build --platform linux/amd64 -t permitseoulprod/prodrepo:$IMAGE_TAG .
+          docker push permitseoulprod/prodrepo:$IMAGE_TAG
         working-directory: ${{ env.working-directory }}
 
   cd:
