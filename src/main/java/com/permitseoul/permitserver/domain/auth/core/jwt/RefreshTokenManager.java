@@ -9,6 +9,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
@@ -18,7 +19,7 @@ public class RefreshTokenManager {
 
     public void saveRefreshTokenInRedis(final long userId, final String refreshToken, final long ttlMillis) {
         try {
-            final long ttlSeconds = ttlMillis / 1000; // ms → s
+            final long ttlSeconds = Math.max(1L, TimeUnit.MILLISECONDS.toSeconds(ttlMillis));
             refreshTokenRepository.save(RefreshToken.of(userId, refreshToken, ttlSeconds));
         } catch (DataAccessException e) {
             throw new AuthRTException();
