@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record TimetableResponse(
+        String eventName,
         @JsonFormat(pattern = "yyyy.MM.dd HH:mm")
         LocalDateTime startDate,
         @JsonFormat(pattern = "yyyy.MM.dd HH:mm")
@@ -15,11 +16,12 @@ public record TimetableResponse(
         List<Block> blocks
 ) {
 
-    public static TimetableResponse of(final LocalDateTime startDate,
+    public static TimetableResponse of(final String eventName,
+                                       final LocalDateTime startDate,
                                        final LocalDateTime endDate,
                                        final List<Area> areas,
                                        final List<Block> blocks) {
-        return new TimetableResponse(startDate, endDate, areas, blocks);
+        return new TimetableResponse(eventName, startDate, endDate, areas, blocks);
     }
 
     public record Area(
