@@ -66,7 +66,7 @@ public class AuthService {
             throw new AuthUnAuthorizedFeignException(ErrorCode.UNAUTHORIZED_FEIGN, e.getPlatformErrorCode());
         } catch (UserDuplicateException e ) {
             throw new AuthUnAuthorizedException(ErrorCode.CONFLICT);
-        } catch (DataAccessException e) {
+        } catch (AuthRTException e) {
             throw new AuthRedisException(ErrorCode.INTERNAL_RT_REDIS_ERROR);
         }
     }
@@ -92,7 +92,7 @@ public class AuthService {
             throw new AuthUnAuthorizedFeignException(ErrorCode.UNAUTHORIZED_FEIGN, e.getPlatformErrorCode());
         } catch (UserNotFoundException e ) {
             throw new AuthSocialNotFoundApiException(ErrorCode.NOT_FOUND_USER, socialAccessToken);
-        } catch (DataAccessException e) {
+        } catch (AuthRTException e) {
             throw new AuthRedisException(ErrorCode.INTERNAL_RT_REDIS_ERROR);
         }
     }
@@ -114,9 +114,7 @@ public class AuthService {
         } catch (ExpiredJwtException e) {
             throw new AuthUnAuthorizedException(ErrorCode.UNAUTHORIZED_RT_EXPIRED);
         } catch (AuthRTException e) {
-            throw new AuthUnAuthorizedException(ErrorCode.INTERNAL_RT_CACHE_ERROR);
-        } catch (DataAccessException e) {
-            throw new AuthRedisException(ErrorCode.INTERNAL_RT_REDIS_ERROR);
+            throw new AuthUnAuthorizedException(ErrorCode.INTERNAL_RT_REDIS_ERROR);
         }
     }
 
@@ -124,11 +122,13 @@ public class AuthService {
     public void logout(final long userId, final String refreshTokenFromCookie) {
         try {
             checkIsSameRefreshToken(userId, refreshTokenFromCookie);
+            refreshTokenManager.deleteRefreshToken(userId);
         } catch (AuthRTNotFoundException | AuthRTException e) {
             throw new AuthUnAuthorizedException(ErrorCode.UNAUTHORIZED_WRONG_RT);
+        } catch (DataAccessException e) {
+            throw new AuthRedisException(ErrorCode.INTERNAL_RT_REDIS_ERROR);
         }
 
-        refreshTokenManager.deleteRefreshToken(userId);
     }
 
     private void checkIsSameRefreshToken(final long userId, final String refreshToken) {
