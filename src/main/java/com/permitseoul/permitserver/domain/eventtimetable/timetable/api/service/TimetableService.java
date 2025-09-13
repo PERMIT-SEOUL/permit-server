@@ -1,5 +1,8 @@
 package com.permitseoul.permitserver.domain.eventtimetable.timetable.api.service;
 
+import com.permitseoul.permitserver.domain.event.core.component.EventRetriever;
+import com.permitseoul.permitserver.domain.event.core.domain.Event;
+import com.permitseoul.permitserver.domain.event.core.exception.EventNotfoundException;
 import com.permitseoul.permitserver.domain.eventtimetable.area.core.component.TimetableAreaRetriever;
 import com.permitseoul.permitserver.domain.eventtimetable.area.core.domain.TimetableArea;
 import com.permitseoul.permitserver.domain.eventtimetable.area.core.exception.TimetableAreaNotFoundException;
@@ -34,14 +37,36 @@ public class TimetableService {
     private final TimetableCategoryRetriever timetableCategoryRetriever;
     private final TimetableBlockRetriever timetableBlockRetriever;
     private final TimetableUserLikeRetriever timetableUserLikeRetriever;
+    private final EventRetriever eventRetriever;
     private final SecureUrlUtil secureUrlUtil;
 
     @Transactional(readOnly = true)
     public TimetableResponse getEventTimetable(final long eventId, final Long userId) {
-        final Timetable timetable = getTimetableByEventId(eventId);
-        final List<TimetableArea> areaList = getAreaListByTimetableId(timetable.getTimetableId());
-        final List<TimetableCategory> categoryList = getCategoryListByTimetableId(timetable.getTimetableId());
-        final List<TimetableBlock> blockList = getBlockListByTimetableId(timetable.getTimetableId());
+        final Event event;
+        final Timetable timetable;
+        final List<TimetableArea> areaList;
+        final List<TimetableCategory> categoryList;
+
+        final List<TimetableBlock> blockList;
+        try {
+            event = eventRetriever.findEventById(eventId);
+            timetable = timetableRetriever.getTimetableByEventId(eventId);
+            final long timetableId = timetable.getTimetableId();
+            areaList = timetableAreaRetriever.findTimetableAreaListByTimetableId(timetableId);
+            categoryList = timetableCategoryRetriever.findAllTimetableCategory(timetableId);
+            blockList = timetableBlockRetriever.findAllTimetableBlockByTimetableId(timetableId);
+
+        } catch (EventNotfoundException e) {
+            throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_EVENT);
+        } catch (TimetableNotFoundException e) {
+            throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE);
+        } catch (TimetableAreaNotFoundException e) {
+            throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_AREA);
+        } catch (TimetableCategoryNotfoundException e) {
+            throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_CATEGORY);
+        } catch (TimetableBlockNotfoundException e) {
+            throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_BLOCK);
+        }
 
         final List<Long> blockIds = blockList.stream()
                 .map(TimetableBlock::getTimetableBlockId)
@@ -55,6 +80,7 @@ public class TimetableService {
         final List<TimetableResponse.Block> blockResponses = mapBlocksToResponse(blockList, categoryColorMap, likedBlockIds);
 
         return TimetableResponse.of(
+                event.getName(),
                 timetable.getStartAt(),
                 timetable.getEndAt(),
                 areaResponses,
@@ -94,40 +120,10 @@ public class TimetableService {
                 timetableBlock.getInformation(),
                 timetableArea.getAreaName(),
                 timetableBlock.getImageUrl(),
-                timetableBlock.getBlockInfoRedirectUrl()
+                timetableBlock.getBlockInfoRedirectUrl(),
+                timetableBlock.getStartAt(),
+                timetableBlock.getEndAt()
         );
-    }
-
-    private Timetable getTimetableByEventId(final long eventId) {
-        try {
-            return timetableRetriever.getTimetableByEventId(eventId);
-        } catch (TimetableNotFoundException e) {
-            throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE);
-        }
-    }
-
-    private List<TimetableArea> getAreaListByTimetableId(final long timetableId) {
-        try {
-            return timetableAreaRetriever.findTimetableAreaListByTimetableId(timetableId);
-        } catch (TimetableAreaNotFoundException e) {
-            throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_AREA);
-        }
-    }
-
-    private List<TimetableCategory> getCategoryListByTimetableId(final long timetableId) {
-        try {
-            return timetableCategoryRetriever.findAllTimetableCategory(timetableId);
-        } catch (TimetableCategoryNotfoundException e) {
-            throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_CATEGORY);
-        }
-    }
-
-    private List<TimetableBlock> getBlockListByTimetableId(final long timetableId) {
-        try {
-            return timetableBlockRetriever.findAllTimetableBlockByTimetableId(timetableId);
-        } catch (TimetableBlockNotfoundException e) {
-            throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_BLOCK);
-        }
     }
 
     private Map<Long, String> mapCategoryColors(final List<TimetableCategory> categoryList) {
