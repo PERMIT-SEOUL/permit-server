@@ -47,8 +47,9 @@ jobs:
 
       - name: docker image 빌드 및 푸시
         run: |
-          docker build --platform linux/amd64 -t permitseouldev/permitseoul-dev .
-          docker push permitseouldev/permitseoul-dev
+          IMAGE_TAG=dev
+          docker build --platform linux/amd64 -t permitseouldev/permitseoul-dev:$IMAGE_TAG .
+          docker push permitseouldev/permitseoul-dev:$IMAGE_TAG
         working-directory: ${{ env.working-directory }}
 
   cd:
