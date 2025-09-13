@@ -73,7 +73,7 @@ public class EventService {
     }
 
     private List<EventDetailResponse.LineupCategory> parseLineup(final String rawLineupText) {
-        List<EventDetailResponse.LineupCategory> result = new ArrayList<>();
+        final List<EventDetailResponse.LineupCategory> result = new ArrayList<>();
         if (rawLineupText == null || rawLineupText.isBlank()) return result;
 
         final String[] lines = rawLineupText.split("\\r?\\n");
@@ -82,19 +82,24 @@ public class EventService {
             line = line.trim();
             if (line.isBlank()) continue;
 
-            // [카테고리] 아티스트1 아티스트2
             final int closingBracketIndex = line.indexOf(']');
             if (!line.startsWith("[") || closingBracketIndex == -1) continue;
 
             final String category = line.substring(0, closingBracketIndex + 1);
+
             final String artistPart = line.substring(closingBracketIndex + 1).trim();
             if (artistPart.isBlank()) continue;
 
-            final List<EventDetailResponse.Artist> artists = Arrays.stream(artistPart.split("\\s+"))
-                    .map(EventDetailResponse.Artist::new)
-                    .toList();
+            final List<EventDetailResponse.Artist> artists =
+                    Arrays.stream(artistPart.split("\\s*,\\s*"))  // 쉼표 기준 split, 주변 공백 무시
+                            .map(String::trim)
+                            .filter(s -> !s.isEmpty())
+                            .map(EventDetailResponse.Artist::new)
+                            .toList();
 
-            result.add(EventDetailResponse.LineupCategory.of(category, artists));
+            if (!artists.isEmpty()) {
+                result.add(EventDetailResponse.LineupCategory.of(category, artists));
+            }
         }
 
         return result;

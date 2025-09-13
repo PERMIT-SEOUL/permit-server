@@ -7,10 +7,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class UserCreator {
+public class UserSaver {
     private final UserRepository userRepository;
 
-    public UserEntity createUser(final UserEntity userEntity) {
+    public UserEntity saveUser(final UserEntity userEntity) {
         return userRepository.save(userEntity);
     }
 }

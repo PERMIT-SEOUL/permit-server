@@ -1,12 +1,13 @@
 package com.permitseoul.permitserver.domain.auth.core.domain;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 public class Token {
 
     private String accessToken;

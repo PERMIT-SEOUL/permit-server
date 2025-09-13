@@ -6,6 +6,7 @@ import com.permitseoul.permitserver.domain.auth.core.exception.AuthWrongJwtExcep
 import com.permitseoul.permitserver.domain.auth.core.jwt.JwtGenerator;
 import com.permitseoul.permitserver.domain.auth.core.jwt.JwtProperties;
 import com.permitseoul.permitserver.domain.auth.core.jwt.JwtProvider;
+import com.permitseoul.permitserver.domain.auth.core.jwt.RefreshTokenManager;
 import com.permitseoul.permitserver.domain.user.core.domain.UserRole;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
