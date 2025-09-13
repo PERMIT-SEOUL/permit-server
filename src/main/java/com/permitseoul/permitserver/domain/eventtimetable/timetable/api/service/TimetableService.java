@@ -120,7 +120,9 @@ public class TimetableService {
                 timetableBlock.getInformation(),
                 timetableArea.getAreaName(),
                 timetableBlock.getImageUrl(),
-                timetableBlock.getBlockInfoRedirectUrl()
+                timetableBlock.getBlockInfoRedirectUrl(),
+                timetableBlock.getStartAt(),
+                timetableBlock.getEndAt()
         );
     }
 
