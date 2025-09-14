@@ -1,0 +1,41 @@
+<appender name="DEVERRORROLLFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <immediateFlush>true</immediateFlush>
+
+    <file>${LOG_PATH}/PERMIT-ERROR-LOG.log</file>
+
+    <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+        <providers>
+            <timestamp>
+                <timeZone>Asia/Seoul</timeZone>
+                <pattern>yyyy-MM-dd HH:mm:ss.SSS</pattern>
+                <fieldName>time</fieldName>
+            </timestamp>
+            <threadName/>
+            <logLevel/>
+            <loggerName/>
+            <mdc/>
+            <arguments/>
+            <message/>
+            <stackTrace>
+                <fieldName>stack</fieldName>
+                <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                    <maxDepthPerThrowable>10</maxDepthPerThrowable>
+                    <rootCauseFirst>true</rootCauseFirst>
+                </throwableConverter>
+            </stackTrace>
+        </providers>
+    </encoder>
+
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+        <level>ERROR</level>
+        <onMatch>ACCEPT</onMatch>
+        <onMismatch>DENY</onMismatch>
+    </filter>
+
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <fileNamePattern>${LOG_PATH}/PERMIT-ERROR-LOG-%d{yyyy-MM-dd}-%i-log.zip</fileNamePattern>
+        <maxFileSize>20MB</maxFileSize>
+        <maxHistory>30</maxHistory>
+        <totalSizeCap>3GB</totalSizeCap>
+    </rollingPolicy>
+</appender>

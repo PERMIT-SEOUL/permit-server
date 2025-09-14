@@ -1,0 +1,7 @@
+<appender name="LOCALCONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+        <pattern>%green(%d{yyyy-MM-dd HH:mm:ss.SSS}) %magenta([%thread]) %highlight(%-5level) %boldMagenta(%F) %yellow(%M) %cyan(%logger{36}) %msg%n</pattern>
+    </encoder>
+
+</appender>

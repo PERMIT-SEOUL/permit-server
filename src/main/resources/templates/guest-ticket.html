@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="'[' + ( ${eventType} ?: 'EVENT' ) + '] permit guest ticket'">
+        permit guest ticket
+    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 이메일 클라이언트 호환 위해 인라인 스타일 위주 -->
+</head>
+<body style="margin:0;padding:24px;background:#f7f7f7;font-family:Arial,Helvetica,sans-serif;color:#222;">
+<div style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #eee;border-radius:12px;overflow:hidden;">
+    <div style="padding:20px 24px;">
+        <h1 th:text="'[' + ${eventType} + '] Guest Ticket Info'"
+            style="font-size:18px;margin:0 0 12px 0;">
+        </h1>
+        <p style="margin:8px 0 16px 0;">안녕하세요 <b th:text="${guestName}">게스트</b>님, 아래 QR 코드를 행사장에 가져와주세요.</p>
+        <p style="margin:0 0 16px 0;">Event Name: <b th:text="${eventName}">0</b></p>
+
+        <div th:each="code,iter : ${ticketCodes}"
+             style="margin:12px 0;padding:12px;border:1px solid #e5e5e5;border-radius:8px;display:inline-block;">
+            <p style="margin:0 0 8px 0;">Ticket Code:
+                <b th:text="${code}">TICKET-CODE</b>
+            </p>
+            <!-- CID는 'qr-{index}' 규칙으로 자바에서 첨부됨 -->
+            <img th:src="'cid:qr-' + ${iter.index}" alt="QR Code"
+                 style="width:200px;height:200px;display:block;"/>
+        </div>
+
+        <p style="margin:16px 0 0 0;">감사합니다.</p>
+    </div>
+</div>
+</body>
+</html>

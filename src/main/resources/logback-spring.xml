@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds">
+
+    <springProfile name="local">
+        <include resource="logback/logback-local.xml"/>
+        <root level="INFO">
+            <appender-ref ref="LOCALCONSOLE"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="dev">
+        <include resource="logback/logback-dev-info.xml"/>
+        <include resource="logback/logback-dev-error.xml"/>
+        <root level="INFO">
+            <appender-ref ref="DEVINFOROLLFILE"/>
+            <appender-ref ref="DEVERRORROLLFILE"/>
+        </root>
+    </springProfile>
+
+</configuration>
