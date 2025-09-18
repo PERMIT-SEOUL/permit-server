@@ -37,7 +37,8 @@ public record TimetableResponse(
     public record Block(
             String blockId,
             String blockName,
-            String blockColor,
+            String blockBackgroundColor,
+            String blockLineColor,
             @JsonFormat(pattern = "yyyy.MM.dd HH:mm")
             LocalDateTime blockStartDate,
             @JsonFormat(pattern = "yyyy.MM.dd HH:mm")
@@ -47,12 +48,13 @@ public record TimetableResponse(
     ) {
         public static Block of(final String blockId,
                                final String blockName,
-                               final String blockColor,
+                               final String blockBackgroundColor,
+                               final String blockLineColor,
                                final LocalDateTime blockStartDate,
                                final LocalDateTime blockEndDate,
                                final long blockAreaId,
                                boolean isUserLiked) {
-            return new Block(blockId, blockName, blockColor, blockStartDate, blockEndDate, blockAreaId, isUserLiked);
+            return new Block(blockId, blockName, blockBackgroundColor, blockLineColor, blockStartDate, blockEndDate, blockAreaId, isUserLiked);
         }
     }
 }

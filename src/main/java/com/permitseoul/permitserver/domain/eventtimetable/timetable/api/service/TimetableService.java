@@ -19,6 +19,7 @@ import com.permitseoul.permitserver.domain.eventtimetable.timetable.api.dto.Time
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.api.exception.NotfoundTimetableException;
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.component.TimetableRetriever;
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.domain.Timetable;
+import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.domain.TimetableCategoryColor;
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.exception.TimetableNotFoundException;
 import com.permitseoul.permitserver.domain.eventtimetable.userlike.core.component.TimetableUserLikeRetriever;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
@@ -79,7 +80,7 @@ public class TimetableService {
                 ? Set.of()
                 : new HashSet<>(timetableUserLikeRetriever.findLikedBlockIdsIn(userId, blockIds));
 
-        final Map<Long, String> categoryColorMap = mapCategoryColors(categoryList);
+        final Map<Long, TimetableCategoryColor> categoryColorMap = mapCategoryColors(categoryList);
         final List<TimetableResponse.Area> areaResponses = mapAreasToResponse(areaList);
         final List<TimetableResponse.Block> blockResponses = mapBlocksToResponse(blockList, categoryColorMap, likedBlockIds);
 
@@ -117,7 +118,8 @@ public class TimetableService {
         return TimetableDetailResponse.of(
                 timetableBlock.getBlockName(),
                 timetableCategory.getCategoryName(),
-                timetableCategory.getCategoryColor(),
+                timetableCategory.getCategoryBackgroundColor(),
+                timetableCategory.getCategoryLineColor(),
                 isUserLiked,
                 timetableBlock.getInformation(),
                 timetableArea.getAreaName(),
@@ -143,11 +145,14 @@ public class TimetableService {
                 .toList();
     }
 
-    private Map<Long, String> mapCategoryColors(final List<TimetableCategory> categoryList) {
+    private Map<Long, TimetableCategoryColor> mapCategoryColors(final List<TimetableCategory> categoryList) {
         return categoryList.stream()
                 .collect(Collectors.toMap(
                         TimetableCategory::getTimetableCategoryId,
-                        TimetableCategory::getCategoryColor
+                        category -> new TimetableCategoryColor(
+                                category.getCategoryBackgroundColor(),
+                                category.getCategoryLineColor()
+                        )
                 ));
     }
 
@@ -163,20 +168,23 @@ public class TimetableService {
 
     private List<TimetableResponse.Block> mapBlocksToResponse(
             final List<TimetableBlock> blockList,
-            final Map<Long, String> categoryColorMap,
+            final Map<Long, TimetableCategoryColor> categoryColorMap,
             final Set<Long> likedBlockIds
     ) {
         return blockList.stream()
                 .sorted(Comparator.comparing(TimetableBlock::getStartAt))
                 .map(block -> {
-                    final String categoryColor = Optional.ofNullable(
+                    final TimetableCategoryColor categoryColor = Optional.ofNullable(
                                     categoryColorMap.get(block.getTimetableCategoryId()))
                             .orElseThrow(() -> new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_CATEGORY_COLOR));
 
                     final String encodedBlockId = secureUrlUtil.encode(block.getTimetableBlockId());
 
-                    return TimetableResponse.Block.of(encodedBlockId,block.getBlockName(),
-                            categoryColor,
+                    return TimetableResponse.Block.of(
+                            encodedBlockId,
+                            block.getBlockName(),
+                            categoryColor.backgroundColor(),
+                            categoryColor.lineColor(),
                             block.getStartAt(),
                             block.getEndAt(),
                             block.getTimetableAreaId(),

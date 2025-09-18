@@ -22,18 +22,23 @@ public class TimetableCategoryEntity {
     @Column(name = "category_name", nullable = false)
     private String categoryName;
 
-    @Column(name = "category_color", nullable = false)
-    private String categoryColor;
+    @Column(name = "category_background_color", nullable = false)
+    private String categoryBackgroundColor;
 
-    private TimetableCategoryEntity(long timetableId, String categoryName, String categoryColor) {
+    @Column(name = "category_line_color", nullable = false)
+    private String categoryLineColor;
+
+    private TimetableCategoryEntity(long timetableId, String categoryName, String categoryBackgroundColor, String categoryLineColor) {
         this.timetableId = timetableId;
         this.categoryName = categoryName;
-        this.categoryColor = categoryColor;
+        this.categoryBackgroundColor = categoryBackgroundColor;
+        this.categoryLineColor = categoryLineColor;
     }
 
     public static TimetableCategoryEntity create(final long timetableId,
                                                  final String categoryName,
-                                                 final String categoryColor) {
-        return new TimetableCategoryEntity(timetableId, categoryName, categoryColor);
+                                                 final String categoryBackgroundColor,
+                                                 final String categoryLineColor) {
+        return new TimetableCategoryEntity(timetableId, categoryName, categoryBackgroundColor, categoryLineColor);
     }
 }

@@ -8,7 +8,8 @@ import java.util.List;
 public record TimetableDetailResponse(
         String blockName,
         String blockCategory,
-        String categoryColor,
+        String categoryBackgroundColor,
+        String categoryLineColor,
         boolean isLiked,
         String information,
         String area,
@@ -22,7 +23,8 @@ public record TimetableDetailResponse(
 ) {
     public static TimetableDetailResponse of(final String blockName,
                                              final String blockCategory,
-                                             final String categoryColor,
+                                             final String categoryBackgroundColor,
+                                             final String categoryLineColor,
                                              final boolean isLiked,
                                              final String information,
                                              final String area,
@@ -33,7 +35,8 @@ public record TimetableDetailResponse(
         return new TimetableDetailResponse(
                 blockName,
                 blockCategory,
-                categoryColor,
+                categoryBackgroundColor,
+                categoryLineColor,
                 isLiked,
                 information,
                 area,
