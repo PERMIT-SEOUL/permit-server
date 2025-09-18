@@ -9,6 +9,8 @@ import com.permitseoul.permitserver.domain.eventtimetable.area.core.exception.Ti
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.component.TimetableBlockRetriever;
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.domain.TimetableBlock;
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.exception.TimetableBlockNotfoundException;
+import com.permitseoul.permitserver.domain.eventtimetable.blockmedia.component.TimetableBlockMediaRetriever;
+import com.permitseoul.permitserver.domain.eventtimetable.blockmedia.domain.TimetableBlockMedia;
 import com.permitseoul.permitserver.domain.eventtimetable.category.core.component.TimetableCategoryRetriever;
 import com.permitseoul.permitserver.domain.eventtimetable.category.core.domain.TimetableCategory;
 import com.permitseoul.permitserver.domain.eventtimetable.category.core.exception.TimetableCategoryNotfoundException;
@@ -36,9 +38,11 @@ public class TimetableService {
     private final TimetableAreaRetriever timetableAreaRetriever;
     private final TimetableCategoryRetriever timetableCategoryRetriever;
     private final TimetableBlockRetriever timetableBlockRetriever;
+    private final TimetableBlockMediaRetriever timetableBlockMediaRetriever;
     private final TimetableUserLikeRetriever timetableUserLikeRetriever;
     private final EventRetriever eventRetriever;
     private final SecureUrlUtil secureUrlUtil;
+
 
     @Transactional(readOnly = true)
     public TimetableResponse getEventTimetable(final long eventId, final Long userId) {
@@ -93,8 +97,10 @@ public class TimetableService {
         final TimetableBlock timetableBlock;
         final TimetableCategory timetableCategory;
         final TimetableArea timetableArea;
+        final List<TimetableBlockMedia> timetableBlockMediaList;
         try {
             timetableBlock = timetableBlockRetriever.findTimetableBlockById(blockId);
+            timetableBlockMediaList = timetableBlockMediaRetriever.getAllTimetableBlockMediaByBlockId(timetableBlock.getTimetableBlockId());
             timetableCategory = timetableCategoryRetriever.findTimetableCategoryById(timetableBlock.getTimetableCategoryId());
             timetableArea = timetableAreaRetriever.findTimetableAreaById(timetableBlock.getTimetableAreaId());
         } catch (TimetableBlockNotfoundException e) {
@@ -105,12 +111,8 @@ public class TimetableService {
             throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_AREA);
         }
 
-        final boolean isUserLiked;
-        if (userId == null) {
-            isUserLiked = false;
-        } else {
-            isUserLiked = timetableUserLikeRetriever.isExistUserLikeByUserIdAndBlockId(userId, timetableBlock.getTimetableBlockId());
-        }
+        final List<TimetableDetailResponse.MediaInfo> mediaInfos = sortTimetableBlockMedia(timetableBlockMediaList);
+        final boolean isUserLiked = getUserLiked(userId, timetableBlock.getTimetableBlockId());
 
         return TimetableDetailResponse.of(
                 timetableBlock.getBlockName(),
@@ -119,11 +121,26 @@ public class TimetableService {
                 isUserLiked,
                 timetableBlock.getInformation(),
                 timetableArea.getAreaName(),
-                timetableBlock.getImageUrl(),
                 timetableBlock.getBlockInfoRedirectUrl(),
                 timetableBlock.getStartAt(),
-                timetableBlock.getEndAt()
+                timetableBlock.getEndAt(),
+                mediaInfos
         );
+    }
+
+    private boolean getUserLiked(final Long userId, final long timetableBlockId) {
+        if (userId == null) {
+            return false;
+        } else {
+            return timetableUserLikeRetriever.isExistUserLikeByUserIdAndBlockId(userId, timetableBlockId);
+        }
+    }
+
+    private List<TimetableDetailResponse.MediaInfo> sortTimetableBlockMedia(final List<TimetableBlockMedia> timetableBlockMediaList) {
+        return timetableBlockMediaList.stream()
+                .sorted(Comparator.comparingInt(TimetableBlockMedia::getSequence))
+                .map(media -> TimetableDetailResponse.MediaInfo.of(media.getMediaUrl()))
+                .toList();
     }
 
     private Map<Long, String> mapCategoryColors(final List<TimetableCategory> categoryList) {

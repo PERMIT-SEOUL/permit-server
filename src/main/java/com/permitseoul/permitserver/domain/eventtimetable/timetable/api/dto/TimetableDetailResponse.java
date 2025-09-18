@@ -3,6 +3,7 @@ package com.permitseoul.permitserver.domain.eventtimetable.timetable.api.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record TimetableDetailResponse(
         String blockName,
@@ -11,12 +12,13 @@ public record TimetableDetailResponse(
         boolean isLiked,
         String information,
         String area,
-        String imageUrl,
         String blockInfoUrl,
         @JsonFormat(pattern = "yyyy.MM.dd HH:mm")
         LocalDateTime startDate,
         @JsonFormat(pattern = "yyyy.MM.dd HH:mm")
-        LocalDateTime endDate
+        LocalDateTime endDate,
+        List<MediaInfo> media
+
 ) {
     public static TimetableDetailResponse of(final String blockName,
                                              final String blockCategory,
@@ -24,10 +26,10 @@ public record TimetableDetailResponse(
                                              final boolean isLiked,
                                              final String information,
                                              final String area,
-                                             final String imageUrl,
                                              final String blockInfoRedirectUrl,
                                              final LocalDateTime startDate,
-                                             final LocalDateTime endDate) {
+                                             final LocalDateTime endDate,
+                                             final List<MediaInfo> mediaInfo) {
         return new TimetableDetailResponse(
                 blockName,
                 blockCategory,
@@ -35,10 +37,18 @@ public record TimetableDetailResponse(
                 isLiked,
                 information,
                 area,
-                imageUrl,
                 blockInfoRedirectUrl,
                 startDate,
-                endDate
+                endDate,
+                mediaInfo
         );
+    }
+
+    public record MediaInfo(
+            String mediaUrl
+    ) {
+        public static MediaInfo of(final String mediaUrl) {
+            return new MediaInfo(mediaUrl);
+        }
     }
 }

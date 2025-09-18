@@ -17,7 +17,6 @@ public class TimetableBlock {
     private final LocalDateTime endAt;
     private final String blockName;
     private final String artist;
-    private final String imageUrl;
     private final String information;
     private final String blockInfoRedirectUrl;
 
@@ -31,7 +30,6 @@ public class TimetableBlock {
                 timetableBlockEntity.getEndAt(),
                 timetableBlockEntity.getBlockName(),
                 timetableBlockEntity.getArtist(),
-                timetableBlockEntity.getImageUrl(),
                 timetableBlockEntity.getInformation(),
                 timetableBlockEntity.getBlockInfoRedirectUrl()
         );
