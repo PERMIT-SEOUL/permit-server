@@ -40,9 +40,6 @@ public class TimetableBlockEntity {
     @Column(name = "artist")
     private String artist;
 
-    @Column(name = "image_url")
-    private String imageUrl;
-
     @Column(name = "information", nullable = false)
     private String information;
 
@@ -58,7 +55,6 @@ public class TimetableBlockEntity {
             LocalDateTime endAt,
             String blockName,
             String artist,
-            String imageUrl,
             String information,
             String blockInfoRedirectUrl
     ) {
@@ -71,7 +67,6 @@ public class TimetableBlockEntity {
         this.endAt = endAt;
         this.blockName = blockName;
         this.artist = artist;
-        this.imageUrl = imageUrl;
         this.information = information;
         this.blockInfoRedirectUrl = blockInfoRedirectUrl;
     }
@@ -83,10 +78,9 @@ public class TimetableBlockEntity {
                                               final LocalDateTime endAt,
                                               final String blockName,
                                               final String artist,
-                                              final String imageUrl,
                                               final String information,
                                               final String blockInfoRedirectUrl) {
-        return new TimetableBlockEntity(timetableId, timetableCategoryId, timetableAreaId, startAt, endAt, blockName, artist, imageUrl, information, blockInfoRedirectUrl);
+        return new TimetableBlockEntity(timetableId, timetableCategoryId, timetableAreaId, startAt, endAt, blockName, artist, information, blockInfoRedirectUrl);
     }
 
     private void validateDateTime(final LocalDateTime startAt, final LocalDateTime endAt) {
