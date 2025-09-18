@@ -1,6 +1,8 @@
 package com.permitseoul.permitserver.domain.eventtimetable.blockmedia.domain.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,9 +19,11 @@ public class TimetableBlockMediaEntity {
     private Long timetableBlockMediaId;
 
     @Column(name = "timetable_block_id", nullable = false)
+    @Positive(message = "timetableBlockId는 1이상이어야합니다.")
     private long timetableBlockId;
 
     @Column(name = "sequence", nullable = false)
+    @Min(value = 0, message = "timetable_block_media의 sequence는 0이상이어야합니다.")
     private int sequence;
 
     @Column(name = "mediaUrl", nullable = false)
