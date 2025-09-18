@@ -10,14 +10,16 @@ public class TimetableCategory {
     private final Long timetableCategoryId;
     private final long timetableId;
     private final String categoryName;
-    private final String categoryColor;
+    private final String categoryBackgroundColor;
+    private final String categoryLineColor;
 
     public static TimetableCategory fromEntity(final TimetableCategoryEntity timetableCategoryEntity) {
         return new TimetableCategory(
                 timetableCategoryEntity.getTimetableCategoryId(),
                 timetableCategoryEntity.getTimetableId(),
                 timetableCategoryEntity.getCategoryName(),
-                timetableCategoryEntity.getCategoryColor()
+                timetableCategoryEntity.getCategoryBackgroundColor(),
+                timetableCategoryEntity.getCategoryLineColor()
         );
     }
 
