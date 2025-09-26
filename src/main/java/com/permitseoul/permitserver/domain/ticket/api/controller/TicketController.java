@@ -9,6 +9,7 @@ import com.permitseoul.permitserver.global.resolver.user.UserIdHeader;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.SuccessCode;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +42,7 @@ public class TicketController {
     //도어용 티켓 검증 api
     @PostMapping("/confirm")
     public ResponseEntity<BaseResponse<?>> getUserBuyTicketInfo(
-            @RequestBody TicketConfirmRequest ticketConfirmRequest
+            @RequestBody @Valid TicketConfirmRequest ticketConfirmRequest
     ) {
         ticketService.confirmTicket(ticketConfirmRequest.ticketCode(), ticketConfirmRequest.checkCode());
         return ApiResponseUtil.success(SuccessCode.OK);

@@ -121,7 +121,6 @@ public class TicketService {
             final Event event = eventRetriever.findEventById(ticketEntity.getEventId());
             verifyTicketCheckCode(event.getTicketCheckCode(), checkCodeFromTicket);
 
-            
             ticketUpdater.updateTicketStatus(ticketEntity, TicketStatus.USED);
         } catch (TicketNotFoundException  e) {
             throw new NotFoundTicketException(ErrorCode.NOT_FOUND_TICKET);
@@ -133,8 +132,10 @@ public class TicketService {
     }
 
     private void verifyTicketStatus(final TicketStatus ticketStatus) {
-        if(ticketStatus == TicketStatus.USED || ticketStatus == TicketStatus.CANCELED) {
+        if(ticketStatus == TicketStatus.USED)  {
             throw new ConflictTicketException(ErrorCode.CONFLICT_ALREADY_USED_TICKET);
+        } else if(ticketStatus == TicketStatus.CANCELED) {
+            throw new IllegalTicketException(ErrorCode.BAD_REQUEST_CANCELED_TICKET);
         }
     }
 

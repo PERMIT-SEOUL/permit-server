@@ -59,7 +59,9 @@ public class TicketEntity extends BaseTimeEntity {
 
     public void updateTicketStatus(final TicketStatus status) {
         this.status = status;
-        this.usedTime = LocalDateTime.now();
+        if(status == TicketStatus.USED) {
+            this.usedTime = LocalDateTime.now();
+        }
     }
 }
 
