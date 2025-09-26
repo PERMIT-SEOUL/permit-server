@@ -2,14 +2,21 @@ package com.permitseoul.permitserver.domain.ticket.api.service;
 
 import com.permitseoul.permitserver.domain.event.core.component.EventRetriever;
 import com.permitseoul.permitserver.domain.event.core.domain.Event;
+import com.permitseoul.permitserver.domain.event.core.exception.EventNotfoundException;
 import com.permitseoul.permitserver.domain.payment.core.component.PaymentRetriever;
 import com.permitseoul.permitserver.domain.payment.core.domain.Payment;
-import com.permitseoul.permitserver.domain.ticket.api.dto.EventTicketInfoResponse;
-import com.permitseoul.permitserver.domain.ticket.api.dto.UserBuyTicketInfo;
+import com.permitseoul.permitserver.domain.ticket.api.dto.res.EventTicketInfoResponse;
+import com.permitseoul.permitserver.domain.ticket.api.dto.res.UserBuyTicketInfoResponse;
+import com.permitseoul.permitserver.domain.ticket.api.exception.ConflictTicketException;
+import com.permitseoul.permitserver.domain.ticket.api.exception.DateTicketException;
+import com.permitseoul.permitserver.domain.ticket.api.exception.IllegalTicketException;
 import com.permitseoul.permitserver.domain.ticket.api.exception.NotFoundTicketException;
 import com.permitseoul.permitserver.domain.ticket.core.component.TicketRetriever;
+import com.permitseoul.permitserver.domain.ticket.core.component.TicketUpdater;
 import com.permitseoul.permitserver.domain.ticket.core.domain.Ticket;
 import com.permitseoul.permitserver.domain.ticket.core.domain.TicketStatus;
+import com.permitseoul.permitserver.domain.ticket.core.domain.entity.TicketEntity;
+import com.permitseoul.permitserver.domain.ticket.core.exception.TicketNotFoundException;
 import com.permitseoul.permitserver.domain.ticketround.core.component.TicketRoundRetriever;
 import com.permitseoul.permitserver.domain.ticketround.core.domain.TicketRound;
 import com.permitseoul.permitserver.domain.tickettype.core.component.TicketTypeRetriever;
@@ -41,6 +48,7 @@ public class TicketService {
     private final PaymentRetriever paymentRetriever;
 
     private static final String ORDER_DATE_FORMAT = "yyyy-MM-dd";
+    private final TicketUpdater ticketUpdater;
 
     @Transactional(readOnly = true)
     public EventTicketInfoResponse getEventTicketInfo(final long eventId, final LocalDateTime now) {
@@ -75,14 +83,14 @@ public class TicketService {
     }
 
     @Transactional(readOnly = true)
-    public UserBuyTicketInfo getUserBuyTicketInfo(final Long userId) {
+    public UserBuyTicketInfoResponse getUserBuyTicketInfo(final Long userId) {
         if (userId == null) {
-            return new UserBuyTicketInfo(List.of());
+            return new UserBuyTicketInfoResponse(List.of());
         }
         try {
             final List<Ticket> ticketList = ticketRetriever.findAllTicketsByUserId(userId);
             if (ticketList.isEmpty()) {
-                return new UserBuyTicketInfo(List.of());
+                return new UserBuyTicketInfoResponse(List.of());
             }
 
             final Map<Long, TicketType> ticketTypeMap = getTicketTypeMap(ticketList);
@@ -93,19 +101,61 @@ public class TicketService {
 
             final Map<String, BigDecimal> refundAmountByOrderId = findRefundAmountsFromPaymentIfAllTicketsCanceled(TicketListGroupedByOrderIdMap);
 
-            final List<UserBuyTicketInfo.Order> orders = convertToOrderList(TicketListGroupedByOrderIdMap, eventMap, ticketTypeMap, refundAmountByOrderId);
+            final List<UserBuyTicketInfoResponse.Order> orders = convertToOrderList(TicketListGroupedByOrderIdMap, eventMap, ticketTypeMap, refundAmountByOrderId);
 
-            return new UserBuyTicketInfo(orders);
+            return new UserBuyTicketInfoResponse(orders);
         } catch (TicketTypeNotfoundException e) {
             throw new NotFoundTicketException(ErrorCode.NOT_FOUND_TICKET_TYPE);
         }
-
     }
 
-    private List<UserBuyTicketInfo.Order> convertToOrderList(final Map<String, List<Ticket>> ticketsGroupedByOrderId,
-                                                             final Map<Long, Event> eventMap,
-                                                             final Map<Long, TicketType> ticketTypeMap,
-                                                             final Map<String, BigDecimal> refundAmountByOrderId) {
+    @Transactional
+    public void confirmTicket(final String ticketCode, final String checkCodeFromTicket) {
+        try {
+            final TicketEntity ticketEntity = ticketRetriever.findTicketEntityByTicketCode(ticketCode);
+            verifyTicketStatus(ticketEntity.getStatus());
+
+            final TicketType ticketType = ticketTypeRetriever.findTicketTypeById(ticketEntity.getTicketTypeId());
+            verifyTicketDate(ticketType.getTicketStartAt(), ticketType.getTicketEndAt());
+
+            final Event event = eventRetriever.findEventById(ticketEntity.getEventId());
+            verifyTicketCheckCode(event.getTicketCheckCode(), checkCodeFromTicket);
+
+            ticketUpdater.updateTicketStatus(ticketEntity, TicketStatus.USED);
+        } catch (TicketNotFoundException  e) {
+            throw new NotFoundTicketException(ErrorCode.NOT_FOUND_TICKET);
+        } catch (TicketTypeNotfoundException e) {
+            throw new NotFoundTicketException(ErrorCode.NOT_FOUND_TICKET_TYPE);
+        } catch (EventNotfoundException e) {
+            throw new NotFoundTicketException(ErrorCode.NOT_FOUND_EVENT);
+        }
+    }
+
+    private void verifyTicketStatus(final TicketStatus ticketStatus) {
+        if(ticketStatus == TicketStatus.USED)  {
+            throw new ConflictTicketException(ErrorCode.CONFLICT_ALREADY_USED_TICKET);
+        } else if(ticketStatus == TicketStatus.CANCELED) {
+            throw new IllegalTicketException(ErrorCode.BAD_REQUEST_CANCELED_TICKET);
+        }
+    }
+
+    private void verifyTicketCheckCode(final String ticketCheckCode, final String checkCodeFromTicket) {
+        if(!Objects.equals(ticketCheckCode, checkCodeFromTicket)) {
+            throw new IllegalTicketException(ErrorCode.BAD_REQUEST_TICKET_CHECK_CODE_ERROR);
+        }
+    }
+
+    private void verifyTicketDate(final LocalDateTime ticketStartAt, final LocalDateTime ticketEndAt) {
+        final LocalDateTime now = LocalDateTime.now();
+        if(now.isBefore(ticketStartAt) || now.isAfter(ticketEndAt)) {
+            throw new DateTicketException(ErrorCode.BAD_REQUEST_DATE_TIME_ERROR);
+        }
+    }
+
+    private List<UserBuyTicketInfoResponse.Order> convertToOrderList(final Map<String, List<Ticket>> ticketsGroupedByOrderId,
+                                                                     final Map<Long, Event> eventMap,
+                                                                     final Map<Long, TicketType> ticketTypeMap,
+                                                                     final Map<String, BigDecimal> refundAmountByOrderId) {
         return ticketsGroupedByOrderId.entrySet().stream()
                 .map(entry -> {
                     final String orderId = entry.getKey();
@@ -117,12 +167,12 @@ public class TicketService {
                     final String eventName = eventMap.get(eventId).getName();
                     final String eventVenue = eventMap.get(eventId).getVenue();
 
-                    final List<UserBuyTicketInfo.TicketInfo> ticketInfos = ticketsInOrder.stream()
+                    final List<UserBuyTicketInfoResponse.TicketInfo> ticketInfos = ticketsInOrder.stream()
                             .map(ticket -> {
                                 final TicketType ticketType = ticketTypeMap.get(ticket.getTicketTypeId());
                                 final boolean expired = isTicketDateExpired(ticketType.getTicketEndAt());
 
-                                return new UserBuyTicketInfo.TicketInfo(
+                                return new UserBuyTicketInfoResponse.TicketInfo(
                                         ticket.getTicketCode(),
                                         ticketType.getTicketTypeName(),
                                         toUiStatus(ticket.getStatus(), expired),
@@ -133,14 +183,14 @@ public class TicketService {
 
                     // 한 오더내에서 모든 티켓이 USABLE 상태일 때만 취소 가능함
                     final boolean canCancel = ticketInfos.stream()
-                            .allMatch(info -> info.ticketStatus() == UserBuyTicketInfo.TicketStatusForUi.USABLE);
+                            .allMatch(info -> info.ticketStatus() == UserBuyTicketInfoResponse.TicketStatusForUi.USABLE);
 
                     final BigDecimal refundAmount = refundAmountByOrderId.get(orderId);
                     final String formattedRefund = refundAmount != null ? PriceFormatterUtil.formatPrice(refundAmount) : null;
 
-                    return new UserBuyTicketInfo.Order(orderDate, orderId, eventName, eventVenue, formattedRefund,canCancel, ticketInfos);
+                    return new UserBuyTicketInfoResponse.Order(orderDate, orderId, eventName, eventVenue, formattedRefund,canCancel, ticketInfos);
                 })
-                .sorted(Comparator.comparing(UserBuyTicketInfo.Order::orderDate).reversed())
+                .sorted(Comparator.comparing(UserBuyTicketInfoResponse.Order::orderDate).reversed())
                 .toList();
     }
 
@@ -148,15 +198,15 @@ public class TicketService {
         return LocalDateTime.now().isAfter(endDate);
     }
 
-    private UserBuyTicketInfo.TicketStatusForUi toUiStatus(final TicketStatus status, final boolean expired) {
+    private UserBuyTicketInfoResponse.TicketStatusForUi toUiStatus(final TicketStatus status, final boolean expired) {
         if (expired && status == TicketStatus.RESERVED) {
-            return UserBuyTicketInfo.TicketStatusForUi.EXPIRED;
+            return UserBuyTicketInfoResponse.TicketStatusForUi.EXPIRED;
         }
 
         return switch (status) {
-            case RESERVED -> UserBuyTicketInfo.TicketStatusForUi.USABLE;
-            case USED -> UserBuyTicketInfo.TicketStatusForUi.USED;
-            case CANCELED -> UserBuyTicketInfo.TicketStatusForUi.REFUNDED;
+            case RESERVED -> UserBuyTicketInfoResponse.TicketStatusForUi.USABLE;
+            case USED -> UserBuyTicketInfoResponse.TicketStatusForUi.USED;
+            case CANCELED -> UserBuyTicketInfoResponse.TicketStatusForUi.REFUNDED;
         };
     }
 

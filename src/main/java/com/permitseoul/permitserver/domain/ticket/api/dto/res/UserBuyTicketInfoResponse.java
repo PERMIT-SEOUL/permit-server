@@ -1,9 +1,9 @@
-package com.permitseoul.permitserver.domain.ticket.api.dto;
+package com.permitseoul.permitserver.domain.ticket.api.dto.res;
 
 
 import java.util.List;
 
-public record UserBuyTicketInfo(
+public record UserBuyTicketInfoResponse(
         List<Order> orders
 ) {
     public record Order(
