@@ -2,14 +2,21 @@ package com.permitseoul.permitserver.domain.ticket.api.service;
 
 import com.permitseoul.permitserver.domain.event.core.component.EventRetriever;
 import com.permitseoul.permitserver.domain.event.core.domain.Event;
+import com.permitseoul.permitserver.domain.event.core.exception.EventNotfoundException;
 import com.permitseoul.permitserver.domain.payment.core.component.PaymentRetriever;
 import com.permitseoul.permitserver.domain.payment.core.domain.Payment;
 import com.permitseoul.permitserver.domain.ticket.api.dto.res.EventTicketInfoResponse;
 import com.permitseoul.permitserver.domain.ticket.api.dto.res.UserBuyTicketInfoResponse;
+import com.permitseoul.permitserver.domain.ticket.api.exception.ConflictTicketException;
+import com.permitseoul.permitserver.domain.ticket.api.exception.DateTicketException;
+import com.permitseoul.permitserver.domain.ticket.api.exception.IllegalTicketException;
 import com.permitseoul.permitserver.domain.ticket.api.exception.NotFoundTicketException;
 import com.permitseoul.permitserver.domain.ticket.core.component.TicketRetriever;
+import com.permitseoul.permitserver.domain.ticket.core.component.TicketUpdater;
 import com.permitseoul.permitserver.domain.ticket.core.domain.Ticket;
 import com.permitseoul.permitserver.domain.ticket.core.domain.TicketStatus;
+import com.permitseoul.permitserver.domain.ticket.core.domain.entity.TicketEntity;
+import com.permitseoul.permitserver.domain.ticket.core.exception.TicketNotFoundException;
 import com.permitseoul.permitserver.domain.ticketround.core.component.TicketRoundRetriever;
 import com.permitseoul.permitserver.domain.ticketround.core.domain.TicketRound;
 import com.permitseoul.permitserver.domain.tickettype.core.component.TicketTypeRetriever;
@@ -41,6 +48,7 @@ public class TicketService {
     private final PaymentRetriever paymentRetriever;
 
     private static final String ORDER_DATE_FORMAT = "yyyy-MM-dd";
+    private final TicketUpdater ticketUpdater;
 
     @Transactional(readOnly = true)
     public EventTicketInfoResponse getEventTicketInfo(final long eventId, final LocalDateTime now) {
@@ -101,10 +109,46 @@ public class TicketService {
         }
     }
 
-    public void confirmTicket(final String ticketCode, final String checkCode) {
-        final Ticket ticket = ticketRetriever.findTicketByTicketCode(ticketCode);
-        final Event event = eventRetriever.findEventById(ticket.getEventId());
+    @Transactional
+    public void confirmTicket(final String ticketCode, final String checkCodeFromTicket) {
+        try {
+            final TicketEntity ticketEntity = ticketRetriever.findTicketEntityByTicketCode(ticketCode);
+            verifyTicketStatus(ticketEntity.getStatus());
 
+            final TicketType ticketType = ticketTypeRetriever.findTicketTypeById(ticketEntity.getTicketTypeId());
+            verifyTicketDate(ticketType.getTicketStartAt(), ticketType.getTicketEndAt());
+
+            final Event event = eventRetriever.findEventById(ticketEntity.getEventId());
+            verifyTicketCheckCode(event.getTicketCheckCode(), checkCodeFromTicket);
+
+            
+            ticketUpdater.updateTicketStatus(ticketEntity, TicketStatus.USED);
+        } catch (TicketNotFoundException  e) {
+            throw new NotFoundTicketException(ErrorCode.NOT_FOUND_TICKET);
+        } catch (TicketTypeNotfoundException e) {
+            throw new NotFoundTicketException(ErrorCode.NOT_FOUND_TICKET_TYPE);
+        } catch (EventNotfoundException e) {
+            throw new NotFoundTicketException(ErrorCode.NOT_FOUND_EVENT);
+        }
+    }
+
+    private void verifyTicketStatus(final TicketStatus ticketStatus) {
+        if(ticketStatus == TicketStatus.USED || ticketStatus == TicketStatus.CANCELED) {
+            throw new ConflictTicketException(ErrorCode.CONFLICT_ALREADY_USED_TICKET);
+        }
+    }
+
+    private void verifyTicketCheckCode(final String ticketCheckCode, final String checkCodeFromTicket) {
+        if(!Objects.equals(ticketCheckCode, checkCodeFromTicket)) {
+            throw new IllegalTicketException(ErrorCode.BAD_REQUEST_TICKET_CHECK_CODE_ERROR);
+        }
+    }
+
+    private void verifyTicketDate(final LocalDateTime ticketStartAt, final LocalDateTime ticketEndAt) {
+        final LocalDateTime now = LocalDateTime.now();
+        if(now.isBefore(ticketStartAt) || now.isAfter(ticketEndAt)) {
+            throw new DateTicketException(ErrorCode.BAD_REQUEST_DATE_TIME_ERROR);
+        }
     }
 
     private List<UserBuyTicketInfoResponse.Order> convertToOrderList(final Map<String, List<Ticket>> ticketsGroupedByOrderId,

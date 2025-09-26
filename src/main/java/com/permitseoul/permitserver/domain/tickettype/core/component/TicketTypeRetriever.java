@@ -22,6 +22,11 @@ public class TicketTypeRetriever {
     }
 
     @Transactional(readOnly = true)
+    public TicketType findTicketTypeById(final long ticketTypeId) {
+        return TicketType.fromEntity(ticketTypeRepository.findById(ticketTypeId).orElseThrow(TicketTypeNotfoundException::new));
+    }
+
+    @Transactional(readOnly = true)
     public void validExistTicketType(final long ticketTypeId) {
         if(!ticketTypeRepository.existsById(ticketTypeId)) {
             throw new TicketTypeNotfoundException();

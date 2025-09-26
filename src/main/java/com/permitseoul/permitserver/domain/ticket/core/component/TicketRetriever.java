@@ -17,8 +17,8 @@ public class TicketRetriever {
     private final TicketRepository ticketRepository;
 
     @Transactional(readOnly = true)
-    public Ticket findTicketByTicketCode(final String ticketCode) {
-        return Ticket.fromEntity(ticketRepository.findByTicketCode(ticketCode).orElseThrow(TicketNotFoundException::new));
+    public TicketEntity findTicketEntityByTicketCode(final String ticketCode) {
+        return ticketRepository.findByTicketCode(ticketCode).orElseThrow(TicketNotFoundException::new);
     }
 
     @Transactional(readOnly = true)

@@ -25,6 +25,8 @@ public enum ErrorCode implements ApiCode {
     BAD_REQUEST_AMOUNT_MISMATCH(HttpStatus.BAD_REQUEST, 40011, "구매하려는 티켓들의 가격과 totalAmount가 다릅니다."),
     BAD_REQUEST_ID_DECODE_ERROR(HttpStatus.BAD_REQUEST, 40012, "해당 객체 id를 decode 할 수 없습니다."),
     BAD_REQUEST_DATE_TIME_ERROR(HttpStatus.BAD_REQUEST, 40013, "잘못된 date, time입니다."),
+    BAD_REQUEST_TICKET_CHECK_CODE_ERROR(HttpStatus.BAD_REQUEST, 40014, "잘못된 ticket check code 입니다."),
+
 
 
     /**
@@ -97,6 +99,8 @@ public enum ErrorCode implements ApiCode {
     CONFLICT_ALREADY_USED_COUPON_CODE(HttpStatus.CONFLICT, 40903, "이미 사용한 쿠폰코드입니다."),
     CONFLICT_USER_EMAIL(HttpStatus.CONFLICT, 40904, "이미 존재하는 이메일입니다."),
     CONFLICT_TIMETABLE_USER_LIKE(HttpStatus.CONFLICT, 40905, "이미 존재하는 타임테이블 유저 좋아요입니다."),
+    CONFLICT_ALREADY_USED_TICKET(HttpStatus.CONFLICT, 40906, "이미 사용하거나 취소된 티켓입니다."),
+
 
 
     /**
