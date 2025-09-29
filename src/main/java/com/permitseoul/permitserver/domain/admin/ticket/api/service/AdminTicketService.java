@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -50,6 +51,7 @@ public class AdminTicketService {
             return List.of();
         }
         return ticketTypes.stream()
+                .sorted(Comparator.comparing(TicketType::getTicketTypeId))
                 .map(ticketType -> TicketRoundAndTypeDetailRes.TicketTypeInfo.of(
                                 ticketType.getTicketTypeId(),
                                 ticketType.getTicketTypeName(),
