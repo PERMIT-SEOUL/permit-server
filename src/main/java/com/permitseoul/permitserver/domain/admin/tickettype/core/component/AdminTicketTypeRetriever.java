@@ -15,7 +15,14 @@ public class AdminTicketTypeRetriever {
 
     @Transactional(readOnly = true)
     public List<TicketType> getTicketTypesByTicketRounds(final List<Long> ticketRoundIds) {
-        return ticketTypeRepository.findByTicketRoundIdIn(ticketRoundIds).stream()
+        return ticketTypeRepository.findAllByTicketRoundIdIn(ticketRoundIds).stream()
+                .map(TicketType::fromEntity)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<TicketType> getTicketTypesByTicketRoundId(final Long ticketRoundId) {
+        return ticketTypeRepository.findAllByTicketRoundId(ticketRoundId).stream()
                 .map(TicketType::fromEntity)
                 .toList();
     }
