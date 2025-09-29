@@ -9,9 +9,9 @@ public record TicketRoundAndTypeDetailRes(
         long ticketRoundId,
         String ticketRoundName,
         String ticketRoundSalesStartDate, // yyyy.MM.dd
-        String ticketRoundSalesStartTime, // hh:mm
+        String ticketRoundSalesStartTime, // HH:mm
         String ticketRoundSalesEndDate,   // yyyy.MM.dd
-        String ticketRoundSalesEndTime,   // hh:mm
+        String ticketRoundSalesEndTime,   // HH:mm
         List<TicketTypeInfo> ticketTypes
 ) {
 
@@ -39,9 +39,9 @@ public record TicketRoundAndTypeDetailRes(
             BigDecimal ticketTypePrice,
             int ticketTypeCount,
             String ticketTypeStartDate, // yyyy.MM.dd
-            String ticketTypeStartTime, // hh:mm
+            String ticketTypeStartTime, // HH:mm
             String ticketTypeEndDate,   // yyyy.MM.dd
-            String ticketTypeEndTime    // hh:mm
+            String ticketTypeEndTime    // HH:mm
     ) {
         public static TicketTypeInfo of(final long ticketTypeId,
                                         final String ticketTypeName,
