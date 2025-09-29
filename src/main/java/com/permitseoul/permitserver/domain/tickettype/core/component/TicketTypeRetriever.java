@@ -62,7 +62,7 @@ public class TicketTypeRetriever {
 
     @Transactional(readOnly = true)
     public List<TicketType> findTicketTypeListByRoundIdList(final List<Long> roundIds) {
-        final List<TicketTypeEntity> ticketTypeEntityList = ticketTypeRepository.findByTicketRoundIdIn(roundIds);
+        final List<TicketTypeEntity> ticketTypeEntityList = ticketTypeRepository.findAllByTicketRoundIdIn(roundIds);
         if (ObjectUtils.isEmpty(ticketTypeEntityList)) {
             throw new TicketTypeNotfoundException();
         }

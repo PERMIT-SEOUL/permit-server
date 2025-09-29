@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.domain.admin.ticketround.core;
 
+import com.permitseoul.permitserver.domain.admin.ticketround.exception.AdminTicketRoundNotFoundException;
 import com.permitseoul.permitserver.domain.ticketround.core.domain.TicketRound;
 import com.permitseoul.permitserver.domain.ticketround.core.repository.TicketRoundRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,5 +19,10 @@ public class AdminTicketRoundRetriever {
         return ticketRoundRepository.findByEventIdIn(eventIds).stream()
                 .map(TicketRound::fromEntity)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public TicketRound getTicketRoundById(final long ticketRoundId) {
+        return TicketRound.fromEntity(ticketRoundRepository.findById(ticketRoundId).orElseThrow(AdminTicketRoundNotFoundException::new));
     }
 }
