@@ -22,7 +22,8 @@ public class TicketSaver {
                         ticket.getOrderId(),
                         ticket.getTicketTypeId(),
                         ticket.getEventId(),
-                        ticket.getTicketCode()))
+                        ticket.getTicketCode(),
+                        ticket.getTicketPrice()))
                 .toList();
         ticketRepository.saveAll(ticketEntityList);
     }

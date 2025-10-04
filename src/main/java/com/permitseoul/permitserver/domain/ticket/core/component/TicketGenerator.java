@@ -22,6 +22,7 @@ public abstract class TicketGenerator {
                                         .eventId(reservation.getEventId())
                                         .ticketCode(TicketOrCouponCodeGenerator.generateCode())
                                         .status(TicketStatus.RESERVED)
+                                        .ticketPrice(reservation.getTotalAmount())
                                         .build()
                                 )
                 )

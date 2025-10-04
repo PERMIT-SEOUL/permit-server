@@ -16,7 +16,7 @@ public class AdminTicketRoundRetriever {
 
     @Transactional(readOnly = true)
     public List<TicketRound> getTicketRoundsByEventIds(final List<Long> eventIds) {
-        return ticketRoundRepository.findByEventIdIn(eventIds).stream()
+        return ticketRoundRepository.findAllByEventIdIn(eventIds).stream()
                 .map(TicketRound::fromEntity)
                 .toList();
     }
@@ -24,5 +24,12 @@ public class AdminTicketRoundRetriever {
     @Transactional(readOnly = true)
     public TicketRound getTicketRoundById(final long ticketRoundId) {
         return TicketRound.fromEntity(ticketRoundRepository.findById(ticketRoundId).orElseThrow(AdminTicketRoundNotFoundException::new));
+    }
+
+    @Transactional(readOnly = true)
+    public List<TicketRound> getTicketRoundByEventId(final long eventId) {
+        return ticketRoundRepository.findAllByEventId(eventId).stream()
+                .map(TicketRound::fromEntity)
+                .toList();
     }
 }
