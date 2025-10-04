@@ -26,7 +26,7 @@ public interface TicketRepository extends JpaRepository<TicketEntity, Long> {
     // 특정 타입, 특정 상태들 개수
     long countByTicketTypeIdAndStatusIn(final long ticketTypeId, final Collection<TicketStatus> status);
 
-    @Query("SELECT COALESCE(SUM(t.ticketPrice), 0.0) " +
+    @Query("SELECT COALESCE(SUM(t.ticketPrice), CAST(0 AS java.math.BigDecimal)) " +
             "FROM TicketEntity t " +
             "WHERE t.ticketTypeId = :ticketTypeId " +
             "AND t.status IN :statuses")
