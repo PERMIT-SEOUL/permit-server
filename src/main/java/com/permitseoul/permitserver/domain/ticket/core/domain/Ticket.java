@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -19,6 +20,7 @@ public class Ticket {
     private final String ticketCode;
     private final TicketStatus status;
     private final LocalDateTime createdAt;
+    private final BigDecimal ticketPrice;
 
     public static Ticket fromEntity(final TicketEntity entity) {
         return new Ticket(
@@ -29,7 +31,8 @@ public class Ticket {
                 entity.getEventId(),
                 entity.getTicketCode(),
                 entity.getStatus(),
-                entity.getCreatedAt()
+                entity.getCreatedAt(),
+                entity.getTicketPrice()
         );
     }
 }

@@ -19,9 +19,17 @@ public class AdminTicketController {
 
     //admin 행사 티켓 라운드+타입 상세 조회 API
     @GetMapping("/details/{ticketRoundId}")
-    public ResponseEntity<BaseResponse<?>> getTicketRoundAndTypeDetails(
-        @PathVariable("ticketRoundId") long ticketRoundId
+    public ResponseEntity<BaseResponse<?>> getTicketRoundAndTicketTypeDetails(
+        @PathVariable("ticketRoundId") final long ticketRoundId
     ) {
         return ApiResponseUtil.success(SuccessCode.OK, adminTicketService.getTicketRoundAndTypeDetails(ticketRoundId));
+    }
+
+    //admin 행사 티켓 라운드+타입 전체 조회 API
+    @GetMapping("/{eventId}")
+    public ResponseEntity<BaseResponse<?>> getTicketRoundsWithTicketType(
+            @PathVariable("eventId") final long eventId
+    ) {
+        return ApiResponseUtil.success(SuccessCode.OK, adminTicketService.getTicketRoundWithTicketType(eventId));
     }
 }
