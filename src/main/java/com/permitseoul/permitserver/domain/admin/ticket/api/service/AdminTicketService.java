@@ -1,23 +1,32 @@
 package com.permitseoul.permitserver.domain.admin.ticket.api.service;
 
 import com.permitseoul.permitserver.domain.admin.base.api.exception.AdminApiException;
+import com.permitseoul.permitserver.domain.admin.event.api.dto.req.AdminEventWithTicketCreateRequest;
+import com.permitseoul.permitserver.domain.admin.ticket.api.dto.req.TicketRoundWithTypeCreateRequest;
 import com.permitseoul.permitserver.domain.admin.ticket.api.dto.res.TicketRoundAndTicketTypeRes;
 import com.permitseoul.permitserver.domain.admin.ticket.api.dto.res.TicketRoundAndTypeDetailRes;
 import com.permitseoul.permitserver.domain.admin.ticket.core.component.AdminTicketRetriever;
 import com.permitseoul.permitserver.domain.admin.ticketround.core.AdminTicketRoundRetriever;
+import com.permitseoul.permitserver.domain.admin.ticketround.core.AdminTicketRoundSaver;
 import com.permitseoul.permitserver.domain.admin.ticketround.exception.AdminTicketRoundNotFoundException;
 import com.permitseoul.permitserver.domain.admin.tickettype.core.component.AdminTicketTypeRetriever;
+import com.permitseoul.permitserver.domain.admin.tickettype.core.component.AdminTicketTypeSaver;
 import com.permitseoul.permitserver.domain.ticket.core.domain.TicketStatus;
 import com.permitseoul.permitserver.domain.ticket.core.repository.TicketRepository;
 import com.permitseoul.permitserver.domain.ticketround.core.domain.TicketRound;
+import com.permitseoul.permitserver.domain.ticketround.core.exception.TicketRoundIllegalArgumentException;
 import com.permitseoul.permitserver.domain.tickettype.core.domain.TicketType;
+import com.permitseoul.permitserver.domain.tickettype.core.domain.entity.TicketTypeEntity;
+import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeIllegalException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import com.permitseoul.permitserver.global.util.DateFormatterUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
@@ -27,6 +36,8 @@ public class AdminTicketService {
     private final AdminTicketTypeRetriever adminTicketTypeRetriever;
     private final AdminTicketRoundRetriever adminTicketRoundRetriever;
     private final AdminTicketRetriever adminTicketRetriever;
+    private final AdminTicketRoundSaver adminTicketRoundSaver;
+    private final AdminTicketTypeSaver adminTicketTypeSaver;
 
     private static final int EMPTY_TICKET_COUNT_ZERO = 0;
     private static final List<TicketStatus> SOLD_STATUSES = List.of(TicketStatus.RESERVED, TicketStatus.USED);
@@ -89,6 +100,35 @@ public class AdminTicketService {
                 BigDecimal.valueOf(totalSoldAmount),
                 roundsWithTypes
         );
+    }
+
+    @Transactional
+    public void createTicketRoundWithType(final long eventId,
+                                          final String ticketRoundName,
+                                          final LocalDateTime roundSalesStartDate,
+                                          final LocalDateTime roundSalesEndDate,
+                                          final List<TicketRoundWithTypeCreateRequest.TicketTypeRequest> ticketTypeRequests) {
+
+        try {
+            final TicketRound savedTicketRound = adminTicketRoundSaver.saveTicketRound(eventId,ticketRoundName, roundSalesStartDate, roundSalesEndDate);
+            saveTicketTypes(ticketTypeRequests, savedTicketRound.getTicketRoundId());
+        } catch (TicketRoundIllegalArgumentException | TicketTypeIllegalException e) {
+            throw new AdminApiException(ErrorCode.BAD_REQUEST_DATE_TIME_ERROR);
+        }
+    }
+
+    private void saveTicketTypes(final List<TicketRoundWithTypeCreateRequest.TicketTypeRequest> ticketTypes,
+                                 final long ticketRoundId) {
+        final List<TicketTypeEntity> ticketTypeEntityList = ticketTypes.stream()
+                .map(ticketType -> TicketTypeEntity.create(
+                        ticketRoundId,
+                        ticketType.name(),
+                        BigDecimal.valueOf(ticketType.price()),
+                        ticketType.totalCount(),
+                        ticketType.startDate(),
+                        ticketType.endDate()
+                )).toList();
+        adminTicketTypeSaver.saveAllTicketTypes(ticketTypeEntityList);
     }
 
     private TicketRoundAndTicketTypeRes.TicketRoundWithTypes parseRoundWithTypes(final TicketRound round) {

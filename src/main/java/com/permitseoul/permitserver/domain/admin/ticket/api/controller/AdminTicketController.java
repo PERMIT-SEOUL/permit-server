@@ -1,15 +1,13 @@
 package com.permitseoul.permitserver.domain.admin.ticket.api.controller;
 
+import com.permitseoul.permitserver.domain.admin.ticket.api.dto.req.TicketRoundWithTypeCreateRequest;
 import com.permitseoul.permitserver.domain.admin.ticket.api.service.AdminTicketService;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin/tickets")
@@ -31,5 +29,21 @@ public class AdminTicketController {
             @PathVariable("eventId") final long eventId
     ) {
         return ApiResponseUtil.success(SuccessCode.OK, adminTicketService.getTicketRoundWithTicketType(eventId));
+    }
+
+    //admin 행사 티켓 라운드+타입 등록 API
+    @PostMapping("/{eventId}")
+    public ResponseEntity<BaseResponse<?>> createTicketRoundWithType(
+            @PathVariable("eventId") final long eventId,
+            @RequestBody final TicketRoundWithTypeCreateRequest ticketRoundWithTypeCreateRequest
+    ) {
+        adminTicketService.createTicketRoundWithType(
+                eventId,
+                ticketRoundWithTypeCreateRequest.ticketRoundName(),
+                ticketRoundWithTypeCreateRequest.ticketRoundSalesStartDate(),
+                ticketRoundWithTypeCreateRequest.ticketRoundSalesEndDate(),
+                ticketRoundWithTypeCreateRequest.ticketTypes()
+        );
+        return ApiResponseUtil.success(SuccessCode.OK);
     }
 }
