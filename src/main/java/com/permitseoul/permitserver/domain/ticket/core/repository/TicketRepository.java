@@ -21,17 +21,17 @@ public interface TicketRepository extends JpaRepository<TicketEntity, Long> {
     Optional<TicketEntity> findByTicketCode(final String ticketCode);
 
     // 특정 타입, 특정 상태 개수
-    long countByTicketTypeIdAndStatus(long ticketTypeId, TicketStatus status);
+    long countByTicketTypeIdAndStatus(final long ticketTypeId, final TicketStatus status);
 
     // 특정 타입, 특정 상태들 개수
-    long countByTicketTypeIdAndStatusIn(long ticketTypeId, Collection<TicketStatus> status);
+    long countByTicketTypeIdAndStatusIn(final long ticketTypeId, final Collection<TicketStatus> status);
 
-    @Query("SELECT COALESCE(SUM(t.ticketPrice), 0) " +
+    @Query("SELECT COALESCE(SUM(t.ticketPrice), 0.0) " +
             "FROM TicketEntity t " +
             "WHERE t.ticketTypeId = :ticketTypeId " +
             "AND t.status IN :statuses")
     BigDecimal sumTicketPriceByTicketTypeIdAndStatuses(
-            @Param("ticketTypeId") long ticketTypeId,
-            @Param("statuses") Iterable<TicketStatus> statuses
+            @Param("ticketTypeId") final long ticketTypeId,
+            @Param("statuses") final Iterable<TicketStatus> statuses
     );
 }

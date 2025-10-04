@@ -29,6 +29,7 @@ public class AdminTicketService {
     private final AdminTicketRetriever adminTicketRetriever;
 
     private static final int EMPTY_TICKET_COUNT_ZERO = 0;
+    private static final List<TicketStatus> SOLD_STATUSES = List.of(TicketStatus.RESERVED, TicketStatus.USED);
 
     @Transactional(readOnly = true)
     public TicketRoundAndTypeDetailRes getTicketRoundAndTypeDetails(final long ticketRoundId) {
@@ -112,11 +113,8 @@ public class AdminTicketService {
 
     private TicketRoundAndTicketTypeRes.TicketRoundWithTypes.TicketTypeInfo parseTicketTypeInfo(final TicketType type) {
 
-        // 판매 집계 대상 status(RESERVED, USED)
-        final List<TicketStatus> validStatuses = List.of(TicketStatus.RESERVED, TicketStatus.USED);
-
-        final long soldCount = adminTicketRetriever.getSoldCount(type.getTicketTypeId(), validStatuses);
-        final BigDecimal soldAmount = adminTicketRetriever.getSoldAmount(type.getTicketTypeId(), validStatuses);
+        final long soldCount = adminTicketRetriever.getSoldCount(type.getTicketTypeId(), SOLD_STATUSES);
+        final BigDecimal soldAmount = adminTicketRetriever.getSoldAmount(type.getTicketTypeId(), SOLD_STATUSES);
         final long refundCount = adminTicketRetriever.getCountByStatus(type.getTicketTypeId(), TicketStatus.CANCELED);
         final long usedCount = adminTicketRetriever.getCountByStatus(type.getTicketTypeId(), TicketStatus.USED);
 

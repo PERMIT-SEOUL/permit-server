@@ -34,6 +34,11 @@ public class TicketTypeRetriever {
     }
 
     @Transactional(readOnly = true)
+    public List<TicketTypeEntity> findAllByIds(final List<Long> ids) {
+        return ticketTypeRepository.findAllById(ids);
+    }
+
+    @Transactional(readOnly = true)
     public void verifyTicketCount(final TicketTypeEntity ticketTypeEntity, final int count) {
         ticketTypeEntity.verifyTicketCount(count);
     }

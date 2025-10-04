@@ -138,7 +138,12 @@ public class PaymentService {
 
             updateReservationStatusAndTossPaymentResponseTime(reservation.getReservationId(), ReservationStatus.PAYMENT_SUCCESS);
 
-            final List<Ticket> newTicketList = TicketGenerator.generatePublicTickets(reservationTicketList, userId, reservation);
+            final List<Long> ticketTypeIds = reservationTicketList.stream()
+                    .map(ReservationTicket::getTicketTypeId)
+                    .toList();
+            final List<TicketTypeEntity> ticketTypeEntities = ticketTypeRetriever.findAllByIds(ticketTypeIds);
+            final List<Ticket> newTicketList = TicketGenerator.generatePublicTickets(reservationTicketList, userId, reservation, ticketTypeEntities);
+
             ticketReservationPaymentFacade.savePaymentAndAllTickets(
                     newTicketList,
                     reservationTicketList,
