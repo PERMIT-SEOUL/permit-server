@@ -1,9 +1,11 @@
 package com.permitseoul.permitserver.domain.admin.ticket.api.dto.req;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,6 +23,8 @@ public record TicketRoundWithTypeCreateRequest(
         LocalDateTime ticketRoundSalesEndDate,
 
         @NotNull(message = "티켓타입 리스트는 필수입니다.")
+        @Size(min = 1, message = "최소 하나의 티켓타입이 필요합니다.")
+        @Valid
         List<TicketTypeRequest> ticketTypes
 ) {
     public record TicketTypeRequest(

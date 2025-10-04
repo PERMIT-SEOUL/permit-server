@@ -5,6 +5,7 @@ import com.permitseoul.permitserver.domain.admin.ticket.api.service.AdminTicketS
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.SuccessCode;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +36,7 @@ public class AdminTicketController {
     @PostMapping("/{eventId}")
     public ResponseEntity<BaseResponse<?>> createTicketRoundWithType(
             @PathVariable("eventId") final long eventId,
-            @RequestBody final TicketRoundWithTypeCreateRequest ticketRoundWithTypeCreateRequest
+            @RequestBody @Valid final TicketRoundWithTypeCreateRequest ticketRoundWithTypeCreateRequest
     ) {
         adminTicketService.createTicketRoundWithType(
                 eventId,

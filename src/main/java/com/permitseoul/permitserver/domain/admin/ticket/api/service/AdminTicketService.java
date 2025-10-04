@@ -1,7 +1,6 @@
 package com.permitseoul.permitserver.domain.admin.ticket.api.service;
 
 import com.permitseoul.permitserver.domain.admin.base.api.exception.AdminApiException;
-import com.permitseoul.permitserver.domain.admin.event.api.dto.req.AdminEventWithTicketCreateRequest;
 import com.permitseoul.permitserver.domain.admin.ticket.api.dto.req.TicketRoundWithTypeCreateRequest;
 import com.permitseoul.permitserver.domain.admin.ticket.api.dto.res.TicketRoundAndTicketTypeRes;
 import com.permitseoul.permitserver.domain.admin.ticket.api.dto.res.TicketRoundAndTypeDetailRes;
@@ -12,7 +11,6 @@ import com.permitseoul.permitserver.domain.admin.ticketround.exception.AdminTick
 import com.permitseoul.permitserver.domain.admin.tickettype.core.component.AdminTicketTypeRetriever;
 import com.permitseoul.permitserver.domain.admin.tickettype.core.component.AdminTicketTypeSaver;
 import com.permitseoul.permitserver.domain.ticket.core.domain.TicketStatus;
-import com.permitseoul.permitserver.domain.ticket.core.repository.TicketRepository;
 import com.permitseoul.permitserver.domain.ticketround.core.domain.TicketRound;
 import com.permitseoul.permitserver.domain.ticketround.core.exception.TicketRoundIllegalArgumentException;
 import com.permitseoul.permitserver.domain.tickettype.core.domain.TicketType;
@@ -21,7 +19,6 @@ import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeI
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import com.permitseoul.permitserver.global.util.DateFormatterUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
