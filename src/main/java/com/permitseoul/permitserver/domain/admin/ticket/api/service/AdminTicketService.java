@@ -33,6 +33,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -147,7 +148,7 @@ public class AdminTicketService {
                     );
                 } else {
                     final TicketTypeEntity ticketTypeEntity = adminTicketTypeRetriever.getTicketTypeEntityById(ticketTypeUpdateRequest.id());
-                    if(ticketTypeEntity.getTicketRoundId() != ticketRoundEntity.getTicketRoundId()) {
+                    if(!Objects.equals(ticketTypeEntity.getTicketRoundId(), ticketRoundEntity.getTicketRoundId())) {
                         throw new AdminApiException(ErrorCode.BAD_REQUEST_MISMATCH_TICKET_TYPE_ROUND);
                     }
                     adminTicketTypeUpdater.updateTicketType(

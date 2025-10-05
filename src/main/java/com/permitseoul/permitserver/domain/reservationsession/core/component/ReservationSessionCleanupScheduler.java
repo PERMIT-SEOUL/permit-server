@@ -39,7 +39,7 @@ public class ReservationSessionCleanupScheduler {
         reservationSessionRemover.deleteAllInBatch(successSessions);
 
         // 7분 지난 세션 -> 롤백 및 삭제
-        final List<ReservationSessionEntity> expiredOrFailedSessions = reservationSessionRepository.findAllByCreatedAtBefore(expireThreshold);
+        final List<ReservationSessionEntity> expiredOrFailedSessions = reservationSessionRepository.findAllBySuccessfulFalseAndCreatedAtBefore(expireThreshold);
         final Map<Long, Integer> rollbackMap = new HashMap<>();
         final List<String> expiredOrderIds = expiredOrFailedSessions.stream()
                 .map(ReservationSessionEntity::getOrderId)
