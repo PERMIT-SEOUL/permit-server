@@ -46,11 +46,11 @@ public class TicketRoundEntity {
         return new TicketRoundEntity(eventId, ticketRoundTitle, salesStartAt, salesEndAt);
     }
 
-    public void update(final String ticketRoundName,
+    public void update(final String ticketRoundTitle,
                        final LocalDateTime ticketRoundSalesStartDate,
                        final LocalDateTime ticketRoundSalesEndDate) {
         validateDateTIme(ticketRoundSalesStartDate, ticketRoundSalesEndDate);
-        this.ticketRoundTitle = ticketRoundName;
+        this.ticketRoundTitle = ticketRoundTitle;
         this.salesStartAt = ticketRoundSalesStartDate;
         this.salesEndAt = ticketRoundSalesEndDate;
     }
