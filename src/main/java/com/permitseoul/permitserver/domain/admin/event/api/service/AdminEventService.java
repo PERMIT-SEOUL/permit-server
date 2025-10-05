@@ -12,12 +12,11 @@ import com.permitseoul.permitserver.domain.admin.event.core.exception.AdminEvent
 import com.permitseoul.permitserver.domain.admin.eventimage.core.component.AdminEventImageRemover;
 import com.permitseoul.permitserver.domain.admin.eventimage.core.component.AdminEventImageRetriever;
 import com.permitseoul.permitserver.domain.admin.eventimage.core.component.AdminEventImageSaver;
-import com.permitseoul.permitserver.domain.admin.ticketround.core.AdminTicketRoundRetriever;
-import com.permitseoul.permitserver.domain.admin.ticketround.core.AdminTicketRoundSaver;
+import com.permitseoul.permitserver.domain.admin.ticketround.core.component.AdminTicketRoundRetriever;
+import com.permitseoul.permitserver.domain.admin.ticketround.core.component.AdminTicketRoundSaver;
 import com.permitseoul.permitserver.domain.admin.tickettype.core.component.AdminTicketTypeRetriever;
 import com.permitseoul.permitserver.domain.admin.tickettype.core.component.AdminTicketTypeSaver;
 import com.permitseoul.permitserver.domain.event.core.domain.Event;
-import com.permitseoul.permitserver.domain.event.core.domain.EventType;
 import com.permitseoul.permitserver.domain.event.core.domain.entity.EventEntity;
 import com.permitseoul.permitserver.domain.event.core.exception.EventIllegalArgumentException;
 import com.permitseoul.permitserver.domain.eventimage.core.domain.EventImage;

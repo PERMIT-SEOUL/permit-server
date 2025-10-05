@@ -1,4 +1,4 @@
-package com.permitseoul.permitserver.domain.admin.ticketround.core;
+package com.permitseoul.permitserver.domain.admin.ticketround.core.component;
 
 import com.permitseoul.permitserver.domain.ticketround.core.domain.entity.TicketRoundEntity;
 import org.springframework.stereotype.Component;

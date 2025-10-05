@@ -1,6 +1,8 @@
 package com.permitseoul.permitserver.domain.admin.tickettype.core.component;
 
+import com.permitseoul.permitserver.domain.admin.tickettype.core.exception.AdminTicketTypeNotFoundException;
 import com.permitseoul.permitserver.domain.tickettype.core.domain.TicketType;
+import com.permitseoul.permitserver.domain.tickettype.core.domain.entity.TicketTypeEntity;
 import com.permitseoul.permitserver.domain.tickettype.core.repository.TicketTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -25,5 +27,10 @@ public class AdminTicketTypeRetriever {
         return ticketTypeRepository.findAllByTicketRoundId(ticketRoundId).stream()
                 .map(TicketType::fromEntity)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public TicketTypeEntity getTicketTypeEntityById(final Long ticketTypeId) {
+        return ticketTypeRepository.findById(ticketTypeId).orElseThrow(AdminTicketTypeNotFoundException::new);
     }
 }

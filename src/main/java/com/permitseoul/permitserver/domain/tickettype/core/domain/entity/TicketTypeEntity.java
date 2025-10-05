@@ -66,6 +66,28 @@ public class TicketTypeEntity {
         return new TicketTypeEntity(ticketRoundId, ticketTypeName, ticketPrice, totalTicketCount, ticketStartAt, ticketEndAt);
     }
 
+    public void update(final String name,
+                       final BigDecimal price,
+                       final int totalCount,
+                       final LocalDateTime startAt,
+                       final LocalDateTime endAt) {
+        validateDatTime(startAt, endAt);
+        adjustTicketTypeTotalAndRemainCount(totalCount);
+        this.ticketTypeName = name;
+        this.ticketPrice = price;
+        this.ticketStartAt = startAt;
+        this.ticketEndAt = endAt;
+    }
+
+    public void adjustTicketTypeTotalAndRemainCount(final int requestTotalCount) {
+        final int differenceCount =  requestTotalCount - this.totalTicketCount;
+        this.remainTicketCount += differenceCount;
+        this.totalTicketCount = requestTotalCount;
+        if (this.remainTicketCount < 0) {
+            this.remainTicketCount = 0;
+        }
+    }
+
     public void verifyTicketCount(final int buyTicketCount) {
         checkBuyTicketCountZero(buyTicketCount);
         if (this.remainTicketCount < buyTicketCount) {
