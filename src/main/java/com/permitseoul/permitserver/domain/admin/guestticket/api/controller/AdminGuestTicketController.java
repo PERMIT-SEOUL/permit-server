@@ -26,7 +26,7 @@ public class AdminGuestTicketController {
             @RequestBody @Valid GuestTicketIssueRequest guestTicketIssueRequest
     ) {
         adminGuestTicketService.issueGuestTickets(guestTicketIssueRequest.eventId(), guestTicketIssueRequest.guestTicketList());
-        return ApiResponseUtil.success(SuccessCode.OK);
+        return ApiResponseUtil.success(SuccessCode.CREATED);
     }
 
 }

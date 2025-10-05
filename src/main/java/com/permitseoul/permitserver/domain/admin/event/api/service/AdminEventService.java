@@ -95,6 +95,7 @@ public class AdminEventService {
                     DateFormatterUtil.formatHHmm(event.getVisibleEndAt()),
                     event.getTicketCheckCode(),
                     event.getName(),
+                    event.getEventType(),
                     DateFormatterUtil.formatyyyyMMdd(event.getStartAt()),
                     DateFormatterUtil.formatHHmm(event.getStartAt()),
                     DateFormatterUtil.formatyyyyMMdd(event.getEndAt()),

@@ -1,0 +1,17 @@
+package com.permitseoul.permitserver.domain.admin.ticketround.core;
+
+import com.permitseoul.permitserver.domain.ticketround.core.domain.entity.TicketRoundEntity;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+
+@Component
+public class AdminTicketRoundUpdater {
+
+    public void updateTicketRound(final TicketRoundEntity ticketRoundEntity,
+                                  final String ticketRoundName,
+                                  final LocalDateTime ticketRoundSalesStartDate,
+                                  final LocalDateTime ticketRoundSalesEndDate) {
+        ticketRoundEntity.update(ticketRoundName, ticketRoundSalesStartDate, ticketRoundSalesEndDate);
+    }
+}

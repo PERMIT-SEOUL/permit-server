@@ -5,6 +5,8 @@ import com.permitseoul.permitserver.domain.tickettype.core.repository.TicketType
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -14,5 +16,14 @@ public class AdminTicketTypeSaver {
 
     public void saveAllTicketTypes(final List<TicketTypeEntity> ticketTypeEntityList) {
         ticketTypeRepository.saveAll(ticketTypeEntityList);
+    }
+
+    public void saveTicketType(final long ticketRoundId,
+                               final String name,
+                               final BigDecimal price,
+                               final int totalCount,
+                               final LocalDateTime startAt,
+                               final LocalDateTime endAt) {
+        ticketTypeRepository.save(TicketTypeEntity.create(ticketRoundId, name, price, totalCount, startAt, endAt));
     }
 }

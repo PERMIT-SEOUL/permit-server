@@ -34,6 +34,6 @@ public class AdminGuestController {
                 guestAddRequest.phoneNumber(),
                 guestAddRequest.email()
         );
-        return ApiResponseUtil.success(SuccessCode.OK);
+        return ApiResponseUtil.success(SuccessCode.CREATED);
     }
 }

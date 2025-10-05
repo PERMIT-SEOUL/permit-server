@@ -1,6 +1,7 @@
 package com.permitseoul.permitserver.domain.admin.ticket.api.controller;
 
 import com.permitseoul.permitserver.domain.admin.ticket.api.dto.req.TicketRoundWithTypeCreateRequest;
+import com.permitseoul.permitserver.domain.admin.ticket.api.dto.req.TicketRoundWithTypeUpdateRequest;
 import com.permitseoul.permitserver.domain.admin.ticket.api.service.AdminTicketService;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
@@ -45,6 +46,15 @@ public class AdminTicketController {
                 ticketRoundWithTypeCreateRequest.ticketRoundSalesEndDate(),
                 ticketRoundWithTypeCreateRequest.ticketTypes()
         );
+        return ApiResponseUtil.success(SuccessCode.CREATED);
+    }
+
+    //admin 행사 티켓 라운드+타입 수정 API
+    @PatchMapping
+    public ResponseEntity<BaseResponse<?>> updateTicketRoundWithType(
+            @RequestBody @Valid final TicketRoundWithTypeUpdateRequest ticketRoundWithTypeUpdateRequest
+    ) {
+        adminTicketService.updateTicketRoundWithType(ticketRoundWithTypeUpdateRequest);
         return ApiResponseUtil.success(SuccessCode.OK);
     }
 }
