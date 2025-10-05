@@ -2,17 +2,24 @@ package com.permitseoul.permitserver.domain.admin.ticket.api.service;
 
 import com.permitseoul.permitserver.domain.admin.base.api.exception.AdminApiException;
 import com.permitseoul.permitserver.domain.admin.ticket.api.dto.req.TicketRoundWithTypeCreateRequest;
+import com.permitseoul.permitserver.domain.admin.ticket.api.dto.req.TicketRoundWithTypeUpdateRequest;
 import com.permitseoul.permitserver.domain.admin.ticket.api.dto.res.TicketRoundAndTicketTypeRes;
 import com.permitseoul.permitserver.domain.admin.ticket.api.dto.res.TicketRoundAndTypeDetailRes;
 import com.permitseoul.permitserver.domain.admin.ticket.core.component.AdminTicketRetriever;
-import com.permitseoul.permitserver.domain.admin.ticketround.core.AdminTicketRoundRetriever;
-import com.permitseoul.permitserver.domain.admin.ticketround.core.AdminTicketRoundSaver;
+import com.permitseoul.permitserver.domain.admin.ticketround.core.component.AdminTicketRoundRetriever;
+import com.permitseoul.permitserver.domain.admin.ticketround.core.component.AdminTicketRoundSaver;
+import com.permitseoul.permitserver.domain.admin.ticketround.core.component.AdminTicketRoundUpdater;
 import com.permitseoul.permitserver.domain.admin.ticketround.exception.AdminTicketRoundNotFoundException;
 import com.permitseoul.permitserver.domain.admin.tickettype.core.component.AdminTicketTypeRetriever;
 import com.permitseoul.permitserver.domain.admin.tickettype.core.component.AdminTicketTypeSaver;
+import com.permitseoul.permitserver.domain.admin.tickettype.core.component.AdminTicketTypeUpdater;
+import com.permitseoul.permitserver.domain.admin.tickettype.core.exception.AdminTicketTypeNotFoundException;
 import com.permitseoul.permitserver.domain.ticket.core.domain.TicketStatus;
+import com.permitseoul.permitserver.domain.ticketround.core.component.TicketRoundRetriever;
 import com.permitseoul.permitserver.domain.ticketround.core.domain.TicketRound;
+import com.permitseoul.permitserver.domain.ticketround.core.domain.entity.TicketRoundEntity;
 import com.permitseoul.permitserver.domain.ticketround.core.exception.TicketRoundIllegalArgumentException;
+import com.permitseoul.permitserver.domain.ticketround.core.exception.TicketRoundNotFoundException;
 import com.permitseoul.permitserver.domain.tickettype.core.domain.TicketType;
 import com.permitseoul.permitserver.domain.tickettype.core.domain.entity.TicketTypeEntity;
 import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeIllegalException;
@@ -26,6 +33,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -35,9 +43,12 @@ public class AdminTicketService {
     private final AdminTicketRetriever adminTicketRetriever;
     private final AdminTicketRoundSaver adminTicketRoundSaver;
     private final AdminTicketTypeSaver adminTicketTypeSaver;
+    private final AdminTicketRoundUpdater adminTicketRoundUpdater;
 
     private static final int EMPTY_TICKET_COUNT_ZERO = 0;
     private static final List<TicketStatus> SOLD_STATUSES = List.of(TicketStatus.RESERVED, TicketStatus.USED);
+    private final TicketRoundRetriever ticketRoundRetriever;
+    private final AdminTicketTypeUpdater adminTicketTypeUpdater;
 
     @Transactional(readOnly = true)
     public TicketRoundAndTypeDetailRes getTicketRoundAndTypeDetails(final long ticketRoundId) {
@@ -111,6 +122,51 @@ public class AdminTicketService {
             saveTicketTypes(ticketTypeRequests, savedTicketRound.getTicketRoundId());
         } catch (TicketRoundIllegalArgumentException | TicketTypeIllegalException e) {
             throw new AdminApiException(ErrorCode.BAD_REQUEST_DATE_TIME_ERROR);
+        }
+    }
+
+    @Transactional
+    public void updateTicketRoundWithType(final TicketRoundWithTypeUpdateRequest updateRequest) {
+        try {
+            final TicketRoundEntity ticketRoundEntity = ticketRoundRetriever.findTicketRoundEntityById(updateRequest.ticketRoundId());
+            adminTicketRoundUpdater.updateTicketRound(
+                    ticketRoundEntity,
+                    updateRequest.ticketRoundName(),
+                    updateRequest.ticketRoundSalesStartDate(),
+                    updateRequest.ticketRoundSalesEndDate()
+            );
+
+            for(TicketRoundWithTypeUpdateRequest.TicketTypeUpdateRequest ticketTypeUpdateRequest: updateRequest.ticketTypes()) {
+                if(ticketTypeUpdateRequest.id() == null) {
+                    adminTicketTypeSaver.saveTicketType(
+                            ticketRoundEntity.getTicketRoundId(),
+                            ticketTypeUpdateRequest.name(),
+                            ticketTypeUpdateRequest.price(),
+                            ticketTypeUpdateRequest.totalCount(),
+                            ticketTypeUpdateRequest.startDate(),
+                            ticketTypeUpdateRequest.endDate()
+                    );
+                } else {
+                    final TicketTypeEntity ticketTypeEntity = adminTicketTypeRetriever.getTicketTypeEntityById(ticketTypeUpdateRequest.id());
+                    if(!Objects.equals(ticketTypeEntity.getTicketRoundId(), ticketRoundEntity.getTicketRoundId())) {
+                        throw new AdminApiException(ErrorCode.BAD_REQUEST_MISMATCH_TICKET_TYPE_ROUND);
+                    }
+                    adminTicketTypeUpdater.updateTicketType(
+                            ticketTypeEntity,
+                            ticketTypeUpdateRequest.name(),
+                            ticketTypeUpdateRequest.price(),
+                            ticketTypeUpdateRequest.totalCount(),
+                            ticketTypeUpdateRequest.startDate(),
+                            ticketTypeUpdateRequest.endDate()
+                    );
+                }
+            }
+        } catch (TicketRoundNotFoundException e) {
+            throw new AdminApiException(ErrorCode.NOT_FOUND_TICKET_ROUND);
+        } catch (TicketRoundIllegalArgumentException | TicketTypeIllegalException e) {
+            throw new AdminApiException(ErrorCode.BAD_REQUEST_DATE_TIME_ERROR);
+        } catch (AdminTicketTypeNotFoundException e) {
+            throw new AdminApiException(ErrorCode.NOT_FOUND_TICKET_TYPE);
         }
     }
 

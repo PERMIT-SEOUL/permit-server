@@ -46,6 +46,15 @@ public class TicketRoundEntity {
         return new TicketRoundEntity(eventId, ticketRoundTitle, salesStartAt, salesEndAt);
     }
 
+    public void update(final String ticketRoundTitle,
+                       final LocalDateTime ticketRoundSalesStartDate,
+                       final LocalDateTime ticketRoundSalesEndDate) {
+        validateDateTIme(ticketRoundSalesStartDate, ticketRoundSalesEndDate);
+        this.ticketRoundTitle = ticketRoundTitle;
+        this.salesStartAt = ticketRoundSalesStartDate;
+        this.salesEndAt = ticketRoundSalesEndDate;
+    }
+
     public void verifyTicketSalesAvailable(final LocalDateTime now) {
         if (now.isBefore(this.salesStartAt) || now.isAfter(this.salesEndAt)) {
             throw new TicketRoundExpiredException();

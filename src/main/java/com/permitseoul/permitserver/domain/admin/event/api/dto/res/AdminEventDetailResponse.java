@@ -1,5 +1,7 @@
 package com.permitseoul.permitserver.domain.admin.event.api.dto.res;
 
+import com.permitseoul.permitserver.domain.event.core.domain.EventType;
+
 import java.util.List;
 
 public record AdminEventDetailResponse(
@@ -10,6 +12,7 @@ public record AdminEventDetailResponse(
         String eventExposureEndTime,
         String verificationCode,
         String name,
+        EventType eventType,
         String startDate,
         String startTime,
         String endDate,
@@ -28,6 +31,7 @@ public record AdminEventDetailResponse(
                                               final String eventExposureEndTime,
                                               final String verificationCode,
                                               final String name,
+                                              final EventType eventType,
                                               final String startDate,
                                               final String startTime,
                                               final String endDate,
@@ -45,6 +49,7 @@ public record AdminEventDetailResponse(
                 eventExposureEndTime,
                 verificationCode,
                 name,
+                eventType,
                 startDate,
                 startTime,
                 endDate,

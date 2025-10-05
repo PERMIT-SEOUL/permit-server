@@ -27,6 +27,7 @@ public enum ErrorCode implements ApiCode {
     BAD_REQUEST_DATE_TIME_ERROR(HttpStatus.BAD_REQUEST, 40013, "잘못된 date, time입니다."),
     BAD_REQUEST_TICKET_CHECK_CODE_ERROR(HttpStatus.BAD_REQUEST, 40014, "잘못된 ticket check code 입니다."),
     BAD_REQUEST_CANCELED_TICKET(HttpStatus.BAD_REQUEST, 40015, "취소된 ticket 입니다."),
+    BAD_REQUEST_MISMATCH_TICKET_TYPE_ROUND(HttpStatus.BAD_REQUEST, 40016, "ticketType의 roundId와 다른 ticketRoundId 입니다."),
 
 
 
