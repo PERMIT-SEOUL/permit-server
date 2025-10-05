@@ -8,7 +8,6 @@ import com.permitseoul.permitserver.domain.reservationticket.core.domain.Reserva
 import com.permitseoul.permitserver.global.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -39,8 +38,8 @@ public class ReservationSessionCleanupScheduler {
         final List<ReservationSessionEntity> successSessions = reservationSessionRepository.findAllBySuccessfulTrue();
         reservationSessionRemover.deleteAllInBatch(successSessions);
 
-        // 실패인 세션들 + 7분 지난 세션 -> 롤백 및 삭제
-        final List<ReservationSessionEntity> expiredOrFailedSessions = reservationSessionRepository.findAllBySuccessfulFalseAndCreatedAtBefore(expireThreshold);
+        // 7분 지난 세션 -> 롤백 및 삭제
+        final List<ReservationSessionEntity> expiredOrFailedSessions = reservationSessionRepository.findAllByCreatedAtBefore(expireThreshold);
         final Map<Long, Integer> rollbackMap = new HashMap<>();
         final List<String> expiredOrderIds = expiredOrFailedSessions.stream()
                 .map(ReservationSessionEntity::getOrderId)
