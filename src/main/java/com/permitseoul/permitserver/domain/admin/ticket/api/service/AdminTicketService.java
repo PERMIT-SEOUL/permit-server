@@ -147,6 +147,9 @@ public class AdminTicketService {
                     );
                 } else {
                     final TicketTypeEntity ticketTypeEntity = adminTicketTypeRetriever.getTicketTypeEntityById(ticketTypeUpdateRequest.id());
+                    if(ticketTypeEntity.getTicketRoundId() != ticketRoundEntity.getTicketRoundId()) {
+                        throw new AdminApiException(ErrorCode.BAD_REQUEST_MISMATCH_TICKET_TYPE_ROUND);
+                    }
                     adminTicketTypeUpdater.updateTicketType(
                             ticketTypeEntity,
                             ticketTypeUpdateRequest.name(),
@@ -157,15 +160,13 @@ public class AdminTicketService {
                     );
                 }
             }
-
         } catch (TicketRoundNotFoundException e) {
             throw new AdminApiException(ErrorCode.NOT_FOUND_TICKET_ROUND);
-        } catch (TicketRoundIllegalArgumentException e) {
+        } catch (TicketRoundIllegalArgumentException | TicketTypeIllegalException e) {
             throw new AdminApiException(ErrorCode.BAD_REQUEST_DATE_TIME_ERROR);
         } catch (AdminTicketTypeNotFoundException e) {
             throw new AdminApiException(ErrorCode.NOT_FOUND_TICKET_TYPE);
         }
-
     }
 
     private void saveTicketTypes(final List<TicketRoundWithTypeCreateRequest.TicketTypeRequest> ticketTypes,
