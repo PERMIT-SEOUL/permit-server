@@ -16,7 +16,7 @@ public record S3PreSignedUrlRequest(
         @NotNull(message = "eventType은 필수입니다.")
         EventType eventType,
 
-        @NotNull(message = "mediaList는 null일 수 없습니다.")
+        @NotNull(message = "mediaInfoRequests는 null일 수 없습니다.")
         @Valid
         List<MediaInfoRequest> mediaInfoRequests
 ) {
