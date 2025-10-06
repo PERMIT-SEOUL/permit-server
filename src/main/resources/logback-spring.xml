@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="60 seconds">
+    
+    <!-- LOG_PATH 기본값 설정 -->
+    <property name="LOG_PATH" value="${LOG_PATH:-/logs}" />
 
     <springProfile name="local">
         <include resource="logback/logback-local.xml"/>
