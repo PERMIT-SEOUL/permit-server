@@ -1,4 +1,4 @@
-package com.permitseoul.permitserver.global.resolver.user;
+package com.permitseoul.permitserver.global.aop.resolver.user;
 
 import com.permitseoul.permitserver.global.exception.ResolverException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;

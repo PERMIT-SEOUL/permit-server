@@ -1,7 +1,7 @@
-package com.permitseoul.permitserver.global.resolver.timetableblock;
+package com.permitseoul.permitserver.global.aop.resolver.event;
+
 
 import com.permitseoul.permitserver.global.exception.UrlSecureException;
-import com.permitseoul.permitserver.global.resolver.event.EventIdPathVariable;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import com.permitseoul.permitserver.global.util.SecureUrlUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,13 +18,13 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-public class TimetableBlockPathVariableResolver implements  HandlerMethodArgumentResolver{
-    private static final String BLOCK_ID_PATH_VARIABLE = "blockId";
+public class EventIdPathVariableResolver implements HandlerMethodArgumentResolver {
+    private static final String EVENT_ID_PATH_VARIABLE = "eventId";
     private final SecureUrlUtil secureUrlUtil;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(TimetableBlockIdPathVariable.class);
+        return parameter.hasParameterAnnotation(EventIdPathVariable.class);
     }
 
     @Override
@@ -32,12 +32,11 @@ public class TimetableBlockPathVariableResolver implements  HandlerMethodArgumen
         final HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         final Map<String, String> pathVariables = (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
 
-        final String blockId = pathVariables.get(BLOCK_ID_PATH_VARIABLE);
+        final String eventId = pathVariables.get(EVENT_ID_PATH_VARIABLE);
         try {
-            return secureUrlUtil.decode(blockId);
+            return secureUrlUtil.decode(eventId);
         } catch (Exception e) {
             throw new UrlSecureException(ErrorCode.BAD_REQUEST_ID_DECODE_ERROR);
         }
     }
 }
-
