@@ -123,7 +123,6 @@ public class AdminEventService {
         final LocalDateTime ticketRoundSalesEndDateTime = combineDateTime(createDto.roundSalesEndDate(), createDto.roundSalesEndTime());
 
         final Event savedEvent = saveEvent(createDto, eventStartDateTime, eventEndDateTime, eventExposureStartDateTime, eventExposureEndDateTime);
-        saveEventImages(savedEvent.getEventId(), createDto.images());
 
         final TicketRound savedTicketRound;
         try {
@@ -237,18 +236,6 @@ public class AdminEventService {
 
     private LocalDateTime combineDateTime(final LocalDate date, final LocalTime time) {
         return DateFormatterUtil.combineDateAndTime(date, time);
-    }
-
-    private void saveEventImages(final long eventId,
-                                 List<AdminEventWithTicketCreateRequest.AdminEventImageInfo> eventImages) {
-        final List<EventImageEntity> eventImageEntityList = IntStream.range(0, eventImages.size())
-                .mapToObj(i -> EventImageEntity.create(
-                        eventId,
-                        eventImages.get(i).imageUrl().trim(),
-                        i
-                ))
-                .toList();
-        adminEventImageSaver.saveEventImages(eventImageEntityList);
     }
 
     private Map<Long, Integer> initSoldTicketCountZero(final List<Event> events) {
