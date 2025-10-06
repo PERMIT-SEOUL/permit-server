@@ -1,6 +1,6 @@
 <appender name="DEVINFOROLLFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <!-- 파일 위치 -->
-    <file>/home/ubuntu/logs/PERMIT-INFO-LOG.log</file>
+    <file>${LOG_PATH}/PERMIT-INFO-LOG.log</file>
 
     <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
         <providers>
