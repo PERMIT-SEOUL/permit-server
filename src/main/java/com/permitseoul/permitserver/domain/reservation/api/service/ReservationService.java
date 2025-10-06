@@ -62,6 +62,7 @@ public class ReservationService {
     private static final String END_BRACKET = "] ";
     private static final String WITH_COUPON = "(w/Coupon)";
     private static final int COUPON_CAN_BUY_TICKET_MAX_ = 1;
+    private static final long MAX_RESERVATION_VALID_TIME = 7;
 
     public String saveReservation(final long userId,
                                   final long eventId,
@@ -188,10 +189,17 @@ public class ReservationService {
         if (ticketNameWithCountList.isEmpty()) {
             return eventName;
         }
+        // 출력예시: [Olympan25: Andong City] 2nd Release-1일x1(w/Coupon)"
         if (coupon != null) {
-            return String.valueOf(reservationName.append(START_BRACKET).append(eventName).append(END_BRACKET).append(String.join(SLASH, ticketNameWithCountList)).append(WITH_COUPON));
+            return String.valueOf(
+                    reservationName.append(START_BRACKET)
+                            .append(eventName)
+                            .append(END_BRACKET)
+                            .append(String.join(SLASH, ticketNameWithCountList))
+                            .append(WITH_COUPON));
         }
 
+        // 출력예시: [Olympan25: Andong City] 2nd Release-1일x1 / 2nd Release-1박2일x2
         return String.valueOf(reservationName.append(START_BRACKET).append(eventName).append(END_BRACKET).append(String.join(SLASH, ticketNameWithCountList)));
     }
 
@@ -224,7 +232,7 @@ public class ReservationService {
     }
 
     private String getOrderIdWithValidateSessionKey(final long userId, final String sessionKey) {
-        final LocalDateTime validTime = LocalDateTime.now().minusMinutes(7);
+        final LocalDateTime validTime = LocalDateTime.now().minusMinutes(MAX_RESERVATION_VALID_TIME);
         final ReservationSession reservationSession = reservationSessionRetriever.getValidatedReservationSession(userId, sessionKey, validTime);
         return reservationSession.getOrderId();
     }
