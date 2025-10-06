@@ -36,6 +36,6 @@ public class AdminController {
     public ResponseEntity<BaseResponse<?>> getUploadImagesUrl(
             @RequestBody @Valid final S3PreSignedUrlRequest request
     ) {
-        return ApiResponseUtil.success(SuccessCode.OK, s3Service.getS3PreSignedUrls(request.eventId(), request.eventType(), request.mediaInfoRequests()));
+        return ApiResponseUtil.success(SuccessCode.OK, s3Service.getS3PreSignedUrls(request.eventId(), request.mediaInfoRequests()));
     }
 }

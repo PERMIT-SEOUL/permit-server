@@ -26,12 +26,11 @@ public class S3Service {
     private static final long EXPIRE_TIME = 10; // pre-signed url 유효기간(10분)
 
     public S3PreSignedUrlResponse getS3PreSignedUrls(final long eventId,
-                                                     final EventType eventType,
                                                      final List<S3PreSignedUrlRequest.MediaInfoRequest> mediaInfoRequests) {
         final List<S3PreSignedUrlResponse.PreSignedUrlInfo> preSignedUrlInfo = mediaInfoRequests.stream()
                 .map(mediaInfoRequest -> {
                             return S3PreSignedUrlResponse.PreSignedUrlInfo.of(
-                                    generatePreSignedUrl(eventId, eventType, mediaInfoRequest.mediaType()), mediaInfoRequest.mediaName()
+                                    generatePreSignedUrl(eventId, mediaInfoRequest.mediaType()), mediaInfoRequest.mediaName()
                             );
                         }
                 ).toList();
@@ -40,13 +39,12 @@ public class S3Service {
     }
 
     private String generatePreSignedUrl(final long eventId,
-                                        final EventType eventType,
                                         final MediaType mediaType) {
         final String fileName = generateFileName(); //uuid
         final StringBuilder key = new StringBuilder();
 
         //경로 : events/{eventType}/{eventId}/{mediaType}/{filename}
-        key.append("events/").append(eventType.toString()).append("/").append(eventId).append("/").append(mediaType.toString()).append("/").append(fileName);
+        key.append("events/").append(eventId).append("/").append(mediaType.toString()).append("/").append(fileName);
 
         final PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(awsS3Properties.bucket())
