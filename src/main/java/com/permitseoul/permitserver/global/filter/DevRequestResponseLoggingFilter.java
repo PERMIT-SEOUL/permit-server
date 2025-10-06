@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.global.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,62 +13,74 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Slf4j
-@Component // 필터 가장 처음
-@Profile("dev") // dev에서만 적용(테스트 및 qa용)
+@Component // 스프링이 자동 등록 (SecurityFilterChain보다 앞단에서 동작)
+@Profile("dev") // dev 환경에서만 테스트 및 qa용
 public class DevRequestResponseLoggingFilter implements Filter {
+
+    private static final int MAX_LENGTH = 1500;
+    private static final int ZERO = 0;
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    private static final String FIELD_TIME = "time";
+    private static final String FIELD_LOG_TYPE = "log_type";
+    private static final String FIELD_METHOD = "method";
+    private static final String FIELD_URL = "url";
+    private static final String FIELD_STATUS = "status";
+    private static final String FIELD_DURATION = "duration_ms";
+    private static final String FIELD_REQUEST_BODY = "request_body";
+    private static final String FIELD_RESPONSE_BODY = "response_body";
+    private static final String HTTP = "HTTP";
+    private static final String EMPTY_BODY = "(Empty Body)";
+    private static final String OVER_MAX_LENGTH = "...more";
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-        // 요청 응답을 여러 번 읽을 수 있도록 래핑
-        final ContentCachingRequestWrapper reqWrapper = new ContentCachingRequestWrapper((HttpServletRequest) request);
-        final ContentCachingResponseWrapper resWrapper = new ContentCachingResponseWrapper((HttpServletResponse) response);
+        //요청, 응답을 여러번 볼 수 있도록 래핑
+        final ContentCachingRequestWrapper req = new ContentCachingRequestWrapper((HttpServletRequest) request);
+        final ContentCachingResponseWrapper res = new ContentCachingResponseWrapper((HttpServletResponse) response);
 
         final long start = System.currentTimeMillis();
-        chain.doFilter(reqWrapper, resWrapper);
-        final long duration = System.currentTimeMillis() - start;
-
-        logRequestResponse(reqWrapper, resWrapper, duration);
-        resWrapper.copyBodyToResponse();
-    }
-
-    private void logRequestResponse(final ContentCachingRequestWrapper request,
-                                    final ContentCachingResponseWrapper response,
-                                    final long duration) {
         try {
-            final String method = request.getMethod();
-            final String uri = request.getRequestURI();
-            final String query = request.getQueryString();
-            final String fullUrl = uri + (query != null ? "?" + query : "");
-
-            final String reqBody = new String(request.getContentAsByteArray(), StandardCharsets.UTF_8);
-            final String resBody = new String(response.getContentAsByteArray(), StandardCharsets.UTF_8);
-
-            log.info("""
-                    🧩 [HTTP LOG]
-                    ▶️ Time: {}
-                    ▶️ Method: {}
-                    ▶️ URL: {}
-                    ▶️ Status: {}
-                    ▶️ Duration: {} ms
-                    ▶️ Request Body: {}
-                    ▶️ Response Body: {}
-                    """,
-                    LocalDateTime.now(), method, fullUrl,
-                    response.getStatus(), duration, sanitize(reqBody), sanitize(resBody)
-            );
-
-        } catch (Exception e) {
-            log.error("Error logging request/response", e);
+            chain.doFilter(req, res);
+        } finally {
+            final long duration = System.currentTimeMillis() - start;
+            logRequestResponse(req, res, duration);
+            res.copyBodyToResponse(); // 응답 body를 원래 response로 복사
         }
     }
 
-    private String sanitize(String input) {
-        if (input == null || input.isBlank()) return "(empty Body)";
-        // 필요 시 개인정보 마스킹 처리
-        return input.length() > 2000 ? input.substring(0, 2000) + "...(truncated)" : input; //2000자까지만 보임
+    private void logRequestResponse(ContentCachingRequestWrapper request,
+                                    ContentCachingResponseWrapper response,
+                                    long duration) {
+        try {
+            final Map<String, Object> logMap = new LinkedHashMap<>();
+            logMap.put(FIELD_TIME, LocalDateTime.now().toString());
+            logMap.put(FIELD_LOG_TYPE, HTTP);
+            logMap.put(FIELD_METHOD, request.getMethod());
+            logMap.put(FIELD_URL, request.getRequestURI());
+            logMap.put(FIELD_STATUS, response.getStatus());
+            logMap.put(FIELD_DURATION, duration);
+            logMap.put(FIELD_REQUEST_BODY, extractBody(request.getContentAsByteArray()));
+            logMap.put(FIELD_RESPONSE_BODY, extractBody(response.getContentAsByteArray()));
+
+            log.info(OBJECT_MAPPER.writeValueAsString(logMap));
+
+        } catch (Exception e) {
+            log.error("Error while logging request/response", e);
+        }
+    }
+
+    private String extractBody(byte[] arr) {
+        if (arr == null || arr.length == ZERO) return EMPTY_BODY;
+        final  String body = new String(arr, StandardCharsets.UTF_8);
+        return body.length() > MAX_LENGTH
+                ? body.substring(ZERO, MAX_LENGTH) + OVER_MAX_LENGTH
+                : body;
     }
 }
