@@ -2,7 +2,7 @@ package com.permitseoul.permitserver.domain.coupon.api.controller;
 
 import com.permitseoul.permitserver.domain.coupon.api.dto.CouponValidateRequest;
 import com.permitseoul.permitserver.domain.coupon.api.service.CouponService;
-import com.permitseoul.permitserver.global.resolver.event.EventIdPathVariable;
+import com.permitseoul.permitserver.global.aop.resolver.event.EventIdPathVariable;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.SuccessCode;

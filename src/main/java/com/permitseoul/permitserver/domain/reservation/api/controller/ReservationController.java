@@ -2,7 +2,6 @@ package com.permitseoul.permitserver.domain.reservation.api.controller;
 
 import com.permitseoul.permitserver.domain.auth.core.jwt.CookieCreatorUtil;
 import com.permitseoul.permitserver.domain.auth.core.jwt.CookieExtractor;
-import com.permitseoul.permitserver.domain.payment.api.exception.NotFoundPaymentException;
 import com.permitseoul.permitserver.domain.reservation.api.dto.ReservationInfoRequest;
 import com.permitseoul.permitserver.domain.reservation.api.dto.*;
 import com.permitseoul.permitserver.domain.reservation.api.exception.NotfoundReservationException;
@@ -10,7 +9,7 @@ import com.permitseoul.permitserver.domain.reservation.api.exception.Reservation
 import com.permitseoul.permitserver.domain.reservation.api.service.ReservationService;
 import com.permitseoul.permitserver.global.Constants;
 import com.permitseoul.permitserver.global.domain.CookieType;
-import com.permitseoul.permitserver.global.resolver.user.UserIdHeader;
+import com.permitseoul.permitserver.global.aop.resolver.user.UserIdHeader;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;

@@ -13,12 +13,14 @@ import java.math.BigDecimal;
 public class ReservationSaver {
     private final ReservationRepository reservationRepository;
 
-    public Reservation saveReservation(final long userId,
+    public Reservation saveReservation(final String reservationName,
+                                       final long userId,
                                        final long eventId,
                                        final String orderId,
                                        final BigDecimal totalAmount,
                                        final String couponCode) {
-        final ReservationEntity reservationEntity = reservationRepository.save(ReservationEntity.create(userId, eventId, orderId, totalAmount, couponCode));
-        return Reservation.fromEntity(reservationRepository.save(reservationEntity));
+        return Reservation.fromEntity(
+                reservationRepository.save(ReservationEntity.create(reservationName, userId, eventId, orderId, totalAmount, couponCode))
+        );
     }
 }

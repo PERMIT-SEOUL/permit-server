@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class Reservation {
     private final long reservationId;
+    private final String reservationName;
     private final long userId;
     private final long eventId;
     private final String orderId;
@@ -22,6 +23,7 @@ public class Reservation {
     public static Reservation fromEntity(final ReservationEntity reservationEntity) {
         return new Reservation(
                 reservationEntity.getReservationId(),
+                reservationEntity.getReservationName(),
                 reservationEntity.getUserId(),
                 reservationEntity.getEventId(),
                 reservationEntity.getOrderId(),

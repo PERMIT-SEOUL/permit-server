@@ -23,13 +23,6 @@ public class EventRetriever {
     }
 
     @Transactional(readOnly = true)
-    public void validExistEventById(final long eventId) {
-        if (!eventRepository.existsById(eventId)) {
-            throw new EventNotfoundException();
-        }
-    }
-
-    @Transactional(readOnly = true)
     public List<Event> findAllEventsById(final List<Long> eventIds) {
         final List<EventEntity> eventEntityList = eventRepository.findAllById(eventIds);
         return eventEntityList.stream()

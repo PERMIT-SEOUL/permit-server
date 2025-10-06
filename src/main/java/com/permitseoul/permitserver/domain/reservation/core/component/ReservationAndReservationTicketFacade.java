@@ -22,13 +22,14 @@ public class ReservationAndReservationTicketFacade {
     private final ReservationSessionSaver reservationSessionSaver;
 
     @Transactional
-    public String saveReservationWithTicketAndSession(final long userId,
+    public String saveReservationWithTicketAndSession(final String reservationName,
+                                                      final long userId,
                                                       final long eventId,
                                                       final String orderId,
                                                       final BigDecimal totalAmount,
                                                       final String couponCode,
                                                       final List<ReservationInfoRequest.TicketTypeInfo> requestTicketTypeInfos) {
-        final Reservation reservation = reservationSaver.saveReservation(userId, eventId, orderId, totalAmount, couponCode);
+        final Reservation reservation = reservationSaver.saveReservation(reservationName, userId, eventId, orderId, totalAmount, couponCode);
         requestTicketTypeInfos.forEach(
                 ticketTypeInfo -> reservationTicketSaver.saveReservationTicket(ticketTypeInfo.id(), reservation.getOrderId(), ticketTypeInfo.count())
         );

@@ -1,4 +1,4 @@
-package com.permitseoul.permitserver.global.resolver.user;
+package com.permitseoul.permitserver.global.aop.resolver.timetableblock;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,5 +7,5 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface UserIdHeader {
+public @interface TimetableBlockIdPathVariable {
 }

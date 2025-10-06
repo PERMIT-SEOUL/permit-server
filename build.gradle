@@ -56,7 +56,7 @@ dependencies {
 	implementation group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
 
 	//feign
-	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.1.0'
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
 	//oauth
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
@@ -77,4 +77,15 @@ dependencies {
 
 	//logging
 	implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
+
+	//s3
+	implementation("software.amazon.awssdk:bom:2.21.0")
+	implementation("software.amazon.awssdk:s3:2.21.0")
+}
+
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:2023.0.0"
+	}
 }

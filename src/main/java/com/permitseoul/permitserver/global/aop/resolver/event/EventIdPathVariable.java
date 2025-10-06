@@ -1,4 +1,4 @@
-package com.permitseoul.permitserver.global.resolver.event;
+package com.permitseoul.permitserver.global.aop.resolver.event;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
