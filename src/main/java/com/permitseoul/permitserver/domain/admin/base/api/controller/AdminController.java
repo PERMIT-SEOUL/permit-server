@@ -28,6 +28,8 @@ public class AdminController {
         return ApiResponseUtil.success(SuccessCode.OK);
     }
 
+    // pre-signed Url 조회 API
+
 
 
 
