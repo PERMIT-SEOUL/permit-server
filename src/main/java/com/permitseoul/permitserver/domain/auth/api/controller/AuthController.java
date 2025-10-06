@@ -6,7 +6,7 @@ import com.permitseoul.permitserver.domain.auth.api.dto.SignUpRequest;
 import com.permitseoul.permitserver.domain.auth.core.jwt.CookieCreatorUtil;
 import com.permitseoul.permitserver.domain.auth.api.service.AuthService;
 import com.permitseoul.permitserver.global.Constants;
-import com.permitseoul.permitserver.global.resolver.user.UserIdHeader;
+import com.permitseoul.permitserver.global.aop.resolver.user.UserIdHeader;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.SuccessCode;

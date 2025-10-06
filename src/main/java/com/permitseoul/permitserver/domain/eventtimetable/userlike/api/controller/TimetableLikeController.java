@@ -1,8 +1,8 @@
 package com.permitseoul.permitserver.domain.eventtimetable.userlike.api.controller;
 
 import com.permitseoul.permitserver.domain.eventtimetable.userlike.api.service.TimetableLikeService;
-import com.permitseoul.permitserver.global.resolver.timetableblock.TimetableBlockIdPathVariable;
-import com.permitseoul.permitserver.global.resolver.user.UserIdHeader;
+import com.permitseoul.permitserver.global.aop.resolver.timetableblock.TimetableBlockIdPathVariable;
+import com.permitseoul.permitserver.global.aop.resolver.user.UserIdHeader;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.SuccessCode;
