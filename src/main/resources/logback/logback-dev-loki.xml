@@ -1,0 +1,34 @@
+<configuration>
+
+    <!-- Loki4j Appender: dev는 파일 저장 없이 바로 Loki로 -->
+    <appender name="LOKI" class="com.github.loki4j.logback.LokiAppender">
+        <http>
+            <url>http://localhost:3100/loki/api/v1/push</url>
+        </http>
+
+        <format>
+            <label>
+                <pattern>app="permitseoul-dev", level="%level", logger="%logger{20}", host="${HOSTNAME}"</pattern>
+            </label>
+            <message>
+                <pattern>%msg%n</pattern>
+            </message>
+            <stackTrace>
+                <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                    <maxDepthPerThrowable>8</maxDepthPerThrowable>
+                    <rootCauseFirst>true</rootCauseFirst>
+                </throwableConverter>
+            </stackTrace>
+        </format>
+
+        <batch>
+            <maxItems>1000</maxItems>
+            <maxDelay>2000</maxDelay>
+        </batch>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="LOKI"/>
+    </root>
+
+</configuration>
