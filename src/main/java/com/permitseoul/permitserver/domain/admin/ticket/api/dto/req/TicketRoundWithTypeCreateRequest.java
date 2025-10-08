@@ -15,11 +15,11 @@ public record TicketRoundWithTypeCreateRequest(
         String ticketRoundName,
 
         @NotNull(message = "티켓라운드 판매 시작일은 필수입니다.")
-        @JsonFormat(pattern = "yyyy.MM.dd HH:mm")
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
         LocalDateTime ticketRoundSalesStartDate,
 
         @NotNull(message = "티켓라운드 판매 종료일은 필수입니다.")
-        @JsonFormat(pattern = "yyyy.MM.dd HH:mm")
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
         LocalDateTime ticketRoundSalesEndDate,
 
         @NotNull(message = "티켓타입 리스트는 필수입니다.")
@@ -41,11 +41,11 @@ public record TicketRoundWithTypeCreateRequest(
             Integer totalCount,
 
             @NotNull(message = "티켓타입 시작일은 필수입니다.")
-            @JsonFormat(pattern = "yyyy.MM.dd HH:mm")
+            @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
             LocalDateTime startDate,
 
             @NotNull(message = "티켓타입 종료일은 필수입니다.")
-            @JsonFormat(pattern = "yyyy.MM.dd HH:mm")
+            @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
             LocalDateTime endDate
     ) { }
 }
