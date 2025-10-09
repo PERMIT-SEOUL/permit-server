@@ -1,6 +1,5 @@
 <configuration>
 
-    <!-- INFO 로그 -->
     <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>/home/ubuntu/logs/PERMIT-INFO-LOG.log</file>
 
@@ -14,6 +13,9 @@
                 <logLevel/>
                 <loggerName/>
                 <threadName/>
+                <mdc>
+                    <includeMdcKeyName>trace_id</includeMdcKeyName>
+                </mdc>
                 <message/>
             </providers>
         </encoder>
@@ -26,7 +28,6 @@
         </rollingPolicy>
     </appender>
 
-    <!-- ERROR 로그 -->
     <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>/home/ubuntu/logs/PERMIT-ERROR-LOG.log</file>
 
@@ -40,6 +41,9 @@
                 <logLevel/>
                 <loggerName/>
                 <threadName/>
+                <mdc>
+                    <includeMdcKeyName>trace_id</includeMdcKeyName>
+                </mdc>
                 <message/>
                 <stackTrace>
                     <fieldName>stack</fieldName>
@@ -65,9 +69,22 @@
         </rollingPolicy>
     </appender>
 
-    <root level="INFO">
+    <!-- 비동기 처리용 AsyncAppender -->
+    <appender name="ASYNC_INFO" class="ch.qos.logback.classic.AsyncAppender">
         <appender-ref ref="INFO_FILE"/>
+        <queueSize>5000</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+    </appender>
+
+    <appender name="ASYNC_ERROR" class="ch.qos.logback.classic.AsyncAppender">
         <appender-ref ref="ERROR_FILE"/>
+        <queueSize>2000</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="ASYNC_INFO"/>
+        <appender-ref ref="ASYNC_ERROR"/>
     </root>
 
 </configuration>
