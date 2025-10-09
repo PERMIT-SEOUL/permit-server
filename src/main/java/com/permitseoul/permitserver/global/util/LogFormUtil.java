@@ -3,13 +3,14 @@ package com.permitseoul.permitserver.global.util;
 import com.permitseoul.permitserver.global.Constants;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 import net.logstash.logback.argument.StructuredArgument;
 
 import java.math.BigDecimal;
 
 import static net.logstash.logback.argument.StructuredArguments.keyValue;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 public final class LogFormUtil {
     private final static String MASKING_STAR = "*";
 
