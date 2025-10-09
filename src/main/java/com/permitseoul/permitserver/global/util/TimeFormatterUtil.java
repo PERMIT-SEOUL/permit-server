@@ -4,11 +4,12 @@ import com.permitseoul.permitserver.global.exception.TimeFormatException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 public final class TimeFormatterUtil {
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm"); //17:00
 

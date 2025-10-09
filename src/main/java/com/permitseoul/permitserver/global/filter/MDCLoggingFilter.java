@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,7 @@ import java.util.UUID;
 
 @Component
 @Slf4j
+@Profile("!local")
 @Order(Ordered.HIGHEST_PRECEDENCE)
 class MDCLoggingFilter extends OncePerRequestFilter {
     private final static String NGINX_REQUEST_ID = "X-Request-ID";

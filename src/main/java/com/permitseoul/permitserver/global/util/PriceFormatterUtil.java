@@ -3,12 +3,13 @@ package com.permitseoul.permitserver.global.util;
 import com.permitseoul.permitserver.global.exception.PriceFormatException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.List;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 public final class PriceFormatterUtil {
 
     private static final String DECIMAL_PATTERN = "#,###";
