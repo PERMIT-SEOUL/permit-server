@@ -12,7 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @UtilityClass
-public final class HttpReqResLogJsonBuilderForDev {
+public final class HttpReqResLogJsonBuilder {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
