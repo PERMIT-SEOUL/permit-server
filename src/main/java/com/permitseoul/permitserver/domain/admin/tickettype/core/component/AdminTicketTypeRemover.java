@@ -12,4 +12,8 @@ public class AdminTicketTypeRemover {
     public void deleteAllTicketTypeByTicketRoundId(final long ticketRoundId) {
         ticketTypeRepository.deleteAllByTicketRoundId(ticketRoundId);
     }
+
+    public void deleteTicketTypeById(final long ticketTypeId) {
+        ticketTypeRepository.deleteById(ticketTypeId);
+    }
 }
