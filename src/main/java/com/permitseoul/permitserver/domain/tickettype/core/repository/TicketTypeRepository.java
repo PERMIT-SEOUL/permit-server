@@ -21,4 +21,6 @@ public interface TicketTypeRepository extends JpaRepository<TicketTypeEntity, Lo
     List<TicketTypeEntity> findAllByTicketRoundIdIn(final List<Long> ticketRoundIds);
 
     List<TicketTypeEntity> findAllByTicketRoundId(final Long ticketRoundId);
+
+    void deleteAllByTicketRoundId(final long ticketRoundId);
 }

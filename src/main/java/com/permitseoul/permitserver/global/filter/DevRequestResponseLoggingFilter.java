@@ -34,8 +34,11 @@ public class DevRequestResponseLoggingFilter implements Filter {
             chain.doFilter(req, res);
         } finally {
             final long duration = System.currentTimeMillis() - start;
-            final String jsonLog = HttpReqResLogJsonBuilder.buildJsonLog(req, res, duration);
-            discordSender.send(jsonLog);
+            final String uri = req.getRequestURI();
+            if (!uri.startsWith("/actuator/health")) {
+                final String jsonLog = HttpReqResLogJsonBuilder.buildJsonLog(req, res, duration);
+                discordSender.send(jsonLog);
+            }
             res.copyBodyToResponse();
         }
     }
