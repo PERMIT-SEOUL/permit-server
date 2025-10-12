@@ -35,7 +35,9 @@ public class SecurityConfig {
             "/api/events/detail/*",
             "/api/users/email-check",
             "/api/events/*/timetables",
-            "/api/events/timetables/*"
+            "/api/events/timetables/*",
+            "/api/tickets/info/*",
+            "/api/tickets/confirm"
     };
 
     private static final String[] adminURIList = {
@@ -51,7 +53,7 @@ public class SecurityConfig {
             "/api/payments/cancel",
             "/api/coupons/validate/*",
             "/api/events/timetables/likes/*",
-            "/api/tickets/*"
+            "/api/tickets/user"
     };
 
     @Bean

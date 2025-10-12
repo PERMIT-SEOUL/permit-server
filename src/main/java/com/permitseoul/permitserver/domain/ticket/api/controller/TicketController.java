@@ -21,7 +21,7 @@ public class TicketController {
     private final TicketService ticketService;
 
     //행사 티켓 정보 조회 api
-    @GetMapping("/{eventId}")
+    @GetMapping("/info/{eventId}")
     public ResponseEntity<BaseResponse<?>> getEventTicketInfo(
             @EventIdPathVariable final Long eventId
     ) {
