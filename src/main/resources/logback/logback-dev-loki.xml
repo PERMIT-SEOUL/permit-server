@@ -3,7 +3,7 @@
     <!-- Loki4j Appender: dev는 파일 저장 없이 바로 Loki로 -->
     <appender name="LOKI" class="com.github.loki4j.logback.LokiAppender">
         <http>
-            <url>http://localhost:3100/loki/api/v1/push</url>
+            <url>http://loki:3100/loki/api/v1/push</url>
         </http>
 
         <format>
