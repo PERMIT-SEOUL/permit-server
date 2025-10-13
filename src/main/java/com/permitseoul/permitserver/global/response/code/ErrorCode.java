@@ -76,7 +76,7 @@ public enum ErrorCode implements ApiCode {
     NOT_FOUND_RESERVATION_SESSION_COOKIE(HttpStatus.NOT_FOUND, 40415, "세션 쿠키가 없습니다."),
     NOT_FOUND_EVENT_IMAGE(HttpStatus.NOT_FOUND, 40416, "해당 이벤트 이미지가 없습니다."),
     NOT_FOUND_TICKET_TYPE_PRICE(HttpStatus.NOT_FOUND, 40417, "해당 티켓 라운드의 티켓타입 가격이 없습니다."),
-    NOT_FOUND_TIMETABLE_AREA(HttpStatus.NOT_FOUND, 40418, "타임테이블 장소를 찾을 수 없습니다."),
+    NOT_FOUND_TIMETABLE_STAGE(HttpStatus.NOT_FOUND, 40418, "타임테이블 장소를 찾을 수 없습니다."),
     NOT_FOUND_TIMETABLE_CATEGORY(HttpStatus.NOT_FOUND, 40419, "타임테이블 카테고리를 찾을 수 없습니다."),
     NOT_FOUND_TIMETABLE(HttpStatus.NOT_FOUND, 40420, "타임테이블을 찾을 수 없습니다."),
     NOT_FOUND_TIMETABLE_BLOCK(HttpStatus.NOT_FOUND, 40421, "타임테이블 블록을 찾을 수 없습니다."),

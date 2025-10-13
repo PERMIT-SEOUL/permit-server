@@ -12,7 +12,7 @@ public class TimetableBlock {
     private final Long timetableBlockId;
     private final long timetableId;
     private final long timetableCategoryId;
-    private final long timetableAreaId;
+    private final long timetableStageId;
     private final LocalDateTime startAt;
     private final LocalDateTime endAt;
     private final String blockName;
