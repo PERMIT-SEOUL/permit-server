@@ -25,13 +25,18 @@ public class TimetableStageEntity {
     @Column(name = "sequence", nullable = false)
     private int sequence;
 
-    private TimetableStageEntity(long timetableId, String stageName, int sequence) {
+    // ✅ 새 필드 추가
+    @Column(name = "notion_stage_row_id", nullable = false)
+    private String notionStageRowId;
+
+    private TimetableStageEntity(long timetableId, String stageName, int sequence, String notionStageRowId) {
         this.timetableId = timetableId;
         this.stageName = stageName;
         this.sequence = sequence;
+        this.notionStageRowId = notionStageRowId;
     }
 
-    public static TimetableStageEntity create(final long eventTimetableId, final String stageName, final int sequence) {
-        return new TimetableStageEntity(eventTimetableId, stageName, sequence);
+    public static TimetableStageEntity create(final long eventTimetableId, final String stageName, final int sequence, final String notionStageRowId) {
+        return new TimetableStageEntity(eventTimetableId, stageName, sequence, notionStageRowId);
     }
 }

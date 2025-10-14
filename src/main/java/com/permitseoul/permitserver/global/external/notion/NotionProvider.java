@@ -9,12 +9,12 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AdminNotionProvider {
+public class NotionProvider {
     private final NotionClient notionClient;
     private final NotionProperties notionProperties;
     private final String notionDatasourceAuthorizationHeader;
 
-    public AdminNotionProvider(NotionClient notionClient, NotionProperties notionProperties) {
+    public NotionProvider(NotionClient notionClient, NotionProperties notionProperties) {
         this.notionClient = notionClient;
         this.notionProperties = notionProperties;
         this.notionDatasourceAuthorizationHeader = Constants.BEARER + notionProperties.privateApiToken();

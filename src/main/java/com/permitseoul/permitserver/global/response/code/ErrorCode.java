@@ -31,7 +31,6 @@ public enum ErrorCode implements ApiCode {
 
 
 
-
     /**
      * 401 Unauthorized
      */
@@ -84,6 +83,7 @@ public enum ErrorCode implements ApiCode {
     NOT_FOUND_GUEST(HttpStatus.NOT_FOUND, 40423, "게스트를 찾을 수 없습니다."),
     NOT_FOUND_GUEST_TICKET(HttpStatus.NOT_FOUND, 40424, "게스트 티켓을 찾을 수 없습니다."),
     NOT_FOUND_TIMETABLE_USER_LIKE(HttpStatus.NOT_FOUND, 40425, "유저 좋아요 타임테이블을 찾을 수 없습니다."),
+    NOT_FOUND_NOTION_RELATION_ID(HttpStatus.NOT_FOUND, 40426, "Notion Relation Id를 찾을 수 없습니다."),
 
 
 
