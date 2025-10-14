@@ -2,6 +2,7 @@ package com.permitseoul.permitserver.global.external.discord;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.permitseoul.permitserver.global.external.discord.client.DiscordFeignClient;
 import com.permitseoul.permitserver.global.external.discord.dto.DiscordMessage;
 import com.permitseoul.permitserver.global.external.discord.util.DiscordMessageFormatterUtil;
 import lombok.RequiredArgsConstructor;

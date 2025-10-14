@@ -1,4 +1,4 @@
-package com.permitseoul.permitserver.domain.auth.core.external.google.dto;
+package com.permitseoul.permitserver.global.external.google.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

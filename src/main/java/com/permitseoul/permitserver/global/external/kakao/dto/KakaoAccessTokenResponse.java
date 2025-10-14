@@ -1,4 +1,4 @@
-package com.permitseoul.permitserver.domain.auth.core.external.kakao.dto;
+package com.permitseoul.permitserver.global.external.kakao.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

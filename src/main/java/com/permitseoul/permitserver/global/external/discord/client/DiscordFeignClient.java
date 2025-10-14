@@ -1,4 +1,4 @@
-package com.permitseoul.permitserver.global.external.discord;
+package com.permitseoul.permitserver.global.external.discord.client;
 
 import com.permitseoul.permitserver.global.config.FeignConfig;
 import com.permitseoul.permitserver.global.external.discord.dto.DiscordMessage;

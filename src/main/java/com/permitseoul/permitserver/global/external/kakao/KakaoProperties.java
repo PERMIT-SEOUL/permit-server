@@ -1,4 +1,4 @@
-package com.permitseoul.permitserver.domain.auth.core.external.kakao;
+package com.permitseoul.permitserver.global.external.kakao;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

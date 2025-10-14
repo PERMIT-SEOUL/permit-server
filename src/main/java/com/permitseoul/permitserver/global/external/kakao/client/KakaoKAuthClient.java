@@ -1,7 +1,6 @@
-package com.permitseoul.permitserver.domain.auth.core.external.kakao;
+package com.permitseoul.permitserver.global.external.kakao.client;
 
-import com.permitseoul.permitserver.domain.auth.core.external.kakao.dto.KakaoAccessTokenResponse;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import com.permitseoul.permitserver.global.external.kakao.dto.KakaoAccessTokenResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;

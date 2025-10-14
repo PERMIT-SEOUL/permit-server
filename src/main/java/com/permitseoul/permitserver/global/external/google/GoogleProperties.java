@@ -1,4 +1,4 @@
-package com.permitseoul.permitserver.domain.auth.core.external.google;
+package com.permitseoul.permitserver.global.external.google;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

@@ -1,6 +1,6 @@
-package com.permitseoul.permitserver.domain.auth.core.external.google;
+package com.permitseoul.permitserver.global.external.google.client;
 
-import com.permitseoul.permitserver.domain.auth.core.external.google.dto.GoogleTokenResponse;
+import com.permitseoul.permitserver.global.external.google.dto.GoogleTokenResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
