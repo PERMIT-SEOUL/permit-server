@@ -1,7 +1,6 @@
 package com.permitseoul.permitserver.global.external.notion.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
 
 public record NotionTimetableDatasourceResponse(
@@ -9,7 +8,13 @@ public record NotionTimetableDatasourceResponse(
 ) {
 
     public record NotionPage(
+            Parent parent,
             NotionProperties properties
+    ) {}
+
+    public record Parent(
+            @JsonProperty("data_source_id")
+            String dataSourceId
     ) {}
 
     public record NotionProperties(
@@ -81,4 +86,3 @@ public record NotionTimetableDatasourceResponse(
         }
     }
 }
-

@@ -1,7 +1,6 @@
 package com.permitseoul.permitserver.global.external.notion.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
 
 public record NotionStageDatasourceResponse(
@@ -10,7 +9,13 @@ public record NotionStageDatasourceResponse(
 
     public record StagePage(
             String id,
+            Parent parent,
             StageProperties properties
+    ) {}
+
+    public record Parent(
+            @JsonProperty("data_source_id")
+            String dataSourceId
     ) {}
 
     public record StageProperties(
@@ -30,11 +35,7 @@ public record NotionStageDatasourceResponse(
             List<TitleItem> title
     ) {
         public record TitleItem(
-                Text text,
                 String plain_text
-        ) {
-            public record Text(String content) {}
-        }
+        ) { }
     }
 }
-

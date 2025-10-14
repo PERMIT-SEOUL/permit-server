@@ -1,7 +1,6 @@
 package com.permitseoul.permitserver.global.external.notion.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
 
 public record NotionCategoryDatasourceResponse(
@@ -10,7 +9,13 @@ public record NotionCategoryDatasourceResponse(
 
     public record CategoryPage(
             String id,
+            Parent parent,
             CategoryProperties properties
+    ) {}
+
+    public record Parent(
+            @JsonProperty("data_source_id")
+            String dataSourceId
     ) {}
 
     public record CategoryProperties(
@@ -28,12 +33,8 @@ public record NotionCategoryDatasourceResponse(
             List<RichText> richText
     ) {
         public record RichText(
-                String type,
-                Text text,
                 String plain_text
-        ) {
-            public record Text(String content) {}
-        }
+        ) { }
     }
 
     // title 필드
@@ -41,10 +42,7 @@ public record NotionCategoryDatasourceResponse(
             List<TitleItem> title
     ) {
         public record TitleItem(
-                Text text,
                 String plain_text
-        ) {
-            public record Text(String content) {}
-        }
+        ) { }
     }
 }
