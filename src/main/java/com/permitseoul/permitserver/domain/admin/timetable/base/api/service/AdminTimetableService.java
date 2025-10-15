@@ -60,12 +60,9 @@ public class AdminTimetableService {
             );
 
         } catch (final FeignException e) {
-
+            throw new AdminApiException(ErrorCode.INTERNAL_NOTION_FEIGN_ERROR);
         } catch (final PermitIllegalStateException e) {
             throw new AdminApiException(ErrorCode.NOT_FOUND_NOTION_RELATION_ID);
         }
     }
-
-
-
 }
