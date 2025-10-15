@@ -1,4 +1,4 @@
-package com.permitseoul.permitserver.domain.admin.timetable.api.dto.req;
+package com.permitseoul.permitserver.domain.admin.timetable.base.api.dto.req;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;

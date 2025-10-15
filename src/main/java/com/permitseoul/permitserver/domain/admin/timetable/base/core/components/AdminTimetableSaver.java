@@ -1,4 +1,4 @@
-package com.permitseoul.permitserver.domain.admin.timetable.core.components;
+package com.permitseoul.permitserver.domain.admin.timetable.base.core.components;
 
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.domain.Timetable;
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.domain.entity.TimetableEntity;

@@ -1,7 +1,7 @@
-package com.permitseoul.permitserver.domain.admin.timetable.api.controller;
+package com.permitseoul.permitserver.domain.admin.timetable.base.api.controller;
 
-import com.permitseoul.permitserver.domain.admin.timetable.api.dto.req.TimetableInitialPostRequest;
-import com.permitseoul.permitserver.domain.admin.timetable.api.service.AdminTimetableService;
+import com.permitseoul.permitserver.domain.admin.timetable.base.api.dto.req.TimetableInitialPostRequest;
+import com.permitseoul.permitserver.domain.admin.timetable.base.api.service.AdminTimetableService;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.SuccessCode;

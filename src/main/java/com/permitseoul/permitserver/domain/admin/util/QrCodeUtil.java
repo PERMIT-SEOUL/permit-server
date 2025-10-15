@@ -48,6 +48,3 @@ public final class QrCodeUtil {
         }
     }
 }
-
-
-private void

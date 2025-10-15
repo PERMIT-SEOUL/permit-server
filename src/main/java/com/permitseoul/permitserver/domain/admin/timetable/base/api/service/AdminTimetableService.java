@@ -1,12 +1,10 @@
-package com.permitseoul.permitserver.domain.admin.timetable.api.service;
+package com.permitseoul.permitserver.domain.admin.timetable.base.api.service;
 
 import com.permitseoul.permitserver.domain.admin.base.api.exception.AdminApiException;
 import com.permitseoul.permitserver.domain.admin.timetable.stage.core.AdminTimetableStageSaver;
-import com.permitseoul.permitserver.domain.eventtimetable.stage.core.domain.entity.TimetableStageEntity;
 import com.permitseoul.permitserver.global.exception.PermitIllegalStateException;
 import com.permitseoul.permitserver.global.external.notion.NotionProvider;
-import com.permitseoul.permitserver.domain.admin.timetable.core.components.AdminTimetableSaver;
-import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.domain.Timetable;
+import com.permitseoul.permitserver.domain.admin.timetable.base.core.components.AdminTimetableSaver;
 import com.permitseoul.permitserver.global.external.notion.NotionRelationValidator;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionCategoryDatasourceResponse;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionStageDatasourceResponse;
@@ -17,9 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

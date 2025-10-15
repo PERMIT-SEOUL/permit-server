@@ -1,8 +1,14 @@
-package com.permitseoul.permitserver.domain.admin.timetable.api.service;
+package com.permitseoul.permitserver.domain.admin.timetable.base.api.service;
 
+import com.permitseoul.permitserver.domain.admin.timetable.block.core.component.AdminTimetableBlockSaver;
+import com.permitseoul.permitserver.domain.admin.timetable.blockmedia.core.component.AdminTimetableBlockMediaSaver;
 import com.permitseoul.permitserver.domain.admin.timetable.category.core.component.AdminTimetableCategorySaver;
-import com.permitseoul.permitserver.domain.admin.timetable.core.components.AdminTimetableSaver;
+import com.permitseoul.permitserver.domain.admin.timetable.base.core.components.AdminTimetableSaver;
 import com.permitseoul.permitserver.domain.admin.timetable.stage.core.AdminTimetableStageSaver;
+import com.permitseoul.permitserver.domain.admin.util.NotionResponseMapper;
+import com.permitseoul.permitserver.domain.eventtimetable.block.core.domain.TimetableBlock;
+import com.permitseoul.permitserver.domain.eventtimetable.block.core.domain.entity.TimetableBlockEntity;
+import com.permitseoul.permitserver.domain.eventtimetable.blockmedia.domain.entity.TimetableBlockMediaEntity;
 import com.permitseoul.permitserver.domain.eventtimetable.category.core.domain.entity.TimetableCategoryEntity;
 import com.permitseoul.permitserver.domain.eventtimetable.stage.core.domain.entity.TimetableStageEntity;
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.domain.Timetable;
@@ -16,8 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.permitseoul.permitserver.domain.admin.util.NotionResponseMapper.mapToTimetableCategoryEntities;
-import static com.permitseoul.permitserver.domain.admin.util.NotionResponseMapper.mapToTimetableStageEntities;
+import static com.permitseoul.permitserver.domain.admin.util.NotionResponseMapper.*;
 
 @Component
 @RequiredArgsConstructor
@@ -25,6 +30,8 @@ public class AdminTimetableFacade {
     private final AdminTimetableSaver adminTimetableSaver;
     private final AdminTimetableStageSaver adminTimetableStageSaver;
     private final AdminTimetableCategorySaver adminTimetableCategorySaver;
+    private final AdminTimetableBlockSaver adminTimetableBlockSaver;
+    private final AdminTimetableBlockMediaSaver adminTimetableBlockMediaSaver;
 
     @Transactional
     public void saveInitialTimetableInfos(final long eventId,
@@ -53,11 +60,10 @@ public class AdminTimetableFacade {
         final List<TimetableCategoryEntity> timetableCategoryEntities = mapToTimetableCategoryEntities(savedTimetableId, notionCategoryDatasourceResponse);
         adminTimetableCategorySaver.saveAllTimetableCategoryEntities(timetableCategoryEntities);
 
-        // timetable block 엔티티 생성
+        final List<TimetableBlockEntity> blockEntities = mapToTimetableBlockEntities(savedTimetableId, notionTimetableDatasourceResponse);
+        List<TimetableBlock> savedBlocks = adminTimetableBlockSaver.saveAllTimetableBlocks(blockEntities);
 
-
+        final List<TimetableBlockMediaEntity> blockMediaEntities = mapToTimetableBlockMediaEntities(savedBlocks, notionTimetableDatasourceResponse);
+        adminTimetableBlockMediaSaver.saveAllBlockMedia(blockMediaEntities);
     }
-
-
-
 }
