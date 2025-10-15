@@ -24,7 +24,16 @@ public record NotionTimetableDatasourceResponse(
             @JsonProperty("use when media changed")
             RichTextProperty useWhenMediaChanged,
             RelationProperty category,
-            TitleProperty artist
+            TitleProperty artist,
+            @JsonProperty("details")
+            RichTextProperty details,
+            @JsonProperty("direct_url")
+            UrlProperty directUrl
+    ) {}
+
+    // URL 필드
+    public record UrlProperty(
+            String url
     ) {}
 
     // 연관된 테이블 row 필드
@@ -50,12 +59,11 @@ public record NotionTimetableDatasourceResponse(
             List<FileItem> files
     ) {
         public record FileItem(
-                String name,
+                @JsonProperty("file")
                 FileDetail file
         ) {
             public record FileDetail(
-                    String url,
-                    String expiry_time
+                    String url
             ) {}
         }
     }
@@ -67,7 +75,7 @@ public record NotionTimetableDatasourceResponse(
     ) {
         public record RichText(
                 String plain_text
-        ) { }
+        ) {}
     }
 
     // title 필드
@@ -76,6 +84,6 @@ public record NotionTimetableDatasourceResponse(
     ) {
         public record TitleItem(
                 String plain_text
-        ) { }
+        ) {}
     }
 }

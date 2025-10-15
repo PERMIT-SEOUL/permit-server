@@ -28,6 +28,7 @@ public interface NotionClient {
     );
 
     //노션 category 데이터소스 조회
+    @PostMapping(value = "/v1/data_sources/{dataSourceId}/query", consumes = MediaType.APPLICATION_JSON_VALUE)
     NotionCategoryDatasourceResponse getNotionCategoryDatasource(
             @RequestHeader("Authorization") final String authorization,
             @RequestHeader("Notion-Version") final String notionVersion,
@@ -37,6 +38,7 @@ public interface NotionClient {
     );
 
     //노션 stage 데이터소스 조회
+    @PostMapping(value = "/v1/data_sources/{dataSourceId}/query", consumes = MediaType.APPLICATION_JSON_VALUE)
     NotionStageDatasourceResponse getNotionStageDatasource(
             @RequestHeader("Authorization") final String authorization,
             @RequestHeader("Notion-Version") final String notionVersion,
