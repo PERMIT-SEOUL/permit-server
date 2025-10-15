@@ -66,12 +66,8 @@ public record NotionTimetableDatasourceResponse(
             List<RichText> richText
     ) {
         public record RichText(
-                String type,
-                Text text,
                 String plain_text
-        ) {
-            public record Text(String content) {}
-        }
+        ) { }
     }
 
     // title 필드
@@ -79,10 +75,7 @@ public record NotionTimetableDatasourceResponse(
             List<TitleItem> title
     ) {
         public record TitleItem(
-                Text text,
                 String plain_text
-        ) {
-            public record Text(String content) {}
-        }
+        ) { }
     }
 }
