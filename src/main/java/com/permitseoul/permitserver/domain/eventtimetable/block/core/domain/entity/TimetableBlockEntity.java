@@ -22,11 +22,11 @@ public class TimetableBlockEntity {
     @Column(name = "timetable_id", nullable = false)
     private long timetableId;
 
-    @Column(name = "timetable_category_id", nullable = false)
-    private long timetableCategoryId;
+    @Column(name = "timetable_category_notion_id", nullable = false)
+    private String timetableCategoryNotionId;
 
-    @Column(name = "timetable_area_id", nullable = false)
-    private long timetableAreaId;
+    @Column(name = "timetable_stage_notion_id", nullable = false)
+    private String timetableStageNotionId;
 
     @Column(name = "start_at", nullable = false)
     private LocalDateTime startAt;
@@ -49,8 +49,8 @@ public class TimetableBlockEntity {
 
     private TimetableBlockEntity(
             long timetableId,
-            long timetableCategoryId,
-            long timetableAreaId,
+            String timetableCategoryNotionId,
+            String timetableStageNotionId,
             LocalDateTime startAt,
             LocalDateTime endAt,
             String blockName,
@@ -61,8 +61,8 @@ public class TimetableBlockEntity {
         validateDateTime(startAt, endAt);
 
         this.timetableId = timetableId;
-        this.timetableCategoryId = timetableCategoryId;
-        this.timetableAreaId = timetableAreaId;
+        this.timetableCategoryNotionId = timetableCategoryNotionId;
+        this.timetableStageNotionId = timetableStageNotionId;
         this.startAt = startAt;
         this.endAt = endAt;
         this.blockName = blockName;
@@ -72,15 +72,15 @@ public class TimetableBlockEntity {
     }
 
     public static TimetableBlockEntity create(final long timetableId,
-                                              final long timetableCategoryId,
-                                              final long timetableAreaId,
+                                              final String timetableCategoryNotionId,
+                                              final String timetableStageNotionId,
                                               final LocalDateTime startAt,
                                               final LocalDateTime endAt,
                                               final String blockName,
                                               final String artist,
                                               final String information,
                                               final String blockInfoRedirectUrl) {
-        return new TimetableBlockEntity(timetableId, timetableCategoryId, timetableAreaId, startAt, endAt, blockName, artist, information, blockInfoRedirectUrl);
+        return new TimetableBlockEntity(timetableId, timetableCategoryNotionId, timetableStageNotionId, startAt, endAt, blockName, artist, information, blockInfoRedirectUrl);
     }
 
     private void validateDateTime(final LocalDateTime startAt, final LocalDateTime endAt) {

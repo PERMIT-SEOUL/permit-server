@@ -80,7 +80,7 @@ public class TimetableService {
                 ? Set.of()
                 : new HashSet<>(timetableUserLikeRetriever.findLikedBlockIdsIn(userId, blockIds));
 
-        final Map<Long, TimetableCategoryColor> categoryColorMap = mapCategoryColors(categoryList);
+        final Map<String, TimetableCategoryColor> categoryColorMap = mapCategoryColors(categoryList);
         final List<TimetableResponse.Stage> stageResponse = mapStagesToResponse(stageList);
         final List<TimetableResponse.Block> blockResponses = mapBlocksToResponse(blockList, categoryColorMap, likedBlockIds);
 
@@ -102,8 +102,8 @@ public class TimetableService {
         try {
             timetableBlock = timetableBlockRetriever.findTimetableBlockById(blockId);
             timetableBlockMediaList = timetableBlockMediaRetriever.getAllTimetableBlockMediaByBlockId(timetableBlock.getTimetableBlockId());
-            timetableCategory = timetableCategoryRetriever.findTimetableCategoryById(timetableBlock.getTimetableCategoryId());
-            timetableStage = timetableStageRetriever.findTimetableStageById(timetableBlock.getTimetableStageId());
+            timetableCategory = timetableCategoryRetriever.findTimetableCategoryByCategoryNotionRowId(timetableBlock.getTimetableCategoryNotionId());
+            timetableStage = timetableStageRetriever.findTimetableStageByStageNotionRowId(timetableBlock.getTimetableStageNotionId());
         } catch (TimetableBlockNotfoundException e) {
             throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_BLOCK);
         } catch (TimetableCategoryNotfoundException e) {
@@ -145,10 +145,10 @@ public class TimetableService {
                 .toList();
     }
 
-    private Map<Long, TimetableCategoryColor> mapCategoryColors(final List<TimetableCategory> categoryList) {
+    private Map<String, TimetableCategoryColor> mapCategoryColors(final List<TimetableCategory> categoryList) {
         return categoryList.stream()
                 .collect(Collectors.toMap(
-                        TimetableCategory::getTimetableCategoryId,
+                        TimetableCategory::getCategoryNotionId,
                         category -> new TimetableCategoryColor(
                                 category.getCategoryBackgroundColor(),
                                 category.getCategoryLineColor()
@@ -160,7 +160,7 @@ public class TimetableService {
         return stageList.stream()
                 .sorted(Comparator.comparingInt(TimetableStage::getSequence))
                 .map(stage -> TimetableResponse.Stage.of(
-                        stage.getTimetableStageId(),
+                        stage.getStageNotionId(),
                         stage.getStageName(),
                         stage.getSequence())
                 ).toList();
@@ -168,14 +168,14 @@ public class TimetableService {
 
     private List<TimetableResponse.Block> mapBlocksToResponse(
             final List<TimetableBlock> blockList,
-            final Map<Long, TimetableCategoryColor> categoryColorMap,
+            final Map<String, TimetableCategoryColor> categoryColorMap,
             final Set<Long> likedBlockIds
     ) {
         return blockList.stream()
                 .sorted(Comparator.comparing(TimetableBlock::getStartAt))
                 .map(block -> {
                     final TimetableCategoryColor categoryColor = Optional.ofNullable(
-                                    categoryColorMap.get(block.getTimetableCategoryId()))
+                                    categoryColorMap.get(block.getTimetableCategoryNotionId()))
                             .orElseThrow(() -> new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_CATEGORY_COLOR));
 
                     final String encodedBlockId = secureUrlUtil.encode(block.getTimetableBlockId());
@@ -187,7 +187,7 @@ public class TimetableService {
                             categoryColor.lineColor(),
                             block.getStartAt(),
                             block.getEndAt(),
-                            block.getTimetableStageId(),
+                            block.getTimetableStageNotionId(),
                             likedBlockIds.contains(block.getTimetableBlockId())
                     );
                 }).toList();

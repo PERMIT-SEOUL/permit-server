@@ -25,12 +25,12 @@ public record TimetableResponse(
     }
 
     public record Stage(
-            long stageId,
+            String stageNotionId,
             String stageName,
             int sequence
     ) {
-        public static Stage of(final long stageId, final String stageName, final int sequence) {
-            return new Stage(stageId, stageName, sequence);
+        public static Stage of(final String stageNotionId, final String stageName, final int sequence) {
+            return new Stage(stageNotionId, stageName, sequence);
         }
     }
 
@@ -43,7 +43,7 @@ public record TimetableResponse(
             LocalDateTime blockStartDate,
             @JsonFormat(pattern = "yyyy.MM.dd HH:mm")
             LocalDateTime blockEndDate,
-            long blockStageId,
+            String blockStageNotionId,
             boolean isUserLiked
     ) {
         public static Block of(final String blockId,
@@ -52,9 +52,9 @@ public record TimetableResponse(
                                final String blockLineColor,
                                final LocalDateTime blockStartDate,
                                final LocalDateTime blockEndDate,
-                               final long blockStageId,
+                               final String blockStageNotionId,
                                boolean isUserLiked) {
-            return new Block(blockId, blockName, blockBackgroundColor, blockLineColor, blockStartDate, blockEndDate, blockStageId, isUserLiked);
+            return new Block(blockId, blockName, blockBackgroundColor, blockLineColor, blockStartDate, blockEndDate, blockStageNotionId, isUserLiked);
         }
     }
 }

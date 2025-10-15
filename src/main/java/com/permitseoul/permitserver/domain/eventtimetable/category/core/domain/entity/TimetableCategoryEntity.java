@@ -28,7 +28,6 @@ public class TimetableCategoryEntity {
     @Column(name = "category_line_color", nullable = false)
     private String categoryLineColor;
 
-    // ✅ 새 필드 추가
     @Column(name = "notion_category_row_id", nullable = false)
     private String notionCategoryRowId;
 

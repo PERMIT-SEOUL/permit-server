@@ -27,8 +27,9 @@ public class TimetableCategoryRetriever {
     }
 
     @Transactional(readOnly = true)
-    public TimetableCategory findTimetableCategoryById(final long timetableId) {
-        final TimetableCategoryEntity timetableCategoryEntity = timetableCategoryRepository.findById(timetableId).orElseThrow(TimetableCategoryNotfoundException::new);
+    public TimetableCategory findTimetableCategoryByCategoryNotionRowId(final String timetableCategoryNotionId) {
+        final TimetableCategoryEntity timetableCategoryEntity = timetableCategoryRepository.findByNotionCategoryRowId(timetableCategoryNotionId)
+                .orElseThrow(TimetableCategoryNotfoundException::new);
         return TimetableCategory.fromEntity(timetableCategoryEntity);
     }
 

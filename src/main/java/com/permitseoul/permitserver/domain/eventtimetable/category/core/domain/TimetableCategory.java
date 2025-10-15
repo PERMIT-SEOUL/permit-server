@@ -12,6 +12,7 @@ public class TimetableCategory {
     private final String categoryName;
     private final String categoryBackgroundColor;
     private final String categoryLineColor;
+    private final String categoryNotionId;
 
     public static TimetableCategory fromEntity(final TimetableCategoryEntity timetableCategoryEntity) {
         return new TimetableCategory(
@@ -19,7 +20,8 @@ public class TimetableCategory {
                 timetableCategoryEntity.getTimetableId(),
                 timetableCategoryEntity.getCategoryName(),
                 timetableCategoryEntity.getCategoryBackgroundColor(),
-                timetableCategoryEntity.getCategoryLineColor()
+                timetableCategoryEntity.getCategoryLineColor(),
+                timetableCategoryEntity.getNotionCategoryRowId()
         );
     }
 

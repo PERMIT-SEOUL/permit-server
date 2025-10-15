@@ -25,7 +25,6 @@ public class TimetableStageEntity {
     @Column(name = "sequence", nullable = false)
     private int sequence;
 
-    // ✅ 새 필드 추가
     @Column(name = "notion_stage_row_id", nullable = false)
     private String notionStageRowId;
 

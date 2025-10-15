@@ -11,13 +11,16 @@ public class TimetableStage {
     private final long timetableId;
     private final String stageName;
     private final int sequence;
+    private final String stageNotionId;
 
     public static TimetableStage fromEntity(final TimetableStageEntity timetableStageEntity) {
         return new TimetableStage(
                 timetableStageEntity.getTimetableStageId(),
                 timetableStageEntity.getTimetableId(),
                 timetableStageEntity.getStageName(),
-                timetableStageEntity.getSequence()
+                timetableStageEntity.getSequence(),
+                timetableStageEntity.getNotionStageRowId()
+
         );
     }
 }

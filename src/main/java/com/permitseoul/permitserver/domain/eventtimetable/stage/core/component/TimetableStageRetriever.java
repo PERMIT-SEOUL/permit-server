@@ -27,8 +27,9 @@ public class TimetableStageRetriever {
     }
 
     @Transactional(readOnly = true)
-    public TimetableStage findTimetableStageById(final long timetableStageId) {
-        final TimetableStageEntity timetableStageEntity = timetableStageRepository.findById(timetableStageId).orElseThrow(TimetableStageNotFoundException::new);
+    public TimetableStage findTimetableStageByStageNotionRowId(final String timetableStageNotionId) {
+        final TimetableStageEntity timetableStageEntity = timetableStageRepository.findByNotionStageRowId(timetableStageNotionId)
+                .orElseThrow(TimetableStageNotFoundException::new);
         return TimetableStage.fromEntity(timetableStageEntity);
     }
 }
