@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 public class TimetableBlock {
     private final Long timetableBlockId;
     private final long timetableId;
-    private final long timetableCategoryId;
-    private final long timetableAreaId;
+    private final String timetableCategoryNotionId;
+    private final String timetableStageNotionId;
     private final LocalDateTime startAt;
     private final LocalDateTime endAt;
     private final String blockName;
@@ -24,8 +24,8 @@ public class TimetableBlock {
         return new TimetableBlock(
                 timetableBlockEntity.getTimetableBlockId(),
                 timetableBlockEntity.getTimetableId(),
-                timetableBlockEntity.getTimetableCategoryId(),
-                timetableBlockEntity.getTimetableAreaId(),
+                timetableBlockEntity.getTimetableCategoryNotionId(),
+                timetableBlockEntity.getTimetableStageNotionId(),
                 timetableBlockEntity.getStartAt(),
                 timetableBlockEntity.getEndAt(),
                 timetableBlockEntity.getBlockName(),

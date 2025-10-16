@@ -3,9 +3,9 @@ package com.permitseoul.permitserver.domain.eventtimetable.timetable.api.service
 import com.permitseoul.permitserver.domain.event.core.component.EventRetriever;
 import com.permitseoul.permitserver.domain.event.core.domain.Event;
 import com.permitseoul.permitserver.domain.event.core.exception.EventNotfoundException;
-import com.permitseoul.permitserver.domain.eventtimetable.area.core.component.TimetableAreaRetriever;
-import com.permitseoul.permitserver.domain.eventtimetable.area.core.domain.TimetableArea;
-import com.permitseoul.permitserver.domain.eventtimetable.area.core.exception.TimetableAreaNotFoundException;
+import com.permitseoul.permitserver.domain.eventtimetable.stage.core.component.TimetableStageRetriever;
+import com.permitseoul.permitserver.domain.eventtimetable.stage.core.domain.TimetableStage;
+import com.permitseoul.permitserver.domain.eventtimetable.stage.core.exception.TimetableStageNotFoundException;
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.component.TimetableBlockRetriever;
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.domain.TimetableBlock;
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.exception.TimetableBlockNotfoundException;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @Service
 public class TimetableService {
     private final TimetableRetriever timetableRetriever;
-    private final TimetableAreaRetriever timetableAreaRetriever;
+    private final TimetableStageRetriever timetableStageRetriever;
     private final TimetableCategoryRetriever timetableCategoryRetriever;
     private final TimetableBlockRetriever timetableBlockRetriever;
     private final TimetableBlockMediaRetriever timetableBlockMediaRetriever;
@@ -49,7 +49,7 @@ public class TimetableService {
     public TimetableResponse getEventTimetable(final long eventId, final Long userId) {
         final Event event;
         final Timetable timetable;
-        final List<TimetableArea> areaList;
+        final List<TimetableStage> stageList;
         final List<TimetableCategory> categoryList;
 
         final List<TimetableBlock> blockList;
@@ -57,7 +57,7 @@ public class TimetableService {
             event = eventRetriever.findEventById(eventId);
             timetable = timetableRetriever.getTimetableByEventId(eventId);
             final long timetableId = timetable.getTimetableId();
-            areaList = timetableAreaRetriever.findTimetableAreaListByTimetableId(timetableId);
+            stageList = timetableStageRetriever.findTimetableStageListByTimetableId(timetableId);
             categoryList = timetableCategoryRetriever.findAllTimetableCategory(timetableId);
             blockList = timetableBlockRetriever.findAllTimetableBlockByTimetableId(timetableId);
 
@@ -65,8 +65,8 @@ public class TimetableService {
             throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_EVENT);
         } catch (TimetableNotFoundException e) {
             throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE);
-        } catch (TimetableAreaNotFoundException e) {
-            throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_AREA);
+        } catch (TimetableStageNotFoundException e) {
+            throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_STAGE);
         } catch (TimetableCategoryNotfoundException e) {
             throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_CATEGORY);
         } catch (TimetableBlockNotfoundException e) {
@@ -80,15 +80,15 @@ public class TimetableService {
                 ? Set.of()
                 : new HashSet<>(timetableUserLikeRetriever.findLikedBlockIdsIn(userId, blockIds));
 
-        final Map<Long, TimetableCategoryColor> categoryColorMap = mapCategoryColors(categoryList);
-        final List<TimetableResponse.Area> areaResponses = mapAreasToResponse(areaList);
+        final Map<String, TimetableCategoryColor> categoryColorMap = mapCategoryColors(categoryList);
+        final List<TimetableResponse.Stage> stageResponse = mapStagesToResponse(stageList);
         final List<TimetableResponse.Block> blockResponses = mapBlocksToResponse(blockList, categoryColorMap, likedBlockIds);
 
         return TimetableResponse.of(
                 event.getName(),
                 timetable.getStartAt(),
                 timetable.getEndAt(),
-                areaResponses,
+                stageResponse,
                 blockResponses
         );
     }
@@ -97,19 +97,19 @@ public class TimetableService {
     public TimetableDetailResponse getEventTimetableDetail(final long blockId, final Long userId) {
         final TimetableBlock timetableBlock;
         final TimetableCategory timetableCategory;
-        final TimetableArea timetableArea;
+        final TimetableStage timetableStage;
         final List<TimetableBlockMedia> timetableBlockMediaList;
         try {
             timetableBlock = timetableBlockRetriever.findTimetableBlockById(blockId);
             timetableBlockMediaList = timetableBlockMediaRetriever.getAllTimetableBlockMediaByBlockId(timetableBlock.getTimetableBlockId());
-            timetableCategory = timetableCategoryRetriever.findTimetableCategoryById(timetableBlock.getTimetableCategoryId());
-            timetableArea = timetableAreaRetriever.findTimetableAreaById(timetableBlock.getTimetableAreaId());
+            timetableCategory = timetableCategoryRetriever.findTimetableCategoryByCategoryNotionRowId(timetableBlock.getTimetableCategoryNotionId());
+            timetableStage = timetableStageRetriever.findTimetableStageByStageNotionRowId(timetableBlock.getTimetableStageNotionId());
         } catch (TimetableBlockNotfoundException e) {
             throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_BLOCK);
         } catch (TimetableCategoryNotfoundException e) {
             throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_CATEGORY);
-        } catch (TimetableAreaNotFoundException e) {
-            throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_AREA);
+        } catch (TimetableStageNotFoundException e) {
+            throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_STAGE);
         }
 
         final List<TimetableDetailResponse.MediaInfo> mediaInfos = sortTimetableBlockMedia(timetableBlockMediaList);
@@ -122,7 +122,7 @@ public class TimetableService {
                 timetableCategory.getCategoryLineColor(),
                 isUserLiked,
                 timetableBlock.getInformation(),
-                timetableArea.getAreaName(),
+                timetableStage.getStageName(),
                 timetableBlock.getBlockInfoRedirectUrl(),
                 timetableBlock.getStartAt(),
                 timetableBlock.getEndAt(),
@@ -145,10 +145,10 @@ public class TimetableService {
                 .toList();
     }
 
-    private Map<Long, TimetableCategoryColor> mapCategoryColors(final List<TimetableCategory> categoryList) {
+    private Map<String, TimetableCategoryColor> mapCategoryColors(final List<TimetableCategory> categoryList) {
         return categoryList.stream()
                 .collect(Collectors.toMap(
-                        TimetableCategory::getTimetableCategoryId,
+                        TimetableCategory::getCategoryNotionId,
                         category -> new TimetableCategoryColor(
                                 category.getCategoryBackgroundColor(),
                                 category.getCategoryLineColor()
@@ -156,26 +156,26 @@ public class TimetableService {
                 ));
     }
 
-    private List<TimetableResponse.Area> mapAreasToResponse(final List<TimetableArea> areaList) {
-        return areaList.stream()
-                .sorted(Comparator.comparingInt(TimetableArea::getSequence))
-                .map(area -> TimetableResponse.Area.of(
-                        area.getTimetableAreaId(),
-                        area.getAreaName(),
-                        area.getSequence())
+    private List<TimetableResponse.Stage> mapStagesToResponse(final List<TimetableStage> stageList) {
+        return stageList.stream()
+                .sorted(Comparator.comparingInt(TimetableStage::getSequence))
+                .map(stage -> TimetableResponse.Stage.of(
+                        stage.getStageNotionId(),
+                        stage.getStageName(),
+                        stage.getSequence())
                 ).toList();
     }
 
     private List<TimetableResponse.Block> mapBlocksToResponse(
             final List<TimetableBlock> blockList,
-            final Map<Long, TimetableCategoryColor> categoryColorMap,
+            final Map<String, TimetableCategoryColor> categoryColorMap,
             final Set<Long> likedBlockIds
     ) {
         return blockList.stream()
                 .sorted(Comparator.comparing(TimetableBlock::getStartAt))
                 .map(block -> {
                     final TimetableCategoryColor categoryColor = Optional.ofNullable(
-                                    categoryColorMap.get(block.getTimetableCategoryId()))
+                                    categoryColorMap.get(block.getTimetableCategoryNotionId()))
                             .orElseThrow(() -> new NotfoundTimetableException(ErrorCode.NOT_FOUND_TIMETABLE_CATEGORY_COLOR));
 
                     final String encodedBlockId = secureUrlUtil.encode(block.getTimetableBlockId());
@@ -187,7 +187,7 @@ public class TimetableService {
                             categoryColor.lineColor(),
                             block.getStartAt(),
                             block.getEndAt(),
-                            block.getTimetableAreaId(),
+                            block.getTimetableStageNotionId(),
                             likedBlockIds.contains(block.getTimetableBlockId())
                     );
                 }).toList();

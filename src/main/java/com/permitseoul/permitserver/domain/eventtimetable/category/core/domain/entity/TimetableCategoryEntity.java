@@ -28,17 +28,26 @@ public class TimetableCategoryEntity {
     @Column(name = "category_line_color", nullable = false)
     private String categoryLineColor;
 
-    private TimetableCategoryEntity(long timetableId, String categoryName, String categoryBackgroundColor, String categoryLineColor) {
+    @Column(name = "notion_category_row_id", nullable = false)
+    private String notionCategoryRowId;
+
+    private TimetableCategoryEntity(long timetableId,
+                                    String categoryName,
+                                    String categoryBackgroundColor,
+                                    String categoryLineColor,
+                                    String notionCategoryRowId) {
         this.timetableId = timetableId;
         this.categoryName = categoryName;
         this.categoryBackgroundColor = categoryBackgroundColor;
         this.categoryLineColor = categoryLineColor;
+        this.notionCategoryRowId = notionCategoryRowId;
     }
 
     public static TimetableCategoryEntity create(final long timetableId,
                                                  final String categoryName,
                                                  final String categoryBackgroundColor,
-                                                 final String categoryLineColor) {
-        return new TimetableCategoryEntity(timetableId, categoryName, categoryBackgroundColor, categoryLineColor);
+                                                 final String categoryLineColor,
+                                                 final String notionCategoryRowId) {
+        return new TimetableCategoryEntity(timetableId, categoryName, categoryBackgroundColor, categoryLineColor, notionCategoryRowId);
     }
 }
