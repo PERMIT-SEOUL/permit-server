@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static net.logstash.logback.fieldnames.ShortenedFieldNames.FIELD_STACKTRACE;
+
 @UtilityClass
 public final class HttpReqResLogJsonBuilder {
 
@@ -29,11 +31,14 @@ public final class HttpReqResLogJsonBuilder {
     private static final String FIELD_DURATION = "duration_ms";
     private static final String FIELD_REQUEST_BODY = "request_body";
     private static final String FIELD_RESPONSE_BODY = "response_body";
+    private static final String FIELD_EXCEPTION = "exception";
+    private static final String FIELD_STACKTRACE = "stacktrace";
     private static final String LOG_TYPE_HTTP = "HTTP";
 
     public static String buildJsonLog(final ContentCachingRequestWrapper request,
                                       final ContentCachingResponseWrapper response,
-                                      final long duration) {
+                                      final long duration,
+                                      final Exception exception) {
         try {
             final Map<String, Object> logMap = new LinkedHashMap<>();
 
@@ -47,6 +52,12 @@ public final class HttpReqResLogJsonBuilder {
             logMap.put(FIELD_REQUEST_BODY, extractBody(request.getContentAsByteArray()));
             logMap.put(FIELD_RESPONSE_BODY, extractBody(response.getContentAsByteArray()));
 
+
+            if (exception != null) {
+                logMap.put(FIELD_EXCEPTION, exception.getClass().getSimpleName() + ": " + exception.getMessage());
+                logMap.put(FIELD_STACKTRACE, getStackTraceAsString(exception));
+            }
+
             return OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(logMap);
         } catch (Exception e) {
             return "{\"error\":\"failed to format log\"}";
@@ -59,5 +70,17 @@ public final class HttpReqResLogJsonBuilder {
         return body.length() > MAX_LENGTH
                 ? body.substring(0, MAX_LENGTH) + OVER_MAX_LENGTH
                 : body;
+    }
+
+    private static String getStackTraceAsString(final Exception e) {
+        final StringBuilder sb = new StringBuilder();
+        for (StackTraceElement el : e.getStackTrace()) {
+            sb.append(el.toString()).append("\n");
+            if (sb.length() > 1500) { // Discord 메시지 길이 제한 방지
+                sb.append("...more");
+                break;
+            }
+        }
+        return sb.toString();
     }
 }
