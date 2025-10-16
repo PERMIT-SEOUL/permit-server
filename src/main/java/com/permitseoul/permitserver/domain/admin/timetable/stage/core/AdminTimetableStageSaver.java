@@ -12,7 +12,7 @@ import java.util.List;
 public class AdminTimetableStageSaver {
     private final TimetableStageRepository timetableStageRepository;
 
-    public void saveAllTimetableStages(final List<TimetableStageEntity> timetableStageEntities) {
+    public void saveAllTimetableStagesEntities(final List<TimetableStageEntity> timetableStageEntities) {
         timetableStageRepository.saveAll(timetableStageEntities);
     }
 }

@@ -28,6 +28,7 @@ public enum ErrorCode implements ApiCode {
     BAD_REQUEST_TICKET_CHECK_CODE_ERROR(HttpStatus.BAD_REQUEST, 40014, "잘못된 ticket check code 입니다."),
     BAD_REQUEST_CANCELED_TICKET(HttpStatus.BAD_REQUEST, 40015, "취소된 ticket 입니다."),
     BAD_REQUEST_MISMATCH_TICKET_TYPE_ROUND(HttpStatus.BAD_REQUEST, 40016, "ticketType의 roundId와 다른 ticketRoundId 입니다."),
+    BAD_REQUEST_MISMATCH_LIST_SIZE(HttpStatus.BAD_REQUEST, 40017, "list의 길이가 다릅니다."),
 
 
 
@@ -84,6 +85,7 @@ public enum ErrorCode implements ApiCode {
     NOT_FOUND_GUEST_TICKET(HttpStatus.NOT_FOUND, 40424, "게스트 티켓을 찾을 수 없습니다."),
     NOT_FOUND_TIMETABLE_USER_LIKE(HttpStatus.NOT_FOUND, 40425, "유저 좋아요 타임테이블을 찾을 수 없습니다."),
     NOT_FOUND_NOTION_RELATION_ID(HttpStatus.NOT_FOUND, 40426, "Notion Relation Id를 찾을 수 없습니다."),
+    NOT_FOUND_NOTION_DATABASE_SOURCE(HttpStatus.NOT_FOUND, 40427, "Notion 데이터베이스 소스를 찾을 수 없습니다."),
 
 
 
@@ -114,7 +116,7 @@ public enum ErrorCode implements ApiCode {
     INTERNAL_JSON_FORMAT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50002, "json 포맷팅 과정에서 에러가 발생했습니다."),
     INTERNAL_TICKET_ALGORITHM_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50003, "티켓 코드 생성 알고리즘 에러입니다."),
     INTERNAL_PAYMENT_FEIGN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50004, "결제 feign 통신 에러입니다."),
-    INTERNAL_ISO_DATE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50005, "Toss iso date string에서 localdate로 변환 과정 에러입니다."),
+    INTERNAL_ISO_DATE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50005, "DateFormat 변환 과정 에러입니다."),
     INTERNAL_TRANSITION_ENUM_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50006, "enum status 변환 과정 에러입니다."),
     INTERNAL_SESSION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50007, "reservation session 저장 과정 에러입니다."),
     INTERNAL_ID_ENCODE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50008, "객체 guestId Encoding 에러입니다."),

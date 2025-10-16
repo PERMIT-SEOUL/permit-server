@@ -1,16 +1,20 @@
 package com.permitseoul.permitserver.domain.admin.util;
 
+import com.permitseoul.permitserver.domain.admin.util.exception.PermitListSizeNotMatchException;
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.domain.TimetableBlock;
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.domain.entity.TimetableBlockEntity;
 import com.permitseoul.permitserver.domain.eventtimetable.blockmedia.domain.entity.TimetableBlockMediaEntity;
 import com.permitseoul.permitserver.domain.eventtimetable.category.core.domain.entity.TimetableCategoryEntity;
 import com.permitseoul.permitserver.domain.eventtimetable.stage.core.domain.entity.TimetableStageEntity;
+import com.permitseoul.permitserver.global.exception.DateFormatException;
+import com.permitseoul.permitserver.global.exception.PermitIllegalStateException;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionCategoryDatasourceResponse;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionStageDatasourceResponse;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionTimetableDatasourceResponse;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -97,8 +101,21 @@ public final class NotionResponseMapper {
                             : "";
                     final String redirectUrl = props.directUrl() != null ? props.directUrl().url() : null;
 
-                    final LocalDateTime startAt = LocalDateTime.parse(props.time().date().start(), FORMATTER);
-                    final LocalDateTime endAt = LocalDateTime.parse(props.time().date().end(), FORMATTER);
+                    final LocalDateTime startAt;
+                    final LocalDateTime endAt;
+                    try {
+                        startAt = LocalDateTime.parse(props.time().date().start(), FORMATTER);
+                        endAt = LocalDateTime.parse(props.time().date().end(), FORMATTER);
+                    } catch (DateTimeParseException e) {
+                        throw new DateFormatException() ;
+                    }
+
+                    if (props.category().relation().isEmpty()) {
+                        throw new PermitIllegalStateException();
+                    }
+                    if (props.stage().relation().isEmpty()) {
+                        throw new PermitIllegalStateException();
+                    }
 
                     final String categoryNotionId = props.category().relation().get(0).id();
                     final String stageNotionId = props.stage().relation().get(0).id();
@@ -120,6 +137,9 @@ public final class NotionResponseMapper {
 
     public static List<TimetableBlockMediaEntity> mapToTimetableBlockMediaEntities(final List<TimetableBlock> savedBlocks,
                                                                                    final NotionTimetableDatasourceResponse notionTimetableDatasourceResponse) {
+        if(savedBlocks.size() != notionTimetableDatasourceResponse.results().size()) {
+            throw new PermitListSizeNotMatchException();
+        }
         final List<TimetableBlockMediaEntity> mediaEntities = new ArrayList<>();
 
         for (int i = 0; i < savedBlocks.size(); i++) {

@@ -1,20 +1,23 @@
 package com.permitseoul.permitserver.domain.admin.timetable.base.api.service;
 
+import com.permitseoul.permitserver.domain.admin.base.api.exception.AdminApiException;
 import com.permitseoul.permitserver.domain.admin.timetable.block.core.component.AdminTimetableBlockSaver;
 import com.permitseoul.permitserver.domain.admin.timetable.blockmedia.core.component.AdminTimetableBlockMediaSaver;
 import com.permitseoul.permitserver.domain.admin.timetable.category.core.component.AdminTimetableCategorySaver;
 import com.permitseoul.permitserver.domain.admin.timetable.base.core.components.AdminTimetableSaver;
 import com.permitseoul.permitserver.domain.admin.timetable.stage.core.AdminTimetableStageSaver;
-import com.permitseoul.permitserver.domain.admin.util.NotionResponseMapper;
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.domain.TimetableBlock;
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.domain.entity.TimetableBlockEntity;
 import com.permitseoul.permitserver.domain.eventtimetable.blockmedia.domain.entity.TimetableBlockMediaEntity;
 import com.permitseoul.permitserver.domain.eventtimetable.category.core.domain.entity.TimetableCategoryEntity;
 import com.permitseoul.permitserver.domain.eventtimetable.stage.core.domain.entity.TimetableStageEntity;
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.domain.Timetable;
+import com.permitseoul.permitserver.global.exception.DateFormatException;
+import com.permitseoul.permitserver.global.exception.PermitIllegalStateException;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionCategoryDatasourceResponse;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionStageDatasourceResponse;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionTimetableDatasourceResponse;
+import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,22 +43,22 @@ public class AdminTimetableFacade {
                                           final String notionTimetableDataSourceId,
                                           final String notionStageDataSourceId,
                                           final String notionCategoryDataSourceId,
+                                          final NotionTimetableDatasourceResponse notionTimetableDatasourceResponse,
                                           final NotionStageDatasourceResponse notionStageDatasourceResponse,
-                                          final NotionCategoryDatasourceResponse notionCategoryDatasourceResponse,
-                                          final NotionTimetableDatasourceResponse notionTimetableDatasourceResponse) {
+                                          final NotionCategoryDatasourceResponse notionCategoryDatasourceResponse) {
 
         final Timetable savedTimetable = adminTimetableSaver.saveTimetable(
                 eventId,
                 timetableStartAt,
                 timetableEndAt,
                 notionTimetableDataSourceId,
-                notionCategoryDataSourceId,
-                notionStageDataSourceId
+                notionStageDataSourceId,
+                notionCategoryDataSourceId
         );
         final long savedTimetableId = savedTimetable.getTimetableId();
 
         final List<TimetableStageEntity> timetableStageEntities = mapToTimetableStageEntities(savedTimetableId, notionStageDatasourceResponse);
-        adminTimetableStageSaver.saveAllTimetableStages(timetableStageEntities);
+        adminTimetableStageSaver.saveAllTimetableStagesEntities(timetableStageEntities);
 
         final List<TimetableCategoryEntity> timetableCategoryEntities = mapToTimetableCategoryEntities(savedTimetableId, notionCategoryDatasourceResponse);
         adminTimetableCategorySaver.saveAllTimetableCategoryEntities(timetableCategoryEntities);

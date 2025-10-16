@@ -1,10 +1,12 @@
 package com.permitseoul.permitserver.global.external.notion;
 
 import com.permitseoul.permitserver.global.Constants;
+import com.permitseoul.permitserver.global.exception.PermitIllegalStateException;
 import com.permitseoul.permitserver.global.external.notion.client.NotionClient;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionCategoryDatasourceResponse;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionStageDatasourceResponse;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionTimetableDatasourceResponse;
+import com.permitseoul.permitserver.global.external.notion.exception.NotFoundNotionResponseException;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
@@ -21,29 +23,41 @@ public class NotionProvider {
     }
 
     public NotionTimetableDatasourceResponse getNotionTimetableDatasource(final String notionTimetableDatasourceId) {
-        return notionClient.getNotionTimetableDatasource(
+        final NotionTimetableDatasourceResponse response = notionClient.getNotionTimetableDatasource(
                 notionDatasourceAuthorizationHeader,
                 notionProperties.notionVersion(),
                 MediaType.APPLICATION_JSON_VALUE,
                 notionTimetableDatasourceId
         );
+        if (response.results().isEmpty()) {
+            throw new NotFoundNotionResponseException();
+        }
+        return response;
     }
 
     public NotionStageDatasourceResponse getNotionStageDatasource(final String notionStageDatasourceId) {
-        return notionClient.getNotionStageDatasource(
+        final NotionStageDatasourceResponse response = notionClient.getNotionStageDatasource(
                 notionDatasourceAuthorizationHeader,
                 notionProperties.notionVersion(),
                 MediaType.APPLICATION_JSON_VALUE,
                 notionStageDatasourceId
         );
+        if (response.results().isEmpty()) {
+            throw new NotFoundNotionResponseException();
+        }
+        return response;
     }
 
     public NotionCategoryDatasourceResponse getNotionCategoryDatasource(final String notionCategoryDatasourceId) {
-        return notionClient.getNotionCategoryDatasource(
+        final NotionCategoryDatasourceResponse response = notionClient.getNotionCategoryDatasource(
                 notionDatasourceAuthorizationHeader,
                 notionProperties.notionVersion(),
                 MediaType.APPLICATION_JSON_VALUE,
                 notionCategoryDatasourceId
         );
+        if (response.results().isEmpty()) {
+            throw new NotFoundNotionResponseException();
+        }
+        return response;
     }
 }
