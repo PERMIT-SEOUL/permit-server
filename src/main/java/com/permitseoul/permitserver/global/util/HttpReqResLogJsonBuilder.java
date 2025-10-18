@@ -11,8 +11,6 @@ import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static net.logstash.logback.fieldnames.ShortenedFieldNames.FIELD_STACKTRACE;
-
 @UtilityClass
 public final class HttpReqResLogJsonBuilder {
 

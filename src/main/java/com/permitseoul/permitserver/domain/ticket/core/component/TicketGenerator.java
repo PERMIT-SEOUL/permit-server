@@ -21,13 +21,13 @@ public abstract class TicketGenerator {
 
         return reservationTicketList.stream()
                 .flatMap(reservationTicket -> {
-                    // 1️⃣ 현재 예약 티켓의 타입 ID로 대응되는 TicketTypeEntity 찾기
+                    // 현재 예약 티켓의 타입 ID로 대응되는 TicketTypeEntity 찾기
                     final TicketTypeEntity ticketTypeEntity = ticketTypeEntities.stream()
                             .filter(t -> t.getTicketTypeId() == reservationTicket.getTicketTypeId())
                             .findFirst()
                             .orElseThrow(() -> new IllegalArgumentException("해당 ticketTypeId에 대한 TicketTypeEntity를 찾을 수 없습니다."));
 
-                    // 2️⃣ 실제 티켓 생성
+                    // 실제 티켓 생성
                     return IntStream.range(0, reservationTicket.getCount())
                             .mapToObj(i -> Ticket.builder()
                                     .userId(userId)
@@ -38,8 +38,8 @@ public abstract class TicketGenerator {
                                     .status(TicketStatus.RESERVED)
                                     .ticketPrice(
                                             hasCoupon
-                                                    ? reservation.getTotalAmount()          // ✅ 쿠폰 사용 시: 전체 예약 금액
-                                                    : ticketTypeEntity.getTicketPrice()     // ✅ 일반 결제 시: 티켓 단가
+                                                    ? reservation.getTotalAmount()
+                                                    : ticketTypeEntity.getTicketPrice()
                                     )
                                     .build());
                 })
