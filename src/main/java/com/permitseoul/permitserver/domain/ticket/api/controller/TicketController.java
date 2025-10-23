@@ -37,7 +37,7 @@ public class TicketController {
     }
 
     //도어용 티켓 검증 api
-    @PostMapping("/confirm")
+    @PostMapping("/door/staff/confirm")
     public ResponseEntity<BaseResponse<?>> getUserBuyTicketInfo(
             @RequestBody @Valid TicketConfirmRequest ticketConfirmRequest
     ) {
