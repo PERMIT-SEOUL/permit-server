@@ -49,4 +49,9 @@ public class TicketRetriever {
                 .map(Ticket::fromEntity)
                 .toList();
     }
+
+    @Transactional(readOnly = true)
+    public Ticket findTicketByTicketCode(final String ticketCode) {
+        return Ticket.fromEntity(ticketRepository.findByTicketCode(ticketCode).orElseThrow(TicketNotFoundException::new));
+    }
 }

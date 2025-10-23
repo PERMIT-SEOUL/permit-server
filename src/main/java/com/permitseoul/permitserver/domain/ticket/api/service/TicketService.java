@@ -5,6 +5,7 @@ import com.permitseoul.permitserver.domain.event.core.domain.Event;
 import com.permitseoul.permitserver.domain.event.core.exception.EventNotfoundException;
 import com.permitseoul.permitserver.domain.payment.core.component.PaymentRetriever;
 import com.permitseoul.permitserver.domain.payment.core.domain.Payment;
+import com.permitseoul.permitserver.domain.ticket.api.dto.res.DoorValidateUserTicket;
 import com.permitseoul.permitserver.domain.ticket.api.dto.res.EventTicketInfoResponse;
 import com.permitseoul.permitserver.domain.ticket.api.dto.res.UserBuyTicketInfoResponse;
 import com.permitseoul.permitserver.domain.ticket.api.exception.ConflictTicketException;
@@ -110,19 +111,36 @@ public class TicketService {
     }
 
     @Transactional
-    public void confirmTicket(final String ticketCode, final String checkCodeFromTicket) {
+    public void confirmTicketByStaff(final String ticketCode, final String checkCodeFromTicket) {
         try {
             final TicketEntity ticketEntity = ticketRetriever.findTicketEntityByTicketCode(ticketCode);
             verifyTicketStatus(ticketEntity.getStatus());
+            findTicketTypeAndVerifyTicketDate(ticketEntity.getTicketTypeId());
 
-            final TicketType ticketType = ticketTypeRetriever.findTicketTypeById(ticketEntity.getTicketTypeId());
-            verifyTicketDate(ticketType.getTicketStartAt(), ticketType.getTicketEndAt());
-
-            final Event event = eventRetriever.findEventById(ticketEntity.getEventId());
+            final Event event = findEventById(ticketEntity.getEventId());
             verifyTicketCheckCode(event.getTicketCheckCode(), checkCodeFromTicket);
 
             ticketUpdater.updateTicketStatus(ticketEntity, TicketStatus.USED);
         } catch (TicketNotFoundException  e) {
+            throw new NotFoundTicketException(ErrorCode.NOT_FOUND_TICKET);
+        } catch (TicketTypeNotfoundException e) {
+            throw new NotFoundTicketException(ErrorCode.NOT_FOUND_TICKET_TYPE);
+        } catch (EventNotfoundException e) {
+            throw new NotFoundTicketException(ErrorCode.NOT_FOUND_EVENT);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public DoorValidateUserTicket validateUserTicket(final String ticketCode) {
+        try {
+            final Ticket ticket = ticketRetriever.findTicketByTicketCode(ticketCode);
+            verifyTicketStatus(ticket.getStatus());
+
+            final TicketType ticketType = findTicketTypeAndVerifyTicketDate(ticket.getTicketTypeId());
+            final Event event = findEventById(ticket.getEventId());
+
+            return DoorValidateUserTicket.of(event.getName(), ticketType.getTicketTypeName(), ticketType.getTicketStartAt(), ticketType.getTicketEndAt());
+        } catch (TicketNotFoundException e) {
             throw new NotFoundTicketException(ErrorCode.NOT_FOUND_TICKET);
         } catch (TicketTypeNotfoundException e) {
             throw new NotFoundTicketException(ErrorCode.NOT_FOUND_TICKET_TYPE);
@@ -144,6 +162,7 @@ public class TicketService {
     private TicketType findTicketTypeById(final long ticketTypeId) {
         return ticketTypeRetriever.findTicketTypeById(ticketTypeId);
     }
+
     private void verifyTicketStatus(final TicketStatus ticketStatus) {
         if(ticketStatus == TicketStatus.USED)  {
             throw new ConflictTicketException(ErrorCode.CONFLICT_ALREADY_USED_TICKET);

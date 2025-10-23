@@ -36,12 +36,20 @@ public class TicketController {
         return ApiResponseUtil.success(SuccessCode.OK, ticketService.getUserBuyTicketInfo(userId));
     }
 
-    //도어용 티켓 검증 api
+    //도어용 유저 티켓 스텝 확인 api
     @PostMapping("/door/staff/confirm")
-    public ResponseEntity<BaseResponse<?>> getUserBuyTicketInfo(
+    public ResponseEntity<BaseResponse<?>> confirmUserTicketByStaffAtDoor(
             @RequestBody @Valid TicketConfirmRequest ticketConfirmRequest
     ) {
-        ticketService.confirmTicket(ticketConfirmRequest.ticketCode(), ticketConfirmRequest.checkCode());
+        ticketService.confirmTicketByStaff(ticketConfirmRequest.ticketCode(), ticketConfirmRequest.checkCode());
         return ApiResponseUtil.success(SuccessCode.OK);
+    }
+
+    //도어용 유저 티켓 유효성 검증 api
+    @GetMapping("/door/validation/{ticketCode}")
+    public ResponseEntity<BaseResponse<?>> validateUserTicketAtDoor(
+            @PathVariable("ticketCode") final String ticketCode
+    ) {
+        return ApiResponseUtil.success(SuccessCode.OK, ticketService.validateUserTicket(ticketCode));
     }
 }
