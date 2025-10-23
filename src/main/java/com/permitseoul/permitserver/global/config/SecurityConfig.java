@@ -37,7 +37,8 @@ public class SecurityConfig {
             "/api/events/*/timetables",
             "/api/events/timetables/*",
             "/api/tickets/info/*",
-            "/api/tickets/door/staff/confirm"
+            "/api/tickets/door/staff/confirm",
+            "/api/tickets/door/validation/*"
     };
 
     private static final String[] adminURIList = {
