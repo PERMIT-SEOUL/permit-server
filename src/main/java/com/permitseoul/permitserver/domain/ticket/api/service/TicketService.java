@@ -131,6 +131,19 @@ public class TicketService {
         }
     }
 
+    private Event findEventById(final long eventId) {
+        return eventRetriever.findEventById(eventId);
+    }
+
+    private TicketType findTicketTypeAndVerifyTicketDate(final long ticketTypeId) {
+        final TicketType ticketType = findTicketTypeById(ticketTypeId);
+        verifyTicketDate(ticketType.getTicketStartAt(), ticketType.getTicketEndAt());
+        return ticketType;
+    }
+
+    private TicketType findTicketTypeById(final long ticketTypeId) {
+        return ticketTypeRetriever.findTicketTypeById(ticketTypeId);
+    }
     private void verifyTicketStatus(final TicketStatus ticketStatus) {
         if(ticketStatus == TicketStatus.USED)  {
             throw new ConflictTicketException(ErrorCode.CONFLICT_ALREADY_USED_TICKET);
