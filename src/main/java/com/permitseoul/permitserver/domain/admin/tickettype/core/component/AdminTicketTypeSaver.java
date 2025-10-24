@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.domain.admin.tickettype.core.component;
 
+import com.permitseoul.permitserver.domain.tickettype.core.domain.TicketType;
 import com.permitseoul.permitserver.domain.tickettype.core.domain.entity.TicketTypeEntity;
 import com.permitseoul.permitserver.domain.tickettype.core.repository.TicketTypeRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +15,10 @@ import java.util.List;
 public class AdminTicketTypeSaver {
     private final TicketTypeRepository ticketTypeRepository;
 
-    public void saveAllTicketTypes(final List<TicketTypeEntity> ticketTypeEntityList) {
-        ticketTypeRepository.saveAll(ticketTypeEntityList);
+    public List<TicketType> saveAllTicketTypes(final List<TicketTypeEntity> ticketTypeEntityList) {
+        return ticketTypeRepository.saveAll(ticketTypeEntityList).stream()
+                .map(TicketType::fromEntity)
+                .toList();
     }
 
     public void saveTicketType(final long ticketRoundId,
