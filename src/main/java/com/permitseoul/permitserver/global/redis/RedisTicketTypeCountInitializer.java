@@ -1,7 +1,8 @@
-package com.permitseoul.permitserver.global;
+package com.permitseoul.permitserver.global.redis;
 
 import com.permitseoul.permitserver.domain.tickettype.core.domain.entity.TicketTypeEntity;
 import com.permitseoul.permitserver.domain.tickettype.core.repository.TicketTypeRepository;
+import com.permitseoul.permitserver.global.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;

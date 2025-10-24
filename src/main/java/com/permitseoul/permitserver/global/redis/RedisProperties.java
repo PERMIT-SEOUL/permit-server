@@ -1,4 +1,4 @@
-package com.permitseoul.permitserver.global;
+package com.permitseoul.permitserver.global.redis;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
