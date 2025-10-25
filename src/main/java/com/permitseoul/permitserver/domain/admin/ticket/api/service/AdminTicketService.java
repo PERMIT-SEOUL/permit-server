@@ -13,6 +13,7 @@ import com.permitseoul.permitserver.domain.admin.ticketround.exception.AdminTick
 import com.permitseoul.permitserver.domain.admin.tickettype.core.component.AdminTicketTypeRetriever;
 import com.permitseoul.permitserver.domain.admin.tickettype.core.component.AdminTicketTypeSaver;
 import com.permitseoul.permitserver.domain.admin.tickettype.core.component.AdminTicketTypeUpdater;
+import com.permitseoul.permitserver.domain.admin.tickettype.core.component.AdminRedisTicketTypeSaver;
 import com.permitseoul.permitserver.domain.admin.tickettype.core.exception.AdminTicketTypeNotFoundException;
 import com.permitseoul.permitserver.domain.ticket.core.domain.TicketStatus;
 import com.permitseoul.permitserver.domain.ticketround.core.component.TicketRoundRetriever;
@@ -44,6 +45,7 @@ public class AdminTicketService {
     private final AdminTicketRoundSaver adminTicketRoundSaver;
     private final AdminTicketTypeSaver adminTicketTypeSaver;
     private final AdminTicketRoundUpdater adminTicketRoundUpdater;
+    private final AdminRedisTicketTypeSaver adminRedisTicketTypeSaver;
 
     private static final int EMPTY_TICKET_COUNT_ZERO = 0;
     private static final List<TicketStatus> SOLD_STATUSES = List.of(TicketStatus.RESERVED, TicketStatus.USED);
@@ -116,12 +118,19 @@ public class AdminTicketService {
                                           final LocalDateTime roundSalesStartDate,
                                           final LocalDateTime roundSalesEndDate,
                                           final List<TicketRoundWithTypeCreateRequest.TicketTypeRequest> ticketTypeRequests) {
-
+        final List<TicketType> savedTicketTypes;
         try {
             final TicketRound savedTicketRound = adminTicketRoundSaver.saveTicketRound(eventId,ticketRoundName, roundSalesStartDate, roundSalesEndDate);
-            saveTicketTypes(ticketTypeRequests, savedTicketRound.getTicketRoundId());
+            savedTicketTypes = saveTicketTypes(ticketTypeRequests, savedTicketRound.getTicketRoundId());
         } catch (TicketRoundIllegalArgumentException | TicketTypeIllegalException e) {
             throw new AdminApiException(ErrorCode.BAD_REQUEST_DATE_TIME_ERROR);
+        }
+
+        //redis 등록
+        try {
+            adminRedisTicketTypeSaver.saveTicketTypesInRedis(savedTicketTypes);
+        } catch (Exception e) {
+            throw new AdminApiException(ErrorCode.INTERNAL_TICKET_REDIS_ERROR);
         }
     }
 
@@ -170,8 +179,8 @@ public class AdminTicketService {
         }
     }
 
-    private void saveTicketTypes(final List<TicketRoundWithTypeCreateRequest.TicketTypeRequest> ticketTypes,
-                                 final long ticketRoundId) {
+    private List<TicketType> saveTicketTypes(final List<TicketRoundWithTypeCreateRequest.TicketTypeRequest> ticketTypes,
+                                             final long ticketRoundId) {
         final List<TicketTypeEntity> ticketTypeEntityList = ticketTypes.stream()
                 .map(ticketType -> TicketTypeEntity.create(
                         ticketRoundId,
@@ -181,7 +190,7 @@ public class AdminTicketService {
                         ticketType.startDate(),
                         ticketType.endDate()
                 )).toList();
-        adminTicketTypeSaver.saveAllTicketTypes(ticketTypeEntityList);
+        return adminTicketTypeSaver.saveAllTicketTypes(ticketTypeEntityList);
     }
 
     private TicketRoundAndTicketTypeRes.TicketRoundWithTypes parseRoundWithTypes(final TicketRound round) {

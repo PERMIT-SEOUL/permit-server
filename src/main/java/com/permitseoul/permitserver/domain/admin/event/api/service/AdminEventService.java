@@ -16,6 +16,7 @@ import com.permitseoul.permitserver.domain.admin.ticketround.core.component.Admi
 import com.permitseoul.permitserver.domain.admin.ticketround.core.component.AdminTicketRoundSaver;
 import com.permitseoul.permitserver.domain.admin.tickettype.core.component.AdminTicketTypeRetriever;
 import com.permitseoul.permitserver.domain.admin.tickettype.core.component.AdminTicketTypeSaver;
+import com.permitseoul.permitserver.domain.admin.tickettype.core.component.AdminRedisTicketTypeSaver;
 import com.permitseoul.permitserver.domain.event.core.domain.Event;
 import com.permitseoul.permitserver.domain.event.core.domain.entity.EventEntity;
 import com.permitseoul.permitserver.domain.event.core.exception.EventIllegalArgumentException;
@@ -26,12 +27,9 @@ import com.permitseoul.permitserver.domain.ticketround.core.exception.TicketRoun
 import com.permitseoul.permitserver.domain.tickettype.core.domain.TicketType;
 import com.permitseoul.permitserver.domain.tickettype.core.domain.entity.TicketTypeEntity;
 import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeIllegalException;
-import com.permitseoul.permitserver.global.Constants;
 import com.permitseoul.permitserver.global.exception.DateFormatException;
-import com.permitseoul.permitserver.global.redis.RedisManager;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import com.permitseoul.permitserver.global.util.DateFormatterUtil;
-import io.lettuce.core.RedisException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,7 +55,7 @@ public class AdminEventService {
     private final AdminTicketTypeSaver adminTicketTypeSaver;
     private final AdminEventUpdater adminEventUpdater;
     private final AdminEventImageRemover adminEventImageRemover;
-    private final RedisManager redisManager;
+    private final AdminRedisTicketTypeSaver adminRedisTicketTypeSaver;
 
     @Transactional(readOnly = true)
     public List<AdminEventListResponse> getEvents() {
@@ -144,14 +142,9 @@ public class AdminEventService {
 
         //redis 등록
         try {
-            savedTicketTypes.forEach(
-                    savedTicketType -> {
-                        final String key = Constants.REDIS_TICKET_TYPE_KEY_NAME + savedTicketType.getTicketTypeId() + Constants.REDIS_TICKET_TYPE_REMAIN;
-                        redisManager.set(key, String.valueOf(savedTicketType.getTotalTicketCount()), null);
-                    }
-            );
+            adminRedisTicketTypeSaver.saveTicketTypesInRedis(savedTicketTypes);
         } catch (Exception e) {
-            throw new AdminApiException(ErrorCode.INTERNAL_NOTION_TICKET_REDIS_ERROR);
+            throw new AdminApiException(ErrorCode.INTERNAL_TICKET_REDIS_ERROR);
         }
 
     }
