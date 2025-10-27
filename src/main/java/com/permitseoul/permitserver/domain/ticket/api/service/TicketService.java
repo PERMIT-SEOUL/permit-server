@@ -179,7 +179,7 @@ public class TicketService {
 
     private void verifyTicketDate(final LocalDateTime ticketStartAt, final LocalDateTime ticketEndAt) {
         final LocalDateTime now = LocalDateTime.now();
-        if(now.isBefore(ticketStartAt) || now.isAfter(ticketEndAt)) {
+        if(now.isBefore(ticketStartAt) || now.isBefore(ticketEndAt)) {
             throw new DateTicketException(ErrorCode.BAD_REQUEST_DATE_TIME_ERROR);
         }
     }

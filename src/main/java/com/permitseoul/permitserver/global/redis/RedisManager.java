@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.global.redis;
 
+import com.permitseoul.permitserver.global.exception.RedisKeyNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -23,7 +24,7 @@ public class RedisManager {
         } else {
             redisTemplate.opsForValue().set(key, value);
         }
-        log.debug("[RedisService] SET key={}, value={}, ttl={}", key, value, ttl);
+        log.debug("[RedisManager] SET key={}, value={}, ttl={}", key, value, ttl);
     }
 
     public String get(final String key) {
@@ -32,19 +33,25 @@ public class RedisManager {
 
     public void delete(final String key) {
         redisTemplate.delete(key);
-        log.debug("[RedisService] DELETE key={}", key);
+        log.debug("[RedisManager] DELETE key={}", key);
     }
 
     public boolean isExists(final String key) {
-        final Boolean exists = redisTemplate.hasKey(key);
+        Boolean exists = redisTemplate.hasKey(key);
         return exists != null && exists;
     }
 
     public Long decrement(final String key, final long count) {
+        if(!isExists(key)) {
+            throw new RedisKeyNotFoundException();
+        }
         return redisTemplate.opsForValue().decrement(key, count);
     }
 
     public Long increment(final String key, final long count) {
+        if(!isExists(key)) {
+            throw new RedisKeyNotFoundException();
+        }
         return redisTemplate.opsForValue().increment(key, count);
     }
 }

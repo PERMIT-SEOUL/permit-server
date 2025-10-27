@@ -144,7 +144,7 @@ public class AdminEventService {
         try {
             adminRedisTicketTypeSaver.saveTicketTypesInRedis(savedTicketTypes);
         } catch (Exception e) {
-            throw new AdminApiException(ErrorCode.INTERNAL_TICKET_REDIS_ERROR);
+            throw new AdminApiException(ErrorCode.INTERNAL_TICKET_TYPE_REDIS_ERROR);
         }
 
     }
