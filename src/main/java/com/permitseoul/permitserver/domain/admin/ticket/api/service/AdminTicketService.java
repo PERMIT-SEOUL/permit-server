@@ -37,10 +37,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -145,7 +143,7 @@ public class AdminTicketService {
 
     @Transactional
     public void updateTicketRoundWithType(final TicketRoundWithTypeUpdateRequest updateRequest) {
-        final TicketTypeSplitResult ticketTypeSplitResult;
+        final TicketTypeSplitResult ticketTypeSplitByOldAndNewDto;
         try {
             final TicketRoundEntity ticketRoundEntity =
                     ticketRoundRetriever.findTicketRoundEntityById(updateRequest.ticketRoundId());
@@ -156,10 +154,10 @@ public class AdminTicketService {
                     updateRequest.ticketRoundSalesEndDate()
             );
 
-            ticketTypeSplitResult = splitTicketTypeNewAndUpdate(ticketRoundEntity, updateRequest.ticketTypes());
+            ticketTypeSplitByOldAndNewDto = splitTicketTypeNewAndUpdate(ticketRoundEntity, updateRequest.ticketTypes());
 
-            if (!ticketTypeSplitResult.newTicketTypes().isEmpty()) {
-                adminTicketTypeSaver.saveAllTicketTypes(ticketTypeSplitResult.newTicketTypes());
+            if (!ticketTypeSplitByOldAndNewDto.newTicketTypes().isEmpty()) {
+                adminTicketTypeSaver.saveAllTicketTypes(ticketTypeSplitByOldAndNewDto.newTicketTypes());
             }
         } catch (TicketRoundNotFoundException e) {
             throw new AdminApiException(ErrorCode.NOT_FOUND_TICKET_ROUND);
@@ -169,52 +167,79 @@ public class AdminTicketService {
             throw new AdminApiException(ErrorCode.NOT_FOUND_TICKET_TYPE);
         }
 
-        syncRedisTicketCounts(ticketTypeSplitResult.newTicketTypes(), ticketTypeSplitResult.updatedTicketTypes());
+        syncRedisTicketCounts(ticketTypeSplitByOldAndNewDto);
     }
 
-    private void syncRedisTicketCounts(
-            final List<TicketTypeEntity> newTicketTypes,
-            final List<TicketTypeEntity> updatedTicketTypes
-    ) {
-        // 신규 ticketTYpe Redis 등록
-        for (TicketTypeEntity entity : newTicketTypes) {
-            final String key = Constants.REDIS_TICKET_TYPE_KEY_NAME + entity.getTicketTypeId() + Constants.REDIS_TICKET_TYPE_REMAIN;
+    private void syncRedisTicketCounts(final TicketTypeSplitResult ticketTypeSplitResult) {
+        final List<String> newRedisTicketTypeKeys = new ArrayList<>();
+        final Map<String, String> existRedisTicketType = new HashMap<>();
+
+        try {
+            // 새로운 ticketType 등록
+            for (TicketTypeEntity newTicketTypeEntity : ticketTypeSplitResult.newTicketTypes()) {
+                final String key = Constants.REDIS_TICKET_TYPE_KEY_NAME + newTicketTypeEntity.getTicketTypeId() + Constants.REDIS_TICKET_TYPE_REMAIN;
+                redisManager.set(key, String.valueOf(newTicketTypeEntity.getTotalTicketCount()), null);
+                newRedisTicketTypeKeys.add(key);
+                log.info("[Redis] 신규 ticketType 등록 key={}, ticketTypeCount={}", key, newTicketTypeEntity.getTotalTicketCount());
+            }
+
+            // 기존에 있던 ticketType 업데이트
+            for (TicketTypeEntity updatedTicketTypeEntity : ticketTypeSplitResult.updatedTicketTypes()) {
+                final String key = Constants.REDIS_TICKET_TYPE_KEY_NAME + updatedTicketTypeEntity.getTicketTypeId() + Constants.REDIS_TICKET_TYPE_REMAIN;
+                final String existTicketTypeCount = redisManager.get(key);
+                existRedisTicketType.put(key, existTicketTypeCount);
+                if (existTicketTypeCount == null) {
+                    throw new AdminApiException(ErrorCode.INTERNAL_TICKET_TYPE_NOT_FOUND_REDIS_ERROR);
+                }
+
+                final int diff = ticketTypeSplitResult.updateDiffMap().get(updatedTicketTypeEntity.getTicketTypeId());
+                if (diff == 0) continue;
+
+                final Long newRemain = redisManager.increment(key, diff);
+                if (newRemain == null) {
+                    throw new AdminApiException(ErrorCode.INTERNAL_TICKET_TYPE_REDIS_ERROR);
+                }
+
+                if (newRemain <= 0) {
+                    redisManager.set(key, "0", null);
+                    log.warn("[Redis] ticketType 품절 key={}, ",key);
+                } else {
+                    log.info("[Redis] 기존 ticketType update complete, key={}, diff={}, remain={}", key, diff, newRemain);
+                }
+            }
+        } catch (Exception e) {
+            log.error("[Redis] 오류 발생 → Redis 롤백 수행 시작", e);
+            rollbackRedisChanges(ticketTypeSplitResult, existRedisTicketType, newRedisTicketTypeKeys);
+            throw new AdminApiException(ErrorCode.INTERNAL_TICKET_TYPE_REDIS_ERROR);
+        }
+    }
+    
+    private void rollbackRedisChanges(final TicketTypeSplitResult splitResult,
+                                      final Map<String, String> successExistRedisTicketType,
+                                      final List<String> successCreatedRedisTicketTypeKeys) {
+        // 기존에 있던 ticketTypes
+        for (TicketTypeEntity updatedTicketEntity : splitResult.updatedTicketTypes()) {
+            final String key = Constants.REDIS_TICKET_TYPE_KEY_NAME + updatedTicketEntity.getTicketTypeId() + Constants.REDIS_TICKET_TYPE_REMAIN;
+            if (!successExistRedisTicketType.containsKey(key)) continue;
+
+            final int diff = splitResult.updateDiffMap().get(updatedTicketEntity.getTicketTypeId());
+            if (diff == 0) continue;
+
             try {
-                redisManager.set(key, String.valueOf(entity.getRemainTicketCount()), null);
+                redisManager.increment(key, -diff);
+                log.info("[RedisRollback] 기존 key diff 기반 복구 key={}, rollbackDiff={}", key, -diff);
             } catch (Exception e) {
-                //redis 롤백해야됨 이전것들
-                log.error("[RedisManager] 신규 티켓 등록 실패 key={}", key, e);
-                throw new AdminApiException(ErrorCode.INTERNAL_TICKET_TYPE_REDIS_ERROR);
+                log.error("[RedisRollback] 기존 key 롤백 실패 key={}, diff={}", key, diff, e);
             }
         }
 
-        // 기존 ticketType Redis 잔여 개수 업데이트
-        for (TicketTypeEntity entity : updatedTicketTypes) {
-            final String key = Constants.REDIS_TICKET_TYPE_KEY_NAME + entity.getTicketTypeId() + Constants.REDIS_TICKET_TYPE_REMAIN;
+        // 새로 만든 ticketTypes
+        for (String key : successCreatedRedisTicketTypeKeys) {
             try {
-                final String existRedisTicketTypeRemainCount = redisManager.get(key);
-                if (existRedisTicketTypeRemainCount == null) {
-                    //redis 롤백해야됨 이전것들
-                    log.error("[RedisManager] 존재하지 않는 key 감지 key={}", key);
-                    throw new AdminApiException(ErrorCode.INTERNAL_TICKET_TYPE_NOT_FOUND_REDIS_ERROR); // 커스텀 에러코드
-                }
-
-                final int dbRemainTicketTypeCount = entity.getRemainTicketCount();
-                final int redisTicketTypeRemainCount = Integer.parseInt(existRedisTicketTypeRemainCount);
-
-                int diff = dbRemainTicketTypeCount - redisTicketTypeRemainCount;
-
-                int newRedisValue = redisTicketTypeRemainCount + diff;
-                if (newRedisValue < 0) {
-                    newRedisValue = 0;
-                }
-
-                redisManager.set(key, String.valueOf(newRedisValue), null);
-                log.info("[Redis] 기존 티켓 갱신 key={}, old={}, new={}", key, redisTicketTypeRemainCount, newRedisValue);
+                redisManager.delete(key);
+                log.info("[RedisRollback] 신규 key 삭제 key={}", key);
             } catch (Exception e) {
-                //redis 롤백해야됨 이전것들
-                log.error("[Redis] 기존 티켓 갱신 실패 key={}", key, e);
-                throw e; // rollback 유도
+                log.error("[RedisRollback] 신규 key 삭제 실패 key={}", key, e);
             }
         }
     }
@@ -225,9 +250,21 @@ public class AdminTicketService {
     ) {
         final List<TicketTypeEntity> newTicketTypeEntities = new ArrayList<>();
         final List<TicketTypeEntity> updatedTicketTypeEntities = new ArrayList<>();
+        final Map<Long, Integer> updateDiffMap = new HashMap<>();
+
+        // 기존에 있던 ticketType id들만 추출
+        final List<Long> alreadyExistTicketTypeIds = ticketTypeRequests.stream()
+                .map(TicketRoundWithTypeUpdateRequest.TicketTypeUpdateRequest::id)
+                .filter(Objects::nonNull)
+                .toList();
+
+        final Map<Long, TicketTypeEntity> alreadyExistTicketTypeEntityMap = alreadyExistTicketTypeIds.isEmpty()
+                ? Map.of()
+                : adminTicketTypeRetriever.getTicketTypeEntitiesByIds(alreadyExistTicketTypeIds).stream()
+                .collect(Collectors.toMap(TicketTypeEntity::getTicketTypeId, e -> e));
 
         for (TicketRoundWithTypeUpdateRequest.TicketTypeUpdateRequest ticketTypeReq : ticketTypeRequests) {
-            if (ticketTypeReq.id() == null) { // 신규 ticketType
+            if (ticketTypeReq.id() == null) { // 새로운 ticketType인 경우
                 final TicketTypeEntity newEntity = TicketTypeEntity.create(
                         ticketRoundEntity.getTicketRoundId(),
                         ticketTypeReq.name(),
@@ -237,11 +274,19 @@ public class AdminTicketService {
                         ticketTypeReq.endDate()
                 );
                 newTicketTypeEntities.add(newEntity);
-            } else { // 기존 ticketType
-                final TicketTypeEntity existTicketTypeEntity = adminTicketTypeRetriever.getTicketTypeEntityById(ticketTypeReq.id());
+            } else { // 원래 있던 ticketType인 경우
+                final TicketTypeEntity existTicketTypeEntity = alreadyExistTicketTypeEntityMap.get(ticketTypeReq.id());
+                if (existTicketTypeEntity == null) {
+                    throw new AdminApiException(ErrorCode.NOT_FOUND_TICKET_TYPE);
+                }
                 if (!Objects.equals(existTicketTypeEntity.getTicketRoundId(), ticketRoundEntity.getTicketRoundId())) {
                     throw new AdminApiException(ErrorCode.BAD_REQUEST_MISMATCH_TICKET_TYPE_ROUND);
                 }
+
+                final int oldTicketTypeTotalCount = existTicketTypeEntity.getTotalTicketCount();
+                final int reqTicketTypeTotalCount = ticketTypeReq.totalCount();
+                final int ticketTypeTotalDiffCount = reqTicketTypeTotalCount - oldTicketTypeTotalCount;
+
                 adminTicketTypeUpdater.updateTicketType(
                         existTicketTypeEntity,
                         ticketTypeReq.name(),
@@ -250,11 +295,12 @@ public class AdminTicketService {
                         ticketTypeReq.startDate(),
                         ticketTypeReq.endDate()
                 );
+                updateDiffMap.put(existTicketTypeEntity.getTicketTypeId(), ticketTypeTotalDiffCount);
                 updatedTicketTypeEntities.add(existTicketTypeEntity);
             }
         }
 
-        return new TicketTypeSplitResult(newTicketTypeEntities, updatedTicketTypeEntities);
+        return TicketTypeSplitResult.of(newTicketTypeEntities, updatedTicketTypeEntities, updateDiffMap);
     }
 
     private List<TicketType> saveTicketTypes(final List<TicketRoundWithTypeCreateRequest.TicketTypeRequest> ticketTypes,
