@@ -30,7 +30,7 @@ public class RedisManager {
     public boolean setIfAbsent(final String key, final String value) {
         final Boolean ok = redisTemplate.opsForValue().setIfAbsent(key, value);
         //        log.debug("[RedisManager] SET NX key={}, value={}, created={}", key, value, created);
-        return ok != null && ok;
+        return Boolean.TRUE.equals(ok);
     }
 
     public String get(final String key) {
@@ -39,12 +39,12 @@ public class RedisManager {
 
     public void delete(final String key) {
         redisTemplate.delete(key);
-        log.debug("[RedisManager] DELETE key={}", key);
+//        log.debug("[RedisManager] DELETE key={}", key);
     }
 
     public boolean isExists(final String key) {
         Boolean exists = redisTemplate.hasKey(key);
-        return exists != null && exists;
+        return Boolean.TRUE.equals(exists);
     }
 
     public Long decrement(final String key, final long count) {
