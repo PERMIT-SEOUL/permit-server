@@ -30,9 +30,9 @@ public class RedisTicketTypeCountInitializer implements ApplicationRunner {
             final boolean isCreated = redisManager.setIfAbsent(key, String.valueOf(ticketType.getRemainTicketCount()));
 
             if (isCreated) {
-                log.info("[Redis] 서버 실행 - 초기 ticketType redis 생성, key = {}, value = {}", key, ticketType.getTicketTypeId());
+                log.info("[Redis] 서버 실행 - 초기 ticketType redis 생성, key = {}, value = {}", key, ticketType.getRemainTicketCount());
             } else {
-                log.info("[Redis] 서버 실행 - 기존 ticketType 유지(스킵), key = {}, value = {}", key, ticketType.getTicketTypeId());
+                log.info("[Redis] 서버 실행 - 기존 ticketType 유지(스킵), key = {}, value = {}", key, ticketType.getRemainTicketCount());
             }
         });
     }
