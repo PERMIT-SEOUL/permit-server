@@ -213,7 +213,7 @@ public class AdminTicketService {
             throw new AdminApiException(ErrorCode.INTERNAL_TICKET_TYPE_REDIS_ERROR);
         }
     }
-    
+
     private void rollbackRedisChanges(final TicketTypeSplitResult splitResult,
                                       final Map<String, String> successExistRedisTicketType,
                                       final List<String> successCreatedRedisTicketTypeKeys) {
