@@ -24,7 +24,13 @@ public class RedisManager {
         } else {
             redisTemplate.opsForValue().set(key, value);
         }
-        log.debug("[RedisManager] SET key={}, value={}, ttl={}", key, value, ttl);
+//        log.debug("[RedisManager] SET key={}, value={}, ttl={}", key, value, ttl);
+    }
+
+    public boolean setIfAbsent(final String key, final String value) {
+        final Boolean ok = redisTemplate.opsForValue().setIfAbsent(key, value);
+        //        log.debug("[RedisManager] SET NX key={}, value={}, created={}", key, value, created);
+        return ok != null && ok;
     }
 
     public String get(final String key) {

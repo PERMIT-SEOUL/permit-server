@@ -19,7 +19,7 @@ import static net.logstash.logback.argument.StructuredArguments.keyValue;
 @Slf4j
 public class RedisTicketTypeCountInitializer implements ApplicationRunner {
     private final TicketTypeRepository ticketTypeRepository;
-    private final StringRedisTemplate redisTemplate;
+    private final RedisManager redisManager;
 
     @Override
     public void run(ApplicationArguments args) {
@@ -27,8 +27,13 @@ public class RedisTicketTypeCountInitializer implements ApplicationRunner {
 
         ticketTypes.forEach(ticketType -> {
             final String key = Constants.REDIS_TICKET_TYPE_KEY_NAME  + ticketType.getTicketTypeId() + Constants.REDIS_TICKET_TYPE_REMAIN;
-            redisTemplate.opsForValue().setIfAbsent(key, String.valueOf(ticketType.getRemainTicketCount()));
-            log.info("[Redis] 서버 시작 ticketType 등록 ticketTypeId = {}, remainCount = {}", ticketType.getTicketTypeId(),ticketType.getRemainTicketCount());
+            final boolean isCreated = redisManager.setIfAbsent(key, String.valueOf(ticketType.getRemainTicketCount()));
+
+            if (isCreated) {
+                log.info("[Redis] 서버 실행 - 초기 ticketType redis 생성, key = {}, value = {}", key, ticketType.getTicketTypeId());
+            } else {
+                log.info("[Redis] 서버 실행 - 기존 ticketType 유지(스킵), key = {}, value = {}", key, ticketType.getTicketTypeId());
+            }
         });
     }
 }
