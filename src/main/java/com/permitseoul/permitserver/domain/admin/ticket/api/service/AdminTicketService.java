@@ -226,8 +226,9 @@ public class AdminTicketService {
             if (diff == 0) continue;
 
             try {
-                redisManager.increment(key, -diff);
-                log.info("[RedisRollback] 기존 key diff 기반 복구 key={}, rollbackDiff={}", key, -diff);
+                final String previousValue = successExistRedisTicketType.get(key);
+                redisManager.set(key, previousValue, null);
+                log.info("[RedisRollback] 기존 key ticketType 복구 key={}, remainCount={}", key, previousValue);
             } catch (Exception e) {
                 log.error("[RedisRollback] 기존 key 롤백 실패 key={}, diff={}", key, diff, e);
             }

@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @Slf4j
@@ -16,14 +18,12 @@ public class AdminRedisTicketTypeSaver {
     private final RedisManager redisManager;
 
     public void saveTicketTypesInRedis(final List<TicketType> ticketTypes) {
+        final Map<String, String> ticketTypeKeyValue = new HashMap<>();
         ticketTypes.forEach(ticketType -> {
-            final String key = Constants.REDIS_TICKET_TYPE_KEY_NAME
-                    + ticketType.getTicketTypeId()
-                    + Constants.REDIS_TICKET_TYPE_REMAIN;
-            redisManager.set(key, String.valueOf(ticketType.getTotalTicketCount()), null);
-            log.info("[Redis Init] ticketTypeId={} totalCount={}",
-                    ticketType.getTicketTypeId(),
-                    ticketType.getTotalTicketCount());
+            final String key = Constants.REDIS_TICKET_TYPE_KEY_NAME + ticketType.getTicketTypeId() + Constants.REDIS_TICKET_TYPE_REMAIN;
+            ticketTypeKeyValue.put(key, String.valueOf(ticketType.getTotalTicketCount()));
         });
+        redisManager.mSet(ticketTypeKeyValue);
+        log.info("[Redis Init] ticketType Key Value = {}", ticketTypeKeyValue);
     }
 }

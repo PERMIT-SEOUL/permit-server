@@ -7,6 +7,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Map;
+import java.util.Objects;
 
 
 @Service
@@ -59,5 +61,19 @@ public class RedisManager {
             throw new RedisKeyNotFoundException();
         }
         return redisTemplate.opsForValue().increment(key, count);
+    }
+
+    public void mSet(final Map<String, String> keyValues) {
+        Objects.requireNonNull(keyValues, "keyValues must not be null");
+        if (keyValues.isEmpty()) return;
+        redisTemplate.opsForValue().multiSet(keyValues);
+        // log.debug("[RedisManager] MSET size={}", keyValues.size());
+    }
+
+    public boolean mSetIfAbsent(final Map<String, String> keyValues) {
+        Objects.requireNonNull(keyValues, "keyValues must not be null");
+        if (keyValues.isEmpty()) return true;
+        final Boolean ok = redisTemplate.opsForValue().multiSetIfAbsent(keyValues);
+        return Boolean.TRUE.equals(ok);
     }
 }

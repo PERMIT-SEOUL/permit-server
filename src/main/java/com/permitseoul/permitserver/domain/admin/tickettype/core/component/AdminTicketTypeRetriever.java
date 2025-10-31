@@ -30,13 +30,12 @@ public class AdminTicketTypeRetriever {
     }
 
     @Transactional(readOnly = true)
-    public TicketTypeEntity getTicketTypeEntityById(final Long ticketTypeId) {
-        return ticketTypeRepository.findById(ticketTypeId).orElseThrow(AdminTicketTypeNotFoundException::new);
-    }
-
-    @Transactional(readOnly = true)
     public List<TicketTypeEntity> getTicketTypeEntitiesByIds(final List<Long> ids) {
-        return ticketTypeRepository.findAllById(ids);
+        final List<TicketTypeEntity> ticketTypeEntities = ticketTypeRepository.findAllById(ids);
+        if (ticketTypeEntities.size() != ids.size()) {
+            throw new AdminTicketTypeNotFoundException();
+        }
+        return ticketTypeEntities;
     }
 
     @Transactional(readOnly = true)
