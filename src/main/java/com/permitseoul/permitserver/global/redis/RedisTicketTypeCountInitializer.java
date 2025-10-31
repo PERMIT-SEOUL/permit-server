@@ -41,12 +41,8 @@ public class RedisTicketTypeCountInitializer implements ApplicationRunner {
             });
         } catch (Exception e) {
             for (String key : createdKeys) {
-                try {
-                    redisManager.delete(key);
-                    log.warn("[Redis] 서버 실행 ticketType 롤백 DEL key={}", key);
-                } catch (Exception ex) {
-                    log.error("[Redis] 서버 실행 ticketType 롤백 실패 failed key={}", key, ex);
-                }
+                redisManager.delete(key);
+                log.error("[Redis] 서버 실행 ticketType 롤백 DEL key={}", key);
             }
         }
     }
