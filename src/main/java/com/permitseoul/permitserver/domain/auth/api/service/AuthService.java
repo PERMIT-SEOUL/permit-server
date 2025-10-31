@@ -180,6 +180,6 @@ public class AuthService {
     }
 
     private void saveRefreshTokenInRedis(final long userId, final String refreshToken) {
-        refreshTokenManager.saveRefreshTokenInRedis (userId, refreshToken, jwtProperties.refreshTokenExpirationTime());
+        refreshTokenManager.saveRefreshTokenInRedis(userId, refreshToken, jwtProperties.refreshTokenExpirationTime());
     }
 }

@@ -16,6 +16,7 @@ import com.permitseoul.permitserver.domain.admin.ticketround.core.component.Admi
 import com.permitseoul.permitserver.domain.admin.ticketround.core.component.AdminTicketRoundSaver;
 import com.permitseoul.permitserver.domain.admin.tickettype.core.component.AdminTicketTypeRetriever;
 import com.permitseoul.permitserver.domain.admin.tickettype.core.component.AdminTicketTypeSaver;
+import com.permitseoul.permitserver.domain.admin.tickettype.core.component.AdminRedisTicketTypeSaver;
 import com.permitseoul.permitserver.domain.event.core.domain.Event;
 import com.permitseoul.permitserver.domain.event.core.domain.entity.EventEntity;
 import com.permitseoul.permitserver.domain.event.core.exception.EventIllegalArgumentException;
@@ -54,6 +55,7 @@ public class AdminEventService {
     private final AdminTicketTypeSaver adminTicketTypeSaver;
     private final AdminEventUpdater adminEventUpdater;
     private final AdminEventImageRemover adminEventImageRemover;
+    private final AdminRedisTicketTypeSaver adminRedisTicketTypeSaver;
 
     @Transactional(readOnly = true)
     public List<AdminEventListResponse> getEvents() {
@@ -125,6 +127,7 @@ public class AdminEventService {
         final Event savedEvent = saveEvent(createDto, eventStartDateTime, eventEndDateTime, eventExposureStartDateTime, eventExposureEndDateTime);
 
         final TicketRound savedTicketRound;
+        final List<TicketType> savedTicketTypes;
         try {
             savedTicketRound = saveTicketRound(
                     savedEvent.getEventId(),
@@ -132,10 +135,18 @@ public class AdminEventService {
                     ticketRoundSalesStartDateTime,
                     ticketRoundSalesEndDateTime
             );
-            saveTicketTypes(createDto.ticketTypes(), savedTicketRound.getTicketRoundId());
+            savedTicketTypes = saveTicketTypes(createDto.ticketTypes(), savedTicketRound.getTicketRoundId());
         } catch (TicketRoundIllegalArgumentException | TicketTypeIllegalException e) {
             throw new AdminApiException(ErrorCode.BAD_REQUEST_DATE_TIME_ERROR);
         }
+
+        //redis 등록
+        try {
+            adminRedisTicketTypeSaver.saveTicketTypesInRedis(savedTicketTypes);
+        } catch (Exception e) {
+            throw new AdminApiException(ErrorCode.INTERNAL_TICKET_TYPE_REDIS_ERROR);
+        }
+
     }
 
     @Transactional
@@ -186,8 +197,8 @@ public class AdminEventService {
         return DateFormatterUtil.combineDateAndTimeForUpdate(date, time, originalDateTime);
     }
 
-    private void saveTicketTypes(final List<AdminEventWithTicketCreateRequest.TicketTypeRequest> ticketTypes,
-                                 final long ticketRoundId) {
+    private List<TicketType> saveTicketTypes(final List<AdminEventWithTicketCreateRequest.TicketTypeRequest> ticketTypes,
+                                             final long ticketRoundId) {
         final List<TicketTypeEntity> ticketTypeEntityList = ticketTypes.stream()
                 .map(ticketType -> TicketTypeEntity.create(
                         ticketRoundId,
@@ -197,7 +208,7 @@ public class AdminEventService {
                         LocalDateTime.of(ticketType.ticketStartDate(), ticketType.ticketStartTime()),
                         LocalDateTime.of(ticketType.ticketEndDate(), ticketType.ticketEndTime())
                 )).toList();
-        adminTicketTypeSaver.saveAllTicketTypes(ticketTypeEntityList);
+        return adminTicketTypeSaver.saveAllTicketTypes(ticketTypeEntityList);
     }
 
     private TicketRound saveTicketRound(final long eventId,

@@ -126,6 +126,9 @@ public enum ErrorCode implements ApiCode {
     INTERNAL_FILTER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50012, "filter 에러입니다."),
     INTERNAL_RT_REDIS_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50013, "refreshToken redis 에러입니다."),
     INTERNAL_NOTION_FEIGN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50014, "notion feign 통신 에러입니다."),
+    INTERNAL_TICKET_TYPE_REDIS_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50015, "ticketType redis 통신 에러입니다."),
+    INTERNAL_TICKET_TYPE_NOT_FOUND_REDIS_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50016, "해당 ticketType이 redis에 없습니다."),
+
     ;
 
     private final HttpStatus httpStatus;
