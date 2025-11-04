@@ -87,7 +87,7 @@
 
     <!-- Discord 웹훅 전송(error level만) -->
     <appender name="DISCORD_ERROR" class="net.logstash.logback.appender.HttpAppender">
-        <url>${DISCORD_WEBHOOK_URL}</url> <!-- 환경변수로 주입 -->
+        <url>${DISCORD_WEBHOOK_URL}</url>
         <method>POST</method>
         <headers>
             <header>
@@ -101,11 +101,10 @@
             <level>ERROR</level>
         </filter>
 
-        <!-- Discord 단문 텍스트: 2000자 제한 대비 요약 포맷 -->
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>
                 {
-                "content": "[PERMIT-PROD] %level at %d{yyyy-MM-dd HH:mm:ss.SSS,Asia/Seoul}\n%logger{36}\n trace_id=%X{trace_id} uri=%X{uri} method=%X{method} status=%X{status}\n%replace(%message){'\r?\n',' \\n '}%n%replace(%xEx{5}){'\r?\n',' \\n '}
+                "content": "[PERMIT-PROD] %level at %d{yyyy-MM-dd HH:mm:ss.SSS,Asia/Seoul}\n%logger{36}\n trace_id=%replace(%X{trace_id}){"([\"\\])"}{\\\\$1} uri=%replace(%X{uri}){"([\"\\])"}{\\\\$1} method=%X{method} status=%X{status}\n%replace(%message){"([\"\\])"}{\\\\$1}%n%replace(%xEx{5}){'\r?\n',' \\n '}
                 }
             </pattern>
         </encoder>
