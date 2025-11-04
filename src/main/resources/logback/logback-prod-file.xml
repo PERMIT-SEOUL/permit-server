@@ -22,6 +22,9 @@
                 <threadName/>
                 <mdc>
                     <includeMdcKeyName>trace_id</includeMdcKeyName>
+                    <includeMdcKeyName>uri</includeMdcKeyName>
+                    <includeMdcKeyName>method</includeMdcKeyName>
+                    <includeMdcKeyName>status</includeMdcKeyName>
                 </mdc>
                 <message/>
             </providers>
@@ -52,12 +55,15 @@
                 <threadName/>
                 <mdc>
                     <includeMdcKeyName>trace_id</includeMdcKeyName>
+                    <includeMdcKeyName>uri</includeMdcKeyName>
+                    <includeMdcKeyName>method</includeMdcKeyName>
+                    <includeMdcKeyName>status</includeMdcKeyName>
                 </mdc>
                 <message/>
                 <stackTrace>
                     <fieldName>stack</fieldName>
                     <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
-                        <maxDepthPerThrowable>10</maxDepthPerThrowable>
+                        <maxDepthPerThrowable>20</maxDepthPerThrowable>
                         <rootCauseFirst>true</rootCauseFirst>
                     </throwableConverter>
                 </stackTrace>
@@ -79,7 +85,7 @@
         </rollingPolicy>
     </appender>
 
-    <!-- INFO는 큐 만땅이면 드롭(지연 방지) -->
+    <!-- INFO는 큐 다차면 드롭(지연 방지) -->
     <!-- ERROR는 드롭 없이 블로킹 허용(유실 방지) -->
     <appender name="ASYNC_INFO" class="ch.qos.logback.classic.AsyncAppender">
         <appender-ref ref="INFO_FILE"/>
