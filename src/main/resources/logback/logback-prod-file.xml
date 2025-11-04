@@ -1,7 +1,14 @@
 <configuration>
 
+    <!-- INFO/WARN 로깅 파일(error level은 제외) -->
     <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>/home/ubuntu/logs/PERMIT-INFO-LOG.log</file>
+
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>DENY</onMatch>
+            <onMismatch>NEUTRAL</onMismatch>
+        </filter>
 
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
             <providers>
@@ -25,9 +32,11 @@
             <maxFileSize>50MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>3GB</totalSizeCap>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
     </appender>
 
+    <!-- ERROR 로깅 파일(error level만 로깅) -->
     <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>/home/ubuntu/logs/PERMIT-ERROR-LOG.log</file>
 
@@ -66,25 +75,28 @@
             <maxFileSize>20MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>3GB</totalSizeCap>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
     </appender>
 
-    <!-- 비동기 처리용 AsyncAppender -->
+    <!-- INFO는 큐 만땅이면 드롭(지연 방지) -->
+    <!-- ERROR는 드롭 없이 블로킹 허용(유실 방지) -->
     <appender name="ASYNC_INFO" class="ch.qos.logback.classic.AsyncAppender">
         <appender-ref ref="INFO_FILE"/>
         <queueSize>5000</queueSize>
-        <discardingThreshold>0</discardingThreshold>
+        <discardingThreshold>20</discardingThreshold>
+        <neverBlock>true</neverBlock>
     </appender>
 
     <appender name="ASYNC_ERROR" class="ch.qos.logback.classic.AsyncAppender">
         <appender-ref ref="ERROR_FILE"/>
         <queueSize>2000</queueSize>
         <discardingThreshold>0</discardingThreshold>
+        <neverBlock>false</neverBlock>
     </appender>
 
     <root level="INFO">
         <appender-ref ref="ASYNC_INFO"/>
         <appender-ref ref="ASYNC_ERROR"/>
     </root>
-
 </configuration>
