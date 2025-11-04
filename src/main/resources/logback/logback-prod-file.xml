@@ -85,6 +85,35 @@
         </rollingPolicy>
     </appender>
 
+    <!-- Discord 웹훅 전송(error level만) -->
+    <appender name="DISCORD_ERROR" class="net.logstash.logback.appender.HttpAppender">
+        <url>${DISCORD_WEBHOOK_URL}</url> <!-- 환경변수로 주입 -->
+        <method>POST</method>
+        <headers>
+            <header>
+                <name>Content-Type</name>
+                <value>application/json</value>
+            </header>
+        </headers>
+
+        <!-- ERROR 이상만 전송 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+
+        <!-- Discord 단문 텍스트: 2000자 제한 대비 요약 포맷 -->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>
+                {
+                "content": "[PERMIT-PROD] %level at %d{yyyy-MM-dd HH:mm:ss.SSS,Asia/Seoul}\n%logger{36}\n trace_id=%X{trace_id} uri=%X{uri} method=%X{method} status=%X{status}\n%replace(%message){'\r?\n',' \\n '}%n%replace(%xEx{5}){'\r?\n',' \\n '}
+                }
+            </pattern>
+        </encoder>
+
+        <connectTimeout>3000</connectTimeout>
+        <readTimeout>3000</readTimeout>
+    </appender>
+
     <!-- INFO는 큐 다차면 드롭(지연 방지) -->
     <!-- ERROR는 드롭 없이 블로킹 허용(유실 방지) -->
     <appender name="ASYNC_INFO" class="ch.qos.logback.classic.AsyncAppender">
@@ -101,8 +130,16 @@
         <neverBlock>false</neverBlock>
     </appender>
 
+    <appender name="ASYNC_DISCORD_ERROR" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="DISCORD_ERROR"/>
+        <queueSize>500</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+        <neverBlock>true</neverBlock>
+    </appender>
+
     <root level="INFO">
         <appender-ref ref="ASYNC_INFO"/>
         <appender-ref ref="ASYNC_ERROR"/>
+        <appender-ref ref="ASYNC_DISCORD_ERROR"/>
     </root>
 </configuration>
