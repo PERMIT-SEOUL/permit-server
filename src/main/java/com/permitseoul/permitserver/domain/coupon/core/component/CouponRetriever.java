@@ -17,16 +17,8 @@ public class CouponRetriever {
     private final CouponRepository couponRepository;
 
     @Transactional(readOnly = true)
-    public void isExistCoupon(final String couponCode) {
-        if(!couponRepository.existsByCouponCode(couponCode)) {
-            throw new CouponNotfoundException();
-        };
-    }
-
-    @Transactional(readOnly = true)
-    public Coupon findCouponByCouponCode(final String couponCode) {
-        final CouponEntity couponEntity = couponRepository.findByCouponCode(couponCode).orElseThrow(CouponNotfoundException::new);
-        return Coupon.fromEntity(couponEntity);
+    public List<CouponEntity> findAllCouponEntitiesByIds(final List<Long> couponIds) {
+        return couponRepository.findAllById(couponIds);
     }
 
     @Transactional(readOnly = true)
