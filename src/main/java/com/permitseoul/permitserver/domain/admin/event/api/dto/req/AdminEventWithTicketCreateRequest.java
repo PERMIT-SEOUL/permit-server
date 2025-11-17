@@ -59,7 +59,7 @@ public record AdminEventWithTicketCreateRequest(
         String lineup,
         String details,
 
-        @NotEmpty(message = "행사 이미지/영상은 최소 1개 이상이어야 합니다.")
+        @NotNull(message = "image는 필수입니다.")
         @Valid
         List<AdminEventImageRequest> images,
 
