@@ -24,7 +24,8 @@ public record NotionTimetableDatasourceResponse(
             @JsonProperty("use when media changed")
             RichTextProperty useWhenMediaChanged,
             RelationProperty category,
-            TitleProperty artist,
+            @JsonProperty("artist/activity")
+            TitleProperty artistOrActivity,
             @JsonProperty("details")
             RichTextProperty details,
             @JsonProperty("direct_url")

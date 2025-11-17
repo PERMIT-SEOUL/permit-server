@@ -92,10 +92,10 @@ public final class NotionResponseMapper {
                 .map(result -> {
                     final NotionTimetableDatasourceResponse.NotionProperties props = result.properties();
 
-                    final String artist = props.artist().title().isEmpty()
+                    final String artist = props.artistOrActivity().title().isEmpty()
                             ? ""
-                            : props.artist().title().get(0).plain_text();
-                    final String blockName = artist; // (현재 정해진 바로는)blockName == artist
+                            : props.artistOrActivity().title().get(0).plain_text();
+                    final String blockName = artist; // (현재 정해진 바로는)blockName == artistOrActivity
                     final String information = props.details() != null && props.details().richText() != null && !props.details().richText().isEmpty()
                             ? props.details().richText().get(0).plain_text()
                             : "";

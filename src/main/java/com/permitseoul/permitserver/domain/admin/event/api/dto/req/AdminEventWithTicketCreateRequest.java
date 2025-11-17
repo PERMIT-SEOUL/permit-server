@@ -56,9 +56,12 @@ public record AdminEventWithTicketCreateRequest(
 
         @NotBlank(message = "행사 장소는 필수입니다.")
         String venue,
-
         String lineup,
         String details,
+
+        @NotNull(message = "image는 필수입니다.")
+        @Valid
+        List<AdminEventImageRequest> images,
 
         @Min(value = 0, message = "최소 나이는 0 이상이어야 합니다.")
         int minAge,
@@ -114,3 +117,5 @@ public record AdminEventWithTicketCreateRequest(
                 LocalTime ticketEndTime
         ) { }
 }
+
+
