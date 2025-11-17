@@ -29,7 +29,7 @@ import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeI
 import com.permitseoul.permitserver.global.Constants;
 import com.permitseoul.permitserver.global.redis.RedisManager;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
-import com.permitseoul.permitserver.global.util.DateFormatterUtil;
+import com.permitseoul.permitserver.global.util.LocalDateTimeFormatterUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -75,10 +75,10 @@ public class AdminTicketService {
         return TicketRoundAndTypeDetailRes.of(
                 ticketRound.getTicketRoundId(),
                 ticketRound.getTicketRoundTitle(),
-                DateFormatterUtil.formatyyyyMMdd(ticketRound.getSalesStartAt()),
-                DateFormatterUtil.formatHHmm(ticketRound.getSalesStartAt()),
-                DateFormatterUtil.formatyyyyMMdd(ticketRound.getSalesEndAt()),
-                DateFormatterUtil.formatHHmm(ticketRound.getSalesEndAt()),
+                LocalDateTimeFormatterUtil.formatyyyyMMdd(ticketRound.getSalesStartAt()),
+                LocalDateTimeFormatterUtil.formatHHmm(ticketRound.getSalesStartAt()),
+                LocalDateTimeFormatterUtil.formatyyyyMMdd(ticketRound.getSalesEndAt()),
+                LocalDateTimeFormatterUtil.formatHHmm(ticketRound.getSalesEndAt()),
                 ticketTypeInfos
         );
     }
@@ -330,10 +330,10 @@ public class AdminTicketService {
         return TicketRoundAndTicketTypeRes.TicketRoundWithTypes.of(
                 round.getTicketRoundId(),
                 round.getTicketRoundTitle(),
-                DateFormatterUtil.formatyyyyMMdd(round.getSalesStartAt()),
-                DateFormatterUtil.formatHHmm(round.getSalesStartAt()),
-                DateFormatterUtil.formatyyyyMMdd(round.getSalesEndAt()),
-                DateFormatterUtil.formatHHmm(round.getSalesEndAt()),
+                LocalDateTimeFormatterUtil.formatyyyyMMdd(round.getSalesStartAt()),
+                LocalDateTimeFormatterUtil.formatHHmm(round.getSalesStartAt()),
+                LocalDateTimeFormatterUtil.formatyyyyMMdd(round.getSalesEndAt()),
+                LocalDateTimeFormatterUtil.formatHHmm(round.getSalesEndAt()),
                 ticketTypeInfos
         );
     }
@@ -368,10 +368,10 @@ public class AdminTicketService {
                                 ticketType.getTicketTypeName(),
                                 ticketType.getTicketPrice(),
                                 ticketType.getTotalTicketCount(),
-                                DateFormatterUtil.formatyyyyMMdd(ticketType.getTicketStartAt()),
-                                DateFormatterUtil.formatHHmm(ticketType.getTicketStartAt()),
-                                DateFormatterUtil.formatyyyyMMdd(ticketType.getTicketEndAt()),
-                                DateFormatterUtil.formatHHmm(ticketType.getTicketEndAt())
+                                LocalDateTimeFormatterUtil.formatyyyyMMdd(ticketType.getTicketStartAt()),
+                                LocalDateTimeFormatterUtil.formatHHmm(ticketType.getTicketStartAt()),
+                                LocalDateTimeFormatterUtil.formatyyyyMMdd(ticketType.getTicketEndAt()),
+                                LocalDateTimeFormatterUtil.formatHHmm(ticketType.getTicketEndAt())
                         )
                 )
                 .toList();
