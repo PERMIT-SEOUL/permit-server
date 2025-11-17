@@ -44,12 +44,9 @@ public record AdminEventUpdateRequest(
         String venue,
         String lineup,
         String details,
-        List<AdminEventUpdateImageInfo> images,
+        List<AdminEventImageRequest> images,
 
         @Min(value = 0, message = "최소 나이는 0 이상이어야 합니다.")
         Integer minAge
 ) {
-    public record AdminEventUpdateImageInfo(
-            String imageUrl
-    ) { }
 }
