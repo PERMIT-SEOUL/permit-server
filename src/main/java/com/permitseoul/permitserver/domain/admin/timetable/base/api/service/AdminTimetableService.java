@@ -1,21 +1,24 @@
 package com.permitseoul.permitserver.domain.admin.timetable.base.api.service;
 
 import com.permitseoul.permitserver.domain.admin.base.api.exception.AdminApiException;
-import com.permitseoul.permitserver.domain.admin.timetable.stage.core.AdminTimetableStageSaver;
+import com.permitseoul.permitserver.domain.admin.timetable.base.api.dto.res.TimetableInfoResponse;
+import com.permitseoul.permitserver.domain.admin.timetable.base.core.components.AdminTimetableRetriever;
 import com.permitseoul.permitserver.domain.admin.util.exception.PermitListSizeNotMatchException;
+import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.domain.Timetable;
 import com.permitseoul.permitserver.global.exception.DateFormatException;
 import com.permitseoul.permitserver.global.exception.PermitIllegalStateException;
 import com.permitseoul.permitserver.global.external.notion.NotionProvider;
-import com.permitseoul.permitserver.domain.admin.timetable.base.core.components.AdminTimetableSaver;
 import com.permitseoul.permitserver.global.external.notion.NotionRelationValidator;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionCategoryDatasourceResponse;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionStageDatasourceResponse;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionTimetableDatasourceResponse;
 import com.permitseoul.permitserver.global.external.notion.exception.NotFoundNotionResponseException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
+import com.permitseoul.permitserver.global.util.LocalDateTimeFormatterUtil;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -24,6 +27,7 @@ import java.time.LocalDateTime;
 public class AdminTimetableService {
     private final NotionProvider notionProvider;
     private final AdminTimetableFacade adminTimetableFacade;
+    private final AdminTimetableRetriever adminTimetableRetriever;
 
     public void saveInitialTimetableInfo(final long eventId,
                                          final LocalDateTime timetableStartAt,
@@ -70,5 +74,19 @@ public class AdminTimetableService {
         } catch (final NotFoundNotionResponseException e) {
             throw new AdminApiException(ErrorCode.NOT_FOUND_NOTION_DATABASE_SOURCE);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public TimetableInfoResponse getTimetableInfo(final long eventId) {
+        final Timetable timetable = adminTimetableRetriever.findTimetableByEventId(eventId);
+        return TimetableInfoResponse.of(
+                LocalDateTimeFormatterUtil.formatyyyyMMdd(timetable.getStartAt()),
+                LocalDateTimeFormatterUtil.formatHHmm(timetable.getStartAt()),
+                LocalDateTimeFormatterUtil.formatyyyyMMdd(timetable.getEndAt()),
+                LocalDateTimeFormatterUtil.formatHHmm(timetable.getEndAt()),
+                timetable.getNotionTimetableDatasourceId(),
+                timetable.getNotionCategoryDatasourceId(),
+                timetable.getNotionStageDatasourceId()
+        );
     }
 }

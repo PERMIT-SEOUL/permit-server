@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdminTimetableController {
     private final AdminTimetableService adminTimetableService;
 
-    // admin 타임테이블 최초 등록 API
+    // admin 행사 타임테이블 최초 등록 API
     @PostMapping("/{eventId}/timetables/initial")
     public ResponseEntity<BaseResponse<?>> postInitialTimetableInfo(
             @PathVariable("eventId") final long eventId,
@@ -31,5 +31,13 @@ public class AdminTimetableController {
                 request.notionCategoryDataSourceId()
         );
         return ApiResponseUtil.success(SuccessCode.OK);
+    }
+
+    // admin 행사 타임테이블 조회 API
+    @GetMapping("/{eventId}/timetables")
+    public ResponseEntity<BaseResponse<?>> getTimetables(
+            @PathVariable("eventId") final long eventId
+    ) {
+        return ApiResponseUtil.success(SuccessCode.OK, adminTimetableService.getTimetableInfo(eventId));
     }
 }
