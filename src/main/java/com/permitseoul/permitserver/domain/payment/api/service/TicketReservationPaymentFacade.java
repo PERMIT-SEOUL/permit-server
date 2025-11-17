@@ -26,8 +26,7 @@ import com.permitseoul.permitserver.domain.tickettype.core.component.TicketTypeR
 import com.permitseoul.permitserver.domain.tickettype.core.component.TicketTypeUpdater;
 import com.permitseoul.permitserver.domain.tickettype.core.domain.entity.TicketTypeEntity;
 import com.permitseoul.permitserver.global.exception.DateFormatException;
-import com.permitseoul.permitserver.global.util.DateFormatterUtil;
-import com.permitseoul.permitserver.global.response.code.ErrorCode;
+import com.permitseoul.permitserver.global.util.LocalDateTimeFormatterUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -37,7 +36,7 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
-import static com.permitseoul.permitserver.global.util.DateFormatterUtil.parseTossDateToLocalDateTime;
+import static com.permitseoul.permitserver.global.util.LocalDateTimeFormatterUtil.parseTossDateToLocalDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -123,7 +122,7 @@ public class TicketReservationPaymentFacade {
     }
 
     private PaymentCancelResponse.CancelDetail getLatestCancelPayment(final List<PaymentCancelResponse.CancelDetail> paymentCancelResponse) {
-        return  DateFormatterUtil.getLatestCancelPaymentByDate(paymentCancelResponse).orElseThrow(
+        return  LocalDateTimeFormatterUtil.getLatestCancelPaymentByDate(paymentCancelResponse).orElseThrow(
                 DateFormatException::new
         );
     }

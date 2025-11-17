@@ -46,7 +46,7 @@ import com.permitseoul.permitserver.global.Constants;
 import com.permitseoul.permitserver.global.exception.AlgorithmException;
 import com.permitseoul.permitserver.global.exception.DateFormatException;
 import com.permitseoul.permitserver.global.exception.IllegalEnumTransitionException;
-import com.permitseoul.permitserver.global.util.DateFormatterUtil;
+import com.permitseoul.permitserver.global.util.LocalDateTimeFormatterUtil;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import com.permitseoul.permitserver.global.util.LogFormUtil;
 import feign.FeignException;
@@ -154,7 +154,7 @@ public class PaymentService {
 
             return PaymentConfirmResponse.of(
                     event.getName(),
-                    DateFormatterUtil.formatEventDate(event.getStartAt(), event.getEndAt())
+                    LocalDateTimeFormatterUtil.formatEventDate(event.getStartAt(), event.getEndAt())
             );
         } catch (ReservationSessionBadRequestException e) {
             logRollbackFailed(userId, reservationSessionKey, orderId, totalAmount, paymentKey);
