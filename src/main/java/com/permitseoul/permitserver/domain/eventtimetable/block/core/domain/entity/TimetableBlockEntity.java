@@ -46,6 +46,9 @@ public class TimetableBlockEntity {
     @Column(name = "block_info_redirect_url")
     private String blockInfoRedirectUrl;
 
+    @Column(name = "notion_timetable_row_id", nullable = false)
+    private String notionTimetableRowId;
+
 
     private TimetableBlockEntity(
             long timetableId,
@@ -56,7 +59,8 @@ public class TimetableBlockEntity {
             String blockName,
             String artist,
             String information,
-            String blockInfoRedirectUrl
+            String blockInfoRedirectUrl,
+            String notionTimetableRowId
     ) {
         validateDateTime(startAt, endAt);
 
@@ -69,6 +73,7 @@ public class TimetableBlockEntity {
         this.artist = artist;
         this.information = information;
         this.blockInfoRedirectUrl = blockInfoRedirectUrl;
+        this.notionTimetableRowId = notionTimetableRowId;
     }
 
     public static TimetableBlockEntity create(final long timetableId,
@@ -79,8 +84,9 @@ public class TimetableBlockEntity {
                                               final String blockName,
                                               final String artist,
                                               final String information,
-                                              final String blockInfoRedirectUrl) {
-        return new TimetableBlockEntity(timetableId, timetableCategoryNotionId, timetableStageNotionId, startAt, endAt, blockName, artist, information, blockInfoRedirectUrl);
+                                              final String blockInfoRedirectUrl,
+                                              final String notionTimetableRowId) {
+        return new TimetableBlockEntity(timetableId, timetableCategoryNotionId, timetableStageNotionId, startAt, endAt, blockName, artist, information, blockInfoRedirectUrl, notionTimetableRowId);
     }
 
     private void validateDateTime(final LocalDateTime startAt, final LocalDateTime endAt) {

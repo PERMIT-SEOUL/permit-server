@@ -129,7 +129,8 @@ public final class NotionResponseMapper {
                             blockName,
                             artist,
                             information,
-                            redirectUrl
+                            redirectUrl,
+                            result.id()
                     );
                 })
                 .collect(Collectors.toList());

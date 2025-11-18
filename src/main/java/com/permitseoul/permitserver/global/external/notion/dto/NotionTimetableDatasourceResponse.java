@@ -8,6 +8,7 @@ public record NotionTimetableDatasourceResponse(
 ) {
 
     public record NotionPage(
+            String id,
             Parent parent,
             NotionProperties properties
     ) {}
