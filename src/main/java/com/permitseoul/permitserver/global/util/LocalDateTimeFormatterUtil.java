@@ -2,9 +2,6 @@ package com.permitseoul.permitserver.global.util;
 
 import com.permitseoul.permitserver.domain.payment.api.dto.PaymentCancelResponse;
 import com.permitseoul.permitserver.global.exception.DateFormatException;
-import com.permitseoul.permitserver.global.response.code.ErrorCode;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.experimental.UtilityClass;
 
 import java.time.LocalDate;
@@ -15,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @UtilityClass
-public final class DateFormatterUtil {
+public final class LocalDateTimeFormatterUtil {
     private static final DateTimeFormatter DAY_FORMATTER = DateTimeFormatter.ofPattern("E", Locale.ENGLISH);   // Sun
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd", Locale.ENGLISH); // 25
     private static final DateTimeFormatter MONTH_YEAR_FORMATTER = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.ENGLISH); // May 2025

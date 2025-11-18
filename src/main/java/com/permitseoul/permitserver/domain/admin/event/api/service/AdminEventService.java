@@ -30,7 +30,7 @@ import com.permitseoul.permitserver.domain.tickettype.core.domain.entity.TicketT
 import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeIllegalException;
 import com.permitseoul.permitserver.global.exception.DateFormatException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
-import com.permitseoul.permitserver.global.util.DateFormatterUtil;
+import com.permitseoul.permitserver.global.util.LocalDateTimeFormatterUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -91,17 +91,17 @@ public class AdminEventService {
 
             return AdminEventDetailResponse.of(
                     event.getEventId(),
-                    DateFormatterUtil.formatyyyyMMdd(event.getVisibleStartAt()),
-                    DateFormatterUtil.formatHHmm(event.getVisibleStartAt()),
-                    DateFormatterUtil.formatyyyyMMdd(event.getVisibleEndAt()),
-                    DateFormatterUtil.formatHHmm(event.getVisibleEndAt()),
+                    LocalDateTimeFormatterUtil.formatyyyyMMdd(event.getVisibleStartAt()),
+                    LocalDateTimeFormatterUtil.formatHHmm(event.getVisibleStartAt()),
+                    LocalDateTimeFormatterUtil.formatyyyyMMdd(event.getVisibleEndAt()),
+                    LocalDateTimeFormatterUtil.formatHHmm(event.getVisibleEndAt()),
                     event.getTicketCheckCode(),
                     event.getName(),
                     event.getEventType(),
-                    DateFormatterUtil.formatyyyyMMdd(event.getStartAt()),
-                    DateFormatterUtil.formatHHmm(event.getStartAt()),
-                    DateFormatterUtil.formatyyyyMMdd(event.getEndAt()),
-                    DateFormatterUtil.formatHHmm(event.getEndAt()),
+                    LocalDateTimeFormatterUtil.formatyyyyMMdd(event.getStartAt()),
+                    LocalDateTimeFormatterUtil.formatHHmm(event.getStartAt()),
+                    LocalDateTimeFormatterUtil.formatyyyyMMdd(event.getEndAt()),
+                    LocalDateTimeFormatterUtil.formatHHmm(event.getEndAt()),
                     event.getVenue(),
                     event.getLineUp(),
                     event.getDetails(),
@@ -199,7 +199,7 @@ public class AdminEventService {
                                                       final LocalTime time,
                                                       final LocalDateTime originalDateTime
     ) {
-        return DateFormatterUtil.combineDateAndTimeForUpdate(date, time, originalDateTime);
+        return LocalDateTimeFormatterUtil.combineDateAndTimeForUpdate(date, time, originalDateTime);
     }
 
     private List<TicketType> saveTicketTypes(final List<AdminEventWithTicketCreateRequest.TicketTypeRequest> ticketTypes,
@@ -251,7 +251,7 @@ public class AdminEventService {
     }
 
     private LocalDateTime combineDateTime(final LocalDate date, final LocalTime time) {
-        return DateFormatterUtil.combineDateAndTime(date, time);
+        return LocalDateTimeFormatterUtil.combineDateAndTime(date, time);
     }
 
     private Map<Long, Integer> initSoldTicketCountZero(final List<Event> events) {
@@ -338,8 +338,8 @@ public class AdminEventService {
         final Map<String, List<AdminEventListResponse.AdminEventInfo>> grouped = new LinkedHashMap<>();
         for (Event e : sortedEvents) {
             final LocalDateTime start = e.getStartAt();
-            final String yearAndMonth = DateFormatterUtil.formatYearMonth(start);   // "yyyy.MM"
-            final String day = DateFormatterUtil.formatDayWithDate(start); // "E, dd"
+            final String yearAndMonth = LocalDateTimeFormatterUtil.formatYearMonth(start);   // "yyyy.MM"
+            final String day = LocalDateTimeFormatterUtil.formatDayWithDate(start); // "E, dd"
 
             grouped.computeIfAbsent(yearAndMonth, k -> new ArrayList<>())
                     .add(AdminEventListResponse.AdminEventInfo.of(

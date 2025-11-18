@@ -25,7 +25,7 @@ import com.permitseoul.permitserver.domain.tickettype.core.domain.TicketType;
 import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeNotfoundException;
 import com.permitseoul.permitserver.global.exception.PriceFormatException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
-import com.permitseoul.permitserver.global.util.DateFormatterUtil;
+import com.permitseoul.permitserver.global.util.LocalDateTimeFormatterUtil;
 import com.permitseoul.permitserver.global.util.PriceFormatterUtil;
 import com.permitseoul.permitserver.global.util.TimeFormatterUtil;
 import lombok.RequiredArgsConstructor;
@@ -208,7 +208,7 @@ public class TicketService {
                                         ticket.getTicketCode(),
                                         ticketType.getTicketTypeName(),
                                         toUiStatus(ticket.getStatus(), expired),
-                                        DateFormatterUtil.formatEventDate(ticketType.getTicketStartAt(), ticketType.getTicketEndAt()),
+                                        LocalDateTimeFormatterUtil.formatEventDate(ticketType.getTicketStartAt(), ticketType.getTicketEndAt()),
                                         TimeFormatterUtil.formatEventTime(ticketType.getTicketStartAt(), ticketType.getTicketEndAt())
                                 );
                             }).toList();
@@ -323,7 +323,7 @@ public class TicketService {
 
     // 포맷팅된 티켓타입dto로 변환
     private EventTicketInfoResponse.TicketType makeFormattedTicketTypeDto(final TicketType ticketType) {
-        final String formattedDate = DateFormatterUtil.formatEventDate(
+        final String formattedDate = LocalDateTimeFormatterUtil.formatEventDate(
                 ticketType.getTicketStartAt(), ticketType.getTicketEndAt());
         final String formattedTime = ticketType.getTicketStartAt()
                 .toLocalTime()
