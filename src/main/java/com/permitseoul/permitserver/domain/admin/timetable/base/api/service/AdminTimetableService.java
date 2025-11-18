@@ -10,6 +10,7 @@ import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.domain.
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.domain.entity.TimetableEntity;
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.exception.TimetableNotFoundException;
 import com.permitseoul.permitserver.global.exception.DateFormatException;
+import com.permitseoul.permitserver.global.exception.LocalDateTimeException;
 import com.permitseoul.permitserver.global.exception.PermitIllegalStateException;
 import com.permitseoul.permitserver.global.external.notion.NotionProvider;
 import com.permitseoul.permitserver.global.external.notion.NotionRelationValidator;
@@ -122,6 +123,8 @@ public class AdminTimetableService {
             );
         } catch (TimetableNotFoundException e) {
             throw new AdminApiException(ErrorCode.NOT_FOUND_TIMETABLE);
+        } catch (LocalDateTimeException e) {
+            throw new AdminApiException(ErrorCode.BAD_REQUEST_DATE_TIME_ERROR);
         }
     }
 }

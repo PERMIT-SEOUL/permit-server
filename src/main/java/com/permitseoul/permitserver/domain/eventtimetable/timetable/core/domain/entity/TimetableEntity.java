@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.domain.eventtimetable.timetable.core.domain.entity;
 
+import com.permitseoul.permitserver.global.exception.LocalDateTimeException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -75,10 +76,18 @@ public class TimetableEntity {
                        final String notionTimetableDataSourceIdReq,
                        final String notionCategoryDataSourceIdReq,
                        final String notionStageDataSourceIdReq) {
+        validateDate(timetableStartAtReq, timetableEndAtReq);
         this.startAt = timetableStartAtReq;
         this.endAt = timetableEndAtReq;
         this.notionTimetableDatasourceId = notionTimetableDataSourceIdReq;
         this.notionCategoryDatasourceId = notionCategoryDataSourceIdReq;
         this.notionStageDatasourceId = notionStageDataSourceIdReq;
+    }
+
+    public void validateDate(final LocalDateTime timetableStartAt,
+                             final LocalDateTime timetableEndAt) {
+        if (timetableStartAt.isAfter(timetableEndAt)) {
+            throw new LocalDateTimeException();
+        }
     }
 }

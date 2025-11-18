@@ -53,8 +53,9 @@ public class AdminTimetableController {
                 timetableUpdateRequest.timetableStartAt(),
                 timetableUpdateRequest.timetableEndAt(),
                 timetableUpdateRequest.notionTimetableDataSourceId(),
-                timetableUpdateRequest.notionStageDataSourceId(),
-                timetableUpdateRequest.notionCategoryDataSourceId());
+                timetableUpdateRequest.notionCategoryDataSourceId(),
+                timetableUpdateRequest.notionStageDataSourceId()
+                );
         return ApiResponseUtil.success(SuccessCode.OK);
 
     }
