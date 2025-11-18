@@ -69,4 +69,16 @@ public class TimetableEntity {
                 notionCategoryDatasourceId
         );
     }
+
+    public void update(final LocalDateTime timetableStartAtReq,
+                       final LocalDateTime timetableEndAtReq,
+                       final String notionTimetableDataSourceIdReq,
+                       final String notionCategoryDataSourceIdReq,
+                       final String notionStageDataSourceIdReq) {
+        this.startAt = timetableStartAtReq;
+        this.endAt = timetableEndAtReq;
+        this.notionTimetableDatasourceId = notionTimetableDataSourceIdReq;
+        this.notionCategoryDatasourceId = notionCategoryDataSourceIdReq;
+        this.notionStageDatasourceId = notionStageDataSourceIdReq;
+    }
 }
