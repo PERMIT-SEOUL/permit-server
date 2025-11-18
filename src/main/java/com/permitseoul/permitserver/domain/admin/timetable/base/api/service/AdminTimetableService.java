@@ -1,10 +1,14 @@
 package com.permitseoul.permitserver.domain.admin.timetable.base.api.service;
 
 import com.permitseoul.permitserver.domain.admin.base.api.exception.AdminApiException;
+import com.permitseoul.permitserver.domain.admin.timetable.base.api.dto.req.TimetableUpdateRequest;
 import com.permitseoul.permitserver.domain.admin.timetable.base.api.dto.res.TimetableInfoResponse;
 import com.permitseoul.permitserver.domain.admin.timetable.base.core.components.AdminTimetableRetriever;
+import com.permitseoul.permitserver.domain.admin.timetable.base.core.components.AdminTimetableUpdater;
 import com.permitseoul.permitserver.domain.admin.util.exception.PermitListSizeNotMatchException;
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.domain.Timetable;
+import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.domain.entity.TimetableEntity;
+import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.exception.TimetableNotFoundException;
 import com.permitseoul.permitserver.global.exception.DateFormatException;
 import com.permitseoul.permitserver.global.exception.PermitIllegalStateException;
 import com.permitseoul.permitserver.global.external.notion.NotionProvider;
@@ -28,6 +32,7 @@ public class AdminTimetableService {
     private final NotionProvider notionProvider;
     private final AdminTimetableFacade adminTimetableFacade;
     private final AdminTimetableRetriever adminTimetableRetriever;
+    private final AdminTimetableUpdater adminTimetableUpdater;
 
     public void saveInitialTimetableInfo(final long eventId,
                                          final LocalDateTime timetableStartAt,
@@ -78,8 +83,15 @@ public class AdminTimetableService {
 
     @Transactional(readOnly = true)
     public TimetableInfoResponse getTimetableInfo(final long eventId) {
-        final Timetable timetable = adminTimetableRetriever.findTimetableByEventId(eventId);
+        final Timetable timetable;
+        try {
+            timetable = adminTimetableRetriever.findTimetableByEventId(eventId);
+        } catch (TimetableNotFoundException e) {
+            throw new AdminApiException(ErrorCode.NOT_FOUND_TIMETABLE);
+        }
+
         return TimetableInfoResponse.of(
+                timetable.getTimetableId(),
                 LocalDateTimeFormatterUtil.formatyyyyMMdd(timetable.getStartAt()),
                 LocalDateTimeFormatterUtil.formatHHmm(timetable.getStartAt()),
                 LocalDateTimeFormatterUtil.formatyyyyMMdd(timetable.getEndAt()),
@@ -88,5 +100,28 @@ public class AdminTimetableService {
                 timetable.getNotionCategoryDatasourceId(),
                 timetable.getNotionStageDatasourceId()
         );
+    }
+
+    @Transactional
+    public void updateTimetable(final long timetableId,
+                                final LocalDateTime timetableStartAt,
+                                final LocalDateTime timetableEndAt,
+                                final String notionTimetableDataSourceId,
+                                final String notionCategoryDataSourceId,
+                                final String notionStageDataSourceId) {
+        final TimetableEntity timetableEntity;
+        try {
+            timetableEntity = adminTimetableRetriever.findTimetableEntityById(timetableId);
+            adminTimetableUpdater.updateTimetable(
+                    timetableEntity,
+                    timetableStartAt,
+                    timetableEndAt,
+                    notionTimetableDataSourceId,
+                    notionCategoryDataSourceId,
+                    notionStageDataSourceId
+            );
+        } catch (TimetableNotFoundException e) {
+            throw new AdminApiException(ErrorCode.NOT_FOUND_TIMETABLE);
+        }
     }
 }
