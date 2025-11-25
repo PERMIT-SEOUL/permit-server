@@ -26,7 +26,7 @@ public class AdminCouponController {
         return ApiResponseUtil.success(SuccessCode.OK);
     }
 
-    //쿠폰 조회 API
+    //모든 쿠폰 조회 API
     @GetMapping("/{eventId}")
     public ResponseEntity<BaseResponse<?>> getCoupons(
             @PathVariable("eventId") long eventId
