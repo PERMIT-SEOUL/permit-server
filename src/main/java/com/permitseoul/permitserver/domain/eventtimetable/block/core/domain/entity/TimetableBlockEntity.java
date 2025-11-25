@@ -1,6 +1,7 @@
 package com.permitseoul.permitserver.domain.eventtimetable.block.core.domain.entity;
 
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.exception.TimeTableIllegalArgumentException;
+import com.permitseoul.permitserver.global.exception.LocalDateTimeException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -91,7 +92,7 @@ public class TimetableBlockEntity {
 
     private void validateDateTime(final LocalDateTime startAt, final LocalDateTime endAt) {
         if (startAt.isAfter(endAt)) {
-            throw new TimeTableIllegalArgumentException();
+            throw new LocalDateTimeException();
         }
     }
 
@@ -99,5 +100,10 @@ public class TimetableBlockEntity {
         validateDateTime(startAt, endAt);
         this.startAt = startAt;
         this.endAt = endAt;
+    }
+
+    public void updateArtistAndBlockName(final String artistWithBlockName) {
+        this.artist = artistWithBlockName;
+        this.blockName = artistWithBlockName;
     }
 }

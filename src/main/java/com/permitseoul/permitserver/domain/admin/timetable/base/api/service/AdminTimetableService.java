@@ -79,6 +79,8 @@ public class AdminTimetableService {
             throw new AdminApiException(ErrorCode.BAD_REQUEST_MISMATCH_LIST_SIZE);
         } catch (final NotFoundNotionResponseException e) {
             throw new AdminApiException(ErrorCode.NOT_FOUND_NOTION_DATABASE_SOURCE);
+        } catch (final LocalDateTimeException e) {
+            throw new AdminApiException(ErrorCode.BAD_REQUEST_DATE_TIME_ERROR);
         }
     }
 

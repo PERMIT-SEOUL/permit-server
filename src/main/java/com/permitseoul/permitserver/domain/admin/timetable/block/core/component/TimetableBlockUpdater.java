@@ -11,4 +11,8 @@ public class TimetableBlockUpdater {
     public void updateTimetableBlockTime(final TimetableBlockEntity timetableBlockEntity, final LocalDateTime startAt, final LocalDateTime endAt) {
         timetableBlockEntity.updateTime(startAt, endAt);
     }
+
+    public void updateTimetableBlockArtistAndBlockName(final TimetableBlockEntity timetableBlockEntity, final String artist) {
+        timetableBlockEntity.updateArtistAndBlockName(artist);
+    }
 }

@@ -4,6 +4,8 @@ import com.permitseoul.permitserver.domain.admin.timetable.block.api.dto.NotionT
 import com.permitseoul.permitserver.domain.admin.timetable.block.core.domain.NotionTimetableBlockWebhookType;
 import com.permitseoul.permitserver.domain.admin.timetable.block.core.strategy.NotionTimetableBlockUpdateStrategyManager;
 import com.permitseoul.permitserver.domain.admin.timetable.block.core.strategy.NotionTimetableBlockUpdateWebhookStrategy;
+import com.permitseoul.permitserver.domain.eventtimetable.block.core.exception.TimetableBlockNotfoundException;
+import com.permitseoul.permitserver.global.exception.LocalDateTimeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,13 @@ public class AdminNotionTimetableBlockService {
             log.error("알 수 없는 노션 timetable block TYPE 입니다. type={}", type);
             return;
         }
-        strategy.updateNotionTimetableBlockByNotionWebhook(request);
+
+        try {
+            strategy.updateNotionTimetableBlockByNotionWebhook(request);
+        } catch (TimetableBlockNotfoundException e) {
+            log.error("timetable block row를 찾을 수 없습니다. rowId={}", request.data().id());
+        } catch (LocalDateTimeException e) {
+            log.error("잘못된 날짜 순서입니다. rowId={}", request.data().id());
+        }
     }
 }
