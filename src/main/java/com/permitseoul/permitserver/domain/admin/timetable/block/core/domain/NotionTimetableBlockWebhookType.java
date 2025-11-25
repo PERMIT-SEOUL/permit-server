@@ -1,6 +1,6 @@
 package com.permitseoul.permitserver.domain.admin.timetable.block.core.domain;
 
-import com.permitseoul.permitserver.domain.admin.timetable.block.api.dto.NotionTimetableBlockWebhookRequest;
+import com.permitseoul.permitserver.domain.admin.timetable.block.api.dto.NotionTimetableBlockUpdateWebhookRequest;
 
 public enum NotionTimetableBlockWebhookType {
     ARTIST,       // artist/activity(title) 변경
@@ -12,7 +12,7 @@ public enum NotionTimetableBlockWebhookType {
     DETAILS,      // details 필드 변경 (원하면 사용)
     UNKNOWN;
 
-    public static NotionTimetableBlockWebhookType from(final NotionTimetableBlockWebhookRequest.NotionTimetableProperties props) {
+    public static NotionTimetableBlockWebhookType from(final NotionTimetableBlockUpdateWebhookRequest.NotionTimetableProperties props) {
         if (props.artistActivity() != null && props.artistActivity().title() != null
                 && !props.artistActivity().title().isEmpty()) {
             return ARTIST;

@@ -46,8 +46,8 @@ public class TimetableBlockEntity {
     @Column(name = "block_info_redirect_url")
     private String blockInfoRedirectUrl;
 
-    @Column(name = "notion_timetable_row_id", nullable = false)
-    private String notionTimetableRowId;
+    @Column(name = "notion_timetable_block_row_id", nullable = false)
+    private String notionTimetableBlockRowId;
 
 
     private TimetableBlockEntity(
@@ -60,7 +60,7 @@ public class TimetableBlockEntity {
             String artist,
             String information,
             String blockInfoRedirectUrl,
-            String notionTimetableRowId
+            String notionTimetableBlockRowId
     ) {
         validateDateTime(startAt, endAt);
 
@@ -73,7 +73,7 @@ public class TimetableBlockEntity {
         this.artist = artist;
         this.information = information;
         this.blockInfoRedirectUrl = blockInfoRedirectUrl;
-        this.notionTimetableRowId = notionTimetableRowId;
+        this.notionTimetableBlockRowId = notionTimetableBlockRowId;
     }
 
     public static TimetableBlockEntity create(final long timetableId,
@@ -85,13 +85,19 @@ public class TimetableBlockEntity {
                                               final String artist,
                                               final String information,
                                               final String blockInfoRedirectUrl,
-                                              final String notionTimetableRowId) {
-        return new TimetableBlockEntity(timetableId, timetableCategoryNotionId, timetableStageNotionId, startAt, endAt, blockName, artist, information, blockInfoRedirectUrl, notionTimetableRowId);
+                                              final String notionTimetableBlockRowId) {
+        return new TimetableBlockEntity(timetableId, timetableCategoryNotionId, timetableStageNotionId, startAt, endAt, blockName, artist, information, blockInfoRedirectUrl, notionTimetableBlockRowId);
     }
 
     private void validateDateTime(final LocalDateTime startAt, final LocalDateTime endAt) {
         if (startAt.isAfter(endAt)) {
             throw new TimeTableIllegalArgumentException();
         }
+    }
+
+    public void updateTime(final LocalDateTime startAt, final LocalDateTime endAt) {
+        validateDateTime(startAt, endAt);
+        this.startAt = startAt;
+        this.endAt = endAt;
     }
 }

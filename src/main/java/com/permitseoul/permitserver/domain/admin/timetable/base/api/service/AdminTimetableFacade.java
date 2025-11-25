@@ -1,6 +1,5 @@
 package com.permitseoul.permitserver.domain.admin.timetable.base.api.service;
 
-import com.permitseoul.permitserver.domain.admin.base.api.exception.AdminApiException;
 import com.permitseoul.permitserver.domain.admin.timetable.block.core.component.AdminTimetableBlockSaver;
 import com.permitseoul.permitserver.domain.admin.timetable.blockmedia.core.component.AdminTimetableBlockMediaSaver;
 import com.permitseoul.permitserver.domain.admin.timetable.category.core.component.AdminTimetableCategorySaver;
@@ -12,12 +11,9 @@ import com.permitseoul.permitserver.domain.eventtimetable.blockmedia.domain.enti
 import com.permitseoul.permitserver.domain.eventtimetable.category.core.domain.entity.TimetableCategoryEntity;
 import com.permitseoul.permitserver.domain.eventtimetable.stage.core.domain.entity.TimetableStageEntity;
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.domain.Timetable;
-import com.permitseoul.permitserver.global.exception.DateFormatException;
-import com.permitseoul.permitserver.global.exception.PermitIllegalStateException;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionCategoryDatasourceResponse;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionStageDatasourceResponse;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionTimetableDatasourceResponse;
-import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

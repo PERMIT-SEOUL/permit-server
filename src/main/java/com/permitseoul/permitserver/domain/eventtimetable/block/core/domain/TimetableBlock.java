@@ -19,6 +19,7 @@ public class TimetableBlock {
     private final String artist;
     private final String information;
     private final String blockInfoRedirectUrl;
+    private final String notionTimetableRowId;
 
     public static TimetableBlock fromEntity(final TimetableBlockEntity timetableBlockEntity) {
         return new TimetableBlock(
@@ -31,7 +32,8 @@ public class TimetableBlock {
                 timetableBlockEntity.getBlockName(),
                 timetableBlockEntity.getArtist(),
                 timetableBlockEntity.getInformation(),
-                timetableBlockEntity.getBlockInfoRedirectUrl()
+                timetableBlockEntity.getBlockInfoRedirectUrl(),
+                timetableBlockEntity.getNotionTimetableBlockRowId()
         );
     }
 }

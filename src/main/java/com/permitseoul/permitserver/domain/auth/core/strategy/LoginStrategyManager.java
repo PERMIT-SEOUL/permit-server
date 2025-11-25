@@ -15,7 +15,7 @@ public class LoginStrategyManager {
 
     public LoginStrategyManager(final List<LoginStrategy> strategies) {
         this.strategyMap = strategies.stream()
-                .collect(Collectors.toMap(LoginStrategy::getSocialType, Function.identity()));
+                .collect(Collectors.toMap(LoginStrategy::getSocialType, Function.identity() ));
     }
 
     public LoginStrategy getStrategy(final SocialType socialType) {

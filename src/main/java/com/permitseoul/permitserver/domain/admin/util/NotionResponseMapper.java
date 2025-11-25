@@ -11,6 +11,7 @@ import com.permitseoul.permitserver.global.exception.PermitIllegalStateException
 import com.permitseoul.permitserver.global.external.notion.dto.NotionCategoryDatasourceResponse;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionStageDatasourceResponse;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionTimetableDatasourceResponse;
+import com.permitseoul.permitserver.global.util.LocalDateTimeFormatterUtil;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -101,14 +102,8 @@ public final class NotionResponseMapper {
                             : "";
                     final String redirectUrl = props.directUrl() != null ? props.directUrl().url() : null;
 
-                    final LocalDateTime startAt;
-                    final LocalDateTime endAt;
-                    try {
-                        startAt = LocalDateTime.parse(props.time().date().start(), FORMATTER);
-                        endAt = LocalDateTime.parse(props.time().date().end(), FORMATTER);
-                    } catch (DateTimeParseException e) {
-                        throw new DateFormatException() ;
-                    }
+                    final LocalDateTime startAt = LocalDateTimeFormatterUtil.parseISO8601DateToLocalDateTime(props.time().date().start());
+                    final LocalDateTime endAt = LocalDateTimeFormatterUtil.parseISO8601DateToLocalDateTime(props.time().date().end());
 
                     if (props.category().relation().isEmpty()) {
                         throw new PermitIllegalStateException();
