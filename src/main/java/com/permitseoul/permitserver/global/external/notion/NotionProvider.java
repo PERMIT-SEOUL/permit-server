@@ -1,7 +1,6 @@
 package com.permitseoul.permitserver.global.external.notion;
 
 import com.permitseoul.permitserver.global.Constants;
-import com.permitseoul.permitserver.global.exception.PermitIllegalStateException;
 import com.permitseoul.permitserver.global.external.notion.client.NotionClient;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionCategoryDatasourceResponse;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionStageDatasourceResponse;
