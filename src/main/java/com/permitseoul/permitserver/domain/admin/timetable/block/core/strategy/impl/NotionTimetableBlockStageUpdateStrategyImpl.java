@@ -11,15 +11,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class NotionTimetableBlockCategoryUpdateStrategyImpl implements NotionTimetableBlockUpdateWebhookStrategy {
+public class NotionTimetableBlockStageUpdateStrategyImpl implements NotionTimetableBlockUpdateWebhookStrategy {
     private final TimetableBlockRetriever timetableBlockRetriever;
     private final TimetableBlockUpdater timetableBlockUpdater;
 
-    private static final int UPDATE_CATEGORY_RELATION_INDEX = 0; //노션에서 카테고리 섹션은 하나만 선택 가능하므로 0번째 인덱스 사용하면 됨
+    private static final int UPDATE_STAGE_RELATION_INDEX = 0; //노션에서 stage 섹션은 하나만 선택 가능하므로 0번째 인덱스 사용하면 됨
 
     @Override
     public NotionTimetableBlockWebhookType getType() {
-        return NotionTimetableBlockWebhookType.CATEGORY;
+        return NotionTimetableBlockWebhookType.STAGE;
     }
 
     @Override
@@ -29,11 +29,11 @@ public class NotionTimetableBlockCategoryUpdateStrategyImpl implements NotionTim
 
         final String categoryRowId = request.data()
                 .properties()
-                .category()
+                .stage()
                 .relation()
-                .get(UPDATE_CATEGORY_RELATION_INDEX)
+                .get(UPDATE_STAGE_RELATION_INDEX)
                 .id();
 
-        timetableBlockUpdater.updateTimetableBlockCategoryRelationRowId(blockEntity, categoryRowId);
+        timetableBlockUpdater.updateTimetableBlockStageRelationRowId(blockEntity, categoryRowId);
     }
 }

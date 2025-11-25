@@ -16,7 +16,11 @@ public class TimetableBlockUpdater {
         timetableBlockEntity.updateArtistAndBlockName(artist);
     }
 
-    public void updateTimetableBlockCategoryRowId(final TimetableBlockEntity timetableBlockEntity, final String newCategoryRowId) {
-        timetableBlockEntity.updateCategoryNotionId(newCategoryRowId);
+    public void updateTimetableBlockCategoryRelationRowId(final TimetableBlockEntity timetableBlockEntity, final String newCategoryRelationRowId) {
+        timetableBlockEntity.updateCategoryRelationRowId(newCategoryRelationRowId);
+    }
+
+    public void updateTimetableBlockStageRelationRowId(final TimetableBlockEntity timetableBlockEntity, final String newStageRelationRowId) {
+        timetableBlockEntity.updateStageRelationRowId(newStageRelationRowId);
     }
 }

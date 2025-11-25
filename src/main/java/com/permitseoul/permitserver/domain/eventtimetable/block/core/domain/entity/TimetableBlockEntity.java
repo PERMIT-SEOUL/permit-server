@@ -106,7 +106,11 @@ public class TimetableBlockEntity {
         this.blockName = artistWithBlockName;
     }
 
-    public void updateCategoryNotionId(final String newCategoryRowId) {
-        this.notionTimetableCategoryRelationRowId = newCategoryRowId;
+    public void updateCategoryRelationRowId(final String newCategoryRelationRowId) {
+        this.notionTimetableCategoryRelationRowId = newCategoryRelationRowId;
+    }
+
+    public void updateStageRelationRowId(final String newStageRelationRowId) {
+        this.notionTimetableStageRelationRowId = newStageRelationRowId;
     }
 }
