@@ -1,8 +1,9 @@
-package com.permitseoul.permitserver.domain.admin.timetable.block.core.strategy;
+package com.permitseoul.permitserver.domain.admin.timetable.block.core.strategy.impl;
 
 import com.permitseoul.permitserver.domain.admin.timetable.block.api.dto.NotionTimetableBlockUpdateWebhookRequest;
 import com.permitseoul.permitserver.domain.admin.timetable.block.core.component.TimetableBlockUpdater;
 import com.permitseoul.permitserver.domain.admin.timetable.block.core.domain.NotionTimetableBlockWebhookType;
+import com.permitseoul.permitserver.domain.admin.timetable.block.core.strategy.NotionTimetableBlockUpdateWebhookStrategy;
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.component.TimetableBlockRetriever;
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.domain.entity.TimetableBlockEntity;
 import com.permitseoul.permitserver.global.util.LocalDateTimeFormatterUtil;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
-public class NotionTimetableBlockTimeUpdateStrategy implements NotionTimetableBlockUpdateWebhookStrategy {
+public class NotionTimetableBlockTimeUpdateStrategyImpl implements NotionTimetableBlockUpdateWebhookStrategy {
     private final TimetableBlockRetriever timetableBlockRetriever;
     private final TimetableBlockUpdater timetableBlockUpdater;
 
