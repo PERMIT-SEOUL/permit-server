@@ -15,4 +15,8 @@ public class TimetableBlockUpdater {
     public void updateTimetableBlockArtistAndBlockName(final TimetableBlockEntity timetableBlockEntity, final String artist) {
         timetableBlockEntity.updateArtistAndBlockName(artist);
     }
+
+    public void updateTimetableBlockCategoryRowId(final TimetableBlockEntity timetableBlockEntity, final String newCategoryRowId) {
+        timetableBlockEntity.updateCategoryNotionId(newCategoryRowId);
+    }
 }
