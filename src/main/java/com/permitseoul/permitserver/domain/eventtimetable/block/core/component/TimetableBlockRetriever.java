@@ -38,4 +38,10 @@ public class TimetableBlockRetriever {
             throw new TimetableBlockNotfoundException();
         }
     }
+
+    @Transactional(readOnly = true)
+    public TimetableBlockEntity findTimetableBlockEntityByNotionTimetableBlockRowId(final String notionTimetableBlockRowId) {
+        return timetableBlockRepository.findByNotionTimetableBlockRowId(notionTimetableBlockRowId).orElseThrow(TimetableBlockNotfoundException::new);
+
+    }
 }
