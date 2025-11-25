@@ -25,8 +25,8 @@ public class TimetableBlock {
         return new TimetableBlock(
                 timetableBlockEntity.getTimetableBlockId(),
                 timetableBlockEntity.getTimetableId(),
-                timetableBlockEntity.getTimetableCategoryNotionId(),
-                timetableBlockEntity.getTimetableStageNotionId(),
+                timetableBlockEntity.getNotionTimetableCategoryRelationRowId(),
+                timetableBlockEntity.getNotionTimetableStageRelationRowId(),
                 timetableBlockEntity.getStartAt(),
                 timetableBlockEntity.getEndAt(),
                 timetableBlockEntity.getBlockName(),
