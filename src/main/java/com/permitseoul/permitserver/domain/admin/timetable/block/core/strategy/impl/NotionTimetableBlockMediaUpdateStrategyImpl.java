@@ -52,7 +52,6 @@ public class NotionTimetableBlockMediaUpdateStrategyImpl implements NotionTimeta
             }
 
             medias.add(TimetableBlockMediaEntity.create(timetableBlockId, sequence++, url));
-            sequence++;
         }
         adminTimetableBlockMediaSaver.saveAllBlockMedia(medias);
     }
