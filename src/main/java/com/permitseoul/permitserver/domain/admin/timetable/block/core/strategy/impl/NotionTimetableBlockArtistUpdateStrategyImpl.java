@@ -4,7 +4,7 @@ import com.permitseoul.permitserver.domain.admin.timetable.block.api.dto.NotionT
 import com.permitseoul.permitserver.domain.admin.timetable.block.core.component.TimetableBlockUpdater;
 import com.permitseoul.permitserver.domain.admin.timetable.block.core.domain.NotionTimetableBlockWebhookType;
 import com.permitseoul.permitserver.domain.admin.timetable.block.core.strategy.NotionTimetableBlockUpdateWebhookStrategy;
-import com.permitseoul.permitserver.domain.eventtimetable.block.core.component.TimetableBlockRetriever;
+import com.permitseoul.permitserver.domain.eventtimetable.block.core.component.AdminTimetableBlockRetriever;
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.domain.entity.TimetableBlockEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -12,10 +12,10 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class NotionTimetableBlockArtistUpdateStrategyImpl implements NotionTimetableBlockUpdateWebhookStrategy {
-    private final TimetableBlockRetriever timetableBlockRetriever;
+    private final AdminTimetableBlockRetriever adminTimetableBlockRetriever;
     private final TimetableBlockUpdater timetableBlockUpdater;
 
-    private static final int UPDATE_TITLE_INDEX = 0;
+    private static final int NEW_TITLE_INDEX = 0;
 
     @Override
     public NotionTimetableBlockWebhookType getType() {
@@ -25,12 +25,12 @@ public class NotionTimetableBlockArtistUpdateStrategyImpl implements NotionTimet
     @Override
     public void updateNotionTimetableBlockByNotionWebhook(final NotionTimetableBlockUpdateWebhookRequest request) {
         final String rowId = request.data().id();
-        final TimetableBlockEntity blockEntity = timetableBlockRetriever.findTimetableBlockEntityByNotionTimetableBlockRowId(rowId);
+        final TimetableBlockEntity blockEntity = adminTimetableBlockRetriever.findTimetableBlockEntityByNotionTimetableBlockRowId(rowId);
         final String artist = request.data()
                 .properties()
                 .artistActivity()
                 .title()
-                .get(UPDATE_TITLE_INDEX)
+                .get(NEW_TITLE_INDEX)
                 .plainText();
 
         timetableBlockUpdater.updateTimetableBlockArtistAndBlockName(blockEntity, artist);

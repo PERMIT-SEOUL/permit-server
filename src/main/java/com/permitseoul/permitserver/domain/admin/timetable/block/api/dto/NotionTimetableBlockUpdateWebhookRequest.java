@@ -81,7 +81,7 @@ public record NotionTimetableBlockUpdateWebhookRequest(
     ) {
     }
 
-    // media(files) 예: [{ name, external/url or file/url ... }]
+    // media(files)
     public record NotionFilesProperty(
             List<NotionFileValue> files
     ) {
@@ -89,17 +89,11 @@ public record NotionTimetableBlockUpdateWebhookRequest(
 
     public record NotionFileValue(
             String name,
-            NotionFileInner file,
-            NotionFileExternal external
+            NotionFileInner file
     ) {
     }
 
     public record NotionFileInner(
-            String url
-    ) {
-    }
-
-    public record NotionFileExternal(
             String url
     ) {
     }

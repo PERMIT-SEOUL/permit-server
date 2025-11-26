@@ -42,7 +42,7 @@ public class AdminTimetableController {
         return ApiResponseUtil.success(SuccessCode.OK, adminTimetableService.getTimetableInfo(eventId));
     }
 
-    // admin 행사 타임테이블 수정 API
+    // admin 행사 타임테이블 기본 정보 수정 API
     @PatchMapping("/timetables/{timetableId}")
     public ResponseEntity<BaseResponse<?>> updateTimetable(
             @PathVariable("timetableId") final long timetableId,

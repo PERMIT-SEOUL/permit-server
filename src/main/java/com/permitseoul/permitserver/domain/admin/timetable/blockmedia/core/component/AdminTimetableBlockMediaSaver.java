@@ -1,6 +1,5 @@
 package com.permitseoul.permitserver.domain.admin.timetable.blockmedia.core.component;
 
-import com.permitseoul.permitserver.domain.eventtimetable.block.core.domain.entity.TimetableBlockEntity;
 import com.permitseoul.permitserver.domain.eventtimetable.blockmedia.domain.entity.TimetableBlockMediaEntity;
 import com.permitseoul.permitserver.domain.eventtimetable.blockmedia.repository.TimetableBlockMediaRepository;
 import lombok.RequiredArgsConstructor;

@@ -6,7 +6,7 @@ import com.permitseoul.permitserver.domain.event.core.exception.EventNotfoundExc
 import com.permitseoul.permitserver.domain.eventtimetable.stage.core.component.TimetableStageRetriever;
 import com.permitseoul.permitserver.domain.eventtimetable.stage.core.domain.TimetableStage;
 import com.permitseoul.permitserver.domain.eventtimetable.stage.core.exception.TimetableStageNotFoundException;
-import com.permitseoul.permitserver.domain.eventtimetable.block.core.component.TimetableBlockRetriever;
+import com.permitseoul.permitserver.domain.eventtimetable.block.core.component.AdminTimetableBlockRetriever;
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.domain.TimetableBlock;
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.exception.TimetableBlockNotfoundException;
 import com.permitseoul.permitserver.domain.eventtimetable.blockmedia.component.TimetableBlockMediaRetriever;
@@ -38,7 +38,7 @@ public class TimetableService {
     private final TimetableRetriever timetableRetriever;
     private final TimetableStageRetriever timetableStageRetriever;
     private final TimetableCategoryRetriever timetableCategoryRetriever;
-    private final TimetableBlockRetriever timetableBlockRetriever;
+    private final AdminTimetableBlockRetriever adminTimetableBlockRetriever;
     private final TimetableBlockMediaRetriever timetableBlockMediaRetriever;
     private final TimetableUserLikeRetriever timetableUserLikeRetriever;
     private final EventRetriever eventRetriever;
@@ -59,7 +59,7 @@ public class TimetableService {
             final long timetableId = timetable.getTimetableId();
             stageList = timetableStageRetriever.findTimetableStageListByTimetableId(timetableId);
             categoryList = timetableCategoryRetriever.findAllTimetableCategory(timetableId);
-            blockList = timetableBlockRetriever.findAllTimetableBlockByTimetableId(timetableId);
+            blockList = adminTimetableBlockRetriever.findAllTimetableBlockByTimetableId(timetableId);
 
         } catch (EventNotfoundException e) {
             throw new NotfoundTimetableException(ErrorCode.NOT_FOUND_EVENT);
@@ -100,7 +100,7 @@ public class TimetableService {
         final TimetableStage timetableStage;
         final List<TimetableBlockMedia> timetableBlockMediaList;
         try {
-            timetableBlock = timetableBlockRetriever.findTimetableBlockById(blockId);
+            timetableBlock = adminTimetableBlockRetriever.findTimetableBlockById(blockId);
             timetableBlockMediaList = timetableBlockMediaRetriever.getAllTimetableBlockMediaByBlockId(timetableBlock.getTimetableBlockId());
             timetableCategory = timetableCategoryRetriever.findTimetableCategoryByCategoryNotionRowId(timetableBlock.getTimetableCategoryNotionId());
             timetableStage = timetableStageRetriever.findTimetableStageByStageNotionRowId(timetableBlock.getTimetableStageNotionId());
