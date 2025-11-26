@@ -41,7 +41,7 @@ public record NotionTimetableBlockUpdateWebhookRequest(
             NotionRichTextProperty useWhenMediaChanged,
             // redirect url
             @JsonProperty("redirect url")
-            NotionUrlProperty redirectUrl,
+            NotionRichTextProperty redirectUrl,
             // details (텍스트/셀렉트)
             NotionRichTextProperty details
     ) {
@@ -108,11 +108,6 @@ public record NotionTimetableBlockUpdateWebhookRequest(
     public record NotionRichTextValue(
             @JsonProperty("plain_text")
             String plainText
-    ) {
-    }
-
-    public record NotionUrlProperty(
-            String url
     ) {
     }
 }

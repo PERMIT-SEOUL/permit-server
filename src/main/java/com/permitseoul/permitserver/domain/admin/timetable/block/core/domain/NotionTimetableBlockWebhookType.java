@@ -31,7 +31,7 @@ public enum NotionTimetableBlockWebhookType {
             // use when media changed 필드는 단순 트리거 용도
             return MEDIA;
         }
-        if (props.redirectUrl() != null && props.redirectUrl().url() != null) {
+        if (props.redirectUrl() != null) {
             return REDIRECT_URL;
         }
         if (props.details() != null) {

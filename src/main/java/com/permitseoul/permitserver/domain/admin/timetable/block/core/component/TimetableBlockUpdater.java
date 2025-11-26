@@ -27,4 +27,8 @@ public class TimetableBlockUpdater {
     public void updateTimetableBlockDetails(final TimetableBlockEntity timetableBlockEntity, final String newDetails) {
         timetableBlockEntity.updateDetails(newDetails);
     }
+
+    public void updateTimetableBlockRedirectUrl(final TimetableBlockEntity timetableBlockEntity, final String newRedirectUrl) {
+        timetableBlockEntity.updateRedirectUrl(newRedirectUrl);
+    }
 }
