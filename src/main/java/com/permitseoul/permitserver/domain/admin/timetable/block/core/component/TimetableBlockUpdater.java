@@ -23,4 +23,8 @@ public class TimetableBlockUpdater {
     public void updateTimetableBlockStageRelationRowId(final TimetableBlockEntity timetableBlockEntity, final String newStageRelationRowId) {
         timetableBlockEntity.updateStageRelationRowId(newStageRelationRowId);
     }
+
+    public void updateTimetableBlockDetails(final TimetableBlockEntity timetableBlockEntity, final String newDetails) {
+        timetableBlockEntity.updateDetails(newDetails);
+    }
 }

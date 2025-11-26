@@ -13,7 +13,7 @@ public class TimetableBlockMediaRetriever {
     private final TimetableBlockMediaRepository mediaRepository;
 
     public List<TimetableBlockMedia> getAllTimetableBlockMediaByBlockId(final long blockId) {
-        return mediaRepository.findAllByTimetableBlockId(blockId).stream().map(TimetableBlockMedia::fromEntity).toList();
+        return mediaRepository.findAllByTimetableBlockIdOrderBySequenceAsc(blockId).stream().map(TimetableBlockMedia::fromEntity).toList();
     }
 
 }

@@ -27,7 +27,7 @@ public class AdminNotionTimetableBlockService {
 
         final NotionTimetableBlockUpdateWebhookStrategy strategy = notionTimetableBlockUpdateStrategyManager.getStrategy(type);
         if (strategy == null) {
-            log.error("알 수 없는 노션 timetable block TYPE 입니다. type={}", type);
+            log.error("알 수 없는 노션 timetable block strategy 입니다. type={}", type);
             return;
         }
 

@@ -26,7 +26,7 @@ public enum NotionTimetableBlockWebhookType {
         if (props.category() != null && props.category().relation() != null && !props.category().relation().isEmpty()) {
             return CATEGORY;
         }
-        if (props.useWhenMediaChanged() != null) {
+        if (props.media() != null) {
             // media 자체는 files 필드로 들어오고,
             // use when media changed 필드는 단순 트리거 용도
             return MEDIA;
