@@ -113,4 +113,12 @@ public class TimetableBlockEntity {
     public void updateStageRelationRowId(final String newStageRelationRowId) {
         this.notionTimetableStageRelationRowId = newStageRelationRowId;
     }
+
+    public void updateDetails(final String newDetails) {
+        this.information = newDetails;
+    }
+
+    public void updateRedirectUrl(final String newRedirectUrl) {
+        this.blockInfoRedirectUrl = newRedirectUrl;
+    }
 }
