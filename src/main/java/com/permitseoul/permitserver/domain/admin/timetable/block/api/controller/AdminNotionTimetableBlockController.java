@@ -1,6 +1,5 @@
 package com.permitseoul.permitserver.domain.admin.timetable.block.api.controller;
 
-import com.permitseoul.permitserver.domain.admin.timetable.base.api.dto.req.TimetableInitialPostRequest;
 import com.permitseoul.permitserver.domain.admin.timetable.block.api.dto.NotionTimetableBlockUpdateWebhookRequest;
 import com.permitseoul.permitserver.domain.admin.timetable.block.api.service.AdminNotionTimetableBlockService;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;

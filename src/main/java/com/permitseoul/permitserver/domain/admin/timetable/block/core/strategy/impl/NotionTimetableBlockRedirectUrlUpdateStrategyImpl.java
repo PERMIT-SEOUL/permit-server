@@ -26,14 +26,14 @@ public class NotionTimetableBlockRedirectUrlUpdateStrategyImpl implements Notion
     public void updateNotionTimetableBlockByNotionWebhook(final NotionTimetableBlockUpdateWebhookRequest request) {
         final String rowId = request.data().id();
         final TimetableBlockEntity blockEntity = adminTimetableBlockRetriever.findTimetableBlockEntityByNotionTimetableBlockRowId(rowId);
-        final String details = request.data()
+        final String redirectUrl = request.data()
                 .properties()
                 .redirectUrl()
                 .richText()
                 .get(NEW_REDIRECT_URL_INDEX)
                 .plainText();
 
-        timetableBlockUpdater.updateTimetableBlockRedirectUrl(blockEntity, details);
+        timetableBlockUpdater.updateTimetableBlockRedirectUrl(blockEntity, redirectUrl);
 
     }
 }

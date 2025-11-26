@@ -27,13 +27,13 @@ public class NotionTimetableBlockStageUpdateStrategyImpl implements NotionTimeta
         final String rowId = request.data().id();
         final TimetableBlockEntity blockEntity = adminTimetableBlockRetriever.findTimetableBlockEntityByNotionTimetableBlockRowId(rowId);
 
-        final String categoryRowId = request.data()
+        final String stageRowId = request.data()
                 .properties()
                 .stage()
                 .relation()
                 .get(NEW_STAGE_RELATION_INDEX)
                 .id();
 
-        timetableBlockUpdater.updateTimetableBlockStageRelationRowId(blockEntity, categoryRowId);
+        timetableBlockUpdater.updateTimetableBlockStageRelationRowId(blockEntity, stageRowId);
     }
 }
