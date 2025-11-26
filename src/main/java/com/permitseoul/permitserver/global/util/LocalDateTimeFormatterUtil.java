@@ -87,8 +87,8 @@ public final class LocalDateTimeFormatterUtil {
         return LocalDateTime.of(localDate, localTime);
     }
 
-    // 토스에서 주는 날짜 형식 ISO 8601을 LocalDateTime로 변환
-    public static LocalDateTime parseTossDateToLocalDateTime(final String isoDate) {
+    // 날짜 형식 ISO 8601을 LocalDateTime로 변환
+    public static LocalDateTime parseISO8601DateToLocalDateTime(final String isoDate) {
         if (isoDate == null || isoDate.isBlank()) {
             throw new DateFormatException();
         }
@@ -99,6 +99,6 @@ public final class LocalDateTimeFormatterUtil {
     public static Optional<PaymentCancelResponse.CancelDetail> getLatestCancelPaymentByDate(final List<PaymentCancelResponse.CancelDetail> cancels) {
         return cancels.stream()
                 .filter(cancel -> cancel.canceledAt() != null)
-                .max(Comparator.comparing(cancel -> parseTossDateToLocalDateTime(cancel.canceledAt())));
+                .max(Comparator.comparing(cancel -> parseISO8601DateToLocalDateTime(cancel.canceledAt())));
     }
 }

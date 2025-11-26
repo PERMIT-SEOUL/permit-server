@@ -44,7 +44,7 @@ public class CouponRetriever {
 
     @Transactional(readOnly = true)
     public List<Coupon> getCouponsByEventId(final long eventId) {
-        final List<CouponEntity> couponEntities = couponRepository.findAllByEventId(eventId);
+        final List<CouponEntity> couponEntities = couponRepository.findAllByEventIdOrderByCouponIdAsc(eventId);
         return couponEntities.stream()
                 .map(Coupon::fromEntity)
                 .toList();

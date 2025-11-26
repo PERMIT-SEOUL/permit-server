@@ -1,6 +1,6 @@
 package com.permitseoul.permitserver.domain.eventtimetable.block.core.domain.entity;
 
-import com.permitseoul.permitserver.domain.eventtimetable.block.core.exception.TimeTableIllegalArgumentException;
+import com.permitseoul.permitserver.global.exception.LocalDateTimeException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -22,11 +22,11 @@ public class TimetableBlockEntity {
     @Column(name = "timetable_id", nullable = false)
     private long timetableId;
 
-    @Column(name = "timetable_category_notion_id", nullable = false)
-    private String timetableCategoryNotionId;
+    @Column(name = "notion_timetable_category_relation_row_id", nullable = false)
+    private String notionTimetableCategoryRelationRowId;
 
-    @Column(name = "timetable_stage_notion_id", nullable = false)
-    private String timetableStageNotionId;
+    @Column(name = "notion_timetable_stage_relation_row_id", nullable = false)
+    private String notionTimetableStageRelationRowId;
 
     @Column(name = "start_at", nullable = false)
     private LocalDateTime startAt;
@@ -46,46 +46,79 @@ public class TimetableBlockEntity {
     @Column(name = "block_info_redirect_url")
     private String blockInfoRedirectUrl;
 
+    @Column(name = "notion_timetable_block_row_id", nullable = false)
+    private String notionTimetableBlockRowId;
+
 
     private TimetableBlockEntity(
             long timetableId,
-            String timetableCategoryNotionId,
-            String timetableStageNotionId,
+            String notionTimetableCategoryRelationRowId,
+            String notionTimetableStageRelationRowId,
             LocalDateTime startAt,
             LocalDateTime endAt,
             String blockName,
             String artist,
             String information,
-            String blockInfoRedirectUrl
+            String blockInfoRedirectUrl,
+            String notionTimetableBlockRowId
     ) {
         validateDateTime(startAt, endAt);
 
         this.timetableId = timetableId;
-        this.timetableCategoryNotionId = timetableCategoryNotionId;
-        this.timetableStageNotionId = timetableStageNotionId;
+        this.notionTimetableCategoryRelationRowId = notionTimetableCategoryRelationRowId;
+        this.notionTimetableStageRelationRowId = notionTimetableStageRelationRowId;
         this.startAt = startAt;
         this.endAt = endAt;
         this.blockName = blockName;
         this.artist = artist;
         this.information = information;
         this.blockInfoRedirectUrl = blockInfoRedirectUrl;
+        this.notionTimetableBlockRowId = notionTimetableBlockRowId;
     }
 
     public static TimetableBlockEntity create(final long timetableId,
-                                              final String timetableCategoryNotionId,
-                                              final String timetableStageNotionId,
+                                              final String notionTimetableCategoryRelationRowId,
+                                              final String notionTimetableStageRelationRowId,
                                               final LocalDateTime startAt,
                                               final LocalDateTime endAt,
                                               final String blockName,
                                               final String artist,
                                               final String information,
-                                              final String blockInfoRedirectUrl) {
-        return new TimetableBlockEntity(timetableId, timetableCategoryNotionId, timetableStageNotionId, startAt, endAt, blockName, artist, information, blockInfoRedirectUrl);
+                                              final String blockInfoRedirectUrl,
+                                              final String notionTimetableBlockRowId) {
+        return new TimetableBlockEntity(timetableId, notionTimetableCategoryRelationRowId, notionTimetableStageRelationRowId, startAt, endAt, blockName, artist, information, blockInfoRedirectUrl, notionTimetableBlockRowId);
     }
 
     private void validateDateTime(final LocalDateTime startAt, final LocalDateTime endAt) {
         if (startAt.isAfter(endAt)) {
-            throw new TimeTableIllegalArgumentException();
+            throw new LocalDateTimeException();
         }
+    }
+
+    public void updateTime(final LocalDateTime startAt, final LocalDateTime endAt) {
+        validateDateTime(startAt, endAt);
+        this.startAt = startAt;
+        this.endAt = endAt;
+    }
+
+    public void updateArtistAndBlockName(final String artistWithBlockName) {
+        this.artist = artistWithBlockName;
+        this.blockName = artistWithBlockName;
+    }
+
+    public void updateCategoryRelationRowId(final String newCategoryRelationRowId) {
+        this.notionTimetableCategoryRelationRowId = newCategoryRelationRowId;
+    }
+
+    public void updateStageRelationRowId(final String newStageRelationRowId) {
+        this.notionTimetableStageRelationRowId = newStageRelationRowId;
+    }
+
+    public void updateDetails(final String newDetails) {
+        this.information = newDetails;
+    }
+
+    public void updateRedirectUrl(final String newRedirectUrl) {
+        this.blockInfoRedirectUrl = newRedirectUrl;
     }
 }

@@ -12,7 +12,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class TimetableBlockRetriever {
+public class AdminTimetableBlockRetriever {
     private final TimetableBlockRepository timetableBlockRepository;
 
     @Transactional(readOnly = true)
@@ -37,5 +37,15 @@ public class TimetableBlockRetriever {
         if (!timetableBlockRepository.existsById(timetableBlockId)) {
             throw new TimetableBlockNotfoundException();
         }
+    }
+
+    @Transactional(readOnly = true)
+    public TimetableBlockEntity findTimetableBlockEntityByNotionTimetableBlockRowId(final String notionTimetableBlockRowId) {
+        return timetableBlockRepository.findByNotionTimetableBlockRowId(notionTimetableBlockRowId).orElseThrow(TimetableBlockNotfoundException::new);
+    }
+
+    @Transactional(readOnly = true)
+    public TimetableBlock findTimetableBlockByNotionTimetableBlockRowId(final String notionTimetableBlockRowId) {
+        return TimetableBlock.fromEntity(timetableBlockRepository.findByNotionTimetableBlockRowId(notionTimetableBlockRowId).orElseThrow(TimetableBlockNotfoundException::new));
     }
 }

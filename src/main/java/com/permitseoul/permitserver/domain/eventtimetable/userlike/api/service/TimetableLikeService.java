@@ -1,6 +1,6 @@
 package com.permitseoul.permitserver.domain.eventtimetable.userlike.api.service;
 
-import com.permitseoul.permitserver.domain.eventtimetable.block.core.component.TimetableBlockRetriever;
+import com.permitseoul.permitserver.domain.eventtimetable.block.core.component.AdminTimetableBlockRetriever;
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.exception.TimetableBlockNotfoundException;
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.api.exception.NotfoundTimetableException;
 import com.permitseoul.permitserver.domain.eventtimetable.userlike.core.component.TimetableUserLikeRemover;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class TimetableLikeService {
     private final UserRetriever userRetriever;
-    private final TimetableBlockRetriever timetableBlockRetriever;
+    private final AdminTimetableBlockRetriever adminTimetableBlockRetriever;
     private final TimetableUserLikeSaver timetableUserLikeSaver;
     private final TimetableUserLikeRetriever timetableUserLikeRetriever;
     private final TimetableUserLikeRemover timetableUserLikeRemover;
@@ -50,6 +50,6 @@ public class TimetableLikeService {
     }
 
     private void validExistBlockById(final long blockId) {
-        timetableBlockRetriever.validExistTimetableBlock(blockId);
+        adminTimetableBlockRetriever.validExistTimetableBlock(blockId);
     }
 }
