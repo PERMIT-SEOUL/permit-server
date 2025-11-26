@@ -34,9 +34,11 @@ public class AdminNotionTimetableBlockService {
         try {
             strategy.updateNotionTimetableBlockByNotionWebhook(request);
         } catch (TimetableBlockNotfoundException e) {
-            log.error("timetable block row를 찾을 수 없습니다. rowId={}", request.data().id());
+            log.error("timetable block row를 찾을 수 없습니다. request={}", request);
         } catch (LocalDateTimeException e) {
-            log.error("잘못된 날짜 순서입니다. rowId={}", request.data().id());
+            log.error("잘못된 날짜 순서입니다. request={}", request);
+        } catch (IndexOutOfBoundsException | NullPointerException e) {
+            log.error("웹훅 데이터에 필수 필드가 누락되었습니다. request={}, type={}", request, type, e);
         }
     }
 }
