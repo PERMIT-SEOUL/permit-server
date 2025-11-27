@@ -1,7 +1,7 @@
 package com.permitseoul.permitserver.domain.admin.timetable.block.core.strategy.impl;
 
 import com.permitseoul.permitserver.domain.admin.timetable.block.api.dto.NotionTimetableBlockUpdateWebhookRequest;
-import com.permitseoul.permitserver.domain.admin.timetable.block.core.component.TimetableBlockUpdater;
+import com.permitseoul.permitserver.domain.admin.timetable.block.core.component.AdminTimetableBlockUpdater;
 import com.permitseoul.permitserver.domain.admin.timetable.block.core.domain.NotionTimetableBlockWebhookType;
 import com.permitseoul.permitserver.domain.admin.timetable.block.core.strategy.NotionTimetableBlockUpdateWebhookStrategy;
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.component.AdminTimetableBlockRetriever;
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class NotionTimetableBlockTimeUpdateStrategyImpl implements NotionTimetableBlockUpdateWebhookStrategy {
     private final AdminTimetableBlockRetriever adminTimetableBlockRetriever;
-    private final TimetableBlockUpdater timetableBlockUpdater;
+    private final AdminTimetableBlockUpdater adminTimetableBlockUpdater;
 
     @Override
     public NotionTimetableBlockWebhookType getType() {
@@ -32,6 +32,6 @@ public class NotionTimetableBlockTimeUpdateStrategyImpl implements NotionTimetab
         final LocalDateTime startAt = LocalDateTimeFormatterUtil.parseISO8601DateToLocalDateTime(startDateAndEndDate.start());
         final LocalDateTime endAt = LocalDateTimeFormatterUtil.parseISO8601DateToLocalDateTime(startDateAndEndDate.end());
 
-        timetableBlockUpdater.updateTimetableBlockTime(blockEntity, startAt, endAt);
+        adminTimetableBlockUpdater.updateTimetableBlockTime(blockEntity, startAt, endAt);
     }
 }

@@ -1,7 +1,7 @@
 package com.permitseoul.permitserver.domain.admin.timetable.block.core.strategy.impl;
 
 import com.permitseoul.permitserver.domain.admin.timetable.block.api.dto.NotionTimetableBlockUpdateWebhookRequest;
-import com.permitseoul.permitserver.domain.admin.timetable.block.core.component.TimetableBlockUpdater;
+import com.permitseoul.permitserver.domain.admin.timetable.block.core.component.AdminTimetableBlockUpdater;
 import com.permitseoul.permitserver.domain.admin.timetable.block.core.domain.NotionTimetableBlockWebhookType;
 import com.permitseoul.permitserver.domain.admin.timetable.block.core.strategy.NotionTimetableBlockUpdateWebhookStrategy;
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.component.AdminTimetableBlockRetriever;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class NotionTimetableBlockRedirectUrlUpdateStrategyImpl implements NotionTimetableBlockUpdateWebhookStrategy {
     private final AdminTimetableBlockRetriever adminTimetableBlockRetriever;
-    private final TimetableBlockUpdater timetableBlockUpdater;
+    private final AdminTimetableBlockUpdater adminTimetableBlockUpdater;
 
     private static final int NEW_REDIRECT_URL_INDEX = 0;
 
@@ -33,7 +33,7 @@ public class NotionTimetableBlockRedirectUrlUpdateStrategyImpl implements Notion
                 .get(NEW_REDIRECT_URL_INDEX)
                 .plainText();
 
-        timetableBlockUpdater.updateTimetableBlockRedirectUrl(blockEntity, redirectUrl);
+        adminTimetableBlockUpdater.updateTimetableBlockRedirectUrl(blockEntity, redirectUrl);
 
     }
 }
