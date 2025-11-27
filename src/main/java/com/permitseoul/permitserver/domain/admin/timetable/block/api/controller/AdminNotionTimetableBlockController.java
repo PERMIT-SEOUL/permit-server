@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.*;
 public class AdminNotionTimetableBlockController {
     private final AdminNotionTimetableBlockService adminNotionTimetableBlockService;
 
-    // Notion Timetable Block Database Update Webhook API
+    // Notion 타임테이블 블럭 데이터베이스 Update Webhook API
     @PostMapping("/timetables/blocks")
     public ResponseEntity<BaseResponse<?>> updateNotionTimetableBlockWebhook(
-            @RequestBody @Valid NotionTimetableBlockUpdateWebhookRequest request
+            @RequestBody @Valid NotionTimetableBlockUpdateWebhookRequest notionTimetableBlockUpdateWebhookRequest
     ) {
-        adminNotionTimetableBlockService.updateNotionTimetableBlock(request);
+        adminNotionTimetableBlockService.updateNotionTimetableBlock(notionTimetableBlockUpdateWebhookRequest);
         return ApiResponseUtil.success(SuccessCode.OK);
     }
 }
