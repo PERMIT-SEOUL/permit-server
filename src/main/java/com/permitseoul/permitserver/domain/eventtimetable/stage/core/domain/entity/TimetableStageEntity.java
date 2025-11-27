@@ -38,4 +38,12 @@ public class TimetableStageEntity {
     public static TimetableStageEntity create(final long eventTimetableId, final String stageName, final int sequence, final String notionStageRowId) {
         return new TimetableStageEntity(eventTimetableId, stageName, sequence, notionStageRowId);
     }
+
+    public void updateStageName(final String stageName) {
+        this.stageName = stageName;
+    }
+
+    public void updateSequence(final int sequence) {
+        this.sequence = sequence;
+    }
 }
