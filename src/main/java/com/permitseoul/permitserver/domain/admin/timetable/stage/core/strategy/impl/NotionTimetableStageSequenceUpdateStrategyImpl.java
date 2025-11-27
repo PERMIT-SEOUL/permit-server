@@ -6,37 +6,39 @@ import com.permitseoul.permitserver.domain.admin.timetable.stage.core.component.
 import com.permitseoul.permitserver.domain.admin.timetable.stage.core.domain.NotionTimetableStageWebhookType;
 import com.permitseoul.permitserver.domain.admin.timetable.stage.core.strategy.NotionTimetableStageUpdateWebhookStrategy;
 import com.permitseoul.permitserver.domain.eventtimetable.stage.core.domain.entity.TimetableStageEntity;
+import com.permitseoul.permitserver.global.external.notion.exception.NotFoundNotionResponseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class NotionTimetableStageNameUpdateStrategyImpl implements NotionTimetableStageUpdateWebhookStrategy {
+public class NotionTimetableStageSequenceUpdateStrategyImpl implements NotionTimetableStageUpdateWebhookStrategy {
     private final AdminTimetableStageRetriever adminTimetableStageRetriever;
     private final AdminTimetableStageUpdater adminTimetableStageUpdater;
 
-    private static final int NEW_STAGE_NAME_INDEX = 0;
-
     @Override
     public NotionTimetableStageWebhookType getType() {
-        return NotionTimetableStageWebhookType.NAME;
+        return NotionTimetableStageWebhookType.SEQUENCE;
     }
 
     @Override
-    public void updateNotionTimetableStageByNotionWebhook(final NotionTimetableStageUpdateWebhookRequest request) {
-        final String rowId = request.data().id();
+    public void updateNotionTimetableStageByNotionWebhook(final NotionTimetableStageUpdateWebhookRequest notionTimetableStageUpdateWebhookRequest) {
+        final String rowId = notionTimetableStageUpdateWebhookRequest.data().id();
         final TimetableStageEntity stageEntity = adminTimetableStageRetriever.findTimetableStageByTimetableStageRowId(rowId);
 
-        final List<NotionTimetableStageUpdateWebhookRequest.NotionTitleValue> titleList = request.data().properties().stageName().title();
-        if (titleList == null || titleList.isEmpty()) {
-            log.error("Stage name title이 비어있습니다. request={}", request);
-            return;
+        // 노션에서 오는 숫자는 Double
+        final Double number = notionTimetableStageUpdateWebhookRequest.data().properties().sequence().number();
+        if (number == null) {
+            throw new NotFoundNotionResponseException();
         }
-        final String newStageName = titleList.get(NEW_STAGE_NAME_INDEX).plainText();
-        adminTimetableStageUpdater.updateTimetableStageName(stageEntity, newStageName);
+
+        final int sequence = number.intValue();
+        if (sequence < 0) {
+            throw new NumberFormatException();
+        }
+        adminTimetableStageUpdater.updateTimetableStageSequence(stageEntity, sequence);
     }
+
 }

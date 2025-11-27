@@ -10,4 +10,8 @@ public class AdminTimetableStageUpdater {
         timetableStageEntity.updateStageName(newStageName);
     }
 
+    public void updateTimetableStageSequence(final TimetableStageEntity timetableStageEntity, final int newSequence) {
+        timetableStageEntity.updateSequence(newSequence);
+    }
+
 }
