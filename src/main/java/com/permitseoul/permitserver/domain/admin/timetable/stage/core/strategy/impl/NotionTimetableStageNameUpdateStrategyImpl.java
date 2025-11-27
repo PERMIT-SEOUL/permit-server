@@ -3,7 +3,7 @@ package com.permitseoul.permitserver.domain.admin.timetable.stage.core.strategy.
 import com.permitseoul.permitserver.domain.admin.timetable.stage.api.dto.NotionTimetableStageUpdateWebhookRequest;
 import com.permitseoul.permitserver.domain.admin.timetable.stage.core.component.AdminTimetableStageRetriever;
 import com.permitseoul.permitserver.domain.admin.timetable.stage.core.component.AdminTimetableStageUpdater;
-import com.permitseoul.permitserver.domain.admin.timetable.stage.core.domain.NotionTimetableStageWebhookType;
+import com.permitseoul.permitserver.domain.admin.timetable.stage.core.strategy.domain.NotionTimetableStageWebhookType;
 import com.permitseoul.permitserver.domain.admin.timetable.stage.core.strategy.NotionTimetableStageUpdateWebhookStrategy;
 import com.permitseoul.permitserver.domain.eventtimetable.stage.core.domain.entity.TimetableStageEntity;
 import com.permitseoul.permitserver.global.external.notion.exception.NotFoundNotionResponseException;
