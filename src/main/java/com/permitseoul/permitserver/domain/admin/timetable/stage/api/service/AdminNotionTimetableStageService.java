@@ -38,12 +38,8 @@ public class AdminNotionTimetableStageService {
             notionTimetableStageUpdateWebhookStrategy.updateNotionTimetableStageByNotionWebhook(notionTimetableStageUpdateWebhookRequest);
         } catch (TimetableStageNotFoundException e) {
             throw new AdminApiException(ErrorCode.NOT_FOUND_TIMETABLE_STAGE);
-        } catch (IndexOutOfBoundsException | NullPointerException e) {
+        } catch (IndexOutOfBoundsException | NullPointerException | NotFoundNotionResponseException e) {
             log.error("웹훅 데이터에 필수 필드가 누락되었습니다. request={}, ", notionTimetableStageUpdateWebhookRequest, e);
-        } catch (NotFoundNotionResponseException e) {
-            log.error("Sequence number가 비어있습니다. request={}", notionTimetableStageUpdateWebhookRequest);
-        } catch (NumberFormatException e) {
-            log.warn("Invalid sequence(<0). request={}", notionTimetableStageUpdateWebhookRequest );
         }
     }
 }

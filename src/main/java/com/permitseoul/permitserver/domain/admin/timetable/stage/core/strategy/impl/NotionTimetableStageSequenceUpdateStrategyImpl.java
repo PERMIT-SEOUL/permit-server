@@ -36,7 +36,7 @@ public class NotionTimetableStageSequenceUpdateStrategyImpl implements NotionTim
 
         final int sequence = number.intValue();
         if (sequence < 0) {
-            throw new NumberFormatException();
+            throw new IndexOutOfBoundsException();
         }
         adminTimetableStageUpdater.updateTimetableStageSequence(stageEntity, sequence);
     }
