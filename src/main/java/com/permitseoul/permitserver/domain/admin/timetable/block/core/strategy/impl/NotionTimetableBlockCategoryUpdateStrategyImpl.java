@@ -1,7 +1,7 @@
 package com.permitseoul.permitserver.domain.admin.timetable.block.core.strategy.impl;
 
 import com.permitseoul.permitserver.domain.admin.timetable.block.api.dto.NotionTimetableBlockUpdateWebhookRequest;
-import com.permitseoul.permitserver.domain.admin.timetable.block.core.component.TimetableBlockUpdater;
+import com.permitseoul.permitserver.domain.admin.timetable.block.core.component.AdminTimetableBlockUpdater;
 import com.permitseoul.permitserver.domain.admin.timetable.block.core.domain.NotionTimetableBlockWebhookType;
 import com.permitseoul.permitserver.domain.admin.timetable.block.core.strategy.NotionTimetableBlockUpdateWebhookStrategy;
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.component.AdminTimetableBlockRetriever;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class NotionTimetableBlockCategoryUpdateStrategyImpl implements NotionTimetableBlockUpdateWebhookStrategy {
     private final AdminTimetableBlockRetriever adminTimetableBlockRetriever;
-    private final TimetableBlockUpdater timetableBlockUpdater;
+    private final AdminTimetableBlockUpdater adminTimetableBlockUpdater;
 
     private static final int NEW_CATEGORY_RELATION_INDEX = 0; //노션에서 카테고리 섹션은 하나만 선택 가능하므로 0번째 인덱스 사용하면 됨
 
@@ -34,6 +34,6 @@ public class NotionTimetableBlockCategoryUpdateStrategyImpl implements NotionTim
                 .get(NEW_CATEGORY_RELATION_INDEX)
                 .id();
 
-        timetableBlockUpdater.updateTimetableBlockCategoryRelationRowId(blockEntity, categoryRowId);
+        adminTimetableBlockUpdater.updateTimetableBlockCategoryRelationRowId(blockEntity, categoryRowId);
     }
 }

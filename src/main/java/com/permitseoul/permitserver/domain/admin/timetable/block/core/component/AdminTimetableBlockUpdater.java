@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 
 @Component
-public class TimetableBlockUpdater {
+public class AdminTimetableBlockUpdater {
 
     public void updateTimetableBlockTime(final TimetableBlockEntity timetableBlockEntity, final LocalDateTime startAt, final LocalDateTime endAt) {
         timetableBlockEntity.updateTime(startAt, endAt);

@@ -47,8 +47,6 @@ public record NotionTimetableBlockUpdateWebhookRequest(
     ) {
     }
 
-    // ===== 공통 property 타입들 =====
-
     public record NotionDateProperty(
             NotionDateValue date
     ) {

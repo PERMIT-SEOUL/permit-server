@@ -4,7 +4,7 @@ import com.permitseoul.permitserver.domain.admin.timetable.block.core.component.
 import com.permitseoul.permitserver.domain.admin.timetable.blockmedia.core.component.AdminTimetableBlockMediaSaver;
 import com.permitseoul.permitserver.domain.admin.timetable.category.core.component.AdminTimetableCategorySaver;
 import com.permitseoul.permitserver.domain.admin.timetable.base.core.components.AdminTimetableSaver;
-import com.permitseoul.permitserver.domain.admin.timetable.stage.core.AdminTimetableStageSaver;
+import com.permitseoul.permitserver.domain.admin.timetable.stage.core.component.AdminTimetableStageSaver;
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.domain.TimetableBlock;
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.domain.entity.TimetableBlockEntity;
 import com.permitseoul.permitserver.domain.eventtimetable.blockmedia.domain.entity.TimetableBlockMediaEntity;
