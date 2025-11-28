@@ -6,5 +6,5 @@ import com.permitseoul.permitserver.domain.admin.timetable.category.core.strateg
 public interface NotionTimetableCategoryUpdateWebhookStrategy {
     NotionTimetableCategoryWebhookType getType();
 
-    void updateNotionTimetableStageByNotionWebhook(final NotionTimetableCategoryUpdateWebhookRequest notionTimetableCategoryUpdateWebhookRequest);
+    void updateNotionTimetableCategoryByNotionWebhook(final NotionTimetableCategoryUpdateWebhookRequest notionTimetableCategoryUpdateWebhookRequest);
 }

@@ -26,7 +26,7 @@ public class NotionTimetableCategoryNameUpdateStrategyImpl implements NotionTime
     }
 
     @Override
-    public void updateNotionTimetableStageByNotionWebhook(final NotionTimetableCategoryUpdateWebhookRequest webhookRequest) {
+    public void updateNotionTimetableCategoryByNotionWebhook(final NotionTimetableCategoryUpdateWebhookRequest webhookRequest) {
         final String rowId = webhookRequest.data().id();
         final TimetableCategoryEntity categoryEntity = adminTimetableCategoryRetriever.findTimetableCategoryEntityByTimetableCategoryRowId(rowId);
 
