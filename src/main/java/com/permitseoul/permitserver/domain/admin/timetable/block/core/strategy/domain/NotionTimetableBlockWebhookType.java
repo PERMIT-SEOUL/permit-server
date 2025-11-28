@@ -1,4 +1,4 @@
-package com.permitseoul.permitserver.domain.admin.timetable.block.core.domain;
+package com.permitseoul.permitserver.domain.admin.timetable.block.core.strategy.domain;
 
 import com.permitseoul.permitserver.domain.admin.timetable.block.api.dto.NotionTimetableBlockUpdateWebhookRequest;
 

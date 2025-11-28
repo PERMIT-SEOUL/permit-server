@@ -50,4 +50,16 @@ public class TimetableCategoryEntity {
                                                  final String notionCategoryRowId) {
         return new TimetableCategoryEntity(timetableId, categoryName, categoryBackgroundColor, categoryLineColor, notionCategoryRowId);
     }
+
+    public void updateCategoryName(final String newCategoryName) {
+        this.categoryName = newCategoryName;
+    }
+
+    public void updateBackgroundColor(final String newBackgroundColor) {
+        this.categoryBackgroundColor = newBackgroundColor;
+    }
+
+    public void updateLineColor(final String newLineColor) {
+        this.categoryLineColor = newLineColor;
+    }
 }

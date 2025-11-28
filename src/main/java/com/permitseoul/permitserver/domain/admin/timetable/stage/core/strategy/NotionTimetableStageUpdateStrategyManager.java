@@ -1,6 +1,6 @@
 package com.permitseoul.permitserver.domain.admin.timetable.stage.core.strategy;
 
-import com.permitseoul.permitserver.domain.admin.timetable.stage.core.domain.NotionTimetableStageWebhookType;
+import com.permitseoul.permitserver.domain.admin.timetable.stage.core.strategy.domain.NotionTimetableStageWebhookType;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
