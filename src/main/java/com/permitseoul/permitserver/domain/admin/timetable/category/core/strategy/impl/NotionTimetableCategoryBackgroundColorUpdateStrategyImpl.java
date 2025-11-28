@@ -27,7 +27,7 @@ public class NotionTimetableCategoryBackgroundColorUpdateStrategyImpl implements
     }
 
     @Override
-    public void updateNotionTimetableStageByNotionWebhook(NotionTimetableCategoryUpdateWebhookRequest webhookRequest) {
+    public void updateNotionTimetableStageByNotionWebhook(final NotionTimetableCategoryUpdateWebhookRequest webhookRequest) {
         final String rowId = webhookRequest.data().id();
         final TimetableCategoryEntity categoryEntity = adminTimetableCategoryRetriever.findTimetableCategoryEntityByTimetableCategoryRowId(rowId);
 

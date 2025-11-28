@@ -30,12 +30,11 @@ public class NotionTimetableCategoryNameUpdateStrategyImpl implements NotionTime
         final String rowId = webhookRequest.data().id();
         final TimetableCategoryEntity categoryEntity = adminTimetableCategoryRetriever.findTimetableCategoryEntityByTimetableCategoryRowId(rowId);
 
-        final var titleList = webhookRequest.data().properties().categoryName().title();
-        if (titleList == null || titleList.isEmpty()) {
+        final String newCategoryName = webhookRequest.data().properties().categoryName().title().get(NEW_CATEGORY_NAME_INDEX).plainText();
+        if (newCategoryName == null || newCategoryName.isEmpty()) {
             throw new NotFoundNotionResponseException();
         }
 
-        final String newCategoryName = titleList.get(NEW_CATEGORY_NAME_INDEX).plainText();
         adminTimetableCategoryUpdater.updateTimetableCategoryName(categoryEntity, newCategoryName);
     }
 }

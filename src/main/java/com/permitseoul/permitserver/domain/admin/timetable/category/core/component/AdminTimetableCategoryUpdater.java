@@ -12,4 +12,8 @@ public class AdminTimetableCategoryUpdater {
     public void updateTimetableBackgroundColor(final TimetableCategoryEntity timetableCategoryEntity, final String newBackgroundColor) {
         timetableCategoryEntity.updateBackgroundColor(newBackgroundColor);
     }
+
+    public void updateTimetableLineColor(final TimetableCategoryEntity timetableCategoryEntity, final String newLineColor) {
+        timetableCategoryEntity.updateLineColor(newLineColor);
+    }
 }
