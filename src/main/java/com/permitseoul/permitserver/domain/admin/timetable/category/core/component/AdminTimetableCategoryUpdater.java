@@ -8,4 +8,8 @@ public class AdminTimetableCategoryUpdater {
     public void updateTimetableCategoryName(final TimetableCategoryEntity timetableCategoryEntity, final String newCategoryName) {
         timetableCategoryEntity.updateCategoryName(newCategoryName);
     }
+
+    public void updateTimetableBackgroundColor(final TimetableCategoryEntity timetableCategoryEntity, final String newBackgroundColor) {
+        timetableCategoryEntity.updateBackgroundColor(newBackgroundColor);
+    }
 }
