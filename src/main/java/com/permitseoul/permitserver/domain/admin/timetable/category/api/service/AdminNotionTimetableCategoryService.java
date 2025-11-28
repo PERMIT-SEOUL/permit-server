@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.domain.admin.timetable.category.api.service;
 
+import com.permitseoul.permitserver.domain.admin.timetable.base.api.exception.AdminNotionException;
 import com.permitseoul.permitserver.domain.admin.timetable.category.api.dto.NotionTimetableCategoryUpdateWebhookRequest;
 import com.permitseoul.permitserver.domain.admin.timetable.category.core.strategy.NotionTimetableCategoryUpdateStrategyManager;
 import com.permitseoul.permitserver.domain.admin.timetable.category.core.strategy.NotionTimetableCategoryUpdateWebhookStrategy;
@@ -22,24 +23,27 @@ public class AdminNotionTimetableCategoryService {
         try {
             final NotionTimetableCategoryWebhookType webhookType = NotionTimetableCategoryWebhookType.from(notionTimetableCategoryUpdateWebhookRequest.data().properties());
             if (webhookType == NotionTimetableCategoryWebhookType.UNKNOWN) {
-                log.warn("알 수 없는 NotionCategoryWebhookType입니다. request={}", notionTimetableCategoryUpdateWebhookRequest);
-                return;
+                log.error("알 수 없는 NotionCategoryWebhookType입니다. request={}", notionTimetableCategoryUpdateWebhookRequest);
+                throw new AdminNotionException();
             }
 
             final NotionTimetableCategoryUpdateWebhookStrategy strategy = notionTimetableCategoryUpdateStrategyManager.getStrategy(webhookType);
             if (strategy == null) {
                 log.error("NotionCategoryUpdateWebhookStrategy 찾을 수 없습니다. type={}, request={}", webhookType, notionTimetableCategoryUpdateWebhookRequest);
-                return;
+                throw new AdminNotionException();
             }
 
             strategy.updateNotionTimetableCategoryByNotionWebhook(notionTimetableCategoryUpdateWebhookRequest);
 
-        } catch (IndexOutOfBoundsException | NullPointerException | NotFoundNotionResponseException e) {
+        } catch (NotFoundNotionResponseException e) {
             log.error("웹훅 데이터에 필수 필드가 누락되었습니다. request={}, ", notionTimetableCategoryUpdateWebhookRequest, e);
+            throw new AdminNotionException();
         } catch (TimetableCategoryNotfoundException e) {
             log.error("timetableCategory를 찾을 수 없습니다.. request={}", notionTimetableCategoryUpdateWebhookRequest, e);
+            throw new AdminNotionException();
         } catch (Exception e) {
             log.error("카테고리 웹훅 처리 중 알 수 없는 예외 발생. request={}", notionTimetableCategoryUpdateWebhookRequest, e);
+            throw new AdminNotionException();
         }
     }
 }

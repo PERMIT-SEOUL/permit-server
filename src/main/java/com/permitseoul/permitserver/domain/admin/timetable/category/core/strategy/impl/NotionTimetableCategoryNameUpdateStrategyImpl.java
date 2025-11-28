@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -30,8 +31,13 @@ public class NotionTimetableCategoryNameUpdateStrategyImpl implements NotionTime
         final String rowId = webhookRequest.data().id();
         final TimetableCategoryEntity categoryEntity = adminTimetableCategoryRetriever.findTimetableCategoryEntityByTimetableCategoryRowId(rowId);
 
-        final String newCategoryName = webhookRequest.data().properties().categoryName().title().get(NEW_CATEGORY_NAME_INDEX).plainText();
-        if (newCategoryName == null || newCategoryName.isEmpty()) {
+        final NotionTimetableCategoryUpdateWebhookRequest.NotionTitleProperty categoryNameProperty = webhookRequest.data().properties().categoryName();
+        if (categoryNameProperty == null || categoryNameProperty.title() == null || categoryNameProperty.title().isEmpty()) {
+            throw new NotFoundNotionResponseException();
+        }
+
+        final String newCategoryName = categoryNameProperty.title().get(NEW_CATEGORY_NAME_INDEX).plainText();
+        if (newCategoryName == null || newCategoryName.isBlank()) {
             throw new NotFoundNotionResponseException();
         }
 

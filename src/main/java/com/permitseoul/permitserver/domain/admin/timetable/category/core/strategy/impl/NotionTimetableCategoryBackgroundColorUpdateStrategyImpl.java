@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -31,8 +33,12 @@ public class NotionTimetableCategoryBackgroundColorUpdateStrategyImpl implements
         final String rowId = webhookRequest.data().id();
         final TimetableCategoryEntity categoryEntity = adminTimetableCategoryRetriever.findTimetableCategoryEntityByTimetableCategoryRowId(rowId);
 
-        final String newBackgroundColor = webhookRequest.data().properties().backgroundColor().richText().get(NEW_BACKGROUND_COLOR_INDEX).plainText();
-        if (newBackgroundColor == null || newBackgroundColor.isEmpty()) {
+        final List<NotionTimetableCategoryUpdateWebhookRequest.NotionRichTextValue> richTextList = webhookRequest.data().properties().backgroundColor().richText();
+        if (richTextList == null || richTextList.isEmpty()) {
+            throw new NotFoundNotionResponseException();
+        }
+        final String newBackgroundColor = richTextList.get(NEW_BACKGROUND_COLOR_INDEX).plainText();
+        if (newBackgroundColor == null || newBackgroundColor.isBlank()) {
             throw new NotFoundNotionResponseException();
         }
 

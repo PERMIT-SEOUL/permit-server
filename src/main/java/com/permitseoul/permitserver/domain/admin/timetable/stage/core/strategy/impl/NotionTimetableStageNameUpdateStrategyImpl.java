@@ -32,11 +32,15 @@ public class NotionTimetableStageNameUpdateStrategyImpl implements NotionTimetab
         final String rowId = request.data().id();
         final TimetableStageEntity stageEntity = adminTimetableStageRetriever.findTimetableStageByTimetableStageRowId(rowId);
 
-        final List<NotionTimetableStageUpdateWebhookRequest.NotionTitleValue> titleList = request.data().properties().stageName().title();
-        if (titleList == null || titleList.isEmpty() || titleList.get(NEW_STAGE_NAME_INDEX).plainText() == null) {
+        final NotionTimetableStageUpdateWebhookRequest.NotionTitleProperty stageNameProperty = request.data().properties().stageName();
+        if (stageNameProperty == null || stageNameProperty.title() == null || stageNameProperty.title().isEmpty()) {
             throw new NotFoundNotionResponseException();
         }
-        final String newStageName = titleList.get(NEW_STAGE_NAME_INDEX).plainText();
+
+        final String newStageName = stageNameProperty.title().get(NEW_STAGE_NAME_INDEX).plainText();
+        if (newStageName == null || newStageName.isBlank()) {
+            throw new NotFoundNotionResponseException();
+        }
         adminTimetableStageUpdater.updateTimetableStageName(stageEntity, newStageName);
     }
 }

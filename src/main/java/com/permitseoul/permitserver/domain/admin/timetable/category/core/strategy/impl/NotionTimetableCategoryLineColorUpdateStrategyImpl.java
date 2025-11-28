@@ -30,8 +30,14 @@ public class NotionTimetableCategoryLineColorUpdateStrategyImpl implements Notio
         final String rowId = webhookRequest.data().id();
         final TimetableCategoryEntity categoryEntity = adminTimetableCategoryRetriever.findTimetableCategoryEntityByTimetableCategoryRowId(rowId);
 
-        final String newLineColor = webhookRequest.data().properties().lineColor().richText().get(NEW_LINE_COLOR_INDEX).plainText();
-        if (newLineColor == null || newLineColor.isEmpty()) {
+        final NotionTimetableCategoryUpdateWebhookRequest.NotionRichTextProperty lineColorProperty = webhookRequest.data().properties().lineColor();
+        if (lineColorProperty == null || lineColorProperty.richText() == null || lineColorProperty.richText().isEmpty()) {
+            throw new NotFoundNotionResponseException();
+        }
+
+        final var richTextList = lineColorProperty.richText();
+        final String newLineColor = richTextList.get(NEW_LINE_COLOR_INDEX).plainText();
+        if (newLineColor == null || newLineColor.isBlank()) {
             throw new NotFoundNotionResponseException();
         }
 
