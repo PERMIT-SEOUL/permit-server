@@ -5,6 +5,7 @@ import com.permitseoul.permitserver.domain.admin.timetable.category.core.strateg
 import com.permitseoul.permitserver.domain.admin.timetable.category.core.strategy.NotionTimetableCategoryUpdateWebhookStrategy;
 import com.permitseoul.permitserver.domain.admin.timetable.category.core.strategy.domain.NotionTimetableCategoryWebhookType;
 import com.permitseoul.permitserver.domain.eventtimetable.category.core.exception.TimetableCategoryNotfoundException;
+import com.permitseoul.permitserver.global.external.notion.exception.NotFoundNotionResponseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,8 +32,8 @@ public class AdminNotionTimetableCategoryService {
 
             strategy.updateNotionTimetableStageByNotionWebhook(notionTimetableCategoryUpdateWebhookRequest);
 
-        } catch (NullPointerException e) {
-            log.error("웹훅 데이터에 필수 필드가 누락되었습니다. request={}", notionTimetableCategoryUpdateWebhookRequest);
+        } catch (IndexOutOfBoundsException | NullPointerException | NotFoundNotionResponseException e) {
+            log.error("웹훅 데이터에 필수 필드가 누락되었습니다. request={}, ", notionTimetableCategoryUpdateWebhookRequest, e);
         } catch (TimetableCategoryNotfoundException e) {
             log.error("timetableCategory를 찾을 수 없습니다.. request={}", notionTimetableCategoryUpdateWebhookRequest);
         } catch (Exception e) {

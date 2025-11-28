@@ -6,6 +6,7 @@ import com.permitseoul.permitserver.domain.admin.timetable.category.core.compone
 import com.permitseoul.permitserver.domain.admin.timetable.category.core.strategy.NotionTimetableCategoryUpdateWebhookStrategy;
 import com.permitseoul.permitserver.domain.admin.timetable.category.core.strategy.domain.NotionTimetableCategoryWebhookType;
 import com.permitseoul.permitserver.domain.eventtimetable.category.core.domain.entity.TimetableCategoryEntity;
+import com.permitseoul.permitserver.global.external.notion.exception.NotFoundNotionResponseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ public class NotionTimetableCategoryNameUpdateStrategyImpl implements NotionTime
     private final AdminTimetableCategoryRetriever adminTimetableCategoryRetriever;
     private final AdminTimetableCategoryUpdater adminTimetableCategoryUpdater;
 
+    private static final int NEW_CATEGORY_NAME_INDEX = 0;
 
     @Override
     public NotionTimetableCategoryWebhookType getType() {
@@ -30,11 +32,10 @@ public class NotionTimetableCategoryNameUpdateStrategyImpl implements NotionTime
 
         final var titleList = webhookRequest.data().properties().categoryName().title();
         if (titleList == null || titleList.isEmpty()) {
-            log.warn("Category name title이 비어있습니다.. request={}", webhookRequest);
-            return;
+            throw new NotFoundNotionResponseException();
         }
 
-        final String newCategoryName = titleList.get(0).plainText();
+        final String newCategoryName = titleList.get(NEW_CATEGORY_NAME_INDEX).plainText();
         adminTimetableCategoryUpdater.updateTimetableCategoryName(categoryEntity, newCategoryName);
     }
 }

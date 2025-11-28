@@ -40,6 +40,8 @@ public class AdminNotionTimetableStageService {
             throw new AdminApiException(ErrorCode.NOT_FOUND_TIMETABLE_STAGE);
         } catch (IndexOutOfBoundsException | NullPointerException | NotFoundNotionResponseException e) {
             log.error("웹훅 데이터에 필수 필드가 누락되었습니다. request={}, ", notionTimetableStageUpdateWebhookRequest, e);
+        } catch (Exception e) {
+            log.error("카테고리 웹훅 처리 중 알 수 없는 예외 발생. request={}", notionTimetableStageUpdateWebhookRequest);
         }
     }
 }
