@@ -1,15 +1,14 @@
-<configuration>
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
 
     <!-- INFO/WARN 로깅 파일(error level은 제외) -->
     <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>/home/ubuntu/logs/PERMIT-INFO-LOG.log</file>
-
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>ERROR</level>
             <onMatch>DENY</onMatch>
             <onMismatch>NEUTRAL</onMismatch>
         </filter>
-
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
             <providers>
                 <timestamp>
@@ -29,7 +28,6 @@
                 <message/>
             </providers>
         </encoder>
-
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>/home/ubuntu/logs/PERMIT-INFO-LOG-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
             <maxFileSize>50MB</maxFileSize>
@@ -42,7 +40,6 @@
     <!-- ERROR 로깅 파일(error level만 로깅) -->
     <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>/home/ubuntu/logs/PERMIT-ERROR-LOG.log</file>
-
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
             <providers>
                 <timestamp>
@@ -69,13 +66,11 @@
                 </stackTrace>
             </providers>
         </encoder>
-
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>ERROR</level>
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
         </filter>
-
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>/home/ubuntu/logs/PERMIT-ERROR-LOG-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
             <maxFileSize>20MB</maxFileSize>
@@ -95,12 +90,9 @@
                 <value>application/json</value>
             </header>
         </headers>
-
-        <!-- ERROR 이상만 전송 -->
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>ERROR</level>
         </filter>
-
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>
                 {
@@ -108,13 +100,10 @@
                 }
             </pattern>
         </encoder>
-
         <connectTimeout>3000</connectTimeout>
         <readTimeout>3000</readTimeout>
     </appender>
 
-    <!-- INFO는 큐 다차면 드롭(지연 방지) -->
-    <!-- ERROR는 드롭 없이 블로킹 허용(유실 방지) -->
     <appender name="ASYNC_INFO" class="ch.qos.logback.classic.AsyncAppender">
         <appender-ref ref="INFO_FILE"/>
         <queueSize>5000</queueSize>
@@ -141,4 +130,4 @@
         <appender-ref ref="ASYNC_ERROR"/>
         <appender-ref ref="ASYNC_DISCORD_ERROR"/>
     </root>
-</configuration>
+</included>
