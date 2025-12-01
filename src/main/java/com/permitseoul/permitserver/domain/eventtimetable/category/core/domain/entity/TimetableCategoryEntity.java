@@ -19,16 +19,16 @@ public class TimetableCategoryEntity {
     @Column(name = "timetable_id", nullable = false)
     private long timetableId;
 
-    @Column(name = "category_name", nullable = false)
+    @Column(name = "category_name")
     private String categoryName;
 
-    @Column(name = "category_background_color", nullable = false)
+    @Column(name = "category_background_color")
     private String categoryBackgroundColor;
 
-    @Column(name = "category_line_color", nullable = false)
+    @Column(name = "category_line_color")
     private String categoryLineColor;
 
-    @Column(name = "notion_category_row_id", nullable = false)
+    @Column(name = "notion_category_row_id")
     private String notionCategoryRowId;
 
     private TimetableCategoryEntity(long timetableId,

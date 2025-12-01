@@ -19,13 +19,13 @@ public class TimetableStageEntity {
     @Column(name = "event_timetable_id", nullable = false)
     private long timetableId;
 
-    @Column(name = "stage_name", nullable = false)
+    @Column(name = "stage_name")
     private String stageName;
 
-    @Column(name = "sequence", nullable = false)
+    @Column(name = "sequence")
     private int sequence;
 
-    @Column(name = "notion_stage_row_id", nullable = false)
+    @Column(name = "notion_stage_row_id")
     private String notionStageRowId;
 
     private TimetableStageEntity(long timetableId, String stageName, int sequence, String notionStageRowId) {
