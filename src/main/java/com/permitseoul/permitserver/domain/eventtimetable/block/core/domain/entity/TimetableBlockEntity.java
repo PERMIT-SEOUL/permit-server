@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.domain.eventtimetable.block.core.domain.entity;
 
+import com.permitseoul.permitserver.domain.eventtimetable.block.core.domain.TimetableBlock;
 import com.permitseoul.permitserver.global.exception.LocalDateTimeException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -89,7 +90,25 @@ public class TimetableBlockEntity {
         return new TimetableBlockEntity(timetableId, notionTimetableCategoryRelationRowId, notionTimetableStageRelationRowId, startAt, endAt, blockName, artist, information, blockInfoRedirectUrl, notionTimetableBlockRowId);
     }
 
+    public static TimetableBlockEntity createEmptyRow(final long timetableId, final String notionTimetableBlockRowId) {
+        return new TimetableBlockEntity(
+                timetableId,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                notionTimetableBlockRowId
+        );
+    }
+
     private void validateDateTime(final LocalDateTime startAt, final LocalDateTime endAt) {
+        if(startAt == null || endAt == null) {
+            return;
+        }
         if (startAt.isAfter(endAt)) {
             throw new LocalDateTimeException();
         }

@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 
 public final class NotionResponseMapper {
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+    private static final int FIRST_INDEX = 0;
 
     public static List<TimetableStageEntity> mapToTimetableStageEntities(final long timetableId,
                                                                          final NotionStageDatasourceResponse notionStageDatasource) {
@@ -95,10 +95,10 @@ public final class NotionResponseMapper {
 
                     final String artist = props.artistOrActivity().title().isEmpty()
                             ? ""
-                            : props.artistOrActivity().title().get(0).plain_text();
+                            : props.artistOrActivity().title().get(FIRST_INDEX).plain_text();
                     final String blockName = artist; // (현재 정해진 바로는)blockName == artistOrActivity
                     final String information = props.details() != null && props.details().richText() != null && !props.details().richText().isEmpty()
-                            ? props.details().richText().get(0).plain_text()
+                            ? props.details().richText().get(FIRST_INDEX).plain_text()
                             : "";
                     final String redirectUrl = props.directUrl() != null ? props.directUrl().url() : null;
 
@@ -112,8 +112,8 @@ public final class NotionResponseMapper {
                         throw new PermitIllegalStateException();
                     }
 
-                    final String categoryNotionId = props.category().relation().get(0).id();
-                    final String stageNotionId = props.stage().relation().get(0).id();
+                    final String categoryNotionId = props.category().relation().get(FIRST_INDEX).id();
+                    final String stageNotionId = props.stage().relation().get(FIRST_INDEX).id();
 
                     return TimetableBlockEntity.create(
                             timetableId,
