@@ -1,6 +1,5 @@
 package com.permitseoul.permitserver.domain.eventtimetable.block.core.domain.entity;
 
-import com.permitseoul.permitserver.domain.eventtimetable.block.core.domain.TimetableBlock;
 import com.permitseoul.permitserver.global.exception.LocalDateTimeException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

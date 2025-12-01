@@ -23,7 +23,7 @@ public class AdminNotionTimetableCategoryController {
     // Notion 타임테이블 category 데이터베이스 Update Webhook API
     @PostMapping("/timetables/categories/update")
     public ResponseEntity<BaseResponse<?>> updateNotionTimetableCategoryWebhook(
-            @RequestBody @Valid final NotionTimetableCategoryUpdateWebhookRequest notionTimetableCategoryUpdateWebhookRequest
+            @RequestBody final NotionTimetableCategoryUpdateWebhookRequest notionTimetableCategoryUpdateWebhookRequest
     ) {
         adminNotionTimetableCategoryService.updateNotionTimetableCategory(notionTimetableCategoryUpdateWebhookRequest);
         return ApiResponseUtil.success(SuccessCode.OK);
@@ -32,7 +32,7 @@ public class AdminNotionTimetableCategoryController {
     //Notion 타임테이블 카테고리 데이터베이스 페이지 추가 Webhook API
     @PostMapping("/timetables/categories/new")
     public ResponseEntity<BaseResponse<?>> addNotionTimetableCategoryRow(
-            @RequestBody @Valid NotionTimetableCreatedNewRowWebhookRequest webhookRequest
+            @RequestBody NotionTimetableCreatedNewRowWebhookRequest webhookRequest
     ) {
         adminNotionTimetableCategoryService.saveNewTimetableCategoryRowWebhookRequest(webhookRequest.data().parent().dataSourceId(), webhookRequest.data().id());
         return ApiResponseUtil.success(SuccessCode.OK);

@@ -23,7 +23,7 @@ public class AdminNotionTimetableStageController {
     // Notion 타임테이블 stage 데이터베이스 Update Webhook API
     @PostMapping("/timetables/stages/update")
     public ResponseEntity<BaseResponse<?>> updateNotionTimetableStageWebhook(
-            @RequestBody @Valid final NotionTimetableStageUpdateWebhookRequest notionTimetableStageUpdateWebhookRequest
+            @RequestBody final NotionTimetableStageUpdateWebhookRequest notionTimetableStageUpdateWebhookRequest
     ) {
         adminNotionTimetableStageService.updateNotionTimetableStage(notionTimetableStageUpdateWebhookRequest);
         return ApiResponseUtil.success(SuccessCode.OK);
@@ -32,7 +32,7 @@ public class AdminNotionTimetableStageController {
     //Notion 타임테이블 스테이지 데이터베이스 페이지 추가 Webhook API
     @PostMapping("/timetables/stages/new")
     public ResponseEntity<BaseResponse<?>> addNotionTimetableStageRow(
-            @RequestBody @Valid NotionTimetableCreatedNewRowWebhookRequest webhookRequest
+            @RequestBody NotionTimetableCreatedNewRowWebhookRequest webhookRequest
     ) {
         adminNotionTimetableStageService.saveNewTimetableStageRowWebhookRequest(webhookRequest.data().parent().dataSourceId(), webhookRequest.data().id());
         return ApiResponseUtil.success(SuccessCode.OK);

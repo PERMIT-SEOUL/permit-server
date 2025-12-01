@@ -20,7 +20,7 @@ public class AdminNotionTimetableBlockController {
     // Notion 타임테이블 블럭 데이터베이스 필드 Update Webhook API
     @PostMapping("/timetables/blocks/update")
     public ResponseEntity<BaseResponse<?>> updateNotionTimetableBlockWebhook(
-            @RequestBody @Valid NotionTimetableBlockUpdateWebhookRequest webhookRequest
+            @RequestBody NotionTimetableBlockUpdateWebhookRequest webhookRequest
     ) {
         adminNotionTimetableBlockService.updateNotionTimetableBlock(webhookRequest);
         return ApiResponseUtil.success(SuccessCode.OK);
@@ -29,7 +29,7 @@ public class AdminNotionTimetableBlockController {
     //Notion 타임테이블 블럭 데이터베이스 페이지 추가 Webhook API
     @PostMapping("/timetables/blocks/new")
     public ResponseEntity<BaseResponse<?>> addNotionTimetableBlockRow(
-            @RequestBody @Valid NotionTimetableCreatedNewRowWebhookRequest webhookRequest
+            @RequestBody NotionTimetableCreatedNewRowWebhookRequest webhookRequest
     ) {
         adminNotionTimetableBlockService.saveNewTimetableBlockRowWebhookRequest(webhookRequest.data().parent().dataSourceId(), webhookRequest.data().id());
         return ApiResponseUtil.success(SuccessCode.OK);
