@@ -9,23 +9,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(
-        name = "event_timetable",
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "uk_event_timetable_event_timetable_ds",
-                        columnNames = {"event_id", "notion_timetable_datasource_id"}
-                ),
-                @UniqueConstraint(
-                        name = "uk_event_timetable_event_stage_ds",
-                        columnNames = {"event_id", "notion_stage_datasource_id"}
-                ),
-                @UniqueConstraint(
-                        name = "uk_event_timetable_event_category_ds",
-                        columnNames = {"event_id", "notion_category_datasource_id"}
-                )
-        }
-)
+@Table(name = "event_timetable")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TimetableEntity {
