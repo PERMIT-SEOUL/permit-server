@@ -27,4 +27,11 @@ public class AdminTimetableRetriever {
     public Timetable findTimetableByTimetableBlockDataSourceId(final String notionTimetableBlockDataSourceId) {
         return Timetable.fromEntity(timetableRepository.findByNotionTimetableDatasourceId(notionTimetableBlockDataSourceId).orElseThrow(TimetableNotFoundException::new)) ;
     }
+
+    @Transactional(readOnly = true)
+    public Timetable findTimetableByTimetableCategoryDataSourceId(final String notionTimetableCategoryDataSourceId) {
+        return Timetable.fromEntity(timetableRepository.findByNotionCategoryDatasourceId(notionTimetableCategoryDataSourceId).orElseThrow(TimetableNotFoundException::new)) ;
+    }
+
+
 }

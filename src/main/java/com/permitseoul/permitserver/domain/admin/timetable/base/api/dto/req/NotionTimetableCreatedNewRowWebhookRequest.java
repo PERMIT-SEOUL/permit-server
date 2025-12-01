@@ -1,9 +1,9 @@
-package com.permitseoul.permitserver.domain.admin.timetable.block.api.dto;
+package com.permitseoul.permitserver.domain.admin.timetable.base.api.dto.req;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record NotionTimetableBlockCreatedWebhookRequest(
+public record NotionTimetableCreatedNewRowWebhookRequest(
         WebhookData data
 ) {
 

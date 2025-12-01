@@ -51,6 +51,11 @@ public class TimetableCategoryEntity {
         return new TimetableCategoryEntity(timetableId, categoryName, categoryBackgroundColor, categoryLineColor, notionCategoryRowId);
     }
 
+    public static TimetableCategoryEntity createEmptyRow(final long timetableId, final String notionCategoryRowId) {
+        return new TimetableCategoryEntity(timetableId, null, null, null, notionCategoryRowId);
+    }
+
+
     public void updateCategoryName(final String newCategoryName) {
         this.categoryName = newCategoryName;
     }

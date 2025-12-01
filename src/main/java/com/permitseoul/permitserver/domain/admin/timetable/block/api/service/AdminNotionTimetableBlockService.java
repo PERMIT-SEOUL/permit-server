@@ -3,7 +3,7 @@ package com.permitseoul.permitserver.domain.admin.timetable.block.api.service;
 import com.permitseoul.permitserver.domain.admin.base.api.exception.AdminApiException;
 import com.permitseoul.permitserver.domain.admin.timetable.base.api.exception.AdminNotionException;
 import com.permitseoul.permitserver.domain.admin.timetable.base.core.components.AdminTimetableRetriever;
-import com.permitseoul.permitserver.domain.admin.timetable.block.api.dto.NotionTimetableBlockCreatedWebhookRequest;
+import com.permitseoul.permitserver.domain.admin.timetable.base.api.dto.req.NotionTimetableCreatedNewRowWebhookRequest;
 import com.permitseoul.permitserver.domain.admin.timetable.block.api.dto.NotionTimetableBlockUpdateWebhookRequest;
 import com.permitseoul.permitserver.domain.admin.timetable.block.core.component.AdminTimetableBlockSaver;
 import com.permitseoul.permitserver.domain.admin.timetable.block.core.strategy.domain.NotionTimetableBlockWebhookType;
@@ -58,16 +58,13 @@ public class AdminNotionTimetableBlockService {
     }
 
     @Transactional
-    public void saveNewTimetableBlockRowWebhookRequest(final NotionTimetableBlockCreatedWebhookRequest webhookRequest) {
+    public void saveNewTimetableBlockRowWebhookRequest(final String notionTimetableBlockDatasource, final String notionTimetableBlockRowId) {
         try {
-            final String notionTimetableBlockDatasource = webhookRequest.data().parent().dataSourceId();
-            final String notionTimetableBlockRowId = webhookRequest.data().id();
             final Timetable timetable = adminTimetableRetriever.findTimetableByTimetableBlockDataSourceId(notionTimetableBlockDatasource);
             adminTImetableBlockSaver.saveTimetableBlock(timetable.getTimetableId(), notionTimetableBlockRowId);
         } catch (TimetableNotFoundException e){
-            log.error("노션 타임테이블을 찾을 수 없습니다. ");
+            log.error("노션 타임테이블을 찾을 수 없습니다. request = {}", notionTimetableBlockDatasource, e);
             throw new AdminApiException(ErrorCode.NOT_FOUND_TIMETABLE);
         }
-
     }
 }
