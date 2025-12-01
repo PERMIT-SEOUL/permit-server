@@ -1,12 +1,18 @@
 package com.permitseoul.permitserver.domain.admin.timetable.block.api.service;
 
+import com.permitseoul.permitserver.domain.admin.base.api.exception.AdminApiException;
 import com.permitseoul.permitserver.domain.admin.timetable.base.api.exception.AdminNotionException;
+import com.permitseoul.permitserver.domain.admin.timetable.base.core.components.AdminTimetableRetriever;
 import com.permitseoul.permitserver.domain.admin.timetable.block.api.dto.NotionTimetableBlockUpdateWebhookRequest;
+import com.permitseoul.permitserver.domain.admin.timetable.block.core.component.AdminTimetableBlockSaver;
 import com.permitseoul.permitserver.domain.admin.timetable.block.core.strategy.domain.NotionTimetableBlockWebhookType;
 import com.permitseoul.permitserver.domain.admin.timetable.block.core.strategy.NotionTimetableBlockUpdateStrategyManager;
 import com.permitseoul.permitserver.domain.admin.timetable.block.core.strategy.NotionTimetableBlockUpdateWebhookStrategy;
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.exception.TimetableBlockNotfoundException;
+import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.domain.Timetable;
+import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.exception.TimetableNotFoundException;
 import com.permitseoul.permitserver.global.exception.LocalDateTimeException;
+import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class AdminNotionTimetableBlockService {
     private final NotionTimetableBlockUpdateStrategyManager notionTimetableBlockUpdateStrategyManager;
+    private final AdminTimetableRetriever adminTimetableRetriever;
+    private final AdminTimetableBlockSaver adminTimetableBlockSaver;
 
     @Transactional
     public void updateNotionTimetableBlock(final NotionTimetableBlockUpdateWebhookRequest webhookRequest) {
@@ -45,6 +53,17 @@ public class AdminNotionTimetableBlockService {
         } catch (Exception e) {
             log.error("타임테이블 블럭 웹훅 처리 중 알 수 없는 예외 발생. request={}", webhookRequest, e);
             throw new AdminNotionException();
+        }
+    }
+
+    @Transactional
+    public void saveNewTimetableBlockRowWebhookRequest(final String notionTimetableBlockDatasource, final String notionTimetableBlockRowId) {
+        try {
+            final Timetable timetable = adminTimetableRetriever.findTimetableByTimetableBlockDataSourceId(notionTimetableBlockDatasource);
+            adminTimetableBlockSaver.saveTimetableBlock(timetable.getTimetableId(), notionTimetableBlockRowId);
+        } catch (TimetableNotFoundException e){
+            log.error("노션 타임테이블을 찾을 수 없습니다. request = {}", notionTimetableBlockDatasource, e);
+            throw new AdminApiException(ErrorCode.NOT_FOUND_TIMETABLE);
         }
     }
 }

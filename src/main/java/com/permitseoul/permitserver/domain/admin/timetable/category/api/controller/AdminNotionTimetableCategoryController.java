@@ -1,8 +1,8 @@
 package com.permitseoul.permitserver.domain.admin.timetable.category.api.controller;
 
+import com.permitseoul.permitserver.domain.admin.timetable.base.api.dto.req.NotionTimetableCreatedNewRowWebhookRequest;
 import com.permitseoul.permitserver.domain.admin.timetable.category.api.dto.NotionTimetableCategoryUpdateWebhookRequest;
 import com.permitseoul.permitserver.domain.admin.timetable.category.api.service.AdminNotionTimetableCategoryService;
-import com.permitseoul.permitserver.domain.admin.timetable.stage.api.dto.NotionTimetableStageUpdateWebhookRequest;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.SuccessCode;
@@ -21,11 +21,20 @@ public class AdminNotionTimetableCategoryController {
     private final AdminNotionTimetableCategoryService adminNotionTimetableCategoryService;
 
     // Notion 타임테이블 category 데이터베이스 Update Webhook API
-    @PostMapping("/timetables/categories")
+    @PostMapping("/timetables/categories/update")
     public ResponseEntity<BaseResponse<?>> updateNotionTimetableCategoryWebhook(
-            @RequestBody @Valid final NotionTimetableCategoryUpdateWebhookRequest notionTimetableCategoryUpdateWebhookRequest
+            @RequestBody final NotionTimetableCategoryUpdateWebhookRequest notionTimetableCategoryUpdateWebhookRequest
     ) {
         adminNotionTimetableCategoryService.updateNotionTimetableCategory(notionTimetableCategoryUpdateWebhookRequest);
+        return ApiResponseUtil.success(SuccessCode.OK);
+    }
+
+    //Notion 타임테이블 카테고리 데이터베이스 페이지 추가 Webhook API
+    @PostMapping("/timetables/categories/new")
+    public ResponseEntity<BaseResponse<?>> addNotionTimetableCategoryRow(
+            @RequestBody NotionTimetableCreatedNewRowWebhookRequest webhookRequest
+    ) {
+        adminNotionTimetableCategoryService.saveNewTimetableCategoryRowWebhookRequest(webhookRequest.data().parent().dataSourceId(), webhookRequest.data().id());
         return ApiResponseUtil.success(SuccessCode.OK);
     }
 }

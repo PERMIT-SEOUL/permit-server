@@ -22,31 +22,31 @@ public class TimetableBlockEntity {
     @Column(name = "timetable_id", nullable = false)
     private long timetableId;
 
-    @Column(name = "notion_timetable_category_relation_row_id", nullable = false)
+    @Column(name = "notion_timetable_category_relation_row_id")
     private String notionTimetableCategoryRelationRowId;
 
-    @Column(name = "notion_timetable_stage_relation_row_id", nullable = false)
+    @Column(name = "notion_timetable_stage_relation_row_id")
     private String notionTimetableStageRelationRowId;
 
-    @Column(name = "start_at", nullable = false)
+    @Column(name = "start_at")
     private LocalDateTime startAt;
 
-    @Column(name = "end_at", nullable = false)
+    @Column(name = "end_at")
     private LocalDateTime endAt;
 
-    @Column(name = "block_name", nullable = false)
+    @Column(name = "block_name")
     private String blockName;
 
     @Column(name = "artist")
     private String artist;
 
-    @Column(name = "information", nullable = false)
+    @Column(name = "information")
     private String information;
 
     @Column(name = "block_info_redirect_url")
     private String blockInfoRedirectUrl;
 
-    @Column(name = "notion_timetable_block_row_id", nullable = false)
+    @Column(name = "notion_timetable_block_row_id")
     private String notionTimetableBlockRowId;
 
 
@@ -89,7 +89,25 @@ public class TimetableBlockEntity {
         return new TimetableBlockEntity(timetableId, notionTimetableCategoryRelationRowId, notionTimetableStageRelationRowId, startAt, endAt, blockName, artist, information, blockInfoRedirectUrl, notionTimetableBlockRowId);
     }
 
+    public static TimetableBlockEntity createEmptyRow(final long timetableId, final String notionTimetableBlockRowId) {
+        return new TimetableBlockEntity(
+                timetableId,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                notionTimetableBlockRowId
+        );
+    }
+
     private void validateDateTime(final LocalDateTime startAt, final LocalDateTime endAt) {
+        if(startAt == null || endAt == null) {
+            return;
+        }
         if (startAt.isAfter(endAt)) {
             throw new LocalDateTimeException();
         }

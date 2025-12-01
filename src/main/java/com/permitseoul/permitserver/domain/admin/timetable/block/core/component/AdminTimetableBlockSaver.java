@@ -18,4 +18,8 @@ public class AdminTimetableBlockSaver {
                 .map(TimetableBlock::fromEntity)
                 .toList();
     }
+
+    public void saveTimetableBlock(final long timetableId, final String notionTimetableBlockRowId) {
+        timetableBlockRepository.save(TimetableBlockEntity.createEmptyRow(timetableId, notionTimetableBlockRowId));
+    }
 }

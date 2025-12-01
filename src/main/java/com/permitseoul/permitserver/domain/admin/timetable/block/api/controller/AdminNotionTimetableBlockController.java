@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.domain.admin.timetable.block.api.controller;
 
+import com.permitseoul.permitserver.domain.admin.timetable.base.api.dto.req.NotionTimetableCreatedNewRowWebhookRequest;
 import com.permitseoul.permitserver.domain.admin.timetable.block.api.dto.NotionTimetableBlockUpdateWebhookRequest;
 import com.permitseoul.permitserver.domain.admin.timetable.block.api.service.AdminNotionTimetableBlockService;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
@@ -16,12 +17,22 @@ import org.springframework.web.bind.annotation.*;
 public class AdminNotionTimetableBlockController {
     private final AdminNotionTimetableBlockService adminNotionTimetableBlockService;
 
-    // Notion 타임테이블 블럭 데이터베이스 Update Webhook API
-    @PostMapping("/timetables/blocks")
+    // Notion 타임테이블 블럭 데이터베이스 필드 Update Webhook API
+    @PostMapping("/timetables/blocks/update")
     public ResponseEntity<BaseResponse<?>> updateNotionTimetableBlockWebhook(
-            @RequestBody @Valid NotionTimetableBlockUpdateWebhookRequest notionTimetableBlockUpdateWebhookRequest
+            @RequestBody NotionTimetableBlockUpdateWebhookRequest webhookRequest
     ) {
-        adminNotionTimetableBlockService.updateNotionTimetableBlock(notionTimetableBlockUpdateWebhookRequest);
+        adminNotionTimetableBlockService.updateNotionTimetableBlock(webhookRequest);
         return ApiResponseUtil.success(SuccessCode.OK);
+    }
+
+    //Notion 타임테이블 블럭 데이터베이스 페이지 추가 Webhook API
+    @PostMapping("/timetables/blocks/new")
+    public ResponseEntity<BaseResponse<?>> addNotionTimetableBlockRow(
+            @RequestBody NotionTimetableCreatedNewRowWebhookRequest webhookRequest
+    ) {
+        adminNotionTimetableBlockService.saveNewTimetableBlockRowWebhookRequest(webhookRequest.data().parent().dataSourceId(), webhookRequest.data().id());
+        return ApiResponseUtil.success(SuccessCode.OK);
+
     }
 }

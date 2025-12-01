@@ -15,4 +15,8 @@ public class AdminTimetableStageSaver {
     public void saveAllTimetableStagesEntities(final List<TimetableStageEntity> timetableStageEntities) {
         timetableStageRepository.saveAll(timetableStageEntities);
     }
+
+    public void saveTimetableStage(final long timetableId, final String notionTimetableStageRowId) {
+        timetableStageRepository.save(TimetableStageEntity.createEmptyRow(timetableId, notionTimetableStageRowId));
+    }
 }

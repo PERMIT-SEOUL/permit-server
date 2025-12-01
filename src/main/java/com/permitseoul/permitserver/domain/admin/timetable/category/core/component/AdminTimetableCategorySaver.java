@@ -15,4 +15,8 @@ public class AdminTimetableCategorySaver {
     public void saveAllTimetableCategoryEntities(final List<TimetableCategoryEntity> timetableCategoryEntities) {
         timetableCategoryRepository.saveAll(timetableCategoryEntities);
     }
+
+    public void saveTimetableCategoryEntity(final long timetableId, final String notionTimetableCategoryRowId) {
+        timetableCategoryRepository.save(TimetableCategoryEntity.createEmptyRow(timetableId, notionTimetableCategoryRowId));
+    }
 }
