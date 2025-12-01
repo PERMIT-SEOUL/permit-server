@@ -15,4 +15,7 @@ public interface TimetableRepository extends JpaRepository<TimetableEntity, Long
 
     Optional<TimetableEntity> findByNotionCategoryDatasourceId(final String notionCategoryDatasourceId);
 
+    Optional<TimetableEntity> findByNotionStageDatasourceId(final String notionStageDatasourceId);
+
+
 }

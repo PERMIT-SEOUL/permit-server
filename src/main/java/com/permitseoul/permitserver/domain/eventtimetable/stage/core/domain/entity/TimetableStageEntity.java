@@ -39,6 +39,10 @@ public class TimetableStageEntity {
         return new TimetableStageEntity(eventTimetableId, stageName, sequence, notionStageRowId);
     }
 
+    public static TimetableStageEntity createEmptyRow(final long eventTimetableId, final String notionStageRowId) {
+        return new TimetableStageEntity(eventTimetableId, null, -1, notionStageRowId);
+    }
+
     public void updateStageName(final String stageName) {
         this.stageName = stageName;
     }

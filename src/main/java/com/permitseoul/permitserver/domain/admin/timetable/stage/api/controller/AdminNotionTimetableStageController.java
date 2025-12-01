@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.domain.admin.timetable.stage.api.controller;
 
+import com.permitseoul.permitserver.domain.admin.timetable.base.api.dto.req.NotionTimetableCreatedNewRowWebhookRequest;
 import com.permitseoul.permitserver.domain.admin.timetable.stage.api.dto.NotionTimetableStageUpdateWebhookRequest;
 import com.permitseoul.permitserver.domain.admin.timetable.stage.api.service.AdminNotionTimetableStageService;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
@@ -17,15 +18,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/notion/events")
 public class AdminNotionTimetableStageController {
-
     private final AdminNotionTimetableStageService adminNotionTimetableStageService;
 
     // Notion 타임테이블 stage 데이터베이스 Update Webhook API
-    @PostMapping("/timetables/stages")
+    @PostMapping("/timetables/stages/update")
     public ResponseEntity<BaseResponse<?>> updateNotionTimetableStageWebhook(
             @RequestBody @Valid final NotionTimetableStageUpdateWebhookRequest notionTimetableStageUpdateWebhookRequest
     ) {
         adminNotionTimetableStageService.updateNotionTimetableStage(notionTimetableStageUpdateWebhookRequest);
+        return ApiResponseUtil.success(SuccessCode.OK);
+    }
+
+    //Notion 타임테이블 스테이지 데이터베이스 페이지 추가 Webhook API
+    @PostMapping("/timetables/stages/new")
+    public ResponseEntity<BaseResponse<?>> addNotionTimetableStageRow(
+            @RequestBody @Valid NotionTimetableCreatedNewRowWebhookRequest webhookRequest
+    ) {
+        adminNotionTimetableStageService.saveNewTimetableStageRowWebhookRequest(webhookRequest.data().parent().dataSourceId(), webhookRequest.data().id());
         return ApiResponseUtil.success(SuccessCode.OK);
     }
 }

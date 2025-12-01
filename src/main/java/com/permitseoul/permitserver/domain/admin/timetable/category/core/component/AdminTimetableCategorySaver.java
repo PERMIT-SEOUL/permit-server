@@ -16,7 +16,7 @@ public class AdminTimetableCategorySaver {
         timetableCategoryRepository.saveAll(timetableCategoryEntities);
     }
 
-    public void saveTimetableCategoryEntity(final long timetableId, final String notionTimetableCategoryRowId ) {
+    public void saveTimetableCategoryEntity(final long timetableId, final String notionTimetableCategoryRowId) {
         timetableCategoryRepository.save(TimetableCategoryEntity.createEmptyRow(timetableId, notionTimetableCategoryRowId));
     }
 }
