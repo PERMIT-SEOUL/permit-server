@@ -11,27 +11,29 @@ import java.time.LocalDateTime;
 public class TimetableBlock {
     private final Long timetableBlockId;
     private final long timetableId;
-    private final long timetableCategoryId;
-    private final long timetableAreaId;
+    private final String timetableCategoryNotionId;
+    private final String timetableStageNotionId;
     private final LocalDateTime startAt;
     private final LocalDateTime endAt;
     private final String blockName;
     private final String artist;
     private final String information;
     private final String blockInfoRedirectUrl;
+    private final String notionTimetableRowId;
 
     public static TimetableBlock fromEntity(final TimetableBlockEntity timetableBlockEntity) {
         return new TimetableBlock(
                 timetableBlockEntity.getTimetableBlockId(),
                 timetableBlockEntity.getTimetableId(),
-                timetableBlockEntity.getTimetableCategoryId(),
-                timetableBlockEntity.getTimetableAreaId(),
+                timetableBlockEntity.getNotionTimetableCategoryRelationRowId(),
+                timetableBlockEntity.getNotionTimetableStageRelationRowId(),
                 timetableBlockEntity.getStartAt(),
                 timetableBlockEntity.getEndAt(),
                 timetableBlockEntity.getBlockName(),
                 timetableBlockEntity.getArtist(),
                 timetableBlockEntity.getInformation(),
-                timetableBlockEntity.getBlockInfoRedirectUrl()
+                timetableBlockEntity.getBlockInfoRedirectUrl(),
+                timetableBlockEntity.getNotionTimetableBlockRowId()
         );
     }
 }

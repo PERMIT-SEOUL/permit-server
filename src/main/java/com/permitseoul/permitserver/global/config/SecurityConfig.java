@@ -33,10 +33,13 @@ public class SecurityConfig {
             "/api/users/reissue",
             "/api/events",
             "/api/events/detail/*",
-            "/api/tickets/*",
             "/api/users/email-check",
             "/api/events/*/timetables",
-            "/api/events/timetables/*"
+            "/api/events/timetables/*",
+            "/api/tickets/info/*",
+            "/api/tickets/door/staff/confirm",
+            "/api/tickets/door/validation/*",
+            "/api/notion/**"
     };
 
     private static final String[] adminURIList = {
@@ -51,7 +54,8 @@ public class SecurityConfig {
             "/api/payments/confirm",
             "/api/payments/cancel",
             "/api/coupons/validate/*",
-            "/api/events/timetables/likes/*"
+            "/api/events/timetables/likes/*",
+            "/api/tickets/user"
     };
 
     @Bean

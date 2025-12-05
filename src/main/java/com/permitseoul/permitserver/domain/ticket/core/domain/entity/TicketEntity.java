@@ -5,6 +5,7 @@ import com.permitseoul.permitserver.global.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -39,26 +40,34 @@ public class TicketEntity extends BaseTimeEntity {
     @Column(name = "used_time")
     private LocalDateTime usedTime;
 
+    @Column(name = "ticket_price", nullable = false)
+    private BigDecimal ticketPrice;
+
     private TicketEntity(final long userId,
-                        final String orderId,
-                        final long ticketTypeId,
-                        final long eventId,
-                        final String ticketCode
-                        ) {
+                         final String orderId,
+                         final long ticketTypeId,
+                         final long eventId,
+                         final String ticketCode,
+                         final BigDecimal ticketPrice
+    ) {
         this.userId = userId;
         this.orderId = orderId;
         this.ticketTypeId = ticketTypeId;
         this.eventId = eventId;
         this.ticketCode = ticketCode;
         this.status = TicketStatus.RESERVED;
+        this.ticketPrice = ticketPrice;
     }
 
-    public static TicketEntity create(final long userId, final String orderId, final long ticketTypeId, final long eventId, final String ticketCode) {
-        return new TicketEntity(userId, orderId, ticketTypeId, eventId, ticketCode);
+    public static TicketEntity create(final long userId, final String orderId, final long ticketTypeId, final long eventId, final String ticketCode, final BigDecimal ticketPrice) {
+        return new TicketEntity(userId, orderId, ticketTypeId, eventId, ticketCode, ticketPrice);
     }
 
     public void updateTicketStatus(final TicketStatus status) {
         this.status = status;
+        if(status == TicketStatus.USED) {
+            this.usedTime = LocalDateTime.now();
+        }
     }
 }
 

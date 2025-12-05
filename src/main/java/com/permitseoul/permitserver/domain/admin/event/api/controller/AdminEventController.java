@@ -38,7 +38,7 @@ public class AdminEventController {
             @RequestBody @Valid final AdminEventWithTicketCreateRequest adminEventWithTicketCreateRequest
             ) {
         adminEventService.createEventWithTickets(adminEventWithTicketCreateRequest);
-        return ApiResponseUtil.success(SuccessCode.OK);
+        return ApiResponseUtil.success(SuccessCode.CREATED);
     }
 
     //어드민 행사 수정 API

@@ -12,25 +12,25 @@ public record TimetableResponse(
         LocalDateTime startDate,
         @JsonFormat(pattern = "yyyy.MM.dd HH:mm")
         LocalDateTime endDate,
-        List<Area> areas,
+        List<Stage> stages,
         List<Block> blocks
 ) {
 
     public static TimetableResponse of(final String eventName,
                                        final LocalDateTime startDate,
                                        final LocalDateTime endDate,
-                                       final List<Area> areas,
+                                       final List<Stage> stages,
                                        final List<Block> blocks) {
-        return new TimetableResponse(eventName, startDate, endDate, areas, blocks);
+        return new TimetableResponse(eventName, startDate, endDate, stages, blocks);
     }
 
-    public record Area(
-            long areaId,
-            String areaName,
+    public record Stage(
+            String stageNotionId,
+            String stageName,
             int sequence
     ) {
-        public static Area of(final long areaId, final String areaName, final int sequence) {
-            return new Area(areaId, areaName, sequence);
+        public static Stage of(final String stageNotionId, final String stageName, final int sequence) {
+            return new Stage(stageNotionId, stageName, sequence);
         }
     }
 
@@ -43,7 +43,7 @@ public record TimetableResponse(
             LocalDateTime blockStartDate,
             @JsonFormat(pattern = "yyyy.MM.dd HH:mm")
             LocalDateTime blockEndDate,
-            long blockAreaId,
+            String blockStageNotionId,
             boolean isUserLiked
     ) {
         public static Block of(final String blockId,
@@ -52,9 +52,9 @@ public record TimetableResponse(
                                final String blockLineColor,
                                final LocalDateTime blockStartDate,
                                final LocalDateTime blockEndDate,
-                               final long blockAreaId,
+                               final String blockStageNotionId,
                                boolean isUserLiked) {
-            return new Block(blockId, blockName, blockBackgroundColor, blockLineColor, blockStartDate, blockEndDate, blockAreaId, isUserLiked);
+            return new Block(blockId, blockName, blockBackgroundColor, blockLineColor, blockStartDate, blockEndDate, blockStageNotionId, isUserLiked);
         }
     }
 }

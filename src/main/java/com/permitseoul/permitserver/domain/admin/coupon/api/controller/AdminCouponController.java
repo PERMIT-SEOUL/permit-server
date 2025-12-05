@@ -1,6 +1,7 @@
 package com.permitseoul.permitserver.domain.admin.coupon.api.controller;
 
 import com.permitseoul.permitserver.domain.admin.coupon.api.dto.request.CouponIssueRequest;
+import com.permitseoul.permitserver.domain.admin.coupon.api.dto.request.CouponMemoUpdateRequest;
 import com.permitseoul.permitserver.domain.admin.coupon.api.service.AdminCouponService;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
@@ -25,11 +26,20 @@ public class AdminCouponController {
         return ApiResponseUtil.success(SuccessCode.OK);
     }
 
-    //쿠폰 조회 API
+    //모든 쿠폰 조회 API
     @GetMapping("/{eventId}")
     public ResponseEntity<BaseResponse<?>> getCoupons(
             @PathVariable("eventId") long eventId
     ) {
         return ApiResponseUtil.success(SuccessCode.OK, adminCouponService.getCouponsByEventId(eventId));
+    }
+
+    //쿠폰 메모 추가 API
+    @PatchMapping("/memos")
+    public ResponseEntity<BaseResponse<?>> updateCouponMemos(
+            @RequestBody @Valid CouponMemoUpdateRequest couponMemoUpdateRequest
+    ) {
+        adminCouponService.updateCouponMemos(couponMemoUpdateRequest.coupons());
+        return ApiResponseUtil.success(SuccessCode.OK);
     }
 }

@@ -30,7 +30,7 @@ public class ReservationTicketRetriever {
     }
 
     @Transactional(readOnly = true)
-    public List<ReservationTicket> findAllByOrderIds(List<String> orderIds) {
+    public List<ReservationTicket> findAllByOrderIds(final List<String> orderIds) {
         final List<ReservationTicketEntity> reservationTicketEntityList = reservationTicketRepository.findAllByOrderIdIn(orderIds);
         if (reservationTicketEntityList == null || reservationTicketEntityList.isEmpty()) {
             return Collections.emptyList();

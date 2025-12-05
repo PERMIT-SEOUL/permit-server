@@ -33,4 +33,9 @@ public class AdminEventRetriever {
     public EventEntity findEventEntityById(final long eventId) {
         return eventRepository.findById(eventId).orElseThrow(AdminEventNotFoundException::new);
     }
+
+    @Transactional(readOnly = true)
+    public void validateEventExist(final long eventId) {
+        eventRepository.findById(eventId).orElseThrow(AdminEventNotFoundException::new);
+    }
 }

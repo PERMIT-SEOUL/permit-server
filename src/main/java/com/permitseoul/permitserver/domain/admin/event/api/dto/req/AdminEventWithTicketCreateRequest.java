@@ -56,13 +56,12 @@ public record AdminEventWithTicketCreateRequest(
 
         @NotBlank(message = "행사 장소는 필수입니다.")
         String venue,
-
         String lineup,
         String details,
 
+        @NotNull(message = "image는 필수입니다.")
         @Valid
-        @NotEmpty(message = "행사 이미지는 최소 1개 이상이어야 합니다.")
-        List<AdminEventImageInfo> images,
+        List<AdminEventImageRequest> images,
 
         @Min(value = 0, message = "최소 나이는 0 이상이어야 합니다.")
         int minAge,
@@ -117,9 +116,6 @@ public record AdminEventWithTicketCreateRequest(
                 @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
                 LocalTime ticketEndTime
         ) { }
-
-        public record AdminEventImageInfo(
-                @NotBlank(message = "이미지 url은 필수입니다.")
-                String imageUrl
-        ) { }
 }
+
+

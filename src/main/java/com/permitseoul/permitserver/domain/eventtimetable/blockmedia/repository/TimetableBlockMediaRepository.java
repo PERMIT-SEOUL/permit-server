@@ -9,5 +9,7 @@ import java.util.List;
 @Repository
 public interface TimetableBlockMediaRepository extends JpaRepository<TimetableBlockMediaEntity, Long> {
 
-    List<TimetableBlockMediaEntity> findAllByTimetableBlockId(final long timetableBlockId);
+    List<TimetableBlockMediaEntity> findAllByTimetableBlockIdOrderBySequenceAsc(final long timetableBlockId);
+
+    void deleteAllByTimetableBlockId(final long timetableBlockId);
 }

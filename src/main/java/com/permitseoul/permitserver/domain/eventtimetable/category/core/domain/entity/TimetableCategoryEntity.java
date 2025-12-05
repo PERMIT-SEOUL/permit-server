@@ -19,26 +19,52 @@ public class TimetableCategoryEntity {
     @Column(name = "timetable_id", nullable = false)
     private long timetableId;
 
-    @Column(name = "category_name", nullable = false)
+    @Column(name = "category_name")
     private String categoryName;
 
-    @Column(name = "category_background_color", nullable = false)
+    @Column(name = "category_background_color")
     private String categoryBackgroundColor;
 
-    @Column(name = "category_line_color", nullable = false)
+    @Column(name = "category_line_color")
     private String categoryLineColor;
 
-    private TimetableCategoryEntity(long timetableId, String categoryName, String categoryBackgroundColor, String categoryLineColor) {
+    @Column(name = "notion_category_row_id")
+    private String notionCategoryRowId;
+
+    private TimetableCategoryEntity(long timetableId,
+                                    String categoryName,
+                                    String categoryBackgroundColor,
+                                    String categoryLineColor,
+                                    String notionCategoryRowId) {
         this.timetableId = timetableId;
         this.categoryName = categoryName;
         this.categoryBackgroundColor = categoryBackgroundColor;
         this.categoryLineColor = categoryLineColor;
+        this.notionCategoryRowId = notionCategoryRowId;
     }
 
     public static TimetableCategoryEntity create(final long timetableId,
                                                  final String categoryName,
                                                  final String categoryBackgroundColor,
-                                                 final String categoryLineColor) {
-        return new TimetableCategoryEntity(timetableId, categoryName, categoryBackgroundColor, categoryLineColor);
+                                                 final String categoryLineColor,
+                                                 final String notionCategoryRowId) {
+        return new TimetableCategoryEntity(timetableId, categoryName, categoryBackgroundColor, categoryLineColor, notionCategoryRowId);
+    }
+
+    public static TimetableCategoryEntity createEmptyRow(final long timetableId, final String notionCategoryRowId) {
+        return new TimetableCategoryEntity(timetableId, null, null, null, notionCategoryRowId);
+    }
+
+
+    public void updateCategoryName(final String newCategoryName) {
+        this.categoryName = newCategoryName;
+    }
+
+    public void updateBackgroundColor(final String newBackgroundColor) {
+        this.categoryBackgroundColor = newBackgroundColor;
+    }
+
+    public void updateLineColor(final String newLineColor) {
+        this.categoryLineColor = newLineColor;
     }
 }

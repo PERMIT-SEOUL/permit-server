@@ -56,7 +56,13 @@ public class ReservationService {
     private final ReservationAndReservationTicketFacade reservationAndReservationTicketFacade;
     private final ReservationSessionRetriever reservationSessionRetriever;
 
+    private static final String TICKET_TYPE_BUY_COUNT = "x";
+    private static final String SLASH = " / ";
+    private static final String START_BRACKET = "[";
+    private static final String END_BRACKET = "] ";
+    private static final String WITH_COUPON = "(w/Coupon)";
     private static final int COUPON_CAN_BUY_TICKET_MAX_ = 1;
+    private static final long MAX_RESERVATION_VALID_TIME = 7;
 
     public String saveReservation(final long userId,
                                   final long eventId,
@@ -69,22 +75,24 @@ public class ReservationService {
         final List<Long> requestTicketTypeIds = requestTicketTypeInfos.stream()
                 .map(ReservationInfoRequest.TicketTypeInfo::id)
                 .toList();
-
-        // 요청한 티켓타입 엔티티들
+        final List<TicketTypeEntity> ticketTypeEntities;
         final Map<Long, TicketTypeEntity> ticketTypeEntityMap;
+        final String eventName;
+        final Coupon coupon;
 
         // 레디스에서 재고 감소 티켓타입 정보
         final Map<Long, Integer> redisDecreasedTicketTypeInfo;
 
         try {
-            ticketTypeEntityMap = ticketTypeRetriever.findAllTicketTypeEntityByIds(requestTicketTypeIds).stream()
+            ticketTypeEntities = ticketTypeRetriever.findAllTicketTypeEntityByIds(requestTicketTypeIds);
+            ticketTypeEntityMap = ticketTypeEntities.stream()
                     .collect(Collectors.toMap(TicketTypeEntity::getTicketTypeId, it -> it));
 
             validateExistUserById(userId);
-            validateExistEventById(eventId);
-            final Coupon validatedCoupon = validateCouponCode(couponCode, requestTicketTypeInfos, eventId);
+            eventName = validateExistEventById(eventId);
+            coupon = validateCouponCode(couponCode, requestTicketTypeInfos, eventId);
             validateUsableTicketType(ticketTypeEntityMap, eventId, now);
-            validateTotalAmount(ticketTypeEntityMap, requestTicketTypeInfos, totalAmount, validatedCoupon);
+            validateTotalAmount(ticketTypeEntityMap, requestTicketTypeInfos, totalAmount, coupon);
 
             // redis로 선점 예약 방식
             redisDecreasedTicketTypeInfo = decreaseRedisTicketCount(requestTicketTypeInfos);
@@ -108,7 +116,10 @@ public class ReservationService {
         }
 
         try {
+            final String reservationName = buildReservationName(eventName, ticketTypeEntities, requestTicketTypeInfos, coupon);
+
             final String sessionKey = reservationAndReservationTicketFacade.saveReservationWithTicketAndSession(
+                    reservationName,
                     userId,
                     eventId,
                     orderId,
@@ -133,10 +144,9 @@ public class ReservationService {
             final String orderId = getOrderIdWithValidateSessionKey(userId,sessionKey);
             final User user = userRetriever.findUserById(userId);
             final Reservation reservation = reservationRetriever.findReservationByOrderIdAndUserId(orderId, userId);
-            final Event event = eventRetriever.findEventById(reservation.getEventId());
 
             return ReservationInfoResponse.of(
-                    event.getName(),
+                    reservation.getReservationName(),
                     reservation.getOrderId(),
                     user.getName(),
                     user.getEmail(),
@@ -152,6 +162,45 @@ public class ReservationService {
         } catch (ReservationSessionNotFoundException e) {
             throw new NotfoundReservationException(ErrorCode.NOT_FOUND_RESERVATION_SESSION);
         }
+    }
+
+    //예약 이름 생성
+    private String buildReservationName(final String eventName,
+                                        final List<TicketTypeEntity> ticketTypeEntities,
+                                        final List<ReservationInfoRequest.TicketTypeInfo> ticketTypeInfos,
+                                        final Coupon coupon) {
+        final StringBuilder reservationName = new StringBuilder();
+
+        // 티켓 타입 아이디에 따른 구매 개수 map
+        final Map<Long, Integer> ticketTypeCountMap = ticketTypeInfos.stream()
+                .collect(Collectors.toMap(
+                        ReservationInfoRequest.TicketTypeInfo::id,
+                        ReservationInfoRequest.TicketTypeInfo::count
+                ));
+
+        // 티켓 이름 + 수량
+        final List<String> ticketNameWithCountList = ticketTypeEntities.stream()
+                .map(ticket -> {
+                    int count = ticketTypeCountMap.getOrDefault(ticket.getTicketTypeId(), 0);
+                    return ticket.getTicketTypeName() + TICKET_TYPE_BUY_COUNT + count;
+                })
+                .toList();
+
+        if (ticketNameWithCountList.isEmpty()) {
+            return eventName;
+        }
+        // 출력예시: [Olympan25: Andong City] 2nd Release-1일x1(w/Coupon)"
+        if (coupon != null) {
+            return String.valueOf(
+                    reservationName.append(START_BRACKET)
+                            .append(eventName)
+                            .append(END_BRACKET)
+                            .append(String.join(SLASH, ticketNameWithCountList))
+                            .append(WITH_COUPON));
+        }
+
+        // 출력예시: [Olympan25: Andong City] 2nd Release-1일x1 / 2nd Release-1박2일x2
+        return String.valueOf(reservationName.append(START_BRACKET).append(eventName).append(END_BRACKET).append(String.join(SLASH, ticketNameWithCountList)));
     }
 
     private void validateTotalAmount(final Map<Long, TicketTypeEntity> ticketTypeEntityMap,
@@ -183,7 +232,7 @@ public class ReservationService {
     }
 
     private String getOrderIdWithValidateSessionKey(final long userId, final String sessionKey) {
-        final LocalDateTime validTime = LocalDateTime.now().minusMinutes(7);
+        final LocalDateTime validTime = LocalDateTime.now().minusMinutes(MAX_RESERVATION_VALID_TIME);
         final ReservationSession reservationSession = reservationSessionRetriever.getValidatedReservationSession(userId, sessionKey, validTime);
         return reservationSession.getOrderId();
     }
@@ -226,8 +275,8 @@ public class ReservationService {
         userRetriever.validExistUserById(userId);
     }
 
-    private void validateExistEventById(final long eventId) {
-        eventRetriever.validExistEventById(eventId);
+    private String validateExistEventById(final long eventId) {
+        return eventRetriever.findEventById(eventId).getName();
     }
 
     private void validateUsableTicketType(final Map<Long, TicketTypeEntity> ticketTypeMap, final long eventId, final LocalDateTime now) {

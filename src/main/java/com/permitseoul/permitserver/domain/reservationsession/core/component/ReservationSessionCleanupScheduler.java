@@ -8,7 +8,6 @@ import com.permitseoul.permitserver.domain.reservationticket.core.domain.Reserva
 import com.permitseoul.permitserver.global.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -25,6 +24,7 @@ import java.util.Map;
 public class ReservationSessionCleanupScheduler {
 
     private final ReservationSessionRepository reservationSessionRepository;
+    private final ReservationSessionRemover reservationSessionRemover;
     private final ReservationTicketRetriever reservationTicketRetriever;
     private final RedisTemplate<String, String> redisTemplate;
     private final SessionProperties sessionProperties;
@@ -36,9 +36,9 @@ public class ReservationSessionCleanupScheduler {
 
         // 성공인 세션들 -> 모두 삭제
         final List<ReservationSessionEntity> successSessions = reservationSessionRepository.findAllBySuccessfulTrue();
-        reservationSessionRepository.deleteAllInBatch(successSessions);
+        reservationSessionRemover.deleteAllInBatch(successSessions);
 
-        // 실패인 세션들 + 7분 지난 세션 -> 롤백 및 삭제
+        // 7분 지난 세션 -> 롤백 및 삭제
         final List<ReservationSessionEntity> expiredOrFailedSessions = reservationSessionRepository.findAllBySuccessfulFalseAndCreatedAtBefore(expireThreshold);
         final Map<Long, Integer> rollbackMap = new HashMap<>();
         final List<String> expiredOrderIds = expiredOrFailedSessions.stream()

@@ -1,8 +1,8 @@
 package com.permitseoul.permitserver.global.config;
 
-import com.permitseoul.permitserver.global.resolver.event.EventIdPathVariableResolver;
-import com.permitseoul.permitserver.global.resolver.timetableblock.TimetableBlockPathVariableResolver;
-import com.permitseoul.permitserver.global.resolver.user.UserIdHeaderResolver;
+import com.permitseoul.permitserver.global.aop.resolver.event.EventIdPathVariableResolver;
+import com.permitseoul.permitserver.global.aop.resolver.timetableblock.TimetableBlockPathVariableResolver;
+import com.permitseoul.permitserver.global.aop.resolver.user.UserIdHeaderResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;

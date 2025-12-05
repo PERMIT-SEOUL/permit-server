@@ -1,6 +1,6 @@
 package com.permitseoul.permitserver.global.config;
 
-import com.permitseoul.permitserver.global.RedisProperties;
+import com.permitseoul.permitserver.global.redis.RedisProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;

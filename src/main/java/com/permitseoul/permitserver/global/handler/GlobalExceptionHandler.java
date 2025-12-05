@@ -42,11 +42,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResolverException.class)
     public ResponseEntity<BaseResponse<?>> handleResolverException(final ResolverException e) {
+        log.error(e.getMessage(), e);
         return ApiResponseUtil.failure(e.getErrorCode());
     }
 
     @ExceptionHandler(FilterException.class)
     public ResponseEntity<BaseResponse<?>> handleFilterException(final FilterException e) {
+        log.error(e.getMessage(), e);
         return ApiResponseUtil.failure(e.getErrorCode());
     }
 
@@ -57,6 +59,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(PermitGlobalException.class)
     public ResponseEntity<BaseResponse<?>> handlePermitGlobalException(final PermitGlobalException e) {
+        log.error(e.getMessage(), e);
         return ApiResponseUtil.failure(ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
@@ -223,7 +226,7 @@ public class GlobalExceptionHandler {
                 return ApiResponseUtil.failure(ErrorCode.INTEGRITY_CONFLICT, errorMessage);
             }
         }
-
+        log.error(e.getMessage(), e);
         return ApiResponseUtil.failure(ErrorCode.INTEGRITY_CONFLICT);
     }
 

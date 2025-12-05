@@ -25,6 +25,11 @@ public enum ErrorCode implements ApiCode {
     BAD_REQUEST_AMOUNT_MISMATCH(HttpStatus.BAD_REQUEST, 40011, "구매하려는 티켓들의 가격과 totalAmount가 다릅니다."),
     BAD_REQUEST_ID_DECODE_ERROR(HttpStatus.BAD_REQUEST, 40012, "해당 객체 id를 decode 할 수 없습니다."),
     BAD_REQUEST_DATE_TIME_ERROR(HttpStatus.BAD_REQUEST, 40013, "잘못된 date, time입니다."),
+    BAD_REQUEST_TICKET_CHECK_CODE_ERROR(HttpStatus.BAD_REQUEST, 40014, "잘못된 ticket check code 입니다."),
+    BAD_REQUEST_CANCELED_TICKET(HttpStatus.BAD_REQUEST, 40015, "취소된 ticket 입니다."),
+    BAD_REQUEST_MISMATCH_TICKET_TYPE_ROUND(HttpStatus.BAD_REQUEST, 40016, "ticketType의 roundId와 다른 ticketRoundId 입니다."),
+    BAD_REQUEST_MISMATCH_LIST_SIZE(HttpStatus.BAD_REQUEST, 40017, "list의 길이가 다릅니다."),
+
 
 
     /**
@@ -71,7 +76,7 @@ public enum ErrorCode implements ApiCode {
     NOT_FOUND_RESERVATION_SESSION_COOKIE(HttpStatus.NOT_FOUND, 40415, "세션 쿠키가 없습니다."),
     NOT_FOUND_EVENT_IMAGE(HttpStatus.NOT_FOUND, 40416, "해당 이벤트 이미지가 없습니다."),
     NOT_FOUND_TICKET_TYPE_PRICE(HttpStatus.NOT_FOUND, 40417, "해당 티켓 라운드의 티켓타입 가격이 없습니다."),
-    NOT_FOUND_TIMETABLE_AREA(HttpStatus.NOT_FOUND, 40418, "타임테이블 장소를 찾을 수 없습니다."),
+    NOT_FOUND_TIMETABLE_STAGE(HttpStatus.NOT_FOUND, 40418, "타임테이블 장소를 찾을 수 없습니다."),
     NOT_FOUND_TIMETABLE_CATEGORY(HttpStatus.NOT_FOUND, 40419, "타임테이블 카테고리를 찾을 수 없습니다."),
     NOT_FOUND_TIMETABLE(HttpStatus.NOT_FOUND, 40420, "타임테이블을 찾을 수 없습니다."),
     NOT_FOUND_TIMETABLE_BLOCK(HttpStatus.NOT_FOUND, 40421, "타임테이블 블록을 찾을 수 없습니다."),
@@ -79,6 +84,10 @@ public enum ErrorCode implements ApiCode {
     NOT_FOUND_GUEST(HttpStatus.NOT_FOUND, 40423, "게스트를 찾을 수 없습니다."),
     NOT_FOUND_GUEST_TICKET(HttpStatus.NOT_FOUND, 40424, "게스트 티켓을 찾을 수 없습니다."),
     NOT_FOUND_TIMETABLE_USER_LIKE(HttpStatus.NOT_FOUND, 40425, "유저 좋아요 타임테이블을 찾을 수 없습니다."),
+    NOT_FOUND_NOTION_RELATION_ID(HttpStatus.NOT_FOUND, 40426, "Notion Relation Id를 찾을 수 없습니다."),
+    NOT_FOUND_NOTION_DATABASE_SOURCE(HttpStatus.NOT_FOUND, 40427, "Notion 데이터베이스 소스를 찾을 수 없습니다."),
+    NOT_FOUND_COUPON(HttpStatus.NOT_FOUND, 40428, "coupon을 찾을 수 없습니다."),
+
 
 
 
@@ -97,6 +106,10 @@ public enum ErrorCode implements ApiCode {
     CONFLICT_ALREADY_USED_COUPON_CODE(HttpStatus.CONFLICT, 40903, "이미 사용한 쿠폰코드입니다."),
     CONFLICT_USER_EMAIL(HttpStatus.CONFLICT, 40904, "이미 존재하는 이메일입니다."),
     CONFLICT_TIMETABLE_USER_LIKE(HttpStatus.CONFLICT, 40905, "이미 존재하는 타임테이블 유저 좋아요입니다."),
+    CONFLICT_ALREADY_USED_TICKET(HttpStatus.CONFLICT, 40906, "이미 사용한 티켓입니다."),
+    CONFLICT_DUPLICATE_COUPON_ID(HttpStatus.CONFLICT, 40907, "중복된 쿠폰아이디 요청입니다."),
+
+
 
 
     /**
@@ -107,7 +120,7 @@ public enum ErrorCode implements ApiCode {
     INTERNAL_JSON_FORMAT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50002, "json 포맷팅 과정에서 에러가 발생했습니다."),
     INTERNAL_TICKET_ALGORITHM_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50003, "티켓 코드 생성 알고리즘 에러입니다."),
     INTERNAL_PAYMENT_FEIGN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50004, "결제 feign 통신 에러입니다."),
-    INTERNAL_ISO_DATE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50005, "Toss iso date string에서 localdate로 변환 과정 에러입니다."),
+    INTERNAL_ISO_DATE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50005, "DateFormat 변환 과정 에러입니다."),
     INTERNAL_TRANSITION_ENUM_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50006, "enum status 변환 과정 에러입니다."),
     INTERNAL_SESSION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50007, "reservation session 저장 과정 에러입니다."),
     INTERNAL_ID_ENCODE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50008, "객체 guestId Encoding 에러입니다."),
@@ -116,6 +129,9 @@ public enum ErrorCode implements ApiCode {
     INTERNAL_EMAIL_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50011, "이메일 전송 에러입니다."),
     INTERNAL_FILTER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50012, "filter 에러입니다."),
     INTERNAL_RT_REDIS_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50013, "refreshToken redis 에러입니다."),
+    INTERNAL_NOTION_FEIGN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50014, "notion feign 통신 에러입니다."),
+    INTERNAL_TICKET_TYPE_REDIS_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50015, "ticketType redis 통신 에러입니다."),
+    INTERNAL_TICKET_TYPE_NOT_FOUND_REDIS_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50016, "해당 ticketType이 redis에 없습니다."),
 
     ;
 

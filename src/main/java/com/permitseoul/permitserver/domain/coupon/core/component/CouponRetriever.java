@@ -17,16 +17,8 @@ public class CouponRetriever {
     private final CouponRepository couponRepository;
 
     @Transactional(readOnly = true)
-    public void isExistCoupon(final String couponCode) {
-        if(!couponRepository.existsByCouponCode(couponCode)) {
-            throw new CouponNotfoundException();
-        };
-    }
-
-    @Transactional(readOnly = true)
-    public Coupon findCouponByCouponCode(final String couponCode) {
-        final CouponEntity couponEntity = couponRepository.findByCouponCode(couponCode).orElseThrow(CouponNotfoundException::new);
-        return Coupon.fromEntity(couponEntity);
+    public List<CouponEntity> findAllCouponEntitiesByIds(final List<Long> couponIds) {
+        return couponRepository.findAllById(couponIds);
     }
 
     @Transactional(readOnly = true)
@@ -52,7 +44,7 @@ public class CouponRetriever {
 
     @Transactional(readOnly = true)
     public List<Coupon> getCouponsByEventId(final long eventId) {
-        final List<CouponEntity> couponEntities = couponRepository.findAllByEventId(eventId);
+        final List<CouponEntity> couponEntities = couponRepository.findAllByEventIdOrderByCouponIdAsc(eventId);
         return couponEntities.stream()
                 .map(Coupon::fromEntity)
                 .toList();

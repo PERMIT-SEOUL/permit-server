@@ -1,8 +1,8 @@
 package com.permitseoul.permitserver;
 
 import com.permitseoul.permitserver.domain.auth.core.jwt.JwtProperties;
-import com.permitseoul.permitserver.domain.auth.core.external.google.GoogleProperties;
-import com.permitseoul.permitserver.domain.auth.core.external.kakao.KakaoProperties;
+import com.permitseoul.permitserver.global.external.google.GoogleProperties;
+import com.permitseoul.permitserver.global.external.kakao.KakaoProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -54,4 +54,8 @@ public class CouponEntity extends BaseTimeEntity {
         this.used = isUsed;
         this.usedAt = usedAt;
     }
+
+    public void updateMemo(final String memo) {
+        this.memo = memo;
+    }
 }

@@ -2,7 +2,7 @@ package com.permitseoul.permitserver.domain.event.api.controller;
 
 
 import com.permitseoul.permitserver.domain.event.api.service.EventService;
-import com.permitseoul.permitserver.global.resolver.event.EventIdPathVariable;
+import com.permitseoul.permitserver.global.aop.resolver.event.EventIdPathVariable;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.SuccessCode;

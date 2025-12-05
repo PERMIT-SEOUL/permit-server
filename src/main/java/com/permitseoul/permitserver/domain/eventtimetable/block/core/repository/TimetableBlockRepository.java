@@ -5,8 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TimetableBlockRepository extends JpaRepository<TimetableBlockEntity, Long> {
     List<TimetableBlockEntity> findAllByTimetableId(final long timetableId);
+
+    Optional<TimetableBlockEntity> findByNotionTimetableBlockRowId(final String notionTimetableRowId);
 }

@@ -26,8 +26,7 @@ import com.permitseoul.permitserver.domain.tickettype.core.component.TicketTypeR
 import com.permitseoul.permitserver.domain.tickettype.core.component.TicketTypeUpdater;
 import com.permitseoul.permitserver.domain.tickettype.core.domain.entity.TicketTypeEntity;
 import com.permitseoul.permitserver.global.exception.DateFormatException;
-import com.permitseoul.permitserver.global.util.DateFormatterUtil;
-import com.permitseoul.permitserver.global.response.code.ErrorCode;
+import com.permitseoul.permitserver.global.util.LocalDateTimeFormatterUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -37,7 +36,7 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
-import static com.permitseoul.permitserver.global.util.DateFormatterUtil.parseTossDateToLocalDateTime;
+import static com.permitseoul.permitserver.global.util.LocalDateTimeFormatterUtil.parseISO8601DateToLocalDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -118,12 +117,12 @@ public class TicketReservationPaymentFacade {
                 paymentId,
                 latestCancelPayment.cancelAmount(),
                 latestCancelPayment.transactionKey(),
-                parseTossDateToLocalDateTime(latestCancelPayment.canceledAt())
+                parseISO8601DateToLocalDateTime(latestCancelPayment.canceledAt())
         );
     }
 
     private PaymentCancelResponse.CancelDetail getLatestCancelPayment(final List<PaymentCancelResponse.CancelDetail> paymentCancelResponse) {
-        return  DateFormatterUtil.getLatestCancelPaymentByDate(paymentCancelResponse).orElseThrow(
+        return  LocalDateTimeFormatterUtil.getLatestCancelPaymentByDate(paymentCancelResponse).orElseThrow(
                 DateFormatException::new
         );
     }
@@ -147,8 +146,8 @@ public class TicketReservationPaymentFacade {
                 tossPaymentResponse.paymentKey(),
                 reservation.getTotalAmount(),
                 tossPaymentResponse.currency(),
-                parseTossDateToLocalDateTime(tossPaymentResponse.requestedAt()),
-                parseTossDateToLocalDateTime(tossPaymentResponse.approvedAt())
+                parseISO8601DateToLocalDateTime(tossPaymentResponse.requestedAt()),
+                parseISO8601DateToLocalDateTime(tossPaymentResponse.approvedAt())
         );
     }
     private void decreaseTicketCountAtTicketTypeDBWithLock(final List<ReservationTicket> reservationTicketList) {

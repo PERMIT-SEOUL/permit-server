@@ -34,4 +34,8 @@ public class TimetableBlockMediaEntity {
         this.sequence = sequence;
         this.mediaUrl = mediaUrl;
     }
+
+    public static TimetableBlockMediaEntity create(final long timetableBlockId, final int sequence, final String mediaUrl) {
+        return new TimetableBlockMediaEntity(timetableBlockId, sequence, mediaUrl);
+    }
 }

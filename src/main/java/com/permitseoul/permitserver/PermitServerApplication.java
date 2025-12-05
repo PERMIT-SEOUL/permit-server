@@ -3,12 +3,14 @@ package com.permitseoul.permitserver;
 import com.permitseoul.permitserver.domain.admin.property.EmailProperties;
 import com.permitseoul.permitserver.domain.admin.property.QrCodeProperties;
 import com.permitseoul.permitserver.domain.admin.base.api.AdminProperties;
+import com.permitseoul.permitserver.domain.admin.util.aws.AwsS3Properties;
 import com.permitseoul.permitserver.domain.auth.core.jwt.JwtProperties;
-import com.permitseoul.permitserver.domain.auth.core.external.google.GoogleProperties;
-import com.permitseoul.permitserver.domain.auth.core.external.kakao.KakaoProperties;
+import com.permitseoul.permitserver.global.external.google.GoogleProperties;
+import com.permitseoul.permitserver.global.external.kakao.KakaoProperties;
 import com.permitseoul.permitserver.domain.reservation.api.TossProperties;
 import com.permitseoul.permitserver.domain.reservationsession.core.domain.SessionProperties;
 import com.permitseoul.permitserver.global.HashIdProperties;
+import com.permitseoul.permitserver.global.external.notion.NotionProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -24,7 +26,9 @@ import org.springframework.cache.annotation.EnableCaching;
 		SessionProperties.class,
 		AdminProperties.class,
 		QrCodeProperties.class,
-		EmailProperties.class
+		EmailProperties.class,
+		AwsS3Properties.class,
+		NotionProperties.class
 })
 @SpringBootApplication
 public class PermitServerApplication {

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="60 seconds">
 
+    <!-- LOG_PATH 기본값 설정 -->
+    <property name="LOG_PATH" value="${LOG_PATH:-/logs}" />
+
+    <!-- local 환경 -->
     <springProfile name="local">
         <include resource="logback/logback-local.xml"/>
         <root level="INFO">
@@ -8,13 +12,14 @@
         </root>
     </springProfile>
 
+    <!-- dev 환경 -->
     <springProfile name="dev">
-        <include resource="logback/logback-dev-info.xml"/>
-        <include resource="logback/logback-dev-error.xml"/>
-        <root level="INFO">
-            <appender-ref ref="DEVINFOROLLFILE"/>
-            <appender-ref ref="DEVERRORROLLFILE"/>
-        </root>
+        <include resource="logback/logback-dev-loki.xml"/>
+    </springProfile>
+
+    <!-- prod 환경 -->
+    <springProfile name="prod">
+        <include resource="logback/logback-prod-file.xml"/>
     </springProfile>
 
 </configuration>
