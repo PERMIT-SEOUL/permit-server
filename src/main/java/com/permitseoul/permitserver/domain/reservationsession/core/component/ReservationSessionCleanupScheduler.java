@@ -34,8 +34,6 @@ public class ReservationSessionCleanupScheduler {
     public void cleanupSessions() {
         final LocalDateTime expireThreshold = LocalDateTime.now().minusMinutes(sessionProperties.expireTime());
 
-        log.error("TESTTTTTTTTTTTTTTTTTTTT"); //todo: test용, 추후 삭제
-
         // 성공인 세션들 -> 모두 삭제
         final List<ReservationSessionEntity> successSessions = reservationSessionRepository.findAllBySuccessfulTrue();
         reservationSessionRemover.deleteAllInBatch(successSessions);

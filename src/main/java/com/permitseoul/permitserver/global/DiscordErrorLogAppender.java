@@ -158,6 +158,7 @@ public class DiscordErrorLogAppender extends UnsynchronizedAppenderBase<ILogging
                 .replace("\\", "\\\\")
                 .replace("\"", "\\\"")
                 .replace("\n", "\\n")
-                .replace("\r", "\\r");
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
     }
 }
