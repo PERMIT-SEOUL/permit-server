@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <included>
 
-    <!-- INFO/WARN 로깅 파일(error level은 제외) -->
+    <!-- INFO/WARN 로깅 파일 (ERROR 레벨은 제외) -->
     <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>/home/ubuntu/logs/PERMIT-INFO-LOG.log</file>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
@@ -37,7 +37,7 @@
         </rollingPolicy>
     </appender>
 
-    <!-- ERROR 로깅 파일(error level만 로깅) -->
+    <!-- ERROR 로깅 파일 (ERROR 레벨만 로깅) -->
     <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>/home/ubuntu/logs/PERMIT-ERROR-LOG.log</file>
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
@@ -80,30 +80,23 @@
         </rollingPolicy>
     </appender>
 
-    <!-- Discord 웹훅 전송(error level만) -->
-    <appender name="DISCORD_ERROR" class="net.logstash.logback.appender.HttpAppender">
-        <url>${DISCORD_WEBHOOK_URL}</url>
-        <method>POST</method>
-        <headers>
-            <header>
-                <name>Content-Type</name>
-                <value>application/json</value>
-            </header>
-        </headers>
+    <!-- Discord 웹훅 전송 (ERROR 레벨만) -->
+    <appender name="DISCORD_ERROR"
+              class="com.permitseoul.permitserver.global.DiscordErrorLogAppender">
+
+        <!-- prod EC2 환경변수 / JVM 옵션 등으로 넣어줄 값 -->
+        <url>${DISCORD_ERROR_WEBHOOK_URL}</url>
+
+        <connectTimeout>3000</connectTimeout>
+        <readTimeout>3000</readTimeout>
+
+        <!-- 방어적으로 ERROR 이상만 이 Appender로 보냄 -->
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>ERROR</level>
         </filter>
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>
-                {
-                "content": "[PERMIT-PROD] %level at %d{yyyy-MM-dd HH:mm:ss.SSS,Asia/Seoul}\n%logger{36}\n trace_id=%replace(%X{trace_id}){"([\"\\])"}{\\\\$1} uri=%replace(%X{uri}){"([\"\\])"}{\\\\$1} method=%X{method} status=%X{status}\n%replace(%message){"([\"\\])"}{\\\\$1}%n%replace(%xEx{5}){'\r?\n',' \\n '}
-                }
-            </pattern>
-        </encoder>
-        <connectTimeout>3000</connectTimeout>
-        <readTimeout>3000</readTimeout>
     </appender>
 
+    <!-- 비동기 INFO -->
     <appender name="ASYNC_INFO" class="ch.qos.logback.classic.AsyncAppender">
         <appender-ref ref="INFO_FILE"/>
         <queueSize>5000</queueSize>
@@ -111,6 +104,7 @@
         <neverBlock>true</neverBlock>
     </appender>
 
+    <!-- 비동기 ERROR (파일) -->
     <appender name="ASYNC_ERROR" class="ch.qos.logback.classic.AsyncAppender">
         <appender-ref ref="ERROR_FILE"/>
         <queueSize>2000</queueSize>
@@ -118,6 +112,7 @@
         <neverBlock>false</neverBlock>
     </appender>
 
+    <!-- 비동기 Discord ERROR -->
     <appender name="ASYNC_DISCORD_ERROR" class="ch.qos.logback.classic.AsyncAppender">
         <appender-ref ref="DISCORD_ERROR"/>
         <queueSize>500</queueSize>
