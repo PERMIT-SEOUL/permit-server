@@ -18,6 +18,8 @@ public final class DiscordMessageFormatterUtil {
     private static final String FIELD_DURATION = "duration_ms";
     private static final String FIELD_REQUEST_BODY = "request_body";
     private static final String FIELD_RESPONSE_BODY = "response_body";
+    private static final String FIELD_EXCEPTION = "exception";
+    private static final String FIELD_STACKTRACE = "stacktrace";
     private static final String DEFAULT_NO_TIME = "(no time)";
     private static final String DEFAULT_NO_LOG_TYPE = "N/A";
     private static final String DEFAULT_NO_METHOD = "UNKNOWN";
@@ -40,28 +42,60 @@ public final class DiscordMessageFormatterUtil {
         final String requestBody = prettyJson(root.path(FIELD_REQUEST_BODY).asText());
         final String responseBody = prettyJson(root.path(FIELD_RESPONSE_BODY).asText());
 
+        final String exception = root.path(FIELD_EXCEPTION).isMissingNode()
+                ? null
+                : root.path(FIELD_EXCEPTION).asText(null);
+
+        final String stacktrace = root.path(FIELD_STACKTRACE).isMissingNode()
+                ? null
+                : root.path(FIELD_STACKTRACE).asText(null);
+
+        String exceptionSection = "";
+        if (exception != null && !exception.isBlank()) {
+            exceptionSection = """
+                
+                **Exception:**
+                ```text
+                %s
+                ```
+                """.formatted(exception);
+        }
+
+        String stacktraceSection = "";
+        if (stacktrace != null && !stacktrace.isBlank()) {
+            stacktraceSection = """
+                
+                **Stacktrace:**
+                ```text
+                %s
+                ```
+                """.formatted(stacktrace);
+        }
+
         return """
-            **[HTTP 요청/응답 로그]**
+        **[HTTP 요청/응답 로그]**
 
-            🕓 **time:** %s
-            🧩 **log_type:** %s
-            🧭 **method:** %s
-            🌐 **url:** %s
-            📦 **status:** %d
-            🫆 **trace_id:** `%s`
-            ⏱️ **duration:** %dms
+        🕓 **time:** %s
+        🧩 **log_type:** %s
+        🧭 **method:** %s
+        🌐 **url:** %s
+        📦 **status:** %d
+        🫆 **trace_id:** `%s`
+        ⏱️ **duration:** %dms
 
-            **Request Body:**
-            ```json
-            %s
-            ```
-            **Response Body:**
-            ```json
-            %s
-            ```
-            """.formatted(
+        **Request Body:**
+        ```json
+        %s
+        ```
+        **Response Body:**
+        ```json
+        %s
+        ```%s%s
+        """.formatted(
                 time, logType, method, url, status, traceId, duration,
-                requestBody, responseBody
+                requestBody, responseBody,
+                exceptionSection,       // %s
+                stacktraceSection       // %s
         );
     }
 
