@@ -41,7 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull final FilterChain filterChain) throws ServletException, IOException {
         final String uri = request.getRequestURI();
         try {
-            if(isHealthCheckUri(uri) || isLoginOrReissueOrSignupUri(uri)) {
+            if(isHealthCheckUri(uri) || isLoginOrReissue(uri)) {
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -82,7 +82,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return pathMatcher.match(Constants.HEALTH_CHECK_URL, uri);
     }
 
-    private boolean isLoginOrReissueOrSignupUri(final String uri) {
+    private boolean isLoginOrReissue(final String uri) {
         return pathMatcher.match(LOGIN_URI, uri)
                 || pathMatcher.match(REISSUE_URI, uri);
     }
