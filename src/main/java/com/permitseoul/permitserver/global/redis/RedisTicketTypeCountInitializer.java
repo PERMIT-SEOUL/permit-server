@@ -28,8 +28,6 @@ public class RedisTicketTypeCountInitializer implements ApplicationRunner {
         final List<String> createdKeys = new ArrayList<>(ticketTypes.size());
 
         try {
-            log.error("TESTTTTTTTTTTTTTTTTTTTT"); //todo: test용, 추후 삭제
-
             ticketTypes.forEach(ticketType -> {
                 final String key = Constants.REDIS_TICKET_TYPE_KEY_NAME + ticketType.getTicketTypeId() + Constants.REDIS_TICKET_TYPE_REMAIN;
                 final boolean isCreated = redisManager.setIfAbsent(key, String.valueOf(ticketType.getRemainTicketCount()));

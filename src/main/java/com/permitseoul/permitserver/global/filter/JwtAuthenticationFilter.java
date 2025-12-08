@@ -24,6 +24,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 
 @RequiredArgsConstructor
@@ -31,6 +32,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtProvider jwtProvider;
     private final List<String> whiteURIList;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
+    private static final String REISSUE_URI = "/api/users/reissue";
+
 
     @Override
     protected void doFilterInternal(@NonNull final HttpServletRequest request,
@@ -38,7 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull final FilterChain filterChain) throws ServletException, IOException {
         final String uri = request.getRequestURI();
         try {
-            if(isHealthCheckUri(uri)) {
+            if(isHealthCheckUri(uri) || pathMatcher.match(REISSUE_URI, uri)) {
                 filterChain.doFilter(request, response);
                 return;
             }

@@ -7,14 +7,11 @@ import com.permitseoul.permitserver.domain.auth.api.exception.AuthUnAuthorizedFe
 import com.permitseoul.permitserver.domain.auth.core.domain.Token;
 import com.permitseoul.permitserver.domain.auth.api.dto.TokenDto;
 import com.permitseoul.permitserver.domain.auth.core.dto.UserSocialInfoDto;
-import com.permitseoul.permitserver.domain.auth.core.exception.AuthRTNotFoundException;
+import com.permitseoul.permitserver.domain.auth.core.exception.*;
 import com.permitseoul.permitserver.domain.auth.core.jwt.JwtProperties;
 import com.permitseoul.permitserver.domain.auth.core.jwt.RefreshTokenManager;
 import com.permitseoul.permitserver.domain.user.core.domain.User;
 import com.permitseoul.permitserver.domain.user.core.exception.UserDuplicateException;
-import com.permitseoul.permitserver.domain.auth.core.exception.AuthPlatformFeignException;
-import com.permitseoul.permitserver.domain.auth.core.exception.AuthRTException;
-import com.permitseoul.permitserver.domain.auth.core.exception.AuthWrongJwtException;
 import com.permitseoul.permitserver.domain.auth.core.jwt.JwtProvider;
 import com.permitseoul.permitserver.domain.auth.core.strategy.LoginStrategyManager;
 import com.permitseoul.permitserver.domain.auth.api.exception.AuthSocialNotFoundApiException;
@@ -111,7 +108,7 @@ public class AuthService {
             return TokenDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
         } catch (AuthWrongJwtException | AuthRTNotFoundException e) {
             throw new AuthUnAuthorizedException(ErrorCode.UNAUTHORIZED_WRONG_RT);
-        } catch (ExpiredJwtException e) {
+        } catch (AuthExpiredJwtException e) {
             throw new AuthUnAuthorizedException(ErrorCode.UNAUTHORIZED_RT_EXPIRED);
         } catch (AuthRTException e) {
             throw new AuthUnAuthorizedException(ErrorCode.INTERNAL_RT_REDIS_ERROR);

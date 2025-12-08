@@ -5,6 +5,7 @@ import com.permitseoul.permitserver.domain.auth.api.dto.TokenDto;
 import com.permitseoul.permitserver.domain.auth.api.dto.SignUpRequest;
 import com.permitseoul.permitserver.domain.auth.core.jwt.CookieCreatorUtil;
 import com.permitseoul.permitserver.domain.auth.api.service.AuthService;
+import com.permitseoul.permitserver.domain.auth.core.jwt.JwtProperties;
 import com.permitseoul.permitserver.global.Constants;
 import com.permitseoul.permitserver.global.aop.resolver.user.UserIdHeader;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
+    private final JwtProperties jwtProperties;
 
     //회원가입
     @PostMapping("/signup")
@@ -79,8 +81,8 @@ public class AuthController {
 
     private ResponseEntity<BaseResponse<?>> responseWithGeneratedCookie(final HttpServletResponse response,
                                                                         final TokenDto tokenDto) {
-        final ResponseCookie accessTokenCookie = CookieCreatorUtil.createAccessTokenCookie(tokenDto.accessToken());
-        final ResponseCookie refreshTokenCookie = CookieCreatorUtil.createRefreshTokenCookie(tokenDto.refreshToken());
+        final ResponseCookie accessTokenCookie = CookieCreatorUtil.createAccessTokenCookie(tokenDto.accessToken(), jwtProperties.accessTokenExpirationTime());
+        final ResponseCookie refreshTokenCookie = CookieCreatorUtil.createRefreshTokenCookie(tokenDto.refreshToken(), jwtProperties.refreshTokenExpirationTime());
         response.setHeader(Constants.SET_COOKIE, accessTokenCookie.toString());
         response.addHeader(Constants.SET_COOKIE, refreshTokenCookie.toString());
 
