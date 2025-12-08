@@ -33,7 +33,7 @@ public class S3Service {
     public S3PreSignedUrlResponse getS3PreSignedUrls(final long eventId,
                                                      final List<S3PreSignedUrlRequest.MediaInfoRequest> mediaInfoRequests) {
         try {
-            validateExistEvent(eventId);
+//            validateExistEvent(eventId);
             final List<S3PreSignedUrlResponse.PreSignedUrlInfo> preSignedUrlInfo = mediaInfoRequests.stream()
                     .map(mediaInfoRequest -> {
                                 return S3PreSignedUrlResponse.PreSignedUrlInfo.of(
