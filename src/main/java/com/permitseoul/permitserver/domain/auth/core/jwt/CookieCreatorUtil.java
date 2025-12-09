@@ -7,7 +7,7 @@ import org.springframework.http.ResponseCookie;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CookieCreatorUtil {
-    private static final long COOKIE_MAX_AGE = 90L;   // 90초 테스트용
+    private static final long COOKIE_MAX_AGE = 24L * 60 * 60;  // 1일
     private static final long RESERVED_MAX_AGE = 10L * 60; // 10분(10분간 선점 가능)
 
     public static ResponseCookie createReservationSessionCookie(final String sessionKey) {
@@ -58,9 +58,5 @@ public class CookieCreatorUtil {
                 .secure(true)
                 .sameSite("None")
                 .build();
-    }
-
-    private static long toCookieMaxAgeSeconds(final long jwtExpirationMillis) {
-        return jwtExpirationMillis / 1000;
     }
 }
