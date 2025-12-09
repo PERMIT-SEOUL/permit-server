@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
-    private final JwtProperties jwtProperties;
 
     //회원가입
     @PostMapping("/signup")
@@ -81,8 +80,8 @@ public class AuthController {
 
     private ResponseEntity<BaseResponse<?>> responseWithGeneratedCookie(final HttpServletResponse response,
                                                                         final TokenDto tokenDto) {
-        final ResponseCookie accessTokenCookie = CookieCreatorUtil.createAccessTokenCookie(tokenDto.accessToken(), jwtProperties.accessTokenExpirationTime());
-        final ResponseCookie refreshTokenCookie = CookieCreatorUtil.createRefreshTokenCookie(tokenDto.refreshToken(), jwtProperties.refreshTokenExpirationTime());
+        final ResponseCookie accessTokenCookie = CookieCreatorUtil.createAccessTokenCookie(tokenDto.accessToken());
+        final ResponseCookie refreshTokenCookie = CookieCreatorUtil.createRefreshTokenCookie(tokenDto.refreshToken());
         response.setHeader(Constants.SET_COOKIE, accessTokenCookie.toString());
         response.addHeader(Constants.SET_COOKIE, refreshTokenCookie.toString());
 
