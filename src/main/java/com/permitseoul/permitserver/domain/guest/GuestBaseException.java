@@ -1,4 +1,6 @@
 package com.permitseoul.permitserver.domain.guest;
 
-public abstract class GuestBaseException extends RuntimeException {
+import com.permitseoul.permitserver.global.exception.PermitGlobalException;
+
+public abstract class GuestBaseException extends PermitGlobalException {
 }

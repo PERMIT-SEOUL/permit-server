@@ -1,4 +1,6 @@
 package com.permitseoul.permitserver.domain.eventimage;
 
-public abstract class EventImageBaseException extends RuntimeException {
+import com.permitseoul.permitserver.global.exception.PermitGlobalException;
+
+public abstract class EventImageBaseException extends PermitGlobalException {
 }
