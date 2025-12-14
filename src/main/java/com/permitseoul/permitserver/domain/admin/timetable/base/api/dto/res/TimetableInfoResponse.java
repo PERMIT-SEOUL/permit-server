@@ -1,6 +1,7 @@
 package com.permitseoul.permitserver.domain.admin.timetable.base.api.dto.res;
 
 public record TimetableInfoResponse(
+        String eventId,
         long timetableId,
         String timetableStartDate,  // (2025-11-03)
         String timetableStartTime,  //(15:30)
@@ -10,7 +11,8 @@ public record TimetableInfoResponse(
         String notionCategoryDataSourceId,
         String notionStageDataSourceId
 ) {
-    public static TimetableInfoResponse of(final long timetableId,
+    public static TimetableInfoResponse of(final String eventId,
+            final long timetableId,
                                            final String timetableStartDate,
                                            final String timetableStartTime,
                                            final String timetableEndDate,
@@ -19,6 +21,7 @@ public record TimetableInfoResponse(
                                            final String notionCategoryDataSourceId,
                                            final String notionStageDataSourceId) {
         return new TimetableInfoResponse(
+                eventId,
                 timetableId,
                 timetableStartDate,
                 timetableStartTime,
