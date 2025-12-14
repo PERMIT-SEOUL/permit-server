@@ -7,15 +7,9 @@ import java.time.LocalDateTime;
 
 public record GuestTicketValidateResponse(
         String eventName,
-        String ticketName,
-
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-        LocalDateTime ticketStartDate,
-
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-        LocalDateTime ticketEndDate
+        String ticketName
 ) {
     public static GuestTicketValidateResponse of(final String eventName) {
-        return new GuestTicketValidateResponse(eventName, "Guest Ticket", null, null);
+        return new GuestTicketValidateResponse(eventName, "Guest Ticket");
     }
 }
