@@ -23,7 +23,7 @@ import java.util.Map;
 public final class QrCodeUtil {
     private static final int QR_SIZE = 256;
     private static final String PNG = "PNG";
-    private static final String URL_PATH = "/entry/";
+    private static final String URL_PATH = "/entry/guest";
 
 
     public static byte[] generatePng(final String baseUrl, final String ticketCode) {

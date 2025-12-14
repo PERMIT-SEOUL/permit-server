@@ -39,7 +39,8 @@ public class SecurityConfig {
             "/api/tickets/info/*",
             "/api/tickets/door/staff/confirm",
             "/api/tickets/door/validation/*",
-            "/api/notion/**"
+            "/api/notion/**",
+            "api/guests/**"
     };
 
     private static final String[] adminURIList = {

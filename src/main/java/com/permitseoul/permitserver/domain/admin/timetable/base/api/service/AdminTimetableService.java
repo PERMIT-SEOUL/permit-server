@@ -20,6 +20,7 @@ import com.permitseoul.permitserver.global.external.notion.dto.NotionTimetableDa
 import com.permitseoul.permitserver.global.external.notion.exception.NotFoundNotionResponseException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import com.permitseoul.permitserver.global.util.LocalDateTimeFormatterUtil;
+import com.permitseoul.permitserver.global.util.SecureUrlUtil;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ public class AdminTimetableService {
     private final AdminTimetableFacade adminTimetableFacade;
     private final AdminTimetableRetriever adminTimetableRetriever;
     private final AdminTimetableUpdater adminTimetableUpdater;
+    private final SecureUrlUtil secureUrlUtil;
 
     public void saveInitialTimetableInfo(final long eventId,
                                          final LocalDateTime timetableStartAt,
@@ -94,6 +96,7 @@ public class AdminTimetableService {
         }
 
         return TimetableInfoResponse.of(
+                secureUrlUtil.encode(eventId),
                 timetable.getTimetableId(),
                 LocalDateTimeFormatterUtil.formatyyyyMMdd(timetable.getStartAt()),
                 LocalDateTimeFormatterUtil.formatHHmm(timetable.getStartAt()),

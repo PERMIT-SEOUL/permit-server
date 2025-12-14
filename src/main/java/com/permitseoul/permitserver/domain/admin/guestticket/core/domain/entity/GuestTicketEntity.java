@@ -7,6 +7,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
 @Table(name = "guests_tickets")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GuestTicketEntity {
