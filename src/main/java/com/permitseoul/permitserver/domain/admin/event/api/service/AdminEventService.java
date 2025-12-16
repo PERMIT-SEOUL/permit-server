@@ -23,7 +23,8 @@ import com.permitseoul.permitserver.domain.event.core.domain.entity.EventEntity;
 import com.permitseoul.permitserver.domain.event.core.exception.EventIllegalArgumentException;
 import com.permitseoul.permitserver.domain.eventimage.core.domain.EventImage;
 import com.permitseoul.permitserver.domain.eventimage.core.domain.entity.EventImageEntity;
-import com.permitseoul.permitserver.domain.sitemapimage.core.component.EventSiteMapImageSaver;
+import com.permitseoul.permitserver.domain.sitemapimage.core.component.SiteMapImageRemover;
+import com.permitseoul.permitserver.domain.sitemapimage.core.component.SiteMapImageSaver;
 import com.permitseoul.permitserver.domain.sitemapimage.core.domain.entity.EventSiteMapImageEntity;
 import com.permitseoul.permitserver.domain.ticketround.core.domain.TicketRound;
 import com.permitseoul.permitserver.domain.ticketround.core.exception.TicketRoundIllegalArgumentException;
@@ -59,7 +60,8 @@ public class AdminEventService {
     private final AdminEventUpdater adminEventUpdater;
     private final AdminEventImageRemover adminEventImageRemover;
     private final AdminRedisTicketTypeSaver adminRedisTicketTypeSaver;
-    private final EventSiteMapImageSaver eventSiteMapImageSaver;
+    private final SiteMapImageSaver siteMapImageSaver;
+    private final SiteMapImageRemover siteMapImageRemover;
 
     @Transactional(readOnly = true)
     public List<AdminEventListResponse> getEvents() {
@@ -172,8 +174,10 @@ public class AdminEventService {
 
             final LocalDateTime startAt = combineDateAndTimeForUpdate(updateRequest.startDate(), updateRequest.startTime(), eventEntity.getStartAt());
             final LocalDateTime endAt = combineDateAndTimeForUpdate(updateRequest.endDate(), updateRequest.endTime(), eventEntity.getEndAt());
+
             adminEventUpdater.updateEvent(eventEntity, updateRequest, visibleStartAt, visibleEndAt, startAt, endAt);
             updateEventImages(eventEntity.getEventId(), updateRequest.images());
+            updateEventSiteMapImages(eventEntity.getEventId(), updateRequest.siteMapImages());
 
         } catch(AdminEventNotFoundException e) {
             throw new AdminApiException(ErrorCode.NOT_FOUND_EVENT);
@@ -182,11 +186,20 @@ public class AdminEventService {
         }
     }
 
-    private void updateEventImages(final long eventId, final List<AdminEventImageRequest> eventImages) {
-        if (eventImages != null && !eventImages.isEmpty()) {
-            adminEventImageRemover.deleteAllByEventId(eventId);
-            saveEventImages(eventId, eventImages);
+    private void updateEventSiteMapImages(final long eventId, final List<AdminEventImageRequest> eventSiteMapImages) {
+        if (eventSiteMapImages == null || eventSiteMapImages.isEmpty()) {
+            return;
         }
+        siteMapImageRemover.deleteAllSiteMapImages(eventId);
+        saveEventSiteMapImages(eventId, eventSiteMapImages);
+    }
+
+    private void updateEventImages(final long eventId, final List<AdminEventImageRequest> eventImages) {
+        if (eventImages == null || eventImages.isEmpty()) {
+            return;
+        }
+        adminEventImageRemover.deleteAllByEventId(eventId);
+        saveEventImages(eventId, eventImages);
     }
 
     private void saveEventSiteMapImages(final long eventId, final List<AdminEventImageRequest> eventSiteMapImages) {
@@ -200,7 +213,7 @@ public class AdminEventService {
                         eventId
                         ))
                 .toList();
-        eventSiteMapImageSaver.saveSiteMapImages(eventSiteMapImageEntities);
+        siteMapImageSaver.saveSiteMapImages(eventSiteMapImageEntities);
     }
 
     private void saveEventImages(final long eventId, final List<AdminEventImageRequest> eventImages) {
