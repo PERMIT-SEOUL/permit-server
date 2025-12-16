@@ -33,7 +33,7 @@ public class EventSiteMapImageService {
 
             final List<EventSiteMapGetResponse.EventSiteMapImageInfo> siteMapImages = eventSiteMapImages.stream()
                     .sorted(Comparator.comparingInt(EventSiteMapImage::getSequence))
-                    .map(eventSiteMapImage -> EventSiteMapGetResponse.EventSiteMapImageInfo.of(eventSiteMapImage.getSitemapImageUrl(), eventSiteMapImage.getSequence()))
+                    .map(eventSiteMapImage -> EventSiteMapGetResponse.EventSiteMapImageInfo.of(eventSiteMapImage.getSitemapImageUrl()))
                     .toList();
 
             return EventSiteMapGetResponse.of(siteMapImages);
