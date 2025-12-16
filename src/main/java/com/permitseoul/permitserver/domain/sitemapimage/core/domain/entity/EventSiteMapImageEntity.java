@@ -1,12 +1,9 @@
 package com.permitseoul.permitserver.domain.sitemapimage.core.domain.entity;
 
-import com.permitseoul.permitserver.domain.ticket.core.domain.TicketStatus;
-import com.permitseoul.permitserver.domain.ticket.core.domain.entity.TicketEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 
 @Entity
 @Table(name = "event_sitemap_images")
@@ -27,21 +24,18 @@ public class EventSiteMapImageEntity {
     @Column(name = "event_id", nullable = false)
     private long eventId;
 
-    private EventSiteMapImageEntity(final long siteMapImagesId,
+    private EventSiteMapImageEntity(final String sitemapImageUrl,
                                     final int sequence,
-                                    final String sitemapImageUrl,
                                     final long eventId
     ) {
-        this.siteMapImagesId = siteMapImagesId;
         this.sequence = sequence;
         this.sitemapImageUrl = sitemapImageUrl;
         this.eventId = eventId;
     }
 
-    public static EventSiteMapImageEntity create(final long siteMapImagesId,
+    public static EventSiteMapImageEntity create(final String sitemapImageUrl,
                                                  final int sequence,
-                                                 final String sitemapImageUrl,
                                                  final long eventId) {
-        return new EventSiteMapImageEntity(siteMapImagesId, sequence, sitemapImageUrl, eventId);
+        return new EventSiteMapImageEntity( sitemapImageUrl, sequence, eventId);
     }
 }

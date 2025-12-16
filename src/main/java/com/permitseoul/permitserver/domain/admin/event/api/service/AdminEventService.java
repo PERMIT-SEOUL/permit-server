@@ -23,6 +23,8 @@ import com.permitseoul.permitserver.domain.event.core.domain.entity.EventEntity;
 import com.permitseoul.permitserver.domain.event.core.exception.EventIllegalArgumentException;
 import com.permitseoul.permitserver.domain.eventimage.core.domain.EventImage;
 import com.permitseoul.permitserver.domain.eventimage.core.domain.entity.EventImageEntity;
+import com.permitseoul.permitserver.domain.sitemapimage.core.component.EventSiteMapImageSaver;
+import com.permitseoul.permitserver.domain.sitemapimage.core.domain.entity.EventSiteMapImageEntity;
 import com.permitseoul.permitserver.domain.ticketround.core.domain.TicketRound;
 import com.permitseoul.permitserver.domain.ticketround.core.exception.TicketRoundIllegalArgumentException;
 import com.permitseoul.permitserver.domain.tickettype.core.domain.TicketType;
@@ -57,6 +59,7 @@ public class AdminEventService {
     private final AdminEventUpdater adminEventUpdater;
     private final AdminEventImageRemover adminEventImageRemover;
     private final AdminRedisTicketTypeSaver adminRedisTicketTypeSaver;
+    private final EventSiteMapImageSaver eventSiteMapImageSaver;
 
     @Transactional(readOnly = true)
     public List<AdminEventListResponse> getEvents() {
@@ -128,6 +131,8 @@ public class AdminEventService {
         final Event savedEvent = saveEvent(createEventWithTicketsReq, eventStartDateTime, eventEndDateTime, eventExposureStartDateTime, eventExposureEndDateTime);
         saveEventImages(savedEvent.getEventId(), createEventWithTicketsReq.images());
 
+        saveEventSiteMapImages(savedEvent.getEventId(), createEventWithTicketsReq.siteMapImages());
+
         final TicketRound savedTicketRound;
         final List<TicketType> savedTicketTypes;
         try {
@@ -182,6 +187,20 @@ public class AdminEventService {
             adminEventImageRemover.deleteAllByEventId(eventId);
             saveEventImages(eventId, eventImages);
         }
+    }
+
+    private void saveEventSiteMapImages(final long eventId, final List<AdminEventImageRequest> eventSiteMapImages) {
+        if(eventSiteMapImages == null || eventSiteMapImages.isEmpty()) {
+            return;
+        }
+        final List<EventSiteMapImageEntity> eventSiteMapImageEntities = IntStream.range(0, eventSiteMapImages.size())
+                .mapToObj(i -> EventSiteMapImageEntity.create(
+                        eventSiteMapImages.get(i).imageUrl().trim(),
+                        i,
+                        eventId
+                        ))
+                .toList();
+        eventSiteMapImageSaver.saveSiteMapImages(eventSiteMapImageEntities);
     }
 
     private void saveEventImages(final long eventId, final List<AdminEventImageRequest> eventImages) {
