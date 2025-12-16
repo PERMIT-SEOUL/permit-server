@@ -16,7 +16,7 @@ public class EventImageEntity {
     @Column(name = "event_id", nullable = false)
     private long eventId;
 
-    @Column(name = "image_url", nullable = false)
+    @Column(name = "image_url", nullable = false, columnDefinition = "TEXT")
     private String imageUrl;
 
     @Column(name = "sequence", nullable = false)
