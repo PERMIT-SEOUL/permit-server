@@ -2,10 +2,12 @@ package com.permitseoul.permitserver.domain.sitemapimage.core.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 
 @Entity
+@Getter
 @Table(name = "event_sitemap_images")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EventSiteMapImageEntity {
