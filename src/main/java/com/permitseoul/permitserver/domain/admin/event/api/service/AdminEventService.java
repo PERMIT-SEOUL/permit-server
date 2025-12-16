@@ -24,7 +24,9 @@ import com.permitseoul.permitserver.domain.event.core.exception.EventIllegalArgu
 import com.permitseoul.permitserver.domain.eventimage.core.domain.EventImage;
 import com.permitseoul.permitserver.domain.eventimage.core.domain.entity.EventImageEntity;
 import com.permitseoul.permitserver.domain.sitemapimage.core.component.SiteMapImageRemover;
+import com.permitseoul.permitserver.domain.sitemapimage.core.component.SiteMapImageRetriever;
 import com.permitseoul.permitserver.domain.sitemapimage.core.component.SiteMapImageSaver;
+import com.permitseoul.permitserver.domain.sitemapimage.core.domain.EventSiteMapImage;
 import com.permitseoul.permitserver.domain.sitemapimage.core.domain.entity.EventSiteMapImageEntity;
 import com.permitseoul.permitserver.domain.ticketround.core.domain.TicketRound;
 import com.permitseoul.permitserver.domain.ticketround.core.exception.TicketRoundIllegalArgumentException;
@@ -62,6 +64,7 @@ public class AdminEventService {
     private final AdminRedisTicketTypeSaver adminRedisTicketTypeSaver;
     private final SiteMapImageSaver siteMapImageSaver;
     private final SiteMapImageRemover siteMapImageRemover;
+    private final SiteMapImageRetriever siteMapImageRetriever;
 
     @Transactional(readOnly = true)
     public List<AdminEventListResponse> getEvents() {
@@ -94,6 +97,13 @@ public class AdminEventService {
                     .map(eventImage -> AdminEventDetailResponse.AdminEventImageInfo.of(eventImage.getImageUrl()))
                     .toList();
 
+            final List<EventSiteMapImage> siteMapImages = siteMapImageRetriever.findAllEventSiteMapImagesByEventId(event.getEventId());
+
+            final List<AdminEventDetailResponse.AdminEventImageInfo> eventSiteMapImages = siteMapImages.stream()
+                    .sorted(Comparator.comparingInt(EventSiteMapImage::getSequence))
+                    .map(eventImage -> AdminEventDetailResponse.AdminEventImageInfo.of(eventImage.getSitemapImageUrl()))
+                    .toList();
+
             return AdminEventDetailResponse.of(
                     event.getEventId(),
                     LocalDateTimeFormatterUtil.formatyyyyMMdd(event.getVisibleStartAt()),
@@ -111,7 +121,8 @@ public class AdminEventService {
                     event.getLineUp(),
                     event.getDetails(),
                     adminEventImageInfos,
-                    event.getMinAge()
+                    event.getMinAge(),
+                    eventSiteMapImages
             );
 
         } catch(AdminEventNotFoundException e) {
