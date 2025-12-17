@@ -36,7 +36,7 @@ public class EventSiteMapImageService {
                     .map(eventSiteMapImage -> EventSiteMapGetResponse.EventSiteMapImageInfo.of(eventSiteMapImage.getSitemapImageUrl()))
                     .toList();
 
-            return EventSiteMapGetResponse.of(siteMapImages);
+            return EventSiteMapGetResponse.of(event.getName(), siteMapImages);
         } catch (EventNotfoundException e) {
             throw new SiteMapImageApiException(ErrorCode.NOT_FOUND_EVENT);
         }
