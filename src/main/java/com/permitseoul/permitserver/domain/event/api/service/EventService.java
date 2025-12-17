@@ -9,6 +9,7 @@ import com.permitseoul.permitserver.domain.event.core.domain.EventType;
 import com.permitseoul.permitserver.domain.event.core.exception.EventNotfoundException;
 import com.permitseoul.permitserver.domain.eventimage.core.component.EventImageRetriever;
 import com.permitseoul.permitserver.domain.eventimage.core.domain.EventImage;
+import com.permitseoul.permitserver.domain.eventimage.core.domain.entity.EventImageEntity;
 import com.permitseoul.permitserver.domain.eventimage.core.exception.EventImageNotFoundException;
 import com.permitseoul.permitserver.global.util.LocalDateTimeFormatterUtil;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
@@ -22,6 +23,7 @@ import org.springframework.util.ObjectUtils;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -53,6 +55,7 @@ public class EventService {
 
             final List<EventImage> eventImageList = eventImageRetriever.findAllEventImagesByEventId(event.getEventId());
             final List<EventDetailResponse.EventImageInfo> imagesInfo = eventImageList.stream()
+                    .sorted(Comparator.comparingInt(EventImage::getSequence))
                     .map(eventImage -> EventDetailResponse.EventImageInfo.of(eventImage.getImageUrl(), eventImage.getSequence()))
                     .toList();
 

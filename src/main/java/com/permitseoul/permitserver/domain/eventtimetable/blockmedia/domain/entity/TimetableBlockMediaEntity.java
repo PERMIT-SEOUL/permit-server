@@ -26,7 +26,7 @@ public class TimetableBlockMediaEntity {
     @Min(value = 0, message = "timetable_block_media의 sequence는 0이상이어야합니다.")
     private int sequence;
 
-    @Column(name = "mediaUrl", nullable = false)
+    @Column(name = "mediaUrl", nullable = false, columnDefinition = "TEXT")
     private String mediaUrl;
 
     private TimetableBlockMediaEntity(long timetableBlockId, int sequence, String mediaUrl) {
