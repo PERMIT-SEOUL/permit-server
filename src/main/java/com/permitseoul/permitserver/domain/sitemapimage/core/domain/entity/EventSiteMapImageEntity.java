@@ -15,7 +15,7 @@ public class EventSiteMapImageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "sitemap_images_id", nullable = false)
-    public Long siteMapImagesId;
+    private Long siteMapImagesId;
 
     @Column(name = "sequence", nullable = false)
     private int sequence;
