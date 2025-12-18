@@ -29,7 +29,7 @@ public record NotionTimetableDatasourceResponse(
             TitleProperty artistOrActivity,
             @JsonProperty("details")
             RichTextProperty details,
-            @JsonProperty("direct_url")
+            @JsonProperty("redirect url")
             UrlProperty directUrl
     ) {}
 
