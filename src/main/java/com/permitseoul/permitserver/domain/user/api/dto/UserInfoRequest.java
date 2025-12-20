@@ -14,7 +14,6 @@ public record UserInfoRequest(
         Gender gender,
 
         @Email(message = "이메일 형식이 아닙니다.")
-        @NotBlank(message = "이메일은 공백이 될 수 없습니다.")
         String email
 ) {
 }
