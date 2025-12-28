@@ -10,7 +10,9 @@ public record NotionTimetableDatasourceResponse(
     public record NotionPage(
             String id,
             Parent parent,
-            NotionProperties properties
+            NotionProperties properties,
+            @JsonProperty("public_url")
+            String publicUrl
     ) {}
 
     public record Parent(

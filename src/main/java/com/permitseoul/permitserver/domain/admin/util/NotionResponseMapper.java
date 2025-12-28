@@ -1,5 +1,8 @@
 package com.permitseoul.permitserver.domain.admin.util;
 
+import com.permitseoul.permitserver.domain.admin.base.AdminBaseException;
+import com.permitseoul.permitserver.domain.admin.timetable.base.core.exception.NotionPublicUrlNotFoundException;
+import com.permitseoul.permitserver.domain.admin.timetable.base.core.exception.NotionUrlMalformedException;
 import com.permitseoul.permitserver.domain.admin.util.exception.PermitListSizeNotMatchException;
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.domain.TimetableBlock;
 import com.permitseoul.permitserver.domain.eventtimetable.block.core.domain.entity.TimetableBlockEntity;
@@ -8,11 +11,14 @@ import com.permitseoul.permitserver.domain.eventtimetable.category.core.domain.e
 import com.permitseoul.permitserver.domain.eventtimetable.stage.core.domain.entity.TimetableStageEntity;
 import com.permitseoul.permitserver.global.exception.DateFormatException;
 import com.permitseoul.permitserver.global.exception.PermitIllegalStateException;
+import com.permitseoul.permitserver.global.exception.UrlSecureException;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionCategoryDatasourceResponse;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionStageDatasourceResponse;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionTimetableDatasourceResponse;
 import com.permitseoul.permitserver.global.util.LocalDateTimeFormatterUtil;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -140,15 +146,39 @@ public final class NotionResponseMapper {
 
         for (int i = 0; i < savedBlocks.size(); i++) {
             final TimetableBlock block = savedBlocks.get(i);
-            final List<NotionTimetableDatasourceResponse.FilesProperty.FileItem> files = notionTimetableDatasourceResponse.results().get(i).properties().media().files();
-            if (files == null) continue;
+            final NotionTimetableDatasourceResponse.NotionPage notionPage = notionTimetableDatasourceResponse.results().get(i);
+            final String pageId = notionPage.id();
+            final String publicUrl = notionPage.publicUrl();
+            if (publicUrl == null || publicUrl.isBlank()) {
+                throw new NotionPublicUrlNotFoundException();
+            }
+
+            final String host;
+            try {
+                host = new URL(publicUrl).getHost();
+            } catch (MalformedURLException e) {
+                throw new NotionUrlMalformedException();
+            }
+
+            final NotionTimetableDatasourceResponse.FilesProperty filesProperty = notionPage.properties().media();
+            if (filesProperty == null || filesProperty.files() == null) continue;
+            final List<NotionTimetableDatasourceResponse.FilesProperty.FileItem> files = filesProperty.files();
 
             for (int seq = 0; seq < files.size(); seq++) {
-                String mediaUrl = files.get(seq).file().url();
+                final NotionTimetableDatasourceResponse.FilesProperty.FileItem fileItem = files.get(seq);
+                if (fileItem == null || fileItem.file() == null) continue;
+
+                final String originalUrl = fileItem.file().url();
+                if (originalUrl == null || originalUrl.isBlank()) continue;
+
+                //노션에서 주는 url은 유효기간이 있어서 proxyUrl로 우회해서 조회하기
+                final String proxyUrl = NotionImageUrlUtil.buildProxyUrl(host, pageId, originalUrl);
+                if (proxyUrl == null) continue;
+
                 mediaEntities.add(TimetableBlockMediaEntity.create(
                         block.getTimetableBlockId(),
                         seq,
-                        mediaUrl
+                        proxyUrl
                 ));
             }
         }
