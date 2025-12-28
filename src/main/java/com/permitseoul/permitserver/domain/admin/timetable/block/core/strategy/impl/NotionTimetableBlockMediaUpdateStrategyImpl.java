@@ -1,6 +1,5 @@
 package com.permitseoul.permitserver.domain.admin.timetable.block.core.strategy.impl;
 
-import com.permitseoul.permitserver.domain.admin.timetable.base.core.exception.NotionPublicUrlNotFoundException;
 import com.permitseoul.permitserver.domain.admin.timetable.base.core.exception.NotionUrlMalformedException;
 import com.permitseoul.permitserver.domain.admin.timetable.block.api.dto.NotionTimetableBlockUpdateWebhookRequest;
 import com.permitseoul.permitserver.domain.admin.timetable.block.core.strategy.domain.NotionTimetableBlockWebhookType;
@@ -40,6 +39,9 @@ public class NotionTimetableBlockMediaUpdateStrategyImpl implements NotionTimeta
         try {
             host = new java.net.URL(publicUrl).getHost();
         } catch (MalformedURLException e) {
+            throw new NotionUrlMalformedException();
+        }
+        if (host == null) {
             throw new NotionUrlMalformedException();
         }
 

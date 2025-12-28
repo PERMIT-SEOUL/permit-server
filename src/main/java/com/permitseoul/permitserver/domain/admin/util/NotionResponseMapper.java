@@ -16,6 +16,7 @@ import com.permitseoul.permitserver.global.external.notion.dto.NotionCategoryDat
 import com.permitseoul.permitserver.global.external.notion.dto.NotionStageDatasourceResponse;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionTimetableDatasourceResponse;
 import com.permitseoul.permitserver.global.util.LocalDateTimeFormatterUtil;
+import org.jetbrains.annotations.NotNull;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -148,17 +149,7 @@ public final class NotionResponseMapper {
             final TimetableBlock block = savedBlocks.get(i);
             final NotionTimetableDatasourceResponse.NotionPage notionPage = notionTimetableDatasourceResponse.results().get(i);
             final String pageId = notionPage.id();
-            final String publicUrl = notionPage.publicUrl();
-            if (publicUrl == null || publicUrl.isBlank()) {
-                throw new NotionPublicUrlNotFoundException();
-            }
-
-            final String host;
-            try {
-                host = new URL(publicUrl).getHost();
-            } catch (MalformedURLException e) {
-                throw new NotionUrlMalformedException();
-            }
+            final String host = getHost(notionPage);
 
             final NotionTimetableDatasourceResponse.FilesProperty filesProperty = notionPage.properties().media();
             if (filesProperty == null || filesProperty.files() == null) continue;
@@ -184,5 +175,23 @@ public final class NotionResponseMapper {
         }
 
         return mediaEntities;
+    }
+
+    private static String getHost(NotionTimetableDatasourceResponse.NotionPage notionPage) {
+        final String publicUrl = notionPage.publicUrl();
+        if (publicUrl == null || publicUrl.isBlank()) {
+            throw new NotionPublicUrlNotFoundException();
+        }
+
+        final String host;
+        try {
+            host = new URL(publicUrl).getHost();
+        } catch (MalformedURLException e) {
+            throw new NotionUrlMalformedException();
+        }
+        if (host == null) {
+            throw new NotionUrlMalformedException();
+        }
+        return host;
     }
 }

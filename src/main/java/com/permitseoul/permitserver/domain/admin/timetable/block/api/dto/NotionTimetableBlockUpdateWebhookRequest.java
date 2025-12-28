@@ -1,6 +1,7 @@
 package com.permitseoul.permitserver.domain.admin.timetable.block.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ public record NotionTimetableBlockUpdateWebhookRequest(
             String id, // 노션 page id (== timetable row id)
             @JsonProperty("last_edited_time")
             String lastEditedTime,
+            @NotNull
             @JsonProperty("public_url")
             String publicUrl,
             NotionTimetableParent parent,

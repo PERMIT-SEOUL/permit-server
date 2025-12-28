@@ -54,6 +54,7 @@ public class AdminNotionTimetableBlockService {
             throw new AdminNotionException();
         } catch(NotionPublicUrlNotFoundException | NotionUrlMalformedException e) {
             log.error("[Notion 자동화 웹훅 에러] publicUrl이 잘못되었습니다. request={}", webhookRequest, e);
+            throw new AdminNotionException();
         } catch (Exception e) {
             log.error("타임테이블 블럭 웹훅 처리 중 알 수 없는 예외 발생. request={}", webhookRequest, e);
             throw new AdminNotionException();
