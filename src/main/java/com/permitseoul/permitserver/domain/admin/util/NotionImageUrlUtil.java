@@ -36,6 +36,7 @@ public final class NotionImageUrlUtil {
                 .replace("%27", "'")
                 .replace("%28", "(")
                 .replace("%29", ")")
+                .replace("%2A", "*")
                 .replace("%7E", "~");
     }
 }
