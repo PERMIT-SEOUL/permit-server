@@ -88,6 +88,7 @@ public enum ErrorCode implements ApiCode {
     NOT_FOUND_NOTION_DATABASE_SOURCE(HttpStatus.NOT_FOUND, 40427, "Notion 데이터베이스 소스를 찾을 수 없습니다."),
     NOT_FOUND_COUPON(HttpStatus.NOT_FOUND, 40428, "coupon을 찾을 수 없습니다."),
     NOT_FOUND_SITE_MAP_IMAGE(HttpStatus.NOT_FOUND, 40429, "sitemap image를 찾을 수 없습니다."),
+    NOT_FOUND_NOTION_PUBLIC_ID(HttpStatus.NOT_FOUND, 40430, "public url을 찾을 수 없습니다."),
 
 
 
