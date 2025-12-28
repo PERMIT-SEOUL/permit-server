@@ -11,6 +11,8 @@ public record NotionTimetableBlockUpdateWebhookRequest(
             String id, // 노션 page id (== timetable row id)
             @JsonProperty("last_edited_time")
             String lastEditedTime,
+            @JsonProperty("public_url")
+            String publicUrl,
             NotionTimetableParent parent,
             NotionTimetableProperties properties
     ) {

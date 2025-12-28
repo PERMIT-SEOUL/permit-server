@@ -3,6 +3,8 @@ package com.permitseoul.permitserver.domain.admin.timetable.block.api.service;
 import com.permitseoul.permitserver.domain.admin.base.api.exception.AdminApiException;
 import com.permitseoul.permitserver.domain.admin.timetable.base.core.exception.AdminNotionException;
 import com.permitseoul.permitserver.domain.admin.timetable.base.core.components.AdminTimetableRetriever;
+import com.permitseoul.permitserver.domain.admin.timetable.base.core.exception.NotionPublicUrlNotFoundException;
+import com.permitseoul.permitserver.domain.admin.timetable.base.core.exception.NotionUrlMalformedException;
 import com.permitseoul.permitserver.domain.admin.timetable.block.api.dto.NotionTimetableBlockUpdateWebhookRequest;
 import com.permitseoul.permitserver.domain.admin.timetable.block.core.component.AdminTimetableBlockSaver;
 import com.permitseoul.permitserver.domain.admin.timetable.block.core.strategy.domain.NotionTimetableBlockWebhookType;
@@ -50,6 +52,8 @@ public class AdminNotionTimetableBlockService {
         } catch (IndexOutOfBoundsException | NullPointerException e) {
             log.error("웹훅 데이터에 필수 필드가 누락되었습니다. request={}", webhookRequest, e);
             throw new AdminNotionException();
+        } catch(NotionPublicUrlNotFoundException | NotionUrlMalformedException e) {
+            log.error("[Notion 자동화 웹훅 에러] publicUrl이 잘못되었습니다. request={}", webhookRequest, e);
         } catch (Exception e) {
             log.error("타임테이블 블럭 웹훅 처리 중 알 수 없는 예외 발생. request={}", webhookRequest, e);
             throw new AdminNotionException();
