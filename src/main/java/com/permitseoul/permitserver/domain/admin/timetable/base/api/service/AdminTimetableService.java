@@ -5,6 +5,8 @@ import com.permitseoul.permitserver.domain.admin.timetable.base.api.dto.req.Time
 import com.permitseoul.permitserver.domain.admin.timetable.base.api.dto.res.TimetableInfoResponse;
 import com.permitseoul.permitserver.domain.admin.timetable.base.core.components.AdminTimetableRetriever;
 import com.permitseoul.permitserver.domain.admin.timetable.base.core.components.AdminTimetableUpdater;
+import com.permitseoul.permitserver.domain.admin.timetable.base.core.exception.NotionPublicUrlNotFoundException;
+import com.permitseoul.permitserver.domain.admin.timetable.base.core.exception.NotionUrlMalformedException;
 import com.permitseoul.permitserver.domain.admin.util.exception.PermitListSizeNotMatchException;
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.domain.Timetable;
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.domain.entity.TimetableEntity;
@@ -83,6 +85,8 @@ public class AdminTimetableService {
             throw new AdminApiException(ErrorCode.NOT_FOUND_NOTION_DATABASE_SOURCE);
         } catch (final LocalDateTimeException e) {
             throw new AdminApiException(ErrorCode.BAD_REQUEST_DATE_TIME_ERROR);
+        } catch (final NotionPublicUrlNotFoundException | NotionUrlMalformedException e) {
+            throw new AdminApiException(ErrorCode.NOT_FOUND_NOTION_PUBLIC_ID);
         }
     }
 

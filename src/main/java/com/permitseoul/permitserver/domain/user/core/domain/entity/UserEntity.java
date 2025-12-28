@@ -68,7 +68,9 @@ public class UserEntity extends BaseTimeEntity {
                                final String email) {
         this.name = name;
         this.gender = gender;
-        this.email = email;
+        if (email != null) {
+            this.email = email;
+        }
     }
 }
 
