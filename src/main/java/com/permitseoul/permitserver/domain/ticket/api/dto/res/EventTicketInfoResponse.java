@@ -18,6 +18,7 @@ public record EventTicketInfoResponse(
             String ticketTypeName,
             String ticketTypeDate,
             String ticketTypeTime,
-            String ticketTypePrice
+            String ticketTypePrice,
+            boolean isTicketSoldOut
     ) { }
 }
