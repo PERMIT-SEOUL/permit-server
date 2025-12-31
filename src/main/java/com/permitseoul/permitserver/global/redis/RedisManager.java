@@ -7,6 +7,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -75,5 +76,14 @@ public class RedisManager {
         if (keyValues.isEmpty()) return true;
         final Boolean ok = redisTemplate.opsForValue().multiSetIfAbsent(keyValues);
         return Boolean.TRUE.equals(ok);
+    }
+
+    //여러 키를 한번에 조회
+    public List<String> mGet(final List<String> keys) {
+        if (keys == null || keys.isEmpty()) {
+            return List.of();
+        }
+        final List<String> values = redisTemplate.opsForValue().multiGet(keys);
+        return values != null ? values : List.of();
     }
 }
