@@ -124,11 +124,13 @@ public class TicketService {
     }
 
     @Transactional
-    public void confirmTicketByStaff(final String ticketCode, final String checkCodeFromTicket) {
+    public void confirmTicketByStaffCode(final String ticketCode, final String checkCodeFromTicket) {
         try {
             final TicketEntity ticketEntity = ticketRetriever.findTicketEntityByTicketCode(ticketCode);
             verifyTicketStatus(ticketEntity.getStatus());
-            findTicketTypeAndVerifyTicketDate(ticketEntity.getTicketTypeId());
+
+            final TicketType ticketType = findTicketTypeById(ticketEntity.getTicketTypeId());
+            verifyTicketDate(ticketType.getTicketStartAt(), ticketType.getTicketEndAt());
 
             final Event event = findEventById(ticketEntity.getEventId());
             verifyTicketCheckCode(event.getTicketCheckCode(), checkCodeFromTicket);
@@ -143,13 +145,32 @@ public class TicketService {
         }
     }
 
+    @Transactional
+    public void confirmTicketByStaffCamera(final String ticketCode) {
+        try {
+            final TicketEntity ticketEntity = ticketRetriever.findTicketEntityByTicketCode(ticketCode);
+            verifyTicketStatus(ticketEntity.getStatus());
+
+            final TicketType ticketType = findTicketTypeById(ticketEntity.getTicketTypeId());
+            verifyTicketDate(ticketType.getTicketStartAt(), ticketType.getTicketEndAt());
+
+            ticketUpdater.updateTicketStatus(ticketEntity, TicketStatus.USED);
+        } catch (TicketNotFoundException  e) {
+            throw new NotFoundTicketException(ErrorCode.NOT_FOUND_TICKET);
+        } catch (TicketTypeNotfoundException e) {
+            throw new NotFoundTicketException(ErrorCode.NOT_FOUND_TICKET_TYPE);
+        }
+    }
+
     @Transactional(readOnly = true)
     public DoorValidateUserTicket validateUserTicket(final String ticketCode) {
         try {
             final Ticket ticket = ticketRetriever.findTicketByTicketCode(ticketCode);
             verifyTicketStatus(ticket.getStatus());
 
-            final TicketType ticketType = findTicketTypeAndVerifyTicketDate(ticket.getTicketTypeId());
+            final TicketType ticketType = findTicketTypeById(ticket.getTicketTypeId());
+            verifyTicketDate(ticketType.getTicketStartAt(), ticketType.getTicketEndAt());
+
             final Event event = findEventById(ticket.getEventId());
 
             return DoorValidateUserTicket.of(event.getName(), ticketType.getTicketTypeName(), ticketType.getTicketStartAt(), ticketType.getTicketEndAt());
