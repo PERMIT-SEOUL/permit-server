@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class GuestStaffController {
     private final GuestService guestService;
 
-    //도어용 카메라 게스트 티켓 스텝 확인 API
+    //도어용 게스트 티켓 스텝 카메라 확인 API
     @PostMapping("/guests/tickets/door/confirm")
     public ResponseEntity<BaseResponse<?>> confirmGuestTicketByStaffCamera(
             @RequestBody @Valid final GuestTicketConfirmByCameraRequest guestTicketConfirmByCameraRequest

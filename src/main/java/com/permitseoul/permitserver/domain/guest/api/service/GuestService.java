@@ -66,8 +66,6 @@ public class GuestService {
             guestUpdater.updateGuestTicketStatus(guestTicketEntity, GuestTicketStatus.USED);
         } catch (GuestTicketNotFoundException e) {
             throw new GuestNotFoundException(ErrorCode.NOT_FOUND_GUEST_TICKET);
-        } catch (EventNotfoundException e) {
-            throw new GuestNotFoundException(ErrorCode.NOT_FOUND_EVENT);
         }
     }
 

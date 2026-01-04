@@ -25,7 +25,7 @@ public class GuestController {
         return ApiResponseUtil.success(SuccessCode.OK, guestService.validateGuestTicket(ticketCode));
     }
 
-    //도어용 게스트 티켓 스텝 확인 api
+    //도어용 게스트 티켓 스텝 코드 확인 api
     @PostMapping("/tickets/door/staff/confirm")
     public ResponseEntity<BaseResponse<?>> confirmGuestTicketByStaffAtDoor(
             @RequestBody @Valid GuestTicketConfirmRequest guestTicketConfirmRequest
