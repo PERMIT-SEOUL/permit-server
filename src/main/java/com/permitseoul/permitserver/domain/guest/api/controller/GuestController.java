@@ -30,7 +30,7 @@ public class GuestController {
     public ResponseEntity<BaseResponse<?>> confirmGuestTicketByStaffAtDoor(
             @RequestBody @Valid GuestTicketConfirmRequest guestTicketConfirmRequest
     ) {
-        guestService.confirmGuestTicketByStaff(guestTicketConfirmRequest.ticketCode(), guestTicketConfirmRequest.checkCode());
+        guestService.confirmGuestTicketByStaffCheckCode(guestTicketConfirmRequest.ticketCode(), guestTicketConfirmRequest.checkCode());
         return ApiResponseUtil.success(SuccessCode.OK);
     }
 }

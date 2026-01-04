@@ -12,9 +12,6 @@ import com.permitseoul.permitserver.domain.guest.api.exception.GuestTicketIllega
 import com.permitseoul.permitserver.domain.guest.core.component.GuestRetriever;
 import com.permitseoul.permitserver.domain.guest.core.component.GuestUpdater;
 import com.permitseoul.permitserver.domain.guest.core.domain.GuestTicket;
-import com.permitseoul.permitserver.domain.ticket.api.exception.NotFoundTicketException;
-import com.permitseoul.permitserver.domain.ticket.core.exception.TicketNotFoundException;
-import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeNotfoundException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -44,13 +41,27 @@ public class GuestService {
     }
 
     @Transactional
-    public void confirmGuestTicketByStaff(final String ticketCode, final String checkCodeFromStaff) {
+    public void confirmGuestTicketByStaffCheckCode(final String ticketCode, final String checkCodeFromStaff) {
         try {
             final GuestTicketEntity guestTicketEntity = guestRetriever.findGuestTicketEntityByTicketCode(ticketCode);
             validateGuestTicketStatus(guestTicketEntity.getStatus());
 
             final Event event = eventRetriever.findEventById(guestTicketEntity.getEventId());
             validateGuestTicketByCheckCode(event.getTicketCheckCode(), checkCodeFromStaff);
+
+            guestUpdater.updateGuestTicketStatus(guestTicketEntity, GuestTicketStatus.USED);
+        } catch (GuestTicketNotFoundException e) {
+            throw new GuestNotFoundException(ErrorCode.NOT_FOUND_GUEST_TICKET);
+        } catch (EventNotfoundException e) {
+            throw new GuestNotFoundException(ErrorCode.NOT_FOUND_EVENT);
+        }
+    }
+
+    @Transactional
+    public void confirmGuestTicketByStaffCamera(final String ticketCode) {
+        try {
+            final GuestTicketEntity guestTicketEntity = guestRetriever.findGuestTicketEntityByTicketCode(ticketCode);
+            validateGuestTicketStatus(guestTicketEntity.getStatus());
 
             guestUpdater.updateGuestTicketStatus(guestTicketEntity, GuestTicketStatus.USED);
         } catch (GuestTicketNotFoundException e) {
