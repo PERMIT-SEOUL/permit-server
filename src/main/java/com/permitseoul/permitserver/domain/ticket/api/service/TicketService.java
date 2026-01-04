@@ -159,7 +159,7 @@ public class TicketService {
             throw new NotFoundTicketException(ErrorCode.NOT_FOUND_TICKET);
         } catch (TicketTypeNotfoundException e) {
             throw new NotFoundTicketException(ErrorCode.NOT_FOUND_TICKET_TYPE);
-        } 
+        }
     }
 
     @Transactional(readOnly = true)
