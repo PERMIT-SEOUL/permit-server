@@ -46,6 +46,7 @@ import com.permitseoul.permitserver.global.Constants;
 import com.permitseoul.permitserver.global.exception.AlgorithmException;
 import com.permitseoul.permitserver.global.exception.DateFormatException;
 import com.permitseoul.permitserver.global.exception.IllegalEnumTransitionException;
+import com.permitseoul.permitserver.global.exception.RedisUnavailableException;
 import com.permitseoul.permitserver.global.redis.RedisManager;
 import com.permitseoul.permitserver.global.util.LocalDateTimeFormatterUtil;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
@@ -259,13 +260,17 @@ public class PaymentService {
                                          final BigDecimal totalAmount,
                                          final String paymentKey
     ) {
+        log.error("[결제 승인 API - 토스 페이먼츠 결제 실패] userId: {}, sessionKey: {}, orderId: {}", userId, sessionKey, orderId);
         if (reservation != null && reservationTicketList != null) {
             updateReservationStatusAndTossPaymentResponseTime(reservation.getReservationId(), ReservationStatus.PAYMENT_FAILED);
-            reservationSessionRedisRollback(reservationTicketList, userId, orderId);
+            try {
+                reservationSessionRedisRollback(reservationTicketList, userId, orderId);
+            } catch (RedisUnavailableException e) {
+                log.error("[결제 승인 API - redis Rollback Failed] userId: {}, sessionKey: {}, orderId: {}", userId, sessionKey, orderId, e);
+            }
         } else {
             logRollbackFailed(userId, sessionKey, orderId, totalAmount, paymentKey);
         }
-        log.error("[결제 승인 API - 토스 페이먼츠 결제 실패] userId: {}, sessionKey: {}, orderId: {}", userId, sessionKey, orderId);
     }
 
     private void logPaymentSuccessButTicketIssueFailed( final long userId,
@@ -291,7 +296,11 @@ public class PaymentService {
                                       final String paymentKey
     ) {
         if (reservationTicketList != null) {
-            reservationSessionRedisRollback(reservationTicketList, userId, orderId);
+            try {
+                reservationSessionRedisRollback(reservationTicketList, userId, orderId);
+            } catch (RedisUnavailableException e) {
+                log.error("[결제 승인 API - redis Rollback Failed] userId: {}, sessionKey: {}, orderId: {}", userId, sessionKey, orderId, e);
+            }
         } else {
             logRollbackFailed(userId, sessionKey, orderId, totalAmount, paymentKey);
         }
@@ -302,7 +311,7 @@ public class PaymentService {
                                    final String orderId,
                                    final BigDecimal totalAmount,
                                    final String paymentKey) {
-        log.warn("[결제 승인 API - redis Rollback Failed] userId: {}, sessionKey: {}, orderId: {}, totalAmount: {}, paymentKey: {}",
+        log.error("[결제 승인 API - redis Rollback Failed] userId: {}, sessionKey: {}, orderId: {}, totalAmount: {}, paymentKey: {}",
                 userId, sessionKey, orderId, totalAmount, paymentKey);
     }
 
