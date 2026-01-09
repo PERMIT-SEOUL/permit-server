@@ -6,9 +6,9 @@ import com.permitseoul.permitserver.domain.reservationsession.core.repository.Re
 import com.permitseoul.permitserver.domain.reservationticket.core.component.ReservationTicketRetriever;
 import com.permitseoul.permitserver.domain.reservationticket.core.domain.ReservationTicket;
 import com.permitseoul.permitserver.global.Constants;
+import com.permitseoul.permitserver.global.redis.RedisManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +26,7 @@ public class ReservationSessionCleanupScheduler {
     private final ReservationSessionRepository reservationSessionRepository;
     private final ReservationSessionRemover reservationSessionRemover;
     private final ReservationTicketRetriever reservationTicketRetriever;
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisManager redisManager;
     private final SessionProperties sessionProperties;
 
     @Scheduled(cron = "0 * * * * *") // 매 1분마다
@@ -54,7 +54,7 @@ public class ReservationSessionCleanupScheduler {
             rollbackMap.forEach((ticketTypeId, count) -> {
                 final String redisKey = Constants.REDIS_TICKET_TYPE_KEY_NAME + ticketTypeId + Constants.REDIS_TICKET_TYPE_REMAIN;
                 try {
-                    redisTemplate.opsForValue().increment(redisKey, count);
+                    redisManager.increment(redisKey, count);
                     log.info("[Scheduler] Redis rollback: ticketTypeId={}, count={}", ticketTypeId, count);
                 } catch (Exception e) {
                     log.error("[Scheduler] Redis rollback failed: ticketTypeId={}, count={}", ticketTypeId, count, e); // 실패한 롤백들 알림 발송해야될듯

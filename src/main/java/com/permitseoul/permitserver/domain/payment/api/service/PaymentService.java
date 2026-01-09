@@ -46,13 +46,13 @@ import com.permitseoul.permitserver.global.Constants;
 import com.permitseoul.permitserver.global.exception.AlgorithmException;
 import com.permitseoul.permitserver.global.exception.DateFormatException;
 import com.permitseoul.permitserver.global.exception.IllegalEnumTransitionException;
+import com.permitseoul.permitserver.global.redis.RedisManager;
 import com.permitseoul.permitserver.global.util.LocalDateTimeFormatterUtil;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import com.permitseoul.permitserver.global.util.LogFormUtil;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -81,7 +81,7 @@ public class PaymentService {
     private final TicketRetriever ticketRetriever;
     private final TicketReservationPaymentFacade ticketReservationPaymentFacade;
     private final ReservationSessionRetriever reservationSessionRetriever;
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisManager redisManager;
 
 
     public PaymentService(
@@ -95,7 +95,7 @@ public class PaymentService {
             TicketRetriever ticketRetriever,
             TicketReservationPaymentFacade ticketReservationPaymentFacade,
             ReservationSessionRetriever reservationSessionRetriever,
-            RedisTemplate<String, String> redisTemplate) {
+            RedisManager redisManager) {
         this.reservationTicketRetriever = reservationTicketRetriever;
         this.eventRetriever = eventRetriever;
         this.tossPaymentClient = tossPaymentClient;
@@ -106,7 +106,7 @@ public class PaymentService {
         this.ticketRetriever = ticketRetriever;
         this.ticketReservationPaymentFacade = ticketReservationPaymentFacade;
         this.reservationSessionRetriever = reservationSessionRetriever;
-        this.redisTemplate = redisTemplate;
+        this.redisManager = redisManager;
     }
 
 
@@ -378,7 +378,7 @@ public class PaymentService {
         findReservationTicketList.forEach(
                 reservationTicket -> {
                     final String redisKey = Constants.REDIS_TICKET_TYPE_KEY_NAME + reservationTicket.getTicketTypeId() + Constants.REDIS_TICKET_TYPE_REMAIN;
-                    redisTemplate.opsForValue().increment(redisKey, reservationTicket.getCount());
+                    redisManager.increment(redisKey, reservationTicket.getCount());
                     log.info("[Redis Increment Rollback 성공] userId={}, orderId={}, ticketTypeId={}. count={}",
                             userId, orderId, reservationTicket.getTicketTypeId(), reservationTicket.getCount());
                 }

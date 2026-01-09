@@ -27,6 +27,7 @@ import com.permitseoul.permitserver.domain.tickettype.core.exception.TicketTypeN
 import com.permitseoul.permitserver.global.Constants;
 import com.permitseoul.permitserver.global.exception.PriceFormatException;
 import com.permitseoul.permitserver.global.exception.RedisKeyNotFoundException;
+import com.permitseoul.permitserver.global.exception.RedisUnavailableException;
 import com.permitseoul.permitserver.global.redis.RedisManager;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import com.permitseoul.permitserver.global.util.LocalDateTimeFormatterUtil;
@@ -211,7 +212,7 @@ public class TicketService {
         final List<String> redisTicketTypeCountValues;
         try {
             redisTicketTypeCountValues = redisManager.mGet(ticketTypeKeys);
-        } catch (RedisConnectionFailureException | RedisSystemException | QueryTimeoutException e) {
+        } catch (RedisConnectionFailureException | RedisSystemException | QueryTimeoutException | RedisUnavailableException e) {
             // Redis 장애일 때만 fallback
             log.error("[TicketType 개수 정보 조회] Redis 장애로 DB remainTicketCount fallback 처리. ticketType={}, err={}",
                     ticketTypeIds, e.getClass().getSimpleName());
