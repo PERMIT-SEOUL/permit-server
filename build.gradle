@@ -84,6 +84,9 @@ dependencies {
 
 	//Loki
 	implementation 'com.github.loki4j:loki-logback-appender:1.5.2'
+
+	//resilience4j
+	implementation 'io.github.resilience4j:resilience4j-spring-boot3'
 }
 
 
