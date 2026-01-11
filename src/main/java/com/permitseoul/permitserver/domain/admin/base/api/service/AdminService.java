@@ -1,16 +1,13 @@
 package com.permitseoul.permitserver.domain.admin.base.api.service;
 
 import com.permitseoul.permitserver.domain.admin.base.api.AdminProperties;
-import com.permitseoul.permitserver.domain.admin.base.api.dto.req.UserAuthorityGetRequest;
 import com.permitseoul.permitserver.domain.admin.base.api.dto.res.UserAuthorityGetResponse;
-import com.permitseoul.permitserver.domain.admin.base.api.exception.AdminApiException;
 import com.permitseoul.permitserver.domain.admin.base.api.exception.AdminAuthorizationException;
 import com.permitseoul.permitserver.domain.user.core.component.UserRetriever;
 import com.permitseoul.permitserver.domain.user.core.component.UserUpdater;
 import com.permitseoul.permitserver.domain.user.core.domain.User;
 import com.permitseoul.permitserver.domain.user.core.domain.UserRole;
 import com.permitseoul.permitserver.domain.user.core.domain.entity.UserEntity;
-import com.permitseoul.permitserver.domain.user.core.exception.UserIllegalArgumentException;
 import com.permitseoul.permitserver.domain.user.core.exception.UserNotFoundException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import lombok.RequiredArgsConstructor;
