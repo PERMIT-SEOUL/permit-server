@@ -6,6 +6,7 @@ import com.permitseoul.permitserver.domain.user.core.domain.User;
 import com.permitseoul.permitserver.domain.user.core.domain.entity.UserEntity;
 import com.permitseoul.permitserver.domain.user.core.exception.UserNotFoundException;
 import com.permitseoul.permitserver.domain.user.core.repository.UserRepository;
+import jakarta.validation.Constraint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,5 +52,10 @@ public class UserRetriever {
         if (userRepository.existsByEmail(userEmail)) {
             throw new UserDuplicateException();
         }
+    }
+
+    @Transactional(readOnly = true)
+    public User findUserByEmail(final String userEmail) {
+        return User.fromEntity(userRepository.findByEmail(userEmail).orElseThrow(UserNotFoundException::new));
     }
 }
