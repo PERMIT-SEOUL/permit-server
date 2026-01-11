@@ -282,7 +282,7 @@ public class PaymentService {
         log.error("토스 결제 승인 완료 -> 티켓 발급 실패",
                 keyValue(Constants.USER_ID, userId),
                 keyValue(Constants.ORDER_ID, orderId),
-                keyValue(Constants.PAYMENT_KEY, paymentKey),
+                keyValue(Constants.PAYMENT_KEY, LogFormUtil.maskPaymentKey(paymentKey)),
                 keyValue(Constants.RESERVATION_ID, reservationId),
                 keyValue(Constants.TOTAL_AMOUNT, totalAmount)
         );
@@ -312,7 +312,7 @@ public class PaymentService {
                                    final BigDecimal totalAmount,
                                    final String paymentKey) {
         log.error("[결제 승인 API - redis Rollback Failed] userId: {}, sessionKey: {}, orderId: {}, totalAmount: {}, paymentKey: {}",
-                userId, sessionKey, orderId, totalAmount, paymentKey);
+                userId, sessionKey, orderId, totalAmount, LogFormUtil.maskPaymentKey(paymentKey));
     }
 
     private void updateReservationStatusAndTossPaymentResponseTime(final long reservationId, final ReservationStatus status) {
