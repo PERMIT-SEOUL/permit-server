@@ -1,6 +1,9 @@
 package com.permitseoul.permitserver.global.redis;
 
 import com.permitseoul.permitserver.global.exception.RedisKeyNotFoundException;
+import com.permitseoul.permitserver.global.exception.RedisUnavailableException;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -10,6 +13,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 
 @Service
@@ -18,64 +22,88 @@ import java.util.Objects;
 public class RedisManager {
 
     private final StringRedisTemplate redisTemplate;
+    private final CircuitBreaker redisCircuitBreaker;
+
+    private <T> T execute(final Supplier<T> supplier) {
+        try {
+            return CircuitBreaker.decorateSupplier(redisCircuitBreaker, supplier).get();
+        } catch (CallNotPermittedException e) {
+            throw new RedisUnavailableException("redis circuit open", e);
+        }
+    }
+
+    private void execute(final Runnable runnable) {
+        execute(() -> {
+            runnable.run();
+            return null;
+        });
+    }
 
     public void set(final String key,
                     final String value,
                     final Duration ttl) {
-        if (ttl != null) {
-            redisTemplate.opsForValue().set(key, value, ttl);
-        } else {
-            redisTemplate.opsForValue().set(key, value);
-        }
+        execute(() -> {
+            if (ttl != null) {
+                redisTemplate.opsForValue().set(key, value, ttl);
+            } else {
+                redisTemplate.opsForValue().set(key, value);
+            }
+        });
 //        log.debug("[RedisManager] SET key={}, value={}, ttl={}", key, value, ttl);
     }
 
     public boolean setIfAbsent(final String key, final String value) {
-        final Boolean ok = redisTemplate.opsForValue().setIfAbsent(key, value);
-        //        log.debug("[RedisManager] SET NX key={}, value={}, created={}", key, value, created);
-        return Boolean.TRUE.equals(ok);
+        return execute(() -> {
+            final Boolean ok = redisTemplate.opsForValue().setIfAbsent(key, value);
+            //        log.debug("[RedisManager] SET NX key={}, value={}, created={}", key, value, created);
+            return Boolean.TRUE.equals(ok);
+        });
     }
 
     public String get(final String key) {
-        return redisTemplate.opsForValue().get(key);
+        return execute(() -> redisTemplate.opsForValue().get(key));
     }
 
     public void delete(final String key) {
-        redisTemplate.delete(key);
+        execute(() -> redisTemplate.delete(key));
 //        log.debug("[RedisManager] DELETE key={}", key);
     }
 
     public boolean isExists(final String key) {
-        Boolean exists = redisTemplate.hasKey(key);
-        return Boolean.TRUE.equals(exists);
+        return execute(() -> {
+            Boolean exists = redisTemplate.hasKey(key);
+            return Boolean.TRUE.equals(exists);
+        });
     }
 
     public Long decrement(final String key, final long count) {
         if(!isExists(key)) {
             throw new RedisKeyNotFoundException();
         }
-        return redisTemplate.opsForValue().decrement(key, count);
+        return execute(() -> redisTemplate.opsForValue().decrement(key, count));
     }
 
     public Long increment(final String key, final long count) {
         if(!isExists(key)) {
             throw new RedisKeyNotFoundException();
         }
-        return redisTemplate.opsForValue().increment(key, count);
+        return execute(() -> redisTemplate.opsForValue().increment(key, count));
     }
 
     public void mSet(final Map<String, String> keyValues) {
         Objects.requireNonNull(keyValues, "keyValues must not be null");
         if (keyValues.isEmpty()) return;
-        redisTemplate.opsForValue().multiSet(keyValues);
+        execute(() -> redisTemplate.opsForValue().multiSet(keyValues));
         // log.debug("[RedisManager] MSET size={}", keyValues.size());
     }
 
     public boolean mSetIfAbsent(final Map<String, String> keyValues) {
         Objects.requireNonNull(keyValues, "keyValues must not be null");
         if (keyValues.isEmpty()) return true;
-        final Boolean ok = redisTemplate.opsForValue().multiSetIfAbsent(keyValues);
-        return Boolean.TRUE.equals(ok);
+        return execute(() -> {
+            final Boolean ok = redisTemplate.opsForValue().multiSetIfAbsent(keyValues);
+            return Boolean.TRUE.equals(ok);
+        });
     }
 
     //여러 키를 한번에 조회
@@ -83,7 +111,9 @@ public class RedisManager {
         if (keys == null || keys.isEmpty()) {
             return List.of();
         }
-        final List<String> values = redisTemplate.opsForValue().multiGet(keys);
-        return values != null ? values : List.of();
+        return execute(() -> {
+            final List<String> values = redisTemplate.opsForValue().multiGet(keys);
+            return values != null ? values : List.of();
+        });
     }
 }

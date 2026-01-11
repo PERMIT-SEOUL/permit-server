@@ -118,6 +118,7 @@ public enum ErrorCode implements ApiCode {
     /**
      * 500 Internal Server Error
      */
+    SERVICE_UNAVAILABLE_REDIS(HttpStatus.SERVICE_UNAVAILABLE, 50300, "redis 장애입니다. 잠시 후 다시 시도해주세요."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50000, "서버 내부 오류입니다."),
     INTERNAL_RT_CACHE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50001, "RT가 캐시에 저장되어 있지 않습니다."),
     INTERNAL_JSON_FORMAT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50002, "json 포맷팅 과정에서 에러가 발생했습니다."),
