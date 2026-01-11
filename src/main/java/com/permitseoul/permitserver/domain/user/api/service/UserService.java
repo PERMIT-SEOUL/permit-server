@@ -4,6 +4,7 @@ import com.permitseoul.permitserver.domain.user.api.dto.UserInfoResponse;
 import com.permitseoul.permitserver.domain.user.api.exception.ConflictUserException;
 import com.permitseoul.permitserver.domain.user.api.exception.NotfoundUserException;
 import com.permitseoul.permitserver.domain.user.core.component.UserRetriever;
+import com.permitseoul.permitserver.domain.user.core.component.UserUpdater;
 import com.permitseoul.permitserver.domain.user.core.domain.Gender;
 import com.permitseoul.permitserver.domain.user.core.domain.User;
 import com.permitseoul.permitserver.domain.user.core.domain.entity.UserEntity;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UserService {
     private final UserRetriever userRetriever;
+    private final UserUpdater userUpdater;
 
     @Transactional(readOnly = true)
     public void checkEmailDuplicated(final String userEmail) {
@@ -47,7 +49,7 @@ public class UserService {
             if (email != null) {
                 userRetriever.validEmailDuplicated(email);
             }
-            userEntity.updateUserInfo(name, gender, email);
+            userUpdater.updateUserInfo(userEntity, name, gender, email);
         } catch (UserNotFoundException e) {
             throw new NotfoundUserException(ErrorCode.NOT_FOUND_USER);
         } catch (UserDuplicateException e) {
