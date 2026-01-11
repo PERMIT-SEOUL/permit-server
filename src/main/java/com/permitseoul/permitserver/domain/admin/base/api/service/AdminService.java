@@ -10,6 +10,7 @@ import com.permitseoul.permitserver.domain.user.core.component.UserUpdater;
 import com.permitseoul.permitserver.domain.user.core.domain.User;
 import com.permitseoul.permitserver.domain.user.core.domain.UserRole;
 import com.permitseoul.permitserver.domain.user.core.domain.entity.UserEntity;
+import com.permitseoul.permitserver.domain.user.core.exception.UserIllegalArgumentException;
 import com.permitseoul.permitserver.domain.user.core.exception.UserNotFoundException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import lombok.RequiredArgsConstructor;
