@@ -3,6 +3,7 @@ package com.permitseoul.permitserver.domain.admin.base.api.controller;
 import com.permitseoul.permitserver.domain.admin.base.api.dto.req.AdminValidateRequest;
 import com.permitseoul.permitserver.domain.admin.base.api.dto.req.S3PreSignedUrlRequest;
 import com.permitseoul.permitserver.domain.admin.base.api.dto.req.UserAuthorityGetRequest;
+import com.permitseoul.permitserver.domain.admin.base.api.dto.res.UserAuthorityUpdateRequest;
 import com.permitseoul.permitserver.domain.admin.base.api.service.AdminService;
 import com.permitseoul.permitserver.domain.admin.util.aws.S3Service;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
@@ -43,5 +44,15 @@ public class AdminController {
             @RequestBody @Valid final UserAuthorityGetRequest request
     ){
         return ApiResponseUtil.success(SuccessCode.OK, adminService.getUserAuthority(request.email()));
+    }
+
+    //유저 권한 변경 API
+    @PutMapping("/users/{userId}/role")
+    public ResponseEntity<BaseResponse<?>> updateUserAuthority(
+            @PathVariable("userId") final long userId,
+            @RequestBody @Valid final UserAuthorityUpdateRequest request
+    ) {
+        adminService.updateUserAuthority(userId, request.role());
+        return ApiResponseUtil.success(SuccessCode.OK);
     }
 }

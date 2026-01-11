@@ -72,5 +72,9 @@ public class UserEntity extends BaseTimeEntity {
             this.email = email;
         }
     }
+
+    public void updateUserRole(final UserRole userRole) {
+        this.userRole = userRole;
+    }
 }
 
