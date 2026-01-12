@@ -11,6 +11,7 @@ import com.permitseoul.permitserver.global.exception.FilterException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
@@ -26,6 +27,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
 
 
@@ -45,9 +47,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull final HttpServletResponse response,
                                     @NonNull final FilterChain filterChain) throws ServletException, IOException {
         final String uri = request.getRequestURI();
-        log.info(Arrays.toString(request.getCookies()));
-        log.info(request.getHeader("Set-Cookie"));
-        log.info(String.valueOf(request));
+
+        // ===== Headers =====
+        log.info("\n-- Headers --");
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames != null && headerNames.hasMoreElements()) {
+            String name = headerNames.nextElement();
+            Enumeration<String> values = request.getHeaders(name);
+            while (values.hasMoreElements()) {
+                log.info("{}: {}", name, values.nextElement());
+            }
+        }
+
+        // ===== Cookies =====
+        log.info("\n-- Cookies --");
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null || cookies.length == 0) {
+            log.info("(쿠키 none)");
+        } else {
+            for (Cookie c : cookies) {
+                log.info("{}={}; domain={}; path={}; maxAge={}; secure={}; httpOnly={}",
+                        c.getName(),
+                        c.getValue(),
+                        c.getDomain(),
+                        c.getPath(),
+                        c.getMaxAge(),
+                        c.getSecure(),
+                        c.isHttpOnly());
+            }
+        }
+
         try {
             MDC.put(USER_ID_MDC_KEY, ANONYMOUS_USER_ID);
             if(isHealthCheckUri(uri) || isLoginOrReissue(uri)) {
