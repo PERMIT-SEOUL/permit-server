@@ -47,36 +47,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull final HttpServletResponse response,
                                     @NonNull final FilterChain filterChain) throws ServletException, IOException {
         final String uri = request.getRequestURI();
-
-        // ===== Headers =====
-        log.info("\n-- Headers --");
-        Enumeration<String> headerNames = request.getHeaderNames();
-        while (headerNames != null && headerNames.hasMoreElements()) {
-            String name = headerNames.nextElement();
-            Enumeration<String> values = request.getHeaders(name);
-            while (values.hasMoreElements()) {
-                log.info("{}: {}", name, values.nextElement());
-            }
-        }
-
-        // ===== Cookies =====
-        log.info("\n-- Cookies --");
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null || cookies.length == 0) {
-            log.info("(쿠키 none)");
-        } else {
-            for (Cookie c : cookies) {
-                log.info("{}={}; domain={}; path={}; maxAge={}; secure={}; httpOnly={}",
-                        c.getName(),
-                        c.getValue(),
-                        c.getDomain(),
-                        c.getPath(),
-                        c.getMaxAge(),
-                        c.getSecure(),
-                        c.isHttpOnly());
-            }
-        }
-
         try {
             MDC.put(USER_ID_MDC_KEY, ANONYMOUS_USER_ID);
             if(isHealthCheckUri(uri) || isLoginOrReissue(uri)) {
