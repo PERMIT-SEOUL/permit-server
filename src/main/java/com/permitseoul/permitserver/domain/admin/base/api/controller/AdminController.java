@@ -22,6 +22,7 @@ import java.net.URLDecoder;
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
+@Validated
 public class AdminController {
     private final AdminService adminService;
     private final S3Service s3Service;
@@ -45,7 +46,6 @@ public class AdminController {
 
     //유저 권한 정보 조회 API
     @GetMapping("/users")
-    @Validated
     public ResponseEntity<BaseResponse<?>> getUserAuthority(
             @RequestParam("email")
             @NotBlank(message = "email은 필수입니다.")
