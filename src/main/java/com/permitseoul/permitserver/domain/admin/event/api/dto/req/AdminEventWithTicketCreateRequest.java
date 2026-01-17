@@ -54,7 +54,6 @@ public record AdminEventWithTicketCreateRequest(
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
         LocalTime endTime,
 
-        @NotBlank(message = "행사 장소는 필수입니다.")
         String venue,
         String lineup,
         String details,
