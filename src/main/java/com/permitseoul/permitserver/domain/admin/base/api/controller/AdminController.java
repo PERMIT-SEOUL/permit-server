@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLDecoder;
+
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
@@ -41,9 +43,9 @@ public class AdminController {
     //유저 권한 정보 조회 API
     @GetMapping("/users")
     public ResponseEntity<BaseResponse<?>> getUserAuthority(
-            @RequestBody @Valid final UserAuthorityGetRequest request
+            @RequestParam("email") final String email
     ){
-        return ApiResponseUtil.success(SuccessCode.OK, adminService.getUserAuthority(request.email()));
+        return ApiResponseUtil.success(SuccessCode.OK, adminService.getUserAuthority(email));
     }
 
     //유저 권한 변경 API
