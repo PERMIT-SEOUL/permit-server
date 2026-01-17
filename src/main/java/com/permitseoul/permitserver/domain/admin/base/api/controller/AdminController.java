@@ -10,8 +10,11 @@ import com.permitseoul.permitserver.global.response.ApiResponseUtil;
 import com.permitseoul.permitserver.global.response.BaseResponse;
 import com.permitseoul.permitserver.global.response.code.SuccessCode;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URLDecoder;
@@ -42,8 +45,12 @@ public class AdminController {
 
     //유저 권한 정보 조회 API
     @GetMapping("/users")
+    @Validated
     public ResponseEntity<BaseResponse<?>> getUserAuthority(
-            @RequestParam("email") final String email
+            @RequestParam("email")
+            @NotBlank(message = "email은 필수입니다.")
+            @Email(message = "email 형식이 올바르지 않습니다.")
+            final String email
     ){
         return ApiResponseUtil.success(SuccessCode.OK, adminService.getUserAuthority(email));
     }
