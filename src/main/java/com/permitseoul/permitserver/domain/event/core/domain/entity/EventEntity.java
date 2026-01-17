@@ -33,7 +33,7 @@ public class EventEntity extends BaseTimeEntity {
     @Column(name = "end_at", nullable = false)
     private LocalDateTime endAt;
 
-    @Column(name = "venue", nullable = false)
+    @Column(name = "venue")
     private String venue;
 
     @Column(name = "line_up", columnDefinition = "TEXT")
