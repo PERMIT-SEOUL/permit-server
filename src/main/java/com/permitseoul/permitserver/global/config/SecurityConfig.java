@@ -39,7 +39,9 @@ public class SecurityConfig {
             "/api/tickets/info/*",
             "/api/tickets/door/staff/confirm",
             "/api/tickets/door/validation/*",
-            "/api/notion/**"
+            "/api/notion/**",
+            "api/guests/**",
+            "/api/events/*/sitemap",
     };
 
     private static final String[] adminURIList = {
@@ -58,6 +60,10 @@ public class SecurityConfig {
             "/api/tickets/user"
     };
 
+    private static final String[] staffURIList = {
+            "/api/staff/**"
+    };
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
@@ -72,6 +78,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(whiteURIList).permitAll() //로그인 상관 X
                         .requestMatchers(adminURIList).hasRole(UserRole.ADMIN.name())  // ADMIN 권한 필요
+                        .requestMatchers(staffURIList).hasAnyRole(UserRole.STAFF.name(), UserRole.ADMIN.name())
                         .requestMatchers(authRequiredURIList).authenticated() // 로그인 필수
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, List.of(whiteURIList)), UsernamePasswordAuthenticationFilter.class)

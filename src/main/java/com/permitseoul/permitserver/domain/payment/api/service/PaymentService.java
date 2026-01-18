@@ -46,13 +46,14 @@ import com.permitseoul.permitserver.global.Constants;
 import com.permitseoul.permitserver.global.exception.AlgorithmException;
 import com.permitseoul.permitserver.global.exception.DateFormatException;
 import com.permitseoul.permitserver.global.exception.IllegalEnumTransitionException;
+import com.permitseoul.permitserver.global.exception.RedisUnavailableException;
+import com.permitseoul.permitserver.global.redis.RedisManager;
 import com.permitseoul.permitserver.global.util.LocalDateTimeFormatterUtil;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import com.permitseoul.permitserver.global.util.LogFormUtil;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -81,7 +82,7 @@ public class PaymentService {
     private final TicketRetriever ticketRetriever;
     private final TicketReservationPaymentFacade ticketReservationPaymentFacade;
     private final ReservationSessionRetriever reservationSessionRetriever;
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisManager redisManager;
 
 
     public PaymentService(
@@ -95,7 +96,7 @@ public class PaymentService {
             TicketRetriever ticketRetriever,
             TicketReservationPaymentFacade ticketReservationPaymentFacade,
             ReservationSessionRetriever reservationSessionRetriever,
-            RedisTemplate<String, String> redisTemplate) {
+            RedisManager redisManager) {
         this.reservationTicketRetriever = reservationTicketRetriever;
         this.eventRetriever = eventRetriever;
         this.tossPaymentClient = tossPaymentClient;
@@ -106,7 +107,7 @@ public class PaymentService {
         this.ticketRetriever = ticketRetriever;
         this.ticketReservationPaymentFacade = ticketReservationPaymentFacade;
         this.reservationSessionRetriever = reservationSessionRetriever;
-        this.redisTemplate = redisTemplate;
+        this.redisManager = redisManager;
     }
 
 
@@ -259,13 +260,17 @@ public class PaymentService {
                                          final BigDecimal totalAmount,
                                          final String paymentKey
     ) {
+        log.error("[결제 승인 API - 토스 페이먼츠 결제 실패] userId: {}, sessionKey: {}, orderId: {}", userId, sessionKey, orderId);
         if (reservation != null && reservationTicketList != null) {
             updateReservationStatusAndTossPaymentResponseTime(reservation.getReservationId(), ReservationStatus.PAYMENT_FAILED);
-            reservationSessionRedisRollback(reservationTicketList, userId, orderId);
+            try {
+                reservationSessionRedisRollback(reservationTicketList, userId, orderId);
+            } catch (RedisUnavailableException e) {
+                log.error("[결제 승인 API - redis Rollback Failed] userId: {}, sessionKey: {}, orderId: {}", userId, sessionKey, orderId, e);
+            }
         } else {
             logRollbackFailed(userId, sessionKey, orderId, totalAmount, paymentKey);
         }
-        log.error("[결제 승인 API - 토스 페이먼츠 결제 실패] userId: {}, sessionKey: {}, orderId: {}", userId, sessionKey, orderId);
     }
 
     private void logPaymentSuccessButTicketIssueFailed( final long userId,
@@ -277,7 +282,7 @@ public class PaymentService {
         log.error("토스 결제 승인 완료 -> 티켓 발급 실패",
                 keyValue(Constants.USER_ID, userId),
                 keyValue(Constants.ORDER_ID, orderId),
-                keyValue(Constants.PAYMENT_KEY, paymentKey),
+                keyValue(Constants.PAYMENT_KEY, LogFormUtil.maskPaymentKey(paymentKey)),
                 keyValue(Constants.RESERVATION_ID, reservationId),
                 keyValue(Constants.TOTAL_AMOUNT, totalAmount)
         );
@@ -291,7 +296,11 @@ public class PaymentService {
                                       final String paymentKey
     ) {
         if (reservationTicketList != null) {
-            reservationSessionRedisRollback(reservationTicketList, userId, orderId);
+            try {
+                reservationSessionRedisRollback(reservationTicketList, userId, orderId);
+            } catch (RedisUnavailableException e) {
+                log.error("[결제 승인 API - redis Rollback Failed] userId: {}, sessionKey: {}, orderId: {}", userId, sessionKey, orderId, e);
+            }
         } else {
             logRollbackFailed(userId, sessionKey, orderId, totalAmount, paymentKey);
         }
@@ -302,8 +311,8 @@ public class PaymentService {
                                    final String orderId,
                                    final BigDecimal totalAmount,
                                    final String paymentKey) {
-        log.warn("[결제 승인 API - redis Rollback Failed] userId: {}, sessionKey: {}, orderId: {}, totalAmount: {}, paymentKey: {}",
-                userId, sessionKey, orderId, totalAmount, paymentKey);
+        log.error("[결제 승인 API - redis Rollback Failed] userId: {}, sessionKey: {}, orderId: {}, totalAmount: {}, paymentKey: {}",
+                userId, sessionKey, orderId, totalAmount, LogFormUtil.maskPaymentKey(paymentKey));
     }
 
     private void updateReservationStatusAndTossPaymentResponseTime(final long reservationId, final ReservationStatus status) {
@@ -378,7 +387,7 @@ public class PaymentService {
         findReservationTicketList.forEach(
                 reservationTicket -> {
                     final String redisKey = Constants.REDIS_TICKET_TYPE_KEY_NAME + reservationTicket.getTicketTypeId() + Constants.REDIS_TICKET_TYPE_REMAIN;
-                    redisTemplate.opsForValue().increment(redisKey, reservationTicket.getCount());
+                    redisManager.increment(redisKey, reservationTicket.getCount());
                     log.info("[Redis Increment Rollback 성공] userId={}, orderId={}, ticketTypeId={}. count={}",
                             userId, orderId, reservationTicket.getTicketTypeId(), reservationTicket.getCount());
                 }

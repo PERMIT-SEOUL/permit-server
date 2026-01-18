@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.permitseoul.permitserver.global.exception.FilterException;
 import com.permitseoul.permitserver.global.exception.PermitGlobalException;
+import com.permitseoul.permitserver.global.exception.RedisUnavailableException;
 import com.permitseoul.permitserver.global.exception.ResolverException;
 import com.permitseoul.permitserver.global.exception.UrlSecureException;
 import com.permitseoul.permitserver.global.response.ApiResponseUtil;
@@ -50,6 +51,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<BaseResponse<?>> handleFilterException(final FilterException e) {
         log.error(e.getMessage(), e);
         return ApiResponseUtil.failure(e.getErrorCode());
+    }
+
+    @ExceptionHandler(RedisUnavailableException.class)
+    public ResponseEntity<BaseResponse<?>> handleRedisUnavailableException(final RedisUnavailableException e) {
+        log.warn(e.getMessage(), e);
+        return ApiResponseUtil.failure(ErrorCode.SERVICE_UNAVAILABLE_REDIS);
     }
 
     @ExceptionHandler(JsonProcessingException.class)

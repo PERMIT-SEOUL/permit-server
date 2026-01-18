@@ -72,6 +72,8 @@ public class DiscordErrorLogAppender extends UnsynchronizedAppenderBase<ILogging
         final Map<String, String> mdc = event.getMDCPropertyMap();
 
         final String traceId = safe(mdc.get("trace_id"));
+        final String userId = safe(mdc.get("user_id"));
+        final String userIdText = userId.isBlank() ? "anonymous" : userId;
         final String uri = safe(mdc.get("uri"));
         final String method = safe(mdc.get("method"));
         final String status = safe(mdc.get("status"));
@@ -91,7 +93,8 @@ public class DiscordErrorLogAppender extends UnsynchronizedAppenderBase<ILogging
                 .append(" | thread=").append(event.getThreadName())
                 .append("\n");
 
-        sb.append("trace_id=").append(traceId)
+        sb.append("user_id=").append(userIdText)
+                .append(" | trace_id=").append(traceId)
                 .append(" | uri=").append(uri)
                 .append(" | method=").append(method)
                 .append(" | status=").append(status)

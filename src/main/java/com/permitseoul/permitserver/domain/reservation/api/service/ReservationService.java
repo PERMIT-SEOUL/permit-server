@@ -28,10 +28,10 @@ import com.permitseoul.permitserver.domain.user.core.component.UserRetriever;
 import com.permitseoul.permitserver.domain.user.core.domain.User;
 import com.permitseoul.permitserver.domain.user.core.exception.UserNotFoundException;
 import com.permitseoul.permitserver.global.Constants;
+import com.permitseoul.permitserver.global.redis.RedisManager;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,7 +52,7 @@ public class ReservationService {
     private final CouponRetriever couponRetriever;
     private final ReservationRetriever reservationRetriever;
     private final TicketRoundRetriever ticketRoundRetriever;
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisManager redisManager;
     private final ReservationAndReservationTicketFacade reservationAndReservationTicketFacade;
     private final ReservationSessionRetriever reservationSessionRetriever;
 
@@ -244,7 +244,7 @@ public class ReservationService {
             requestTicketTypeInfos.forEach(
                     ticketTypeInfo -> {
                         final String redisKey = Constants.REDIS_TICKET_TYPE_KEY_NAME + ticketTypeInfo.id() + Constants.REDIS_TICKET_TYPE_REMAIN;
-                        final Long remain = redisTemplate.opsForValue().decrement(redisKey, ticketTypeInfo.count());
+                        final Long remain = redisManager.decrement(redisKey, ticketTypeInfo.count());
 
                         redisDecreaseAppliedTicketTypeInfoMap.put(ticketTypeInfo.id(), ticketTypeInfo.count());
 
@@ -266,7 +266,7 @@ public class ReservationService {
         requestTicketTypeInfoMap.forEach(
                 (requestTicketTypeId, count) -> {
                     final String redisKey = Constants.REDIS_TICKET_TYPE_KEY_NAME + requestTicketTypeId + Constants.REDIS_TICKET_TYPE_REMAIN;
-                    redisTemplate.opsForValue().increment(redisKey, count);
+                    redisManager.increment(redisKey, count);
                 }
         );
     }

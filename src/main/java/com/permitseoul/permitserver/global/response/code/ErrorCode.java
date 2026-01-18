@@ -29,6 +29,7 @@ public enum ErrorCode implements ApiCode {
     BAD_REQUEST_CANCELED_TICKET(HttpStatus.BAD_REQUEST, 40015, "취소된 ticket 입니다."),
     BAD_REQUEST_MISMATCH_TICKET_TYPE_ROUND(HttpStatus.BAD_REQUEST, 40016, "ticketType의 roundId와 다른 ticketRoundId 입니다."),
     BAD_REQUEST_MISMATCH_LIST_SIZE(HttpStatus.BAD_REQUEST, 40017, "list의 길이가 다릅니다."),
+    BAD_REQUEST_REDIS_TICKET_TYPE_MISMATCH(HttpStatus.BAD_REQUEST, 40018, "redis ticket tpye mismatch 에러입니다. "),
 
 
 
@@ -87,6 +88,8 @@ public enum ErrorCode implements ApiCode {
     NOT_FOUND_NOTION_RELATION_ID(HttpStatus.NOT_FOUND, 40426, "Notion Relation Id를 찾을 수 없습니다."),
     NOT_FOUND_NOTION_DATABASE_SOURCE(HttpStatus.NOT_FOUND, 40427, "Notion 데이터베이스 소스를 찾을 수 없습니다."),
     NOT_FOUND_COUPON(HttpStatus.NOT_FOUND, 40428, "coupon을 찾을 수 없습니다."),
+    NOT_FOUND_SITE_MAP_IMAGE(HttpStatus.NOT_FOUND, 40429, "sitemap image를 찾을 수 없습니다."),
+    NOT_FOUND_NOTION_PUBLIC_ID(HttpStatus.NOT_FOUND, 40430, "public url을 찾을 수 없습니다."),
 
 
 
@@ -115,6 +118,7 @@ public enum ErrorCode implements ApiCode {
     /**
      * 500 Internal Server Error
      */
+    SERVICE_UNAVAILABLE_REDIS(HttpStatus.SERVICE_UNAVAILABLE, 50300, "redis 장애입니다. 잠시 후 다시 시도해주세요."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50000, "서버 내부 오류입니다."),
     INTERNAL_RT_CACHE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50001, "RT가 캐시에 저장되어 있지 않습니다."),
     INTERNAL_JSON_FORMAT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50002, "json 포맷팅 과정에서 에러가 발생했습니다."),

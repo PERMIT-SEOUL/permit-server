@@ -42,7 +42,7 @@ public class AdminGuestTicketService {
                 final List<GuestTicketEntity> savedTickets = adminGuestTicketFacade.saveGuestTickets(event.getEventId(), guestId, count);
 
                 final List<String> guestTicketCodes = getGuestTicketCodes(savedTickets);
-                final List<byte[]> qrPngs = getQrCodePngs(guestTicketCodes);
+                final List<byte[]> qrPngs = getQrCodePngs(guestTicketCodes, event.getName());
                 sendGuestTicketMail(guest.getEmail(), guest.getName(), event.getName(), event.getEventType(), guestTicketCodes, qrPngs);
 
                 updateGuestTicketToReadyStatus(savedTickets);
@@ -62,9 +62,9 @@ public class AdminGuestTicketService {
                 .toList();
     }
 
-    private List<byte[]> getQrCodePngs(final List<String> guestTicketCodes) {
+    private List<byte[]> getQrCodePngs(final List<String> guestTicketCodes, final String eventName) {
         return guestTicketCodes.stream()
-                .map(code -> QrCodeUtil.generatePng(qrCodeProperties.link(), code))
+                .map(code -> QrCodeUtil.generatePng(qrCodeProperties.link(), code, eventName))
                 .toList();
     }
 

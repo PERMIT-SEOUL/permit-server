@@ -54,7 +54,6 @@ public record AdminEventWithTicketCreateRequest(
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
         LocalTime endTime,
 
-        @NotBlank(message = "행사 장소는 필수입니다.")
         String venue,
         String lineup,
         String details,
@@ -87,7 +86,10 @@ public record AdminEventWithTicketCreateRequest(
 
         @NotEmpty(message = "티켓 정보는 최소 1개 이상이어야 합니다.")
         @Valid
-        List<TicketTypeRequest> ticketTypes
+        List<TicketTypeRequest> ticketTypes,
+
+        @Valid
+        List<AdminEventImageRequest> siteMapImages
 ) {
         public record TicketTypeRequest(
                 @NotBlank(message = "티켓 이름은 필수입니다.")

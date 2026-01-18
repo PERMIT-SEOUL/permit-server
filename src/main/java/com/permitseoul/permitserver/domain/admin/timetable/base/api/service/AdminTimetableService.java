@@ -5,6 +5,8 @@ import com.permitseoul.permitserver.domain.admin.timetable.base.api.dto.req.Time
 import com.permitseoul.permitserver.domain.admin.timetable.base.api.dto.res.TimetableInfoResponse;
 import com.permitseoul.permitserver.domain.admin.timetable.base.core.components.AdminTimetableRetriever;
 import com.permitseoul.permitserver.domain.admin.timetable.base.core.components.AdminTimetableUpdater;
+import com.permitseoul.permitserver.domain.admin.timetable.base.core.exception.NotionPublicUrlNotFoundException;
+import com.permitseoul.permitserver.domain.admin.timetable.base.core.exception.NotionUrlMalformedException;
 import com.permitseoul.permitserver.domain.admin.util.exception.PermitListSizeNotMatchException;
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.domain.Timetable;
 import com.permitseoul.permitserver.domain.eventtimetable.timetable.core.domain.entity.TimetableEntity;
@@ -20,6 +22,7 @@ import com.permitseoul.permitserver.global.external.notion.dto.NotionTimetableDa
 import com.permitseoul.permitserver.global.external.notion.exception.NotFoundNotionResponseException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import com.permitseoul.permitserver.global.util.LocalDateTimeFormatterUtil;
+import com.permitseoul.permitserver.global.util.SecureUrlUtil;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,6 +37,7 @@ public class AdminTimetableService {
     private final AdminTimetableFacade adminTimetableFacade;
     private final AdminTimetableRetriever adminTimetableRetriever;
     private final AdminTimetableUpdater adminTimetableUpdater;
+    private final SecureUrlUtil secureUrlUtil;
 
     public void saveInitialTimetableInfo(final long eventId,
                                          final LocalDateTime timetableStartAt,
@@ -81,6 +85,8 @@ public class AdminTimetableService {
             throw new AdminApiException(ErrorCode.NOT_FOUND_NOTION_DATABASE_SOURCE);
         } catch (final LocalDateTimeException e) {
             throw new AdminApiException(ErrorCode.BAD_REQUEST_DATE_TIME_ERROR);
+        } catch (final NotionPublicUrlNotFoundException | NotionUrlMalformedException e) {
+            throw new AdminApiException(ErrorCode.NOT_FOUND_NOTION_PUBLIC_ID);
         }
     }
 
@@ -94,6 +100,7 @@ public class AdminTimetableService {
         }
 
         return TimetableInfoResponse.of(
+                secureUrlUtil.encode(eventId),
                 timetable.getTimetableId(),
                 LocalDateTimeFormatterUtil.formatyyyyMMdd(timetable.getStartAt()),
                 LocalDateTimeFormatterUtil.formatHHmm(timetable.getStartAt()),

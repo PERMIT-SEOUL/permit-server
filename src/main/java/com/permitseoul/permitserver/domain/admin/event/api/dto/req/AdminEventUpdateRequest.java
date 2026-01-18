@@ -51,6 +51,9 @@ public record AdminEventUpdateRequest(
         List<AdminEventImageRequest> images,
 
         @Min(value = 0, message = "최소 나이는 0 이상이어야 합니다.")
-        Integer minAge
+        Integer minAge,
+
+        @Valid
+        List<AdminEventImageRequest> siteMapImages
 ) {
 }

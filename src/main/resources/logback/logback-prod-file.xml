@@ -21,6 +21,7 @@
                 <threadName/>
                 <mdc>
                     <includeMdcKeyName>trace_id</includeMdcKeyName>
+                    <includeMdcKeyName>user_id</includeMdcKeyName>
                     <includeMdcKeyName>uri</includeMdcKeyName>
                     <includeMdcKeyName>method</includeMdcKeyName>
                     <includeMdcKeyName>status</includeMdcKeyName>
@@ -52,6 +53,7 @@
                 <threadName/>
                 <mdc>
                     <includeMdcKeyName>trace_id</includeMdcKeyName>
+                    <includeMdcKeyName>user_id</includeMdcKeyName>
                     <includeMdcKeyName>uri</includeMdcKeyName>
                     <includeMdcKeyName>method</includeMdcKeyName>
                     <includeMdcKeyName>status</includeMdcKeyName>

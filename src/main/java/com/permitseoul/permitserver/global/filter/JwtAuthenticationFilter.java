@@ -11,10 +11,13 @@ import com.permitseoul.permitserver.global.exception.FilterException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,17 +26,20 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.List;
-import java.util.Objects;
 
 
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtProvider jwtProvider;
     private final List<String> whiteURIList;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
     private static final String REISSUE_URI = "/api/users/reissue";
     private static final String LOGIN_URI   = "/api/users/login";
+    private static final String USER_ID_MDC_KEY = "user_id";
+    private static final String ANONYMOUS_USER_ID = "anonymous";
 
     @Override
     protected void doFilterInternal(@NonNull final HttpServletRequest request,
@@ -41,6 +47,38 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull final FilterChain filterChain) throws ServletException, IOException {
         final String uri = request.getRequestURI();
         try {
+            MDC.put(USER_ID_MDC_KEY, ANONYMOUS_USER_ID);
+
+            // ✅ [테스트 로그] Headers
+            log.info("===== [REQ HEADERS] {} {} =====", request.getMethod(), uri);
+            Enumeration<String> headerNames = request.getHeaderNames();
+            while (headerNames != null && headerNames.hasMoreElements()) {
+                String name = headerNames.nextElement();
+                Enumeration<String> values = request.getHeaders(name);
+                while (values.hasMoreElements()) {
+                    log.info("{}: {}", name, values.nextElement());
+                }
+            }
+
+            // ✅ [테스트 로그] Cookies
+            log.info("===== [REQ COOKIES] {} {} =====", request.getMethod(), uri);
+            Cookie[] cookies = request.getCookies();
+            if (cookies == null || cookies.length == 0) {
+                log.info("(none)");
+            } else {
+                for (Cookie c : cookies) {
+                    log.info("{}={}; domain={}; path={}; maxAge={}; secure={}; httpOnly={}",
+                            c.getName(),
+                            c.getValue(),
+                            c.getDomain(),
+                            c.getPath(),
+                            c.getMaxAge(),
+                            c.getSecure(),
+                            c.isHttpOnly()
+                    );
+                }
+            }
+
             if(isHealthCheckUri(uri) || isLoginOrReissue(uri)) {
                 filterChain.doFilter(request, response);
                 return;
@@ -62,12 +100,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throw new FilterException(ErrorCode.INTERNAL_FILTER_ERROR);
         } catch (Exception e) {
             throw new FilterException(ErrorCode.INTERNAL_SERVER_ERROR);
+        } finally {
+            MDC.remove(USER_ID_MDC_KEY);
         }
     }
 
     private void setAuthentication(final HttpServletRequest request) {
         final String token = CookieExtractor.extractCookie(request, CookieType.ACCESS_TOKEN).getValue();
         final long userId = jwtProvider.extractUserIdFromToken(token);
+        MDC.put(USER_ID_MDC_KEY, String.valueOf(userId));
         final String userRole = jwtProvider.extractUserRoleFromToken(token);
         final List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + userRole));
         SecurityContextHolder.getContext().setAuthentication(
@@ -87,4 +128,3 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 || pathMatcher.match(REISSUE_URI, uri);
     }
 }
-

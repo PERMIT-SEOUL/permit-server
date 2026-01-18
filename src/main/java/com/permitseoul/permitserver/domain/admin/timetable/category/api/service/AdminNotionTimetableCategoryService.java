@@ -1,7 +1,7 @@
 package com.permitseoul.permitserver.domain.admin.timetable.category.api.service;
 
 import com.permitseoul.permitserver.domain.admin.base.api.exception.AdminApiException;
-import com.permitseoul.permitserver.domain.admin.timetable.base.api.exception.AdminNotionException;
+import com.permitseoul.permitserver.domain.admin.timetable.base.core.exception.AdminNotionException;
 import com.permitseoul.permitserver.domain.admin.timetable.base.core.components.AdminTimetableRetriever;
 import com.permitseoul.permitserver.domain.admin.timetable.category.api.dto.NotionTimetableCategoryUpdateWebhookRequest;
 import com.permitseoul.permitserver.domain.admin.timetable.category.core.component.AdminTimetableCategorySaver;

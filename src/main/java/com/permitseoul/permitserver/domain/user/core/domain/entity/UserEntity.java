@@ -1,6 +1,7 @@
 package com.permitseoul.permitserver.domain.user.core.domain.entity;
 
 
+import com.permitseoul.permitserver.domain.user.core.exception.UserIllegalArgumentException;
 import com.permitseoul.permitserver.global.domain.BaseTimeEntity;
 import com.permitseoul.permitserver.domain.user.core.domain.Gender;
 import com.permitseoul.permitserver.domain.user.core.domain.SocialType;
@@ -68,7 +69,16 @@ public class UserEntity extends BaseTimeEntity {
                                final String email) {
         this.name = name;
         this.gender = gender;
-        this.email = email;
+        if (email != null) {
+            this.email = email;
+        }
+    }
+
+    public void updateUserRole(final UserRole userRole) {
+        if(userRole == null) {
+            throw new UserIllegalArgumentException();
+        }
+        this.userRole = userRole;
     }
 }
 

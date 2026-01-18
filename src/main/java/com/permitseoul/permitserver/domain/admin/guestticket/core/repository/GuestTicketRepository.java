@@ -5,6 +5,10 @@ import com.permitseoul.permitserver.domain.admin.guestticket.core.domain.entity.
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface GuestTicketRepository extends JpaRepository<GuestTicketEntity, Long> {
+
+    Optional<GuestTicketEntity> findByGuestTicketCode(final String guestTicketCode);
 }
