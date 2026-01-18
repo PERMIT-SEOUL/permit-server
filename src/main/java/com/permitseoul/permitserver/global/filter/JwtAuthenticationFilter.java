@@ -49,36 +49,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             MDC.put(USER_ID_MDC_KEY, ANONYMOUS_USER_ID);
 
-            // ✅ [테스트 로그] Headers
-            log.info("===== [REQ HEADERS] {} {} =====", request.getMethod(), uri);
-            Enumeration<String> headerNames = request.getHeaderNames();
-            while (headerNames != null && headerNames.hasMoreElements()) {
-                String name = headerNames.nextElement();
-                Enumeration<String> values = request.getHeaders(name);
-                while (values.hasMoreElements()) {
-                    log.info("{}: {}", name, values.nextElement());
-                }
-            }
-
-            // ✅ [테스트 로그] Cookies
-            log.info("===== [REQ COOKIES] {} {} =====", request.getMethod(), uri);
-            Cookie[] cookies = request.getCookies();
-            if (cookies == null || cookies.length == 0) {
-                log.info("(none)");
-            } else {
-                for (Cookie c : cookies) {
-                    log.info("{}={}; domain={}; path={}; maxAge={}; secure={}; httpOnly={}",
-                            c.getName(),
-                            c.getValue(),
-                            c.getDomain(),
-                            c.getPath(),
-                            c.getMaxAge(),
-                            c.getSecure(),
-                            c.isHttpOnly()
-                    );
-                }
-            }
-
             if(isHealthCheckUri(uri) || isLoginOrReissue(uri)) {
                 filterChain.doFilter(request, response);
                 return;
