@@ -114,9 +114,9 @@ public class TicketService {
             final Map<String, List<Ticket>> TicketListGroupedByOrderIdMap = ticketList.stream()
                     .collect(Collectors.groupingBy(Ticket::getOrderId));
 
+            final Map<String, BigDecimal> paymentAmountByOrderId = findPaymentAmountsByOrderId(TicketListGroupedByOrderIdMap.keySet());
             final Map<String, BigDecimal> refundAmountByOrderId = findRefundAmountsFromPaymentIfAllTicketsCanceled(TicketListGroupedByOrderIdMap);
-
-            final List<UserBuyTicketInfoResponse.Order> orders = convertToOrderList(TicketListGroupedByOrderIdMap, eventMap, ticketTypeMap, refundAmountByOrderId);
+            final List<UserBuyTicketInfoResponse.Order> orders = convertToOrderList(TicketListGroupedByOrderIdMap, eventMap, ticketTypeMap, paymentAmountByOrderId, refundAmountByOrderId);
 
             return new UserBuyTicketInfoResponse(orders);
         } catch (TicketTypeNotfoundException e) {
@@ -300,6 +300,7 @@ public class TicketService {
     private List<UserBuyTicketInfoResponse.Order> convertToOrderList(final Map<String, List<Ticket>> ticketsGroupedByOrderId,
                                                                      final Map<Long, Event> eventMap,
                                                                      final Map<Long, TicketType> ticketTypeMap,
+                                                                     final Map<String, BigDecimal> paymentAmountByOrderId,
                                                                      final Map<String, BigDecimal> refundAmountByOrderId) {
         return ticketsGroupedByOrderId.entrySet().stream()
                 .map(entry -> {
@@ -311,6 +312,9 @@ public class TicketService {
                     final long eventId = ticketsInOrder.get(0).getEventId();
                     final String eventName = eventMap.get(eventId).getName();
                     final String eventVenue = eventMap.get(eventId).getVenue();
+
+                    final BigDecimal paymentAmount = paymentAmountByOrderId.get(orderId);
+                    final String formattedPaymentPrice = paymentAmount != null ? PriceFormatterUtil.formatPrice(paymentAmount) : null;
 
                     final List<UserBuyTicketInfoResponse.TicketInfo> ticketInfos = ticketsInOrder.stream()
                             .map(ticket -> {
@@ -333,7 +337,7 @@ public class TicketService {
                     final BigDecimal refundAmount = refundAmountByOrderId.get(orderId);
                     final String formattedRefund = refundAmount != null ? PriceFormatterUtil.formatPrice(refundAmount) : null;
 
-                    return new UserBuyTicketInfoResponse.Order(orderDate, orderId, eventName, eventVenue, formattedRefund,canCancel, ticketInfos);
+                    return new UserBuyTicketInfoResponse.Order(orderDate, orderId, eventName, eventVenue, formattedPaymentPrice, formattedRefund,canCancel, ticketInfos);
                 })
                 .sorted(Comparator.comparing(UserBuyTicketInfoResponse.Order::orderDate).reversed())
                 .toList();
@@ -469,6 +473,20 @@ public class TicketService {
         }
 
         final List<Payment> paymentEntities = paymentRetriever.findPaymentByOrderIdIn(canceledOrderIds);
+
+        return paymentEntities.stream()
+                .collect(Collectors.toMap(
+                        Payment::getOrderId,
+                        Payment::getTotalAmount
+                ));
+    }
+
+    private Map<String, BigDecimal> findPaymentAmountsByOrderId(final Set<String> orderIds) {
+        if (orderIds == null || orderIds.isEmpty()) {
+            return Map.of();
+        }
+
+        final List<Payment> paymentEntities = paymentRetriever.findPaymentByOrderIdIn(orderIds);
 
         return paymentEntities.stream()
                 .collect(Collectors.toMap(

@@ -11,6 +11,7 @@ public record UserBuyTicketInfoResponse(
             String orderId,
             String eventName,
             String eventVenue,
+            String paymentPrice,
             String refundedPrice,
             boolean canCancel,
             List<TicketInfo> ticketInfo
