@@ -7,7 +7,7 @@ import org.springframework.http.ResponseCookie;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CookieCreatorUtil {
-    private static final long COOKIE_MAX_AGE = 2L * 60; //7L * 24 * 60 * 60; //일주일
+    private static final long COOKIE_MAX_AGE = 7L * 24 * 60 * 60; //일주일
     private static final long RESERVED_MAX_AGE = 7L * 60; // 7분(7분간 선점 가능)
 
     public static ResponseCookie createReservationSessionCookie(final String sessionKey) {
