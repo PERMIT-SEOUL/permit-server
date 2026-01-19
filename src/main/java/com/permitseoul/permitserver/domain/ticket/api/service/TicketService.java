@@ -325,7 +325,7 @@ public class TicketService {
                                         ticket.getTicketCode(),
                                         ticketType.getTicketTypeName(),
                                         toUiStatus(ticket.getStatus(), expired),
-                                        LocalDateTimeFormatterUtil.formatEventDate(ticketType.getTicketStartAt(), ticketType.getTicketEndAt()),
+                                        LocalDateTimeFormatterUtil.formatStartEndDate(ticketType.getTicketStartAt(), ticketType.getTicketEndAt()),
                                         TimeFormatterUtil.formatEventTime(ticketType.getTicketStartAt(), ticketType.getTicketEndAt())
                                 );
                             }).toList();
@@ -443,7 +443,7 @@ public class TicketService {
     // 포맷팅된 티켓타입dto로 변환
     private EventTicketInfoResponse.TicketType makeFormattedTicketTypeDto(final TicketType ticketType,
                                                                           final Map<Long, Boolean> soldOutByTicketTypeId) {
-        final String formattedDate = LocalDateTimeFormatterUtil.formatEventDate(
+        final String formattedDate = LocalDateTimeFormatterUtil.formatStartEndDate(
                 ticketType.getTicketStartAt(), ticketType.getTicketEndAt());
         final String formattedTime = ticketType.getTicketStartAt()
                 .toLocalTime()

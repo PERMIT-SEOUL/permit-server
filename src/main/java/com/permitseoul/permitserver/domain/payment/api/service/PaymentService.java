@@ -155,7 +155,7 @@ public class PaymentService {
 
             return PaymentConfirmResponse.of(
                     event.getName(),
-                    LocalDateTimeFormatterUtil.formatEventDate(event.getStartAt(), event.getEndAt())
+                    LocalDateTimeFormatterUtil.formatStartEndDate(event.getStartAt(), event.getEndAt())
             );
         } catch (ReservationSessionBadRequestException e) {
             logRollbackFailed(userId, reservationSessionKey, orderId, totalAmount, paymentKey);
