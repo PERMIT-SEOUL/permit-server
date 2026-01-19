@@ -15,7 +15,8 @@ import java.util.*;
 public final class LocalDateTimeFormatterUtil {
     private static final DateTimeFormatter DAY_FORMATTER = DateTimeFormatter.ofPattern("E", Locale.ENGLISH); // Sun
     private static final DateTimeFormatter DAY_DD_FORMATTER = DateTimeFormatter.ofPattern("E, dd", Locale.ENGLISH);
-    private static final DateTimeFormatter YEAR_MONTH_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM", Locale.ENGLISH); // 2025.09
+    private static final DateTimeFormatter YEAR_MONTH_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM",
+            Locale.ENGLISH); // 2025.09
     private static final DateTimeFormatter DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // 2025.08.15
     private static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("HH:mm"); // 17:30
     private static final DateTimeFormatter MONTH_DAY_FORMATTER = DateTimeFormatter.ofPattern("MMM d", Locale.ENGLISH); // Jan
@@ -25,6 +26,13 @@ public final class LocalDateTimeFormatterUtil {
     private static final String EN_DASH = " – ";
 
     public static String formatStartEndDate(final LocalDateTime startDate, final LocalDateTime endDate) {
+        if (startDate == null) {
+            throw new IllegalArgumentException("startDate가 null입니다.");
+        }
+        if (endDate == null) {
+            throw new IllegalArgumentException("endDate가 null입니다.");
+        }
+
         final StringBuilder sb = new StringBuilder();
         final String startDay = startDate.format(DAY_FORMATTER); // Mon
         final String endDay = endDate.format(DAY_FORMATTER); // Thu
