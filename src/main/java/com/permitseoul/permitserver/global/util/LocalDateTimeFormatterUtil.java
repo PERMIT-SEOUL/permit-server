@@ -38,16 +38,29 @@ public final class LocalDateTimeFormatterUtil {
         final String endDay = endDate.format(DAY_FORMATTER); // Thu
         final String startMonthDay = startDate.format(MONTH_DAY_FORMATTER); // Jan 26
         final String endMonthDay = endDate.format(MONTH_DAY_FORMATTER); // Jan 29 or Feb 10
-        final String year = endDate.format(YEAR_FORMATTER); // 2026
+        final String startYear = startDate.format(YEAR_FORMATTER); // 2025
+        final String endYear = endDate.format(YEAR_FORMATTER); // 2026
 
         // 시작날짜와 종료날짜가 같을 때, "Jan 19 (Mon), 2026" 형식으로 포맷팅
         if (startDate.toLocalDate().equals(endDate.toLocalDate())) {
             sb.append(startMonthDay)
                     .append(" (").append(startDay).append(")")
                     .append(COMMA_AND_SPACE)
-                    .append(year);
+                    .append(endYear);
+        } else if (!startYear.equals(endYear)) {
+            // 시작날짜와 종료날짜의 연도가 다를 때 (예: 2025년 12월 → 2026년 1월)
+            // "Dec 25 (Thu), 2025 – Jan 5 (Sun), 2026" 형식으로 포맷팅
+            sb.append(startMonthDay)
+                    .append(" (").append(startDay).append(")")
+                    .append(COMMA_AND_SPACE)
+                    .append(startYear)
+                    .append(EN_DASH)
+                    .append(endMonthDay)
+                    .append(" (").append(endDay).append(")")
+                    .append(COMMA_AND_SPACE)
+                    .append(endYear);
         } else {
-            // 시작날짜와 종료날짜가 다를 때 (같은 월 또는 다른 월 모두 동일한 형식)
+            // 시작날짜와 종료날짜의 연도가 같을 때 (같은 월 또는 다른 월 모두 동일한 형식)
             // "Jan 26 (Mon) – Jan 29 (Thu), 2026" 또는 "Jan 26 (Mon) – Feb 10 (Tue), 2026"
             sb.append(startMonthDay)
                     .append(" (").append(startDay).append(")")
@@ -55,7 +68,7 @@ public final class LocalDateTimeFormatterUtil {
                     .append(endMonthDay)
                     .append(" (").append(endDay).append(")")
                     .append(COMMA_AND_SPACE)
-                    .append(year);
+                    .append(endYear);
         }
         return sb.toString();
     }
