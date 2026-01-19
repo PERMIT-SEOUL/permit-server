@@ -66,7 +66,8 @@ public class TicketService {
     public EventTicketInfoResponse getEventTicketInfo(final long eventId, final LocalDateTime now) {
         try {
             // 현재 구매가능한 티켓라운드와 이미 구매 기간 지난 라운드만 조회
-            final List<TicketRound> ticketRoundList = ticketRoundRetriever.findSalesOrSalesEndTicketRoundByEventId(eventId, now);
+            final List<TicketRound> ticketRoundList = ticketRoundRetriever
+                    .findSalesOrSalesEndTicketRoundByEventId(eventId, now);
             if (ticketRoundList.isEmpty()) {
                 return new EventTicketInfoResponse(List.of());
             }
@@ -74,7 +75,8 @@ public class TicketService {
             final List<Long> ticketRoundIdList = extractTicketRoundIdList(ticketRoundList);
 
             // 각 티켓 라운드에 해당하는 티켓타입들을 가져와서 Map에 넣음
-            final List<TicketType> ticketTypeList = ticketTypeRetriever.findTicketTypeListByRoundIdList(ticketRoundIdList);
+            final List<TicketType> ticketTypeList = ticketTypeRetriever
+                    .findTicketTypeListByRoundIdList(ticketRoundIdList);
             final Map<Long, List<TicketType>> ticketTypesByTicketRoundIdMap = ticketTypeList
                     .stream()
                     .collect(Collectors.groupingBy(TicketType::getTicketRoundId));
@@ -111,12 +113,19 @@ public class TicketService {
             final Map<Long, TicketType> ticketTypeMap = getTicketTypeMap(ticketList);
             final Map<Long, Event> eventMap = getEventMap(ticketList);
 
-            final Map<String, List<Ticket>> TicketListGroupedByOrderIdMap = ticketList.stream()
-                    .collect(Collectors.groupingBy(Ticket::getOrderId));
+            final Map<String, List<Ticket>> ticketListGroupedByOrderIdMap = ticketList.stream()
+                    .sorted(Comparator.comparing(Ticket::getCreatedAt).reversed())
+                    .collect(Collectors.groupingBy(
+                            Ticket::getOrderId,
+                            LinkedHashMap::new,
+                            Collectors.toList()));
 
-            final Map<String, BigDecimal> paymentAmountByOrderId = findPaymentAmountsByOrderId(TicketListGroupedByOrderIdMap.keySet());
-            final Map<String, BigDecimal> refundAmountByOrderId = findRefundAmountsFromPaymentIfAllTicketsCanceled(TicketListGroupedByOrderIdMap);
-            final List<UserBuyTicketInfoResponse.Order> orders = convertToOrderList(TicketListGroupedByOrderIdMap, eventMap, ticketTypeMap, paymentAmountByOrderId, refundAmountByOrderId);
+            final Map<String, BigDecimal> paymentAmountByOrderId = findPaymentAmountsByOrderId(
+                    ticketListGroupedByOrderIdMap.keySet());
+            final Map<String, BigDecimal> refundAmountByOrderId = findRefundAmountsFromPaymentIfAllTicketsCanceled(
+                    ticketListGroupedByOrderIdMap);
+            final List<UserBuyTicketInfoResponse.Order> orders = convertToOrderList(ticketListGroupedByOrderIdMap,
+                    eventMap, ticketTypeMap, paymentAmountByOrderId, refundAmountByOrderId);
 
             return new UserBuyTicketInfoResponse(orders);
         } catch (TicketTypeNotfoundException e) {
@@ -137,7 +146,7 @@ public class TicketService {
             verifyTicketCheckCode(event.getTicketCheckCode(), checkCodeFromTicket);
 
             ticketUpdater.updateTicketStatus(ticketEntity, TicketStatus.USED);
-        } catch (TicketNotFoundException  e) {
+        } catch (TicketNotFoundException e) {
             throw new NotFoundTicketException(ErrorCode.NOT_FOUND_TICKET);
         } catch (TicketTypeNotfoundException e) {
             throw new NotFoundTicketException(ErrorCode.NOT_FOUND_TICKET_TYPE);
@@ -156,7 +165,7 @@ public class TicketService {
             verifyTicketDate(ticketType.getTicketStartAt(), ticketType.getTicketEndAt());
 
             ticketUpdater.updateTicketStatus(ticketEntity, TicketStatus.USED);
-        } catch (TicketNotFoundException  e) {
+        } catch (TicketNotFoundException e) {
             throw new NotFoundTicketException(ErrorCode.NOT_FOUND_TICKET);
         } catch (TicketTypeNotfoundException e) {
             throw new NotFoundTicketException(ErrorCode.NOT_FOUND_TICKET_TYPE);
@@ -174,7 +183,8 @@ public class TicketService {
 
             final Event event = findEventById(ticket.getEventId());
 
-            return DoorValidateUserTicket.of(event.getName(), ticketType.getTicketTypeName(), ticketType.getTicketStartAt(), ticketType.getTicketEndAt());
+            return DoorValidateUserTicket.of(event.getName(), ticketType.getTicketTypeName(),
+                    ticketType.getTicketStartAt(), ticketType.getTicketEndAt());
         } catch (TicketNotFoundException e) {
             throw new NotFoundTicketException(ErrorCode.NOT_FOUND_TICKET);
         } catch (TicketTypeNotfoundException e) {
@@ -184,7 +194,7 @@ public class TicketService {
         }
     }
 
-    //Redis에 있는 티켓 개수로 isTicketSoldOut 판별
+    // Redis에 있는 티켓 개수로 isTicketSoldOut 판별
     // 1) Redis 장애(연결 실패/타임아웃 등)일 때만 DB remainTicketCount fallback
     // 2) Redis 값이 null(키 없음) 이면 예외 throw (fallback 금지)
     private Map<Long, Boolean> buildSoldOutMapByTicketTypeId(final List<TicketType> ticketTypeList) {
@@ -192,7 +202,7 @@ public class TicketService {
             return Map.of();
         }
 
-        //장애 fallback 시 사용할 DB remain 맵
+        // 장애 fallback 시 사용할 DB remain 맵
         final Map<Long, Integer> dbRemainMap = ticketTypeList.stream()
                 .collect(Collectors.toMap(
                         TicketType::getTicketTypeId,
@@ -212,7 +222,8 @@ public class TicketService {
         final List<String> redisTicketTypeCountValues;
         try {
             redisTicketTypeCountValues = redisManager.mGet(ticketTypeKeys);
-        } catch (RedisConnectionFailureException | RedisSystemException | QueryTimeoutException | RedisUnavailableException e) {
+        } catch (RedisConnectionFailureException | RedisSystemException | QueryTimeoutException
+                | RedisUnavailableException e) {
             // Redis 장애일 때만 fallback
             log.error("[TicketType 개수 정보 조회] Redis 장애로 DB remainTicketCount fallback 처리. ticketType={}, err={}",
                     ticketTypeIds, e.getClass().getSimpleName());
@@ -247,7 +258,8 @@ public class TicketService {
             try {
                 remain = Long.parseLong(raw);
             } catch (NumberFormatException e) {
-                log.error("[TicketInfo] Redis ticketType value parsing 에러. key={}, raw={}, ticketTypeId={}", key, raw, ticketTypeId);
+                log.error("[TicketInfo] Redis ticketType value parsing 에러. key={}, raw={}, ticketTypeId={}", key, raw,
+                        ticketTypeId);
                 throw new PaymentBadRequestException(ErrorCode.INTERNAL_TICKET_TYPE_REDIS_ERROR);
             }
 
@@ -277,31 +289,32 @@ public class TicketService {
     }
 
     private void verifyTicketStatus(final TicketStatus ticketStatus) {
-        if(ticketStatus == TicketStatus.USED)  {
+        if (ticketStatus == TicketStatus.USED) {
             throw new ConflictTicketException(ErrorCode.CONFLICT_ALREADY_USED_TICKET);
-        } else if(ticketStatus == TicketStatus.CANCELED) {
+        } else if (ticketStatus == TicketStatus.CANCELED) {
             throw new IllegalTicketException(ErrorCode.BAD_REQUEST_CANCELED_TICKET);
         }
     }
 
     private void verifyTicketCheckCode(final String ticketCheckCode, final String checkCodeFromTicket) {
-        if(!Objects.equals(ticketCheckCode, checkCodeFromTicket)) {
+        if (!Objects.equals(ticketCheckCode, checkCodeFromTicket)) {
             throw new IllegalTicketException(ErrorCode.BAD_REQUEST_TICKET_CHECK_CODE_ERROR);
         }
     }
 
     private void verifyTicketDate(final LocalDateTime ticketStartAt, final LocalDateTime ticketEndAt) {
         final LocalDateTime now = LocalDateTime.now();
-        if(now.isBefore(ticketStartAt) || now.isAfter(ticketEndAt)) {
+        if (now.isBefore(ticketStartAt) || now.isAfter(ticketEndAt)) {
             throw new DateTicketException(ErrorCode.BAD_REQUEST_DATE_TIME_ERROR);
         }
     }
 
-    private List<UserBuyTicketInfoResponse.Order> convertToOrderList(final Map<String, List<Ticket>> ticketsGroupedByOrderId,
-                                                                     final Map<Long, Event> eventMap,
-                                                                     final Map<Long, TicketType> ticketTypeMap,
-                                                                     final Map<String, BigDecimal> paymentAmountByOrderId,
-                                                                     final Map<String, BigDecimal> refundAmountByOrderId) {
+    private List<UserBuyTicketInfoResponse.Order> convertToOrderList(
+            final Map<String, List<Ticket>> ticketsGroupedByOrderId,
+            final Map<Long, Event> eventMap,
+            final Map<Long, TicketType> ticketTypeMap,
+            final Map<String, BigDecimal> paymentAmountByOrderId,
+            final Map<String, BigDecimal> refundAmountByOrderId) {
         return ticketsGroupedByOrderId.entrySet().stream()
                 .map(entry -> {
                     final String orderId = entry.getKey();
@@ -314,7 +327,9 @@ public class TicketService {
                     final String eventVenue = eventMap.get(eventId).getVenue();
 
                     final BigDecimal paymentAmount = paymentAmountByOrderId.get(orderId);
-                    final String formattedPaymentPrice = paymentAmount != null ? PriceFormatterUtil.formatPrice(paymentAmount) : null;
+                    final String formattedPaymentPrice = paymentAmount != null
+                            ? PriceFormatterUtil.formatPrice(paymentAmount)
+                            : null;
 
                     final List<UserBuyTicketInfoResponse.TicketInfo> ticketInfos = ticketsInOrder.stream()
                             .map(ticket -> {
@@ -325,21 +340,24 @@ public class TicketService {
                                         ticket.getTicketCode(),
                                         ticketType.getTicketTypeName(),
                                         toUiStatus(ticket.getStatus(), expired),
-                                        LocalDateTimeFormatterUtil.formatStartEndDate(ticketType.getTicketStartAt(), ticketType.getTicketEndAt()),
-                                        TimeFormatterUtil.formatEventTime(ticketType.getTicketStartAt(), ticketType.getTicketEndAt())
-                                );
+                                        LocalDateTimeFormatterUtil.formatStartEndDate(ticketType.getTicketStartAt(),
+                                                ticketType.getTicketEndAt()),
+                                        TimeFormatterUtil.formatEventTime(ticketType.getTicketStartAt(),
+                                                ticketType.getTicketEndAt()));
                             }).toList();
 
                     // 한 오더내에서 모든 티켓이 USABLE 상태일 때만 취소 가능함
                     final boolean canCancel = ticketInfos.stream()
-                            .allMatch(info -> info.ticketStatus() == UserBuyTicketInfoResponse.TicketStatusForUi.USABLE);
+                            .allMatch(
+                                    info -> info.ticketStatus() == UserBuyTicketInfoResponse.TicketStatusForUi.USABLE);
 
                     final BigDecimal refundAmount = refundAmountByOrderId.get(orderId);
-                    final String formattedRefund = refundAmount != null ? PriceFormatterUtil.formatPrice(refundAmount) : null;
+                    final String formattedRefund = refundAmount != null ? PriceFormatterUtil.formatPrice(refundAmount)
+                            : null;
 
-                    return new UserBuyTicketInfoResponse.Order(orderDate, orderId, eventName, eventVenue, formattedPaymentPrice, formattedRefund,canCancel, ticketInfos);
+                    return new UserBuyTicketInfoResponse.Order(orderDate, orderId, eventName, eventVenue,
+                            formattedPaymentPrice, formattedRefund, canCancel, ticketInfos);
                 })
-                .sorted(Comparator.comparing(UserBuyTicketInfoResponse.Order::orderDate).reversed())
                 .toList();
     }
 
@@ -388,21 +406,22 @@ public class TicketService {
     }
 
     private EventTicketInfoResponse.Round createRoundDto(final TicketRound round,
-                                                         final Map<Long, List<TicketType>> ticketTypesByTicketRoundIdMap,
-                                                         final Map<Long, Boolean> soldOutByTicketTypeId,
-                                                         final LocalDateTime now ) {
+            final Map<Long, List<TicketType>> ticketTypesByTicketRoundIdMap,
+            final Map<Long, Boolean> soldOutByTicketTypeId,
+            final LocalDateTime now) {
         final boolean isAvailable = isRoundAvailable(round, now);
-        final List<TicketType> ticketTypeListInMap = Objects.requireNonNull(ticketTypesByTicketRoundIdMap.get(round.getTicketRoundId()));
+        final List<TicketType> ticketTypeListInMap = Objects
+                .requireNonNull(ticketTypesByTicketRoundIdMap.get(round.getTicketRoundId()));
         final String roundPrice = formatRoundPrice(ticketTypeListInMap);
-        final List<EventTicketInfoResponse.TicketType> ticketTypeDtoList = getTicketTypeIfTicketRoundAvailableOrEmptyList(isAvailable, ticketTypeListInMap, soldOutByTicketTypeId);
+        final List<EventTicketInfoResponse.TicketType> ticketTypeDtoList = getTicketTypeIfTicketRoundAvailableOrEmptyList(
+                isAvailable, ticketTypeListInMap, soldOutByTicketTypeId);
 
         return new EventTicketInfoResponse.Round(
                 round.getTicketRoundId(),
                 isAvailable,
                 roundPrice,
                 round.getTicketRoundTitle(),
-                ticketTypeDtoList
-        );
+                ticketTypeDtoList);
     }
 
     private boolean isRoundAvailable(final TicketRound round, final LocalDateTime now) {
@@ -410,7 +429,7 @@ public class TicketService {
     }
 
     private void verifyEveryRoundHasTicketType(final Map<Long, List<TicketType>> ticketTypesByTicketRoundIdMap,
-                                               final List<Long> ticketRoundIdList) {
+            final List<Long> ticketRoundIdList) {
         if (!ticketTypesByTicketRoundIdMap.keySet().containsAll(ticketRoundIdList)) {
             throw new NotFoundTicketException(ErrorCode.NOT_FOUND_TICKET_TYPE);
         }
@@ -422,14 +441,15 @@ public class TicketService {
                 .toList();
     }
 
-    private List<EventTicketInfoResponse.TicketType> getTicketTypeIfTicketRoundAvailableOrEmptyList(final boolean isAvailable,
-                                                                                                    final List<TicketType> ticketTypeListInMap,
-                                                                                                    final Map<Long, Boolean> soldOutByTicketTypeId) {
+    private List<EventTicketInfoResponse.TicketType> getTicketTypeIfTicketRoundAvailableOrEmptyList(
+            final boolean isAvailable,
+            final List<TicketType> ticketTypeListInMap,
+            final Map<Long, Boolean> soldOutByTicketTypeId) {
         return isAvailable
                 ? ticketTypeListInMap.stream()
-                .sorted(Comparator.comparing(TicketType::getTicketTypeId))
-                .map(ticketType -> makeFormattedTicketTypeDto(ticketType, soldOutByTicketTypeId))
-                .toList()
+                        .sorted(Comparator.comparing(TicketType::getTicketTypeId))
+                        .map(ticketType -> makeFormattedTicketTypeDto(ticketType, soldOutByTicketTypeId))
+                        .toList()
                 : List.of();
     }
 
@@ -442,7 +462,7 @@ public class TicketService {
 
     // 포맷팅된 티켓타입dto로 변환
     private EventTicketInfoResponse.TicketType makeFormattedTicketTypeDto(final TicketType ticketType,
-                                                                          final Map<Long, Boolean> soldOutByTicketTypeId) {
+            final Map<Long, Boolean> soldOutByTicketTypeId) {
         final String formattedDate = LocalDateTimeFormatterUtil.formatStartEndDate(
                 ticketType.getTicketStartAt(), ticketType.getTicketEndAt());
         final String formattedTime = ticketType.getTicketStartAt()
@@ -457,11 +477,11 @@ public class TicketService {
                 formattedDate,
                 formattedTime,
                 PriceFormatterUtil.formatPrice(ticketType.getTicketPrice()),
-                isSoldOut
-        );
+                isSoldOut);
     }
 
-    private Map<String, BigDecimal> findRefundAmountsFromPaymentIfAllTicketsCanceled(final Map<String, List<Ticket>> ticketsGroupedByOrderId) {
+    private Map<String, BigDecimal> findRefundAmountsFromPaymentIfAllTicketsCanceled(
+            final Map<String, List<Ticket>> ticketsGroupedByOrderId) {
         final Set<String> canceledOrderIds = ticketsGroupedByOrderId.entrySet().stream()
                 .filter(entry -> entry.getValue().stream()
                         .allMatch(ticket -> ticket.getStatus() == TicketStatus.CANCELED))
@@ -477,8 +497,7 @@ public class TicketService {
         return paymentEntities.stream()
                 .collect(Collectors.toMap(
                         Payment::getOrderId,
-                        Payment::getTotalAmount
-                ));
+                        Payment::getTotalAmount));
     }
 
     private Map<String, BigDecimal> findPaymentAmountsByOrderId(final Set<String> orderIds) {
@@ -491,7 +510,6 @@ public class TicketService {
         return paymentEntities.stream()
                 .collect(Collectors.toMap(
                         Payment::getOrderId,
-                        Payment::getTotalAmount
-                ));
+                        Payment::getTotalAmount));
     }
 }

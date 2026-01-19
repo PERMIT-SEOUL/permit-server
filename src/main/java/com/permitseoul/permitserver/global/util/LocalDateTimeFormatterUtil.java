@@ -14,11 +14,8 @@ import java.util.*;
 @UtilityClass
 public final class LocalDateTimeFormatterUtil {
     private static final DateTimeFormatter DAY_FORMATTER = DateTimeFormatter.ofPattern("E", Locale.ENGLISH); // Sun
-            Locale.ENGLISH); // May 2025
-    private static final DateTimeFormatter DAY_DD_FORMATTER = DateTimeFormatter.ofPattern("E, dd", Locale.ENGLISH); // Fri,
-                                                                                                                    // 04
-    private static final DateTimeFormatter YEAR_MONTH_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM",
-            Locale.ENGLISH); // 2025.09
+    private static final DateTimeFormatter DAY_DD_FORMATTER = DateTimeFormatter.ofPattern("E, dd", Locale.ENGLISH);
+    private static final DateTimeFormatter YEAR_MONTH_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM", Locale.ENGLISH); // 2025.09
     private static final DateTimeFormatter DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // 2025.08.15
     private static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("HH:mm"); // 17:30
     private static final DateTimeFormatter MONTH_DAY_FORMATTER = DateTimeFormatter.ofPattern("MMM d", Locale.ENGLISH); // Jan
