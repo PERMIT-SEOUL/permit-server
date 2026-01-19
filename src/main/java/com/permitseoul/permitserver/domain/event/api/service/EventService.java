@@ -9,7 +9,6 @@ import com.permitseoul.permitserver.domain.event.core.domain.EventType;
 import com.permitseoul.permitserver.domain.event.core.exception.EventNotfoundException;
 import com.permitseoul.permitserver.domain.eventimage.core.component.EventImageRetriever;
 import com.permitseoul.permitserver.domain.eventimage.core.domain.EventImage;
-import com.permitseoul.permitserver.domain.eventimage.core.domain.entity.EventImageEntity;
 import com.permitseoul.permitserver.domain.eventimage.core.exception.EventImageNotFoundException;
 import com.permitseoul.permitserver.global.util.LocalDateTimeFormatterUtil;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
@@ -50,7 +49,7 @@ public class EventService {
         try {
             final Event event = eventRetriever.findEventById(eventId);
 
-            final String eventDate = LocalDateTimeFormatterUtil.formatEventDate(event.getStartAt(), event.getEndAt());
+            final String eventDate = LocalDateTimeFormatterUtil.formatStartEndDate(event.getStartAt(), event.getEndAt());
             final String eventTime = TimeFormatterUtil.formatEventTime(event.getStartAt(), event.getEndAt());
 
             final List<EventImage> eventImageList = eventImageRetriever.findAllEventImagesByEventId(event.getEventId());
