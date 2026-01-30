@@ -55,7 +55,7 @@ public class GuestTicketEmailSender {
             final MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, StandardCharsets.UTF_8.name()); //multipart:true는 인라인 이미지 추가
             helper.setFrom(emailProperties.sender(), SENDER_NAME);
             helper.setTo(toEmail);
-            helper.setSubject("​[" + eventType.getDisplayName() + "] Guest Ticket Info");
+            helper.setSubject("​[" + eventType.getDisplayName() + "] Guest Ticket Info"); //Gmail thread subject가 맨앞 "[]" 태그를 무시/정규화하는 경우가 있어, Zero-width space(U+200B)로 패턴 인식을 회피
             helper.setText(html, true);
 
             for (int i = 0; i < qrPngs.size(); i++) {
