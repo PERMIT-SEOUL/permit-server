@@ -55,7 +55,7 @@ public class GuestTicketEmailSender {
             final MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, StandardCharsets.UTF_8.name()); //multipart:true는 인라인 이미지 추가
             helper.setFrom(emailProperties.sender(), SENDER_NAME);
             helper.setTo(toEmail);
-            helper.setSubject("[" + eventType.getDisplayName() + "] Guest Ticket Info");
+            helper.setSubject("​[" + eventType.getDisplayName() + "] Guest Ticket Info");
             helper.setText(html, true);
 
             for (int i = 0; i < qrPngs.size(); i++) {
