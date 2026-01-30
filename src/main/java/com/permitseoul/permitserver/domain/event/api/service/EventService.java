@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
@@ -34,14 +35,22 @@ public class EventService {
 
     @Transactional(readOnly = true)
     public EventAllResponse getAllVisibleEvents() {
-        final LocalDateTime now = LocalDateTime.now();
-        final List<Event> eventList = eventRetriever.findAllVisibleEvents(now);
+        try {
+            final LocalDateTime now = LocalDateTime.now();
+            final List<Event> eventList = eventRetriever.findAllVisibleEvents(now);
+            final List<Long> eventIds = eventList.stream()
+                    .map(Event::getEventId)
+                    .toList();
+            final Map<Long, EventImage> thumbnailMap = eventImageRetriever.findAllThumbnailsByEventIds(eventIds);
 
-        return new EventAllResponse(
-                filteringEventByEventType(eventList, EventType.PERMIT),
-                filteringEventByEventType(eventList, EventType.CEILING),
-                filteringEventByEventType(eventList, EventType.OLYMPAN)
-        );
+            return new EventAllResponse(
+                    filteringEventByEventType(eventList, EventType.PERMIT, thumbnailMap),
+                    filteringEventByEventType(eventList, EventType.CEILING, thumbnailMap),
+                    filteringEventByEventType(eventList, EventType.OLYMPAN, thumbnailMap));
+        } catch (EventImageNotFoundException e) {
+            throw new NotFoundEventException(ErrorCode.NOT_FOUND_EVENT_IMAGE);
+        }
+
     }
 
     @Transactional(readOnly = true)
@@ -92,12 +101,12 @@ public class EventService {
             final String artistPart = line.substring(closingBracketIndex + 1).trim();
             if (artistPart.isBlank()) continue;
 
-            final List<EventDetailResponse.Artist> artists =
-                    Arrays.stream(artistPart.split("\\s*,\\s*"))  // 쉼표 기준 split, 주변 공백 무시
-                            .map(String::trim)
-                            .filter(s -> !s.isEmpty())
-                            .map(EventDetailResponse.Artist::new)
-                            .toList();
+            final List<EventDetailResponse.Artist> artists = Arrays.stream(
+                    artistPart.split("\\s*,\\s*")) // 쉼표 기준// split, 주변 // 공백 무시
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .map(EventDetailResponse.Artist::new)
+                    .toList();
 
             if (!artists.isEmpty()) {
                 result.add(EventDetailResponse.LineupCategory.of(category, artists));
@@ -107,24 +116,27 @@ public class EventService {
         return result;
     }
 
-    private List<EventAllResponse.EventInfo> filteringEventByEventType(final List<Event> eventList, final EventType type) {
-        try {
-            if (ObjectUtils.isEmpty(eventList)) {
-                return List.of();
-            }
-            return eventList.stream()
-                    .filter(event -> event.getEventType() == type)
-                    .map(event -> {
-                        final EventImage thumbnailImage = eventImageRetriever.findEventThumbnailImage(event.getEventId());
-                        return EventAllResponse.EventInfo.of(
-                                secureUrlUtil.encode(event.getEventId()),
-                                event.getName(),
-                                thumbnailImage.getImageUrl()
-                        );
-                    })
-                    .toList();
-        } catch (EventImageNotFoundException e) {
-            throw new NotFoundEventException(ErrorCode.NOT_FOUND_EVENT_IMAGE);
+    private List<EventAllResponse.EventInfo> filteringEventByEventType(final List<Event> eventList,
+                                                                       final EventType type,
+                                                                       final Map<Long, EventImage> thumbnailMap) {
+        if (ObjectUtils.isEmpty(eventList)) {
+            return List.of();
         }
+        return eventList.stream()
+                .filter(event -> event.getEventType() == type)
+                .map(event -> {
+                    final EventImage thumbnailImage = thumbnailMap.get(event.getEventId());
+                    final String thumbnailUrl = (thumbnailImage != null) ? thumbnailImage.getImageUrl() : null;
+
+                    if (ObjectUtils.isEmpty(thumbnailUrl)) {
+                        throw new NotFoundEventException(ErrorCode.NOT_FOUND_EVENT_IMAGE);
+                    }
+
+                    return EventAllResponse.EventInfo.of(
+                            secureUrlUtil.encode(event.getEventId()),
+                            event.getName(),
+                            thumbnailUrl);
+                })
+                .toList();
     }
 }
