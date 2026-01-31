@@ -332,6 +332,7 @@ public class PaymentService {
         return tossPaymentClient.cancelPayment(
                 authorizationHeader,
                 paymentKey,
+                paymentKey,
                 TossPaymentCancelRequest.of(CANCEL_REASON, currency)
         );
     }
@@ -347,6 +348,7 @@ public class PaymentService {
 
         return tossPaymentClient.purchaseConfirm(
                 authorizationHeader,
+                orderId,
                 TossPaymentRequest.of(paymentKey, orderId, totalAmount)
         );
     }

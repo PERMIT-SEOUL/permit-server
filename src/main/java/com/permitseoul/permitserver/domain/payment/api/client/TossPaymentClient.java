@@ -13,10 +13,12 @@ public interface TossPaymentClient {
 
     @PostMapping(value = "/v1/payments/confirm")
     TossPaymentResponse purchaseConfirm(@RequestHeader(HttpHeaders.AUTHORIZATION) String basicAuth,
+                                        @RequestHeader("Idempotency-Key") String idempotencyKey,
                                         @RequestBody TossPaymentRequest tossPaymentRequest);
 
     @PostMapping(value = "/v1/payments/{paymentKey}/cancel")
     PaymentCancelResponse cancelPayment(@RequestHeader(HttpHeaders.AUTHORIZATION) String basicAuth,
+                                        @RequestHeader("Idempotency-Key") String idempotencyKey,
                                         @PathVariable("paymentKey") String paymentKey,
                                         @RequestBody TossPaymentCancelRequest paymentRequest);
 

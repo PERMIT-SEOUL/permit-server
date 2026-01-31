@@ -1,12 +1,15 @@
 package com.permitseoul.permitserver.domain.event.core.component;
 
+import com.permitseoul.permitserver.domain.event.api.exception.NotFoundEventException;
 import com.permitseoul.permitserver.domain.event.core.domain.Event;
 import com.permitseoul.permitserver.domain.event.core.domain.entity.EventEntity;
 import com.permitseoul.permitserver.domain.event.core.exception.EventNotfoundException;
 import com.permitseoul.permitserver.domain.event.core.repository.EventRepository;
+import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,7 +35,8 @@ public class EventRetriever {
 
     @Transactional(readOnly = true)
     public List<Event> findAllVisibleEvents(final LocalDateTime now) {
-        List<EventEntity> events = eventRepository.findVisibleEvents(now);
+        final List<EventEntity> events = eventRepository.findVisibleEvents(now);
+
         return events.stream()
                 .map(Event::fromEntity)
                 .toList();

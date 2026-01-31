@@ -49,3 +49,6 @@ load-tests/
 
 ### Load Tests ###
 load-tests/
+src/main/java/com/permitseoul/permitserver/domain/reservation/api/controller/PerformanceTestController.java
+src/main/java/com/permitseoul/permitserver/domain/reservation/api/service/ReservationDBLockTestService.java
+src/main/java/com/permitseoul/permitserver/domain/reservation/api/service/ReservationPerformanceTestService.java
