@@ -38,6 +38,10 @@ public class EventService {
         try {
             final LocalDateTime now = LocalDateTime.now();
             final List<Event> eventList = eventRetriever.findAllVisibleEvents(now);
+            if (ObjectUtils.isEmpty(eventList)) {
+                return new EventAllResponse(List.of(), List.of(), List.of());
+            }
+            
             final List<Long> eventIds = eventList.stream()
                     .map(Event::getEventId)
                     .toList();
