@@ -12,9 +12,12 @@ import java.util.Optional;
 public interface EventImageRepository extends JpaRepository<EventImageEntity, Long> {
 
     @Query("SELECT e FROM EventImageEntity e WHERE e.eventId = :eventId AND e.sequence = 0")
-    Optional<EventImageEntity> findThumbnailImageEntityByEventId(@Param("eventId") long eventId);
+    Optional<EventImageEntity> findThumbnailImageEntityByEventId(@Param("eventId") final long eventId);
 
     List<EventImageEntity> findAllByEventId(final long eventId);
+
+    @Query("SELECT e FROM EventImageEntity e WHERE e.eventId IN :eventIds AND e.sequence = 0")
+    List<EventImageEntity> findAllThumbnailsByEventIds(@Param("eventIds") final List<Long> eventIds);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("delete from EventImageEntity e where e.eventId = :eventId")

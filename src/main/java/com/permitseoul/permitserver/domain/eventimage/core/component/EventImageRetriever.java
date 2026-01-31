@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -18,8 +20,23 @@ public class EventImageRetriever {
 
     @Transactional(readOnly = true)
     public EventImage findEventThumbnailImage(final long eventId) {
-        final EventImageEntity eventImageEntity = eventImageRepository.findThumbnailImageEntityByEventId(eventId).orElseThrow(EventImageNotFoundException::new);
+        final EventImageEntity eventImageEntity = eventImageRepository.findThumbnailImageEntityByEventId(eventId)
+                .orElseThrow(EventImageNotFoundException::new);
         return EventImage.fromEntity(eventImageEntity);
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, EventImage> findAllThumbnailsByEventIds(final List<Long> eventIds) {
+        final Map<Long, EventImage> eventImageMap = eventImageRepository.findAllThumbnailsByEventIds(eventIds).stream()
+                .collect(Collectors.toMap(
+                        EventImageEntity::getEventId,
+                        EventImage::fromEntity,
+                        (a, b) -> a)
+                );
+        if(ObjectUtils.isEmpty(eventImageMap)) {
+            throw new EventImageNotFoundException();
+        }
+        return eventImageMap;
     }
 
     @Transactional(readOnly = true)

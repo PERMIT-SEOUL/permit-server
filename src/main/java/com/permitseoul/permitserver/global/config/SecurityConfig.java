@@ -22,69 +22,66 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtProvider jwtProvider;
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    private final ExceptionHandlerFilter exceptionHandlerFilter;
+        private final JwtProvider jwtProvider;
+        private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+        private final ExceptionHandlerFilter exceptionHandlerFilter;
 
-    private static final String[] whiteURIList = {
-            "/actuator/health",
-            "/api/users/signup",
-            "/api/users/login",
-            "/api/users/reissue",
-            "/api/events",
-            "/api/events/detail/*",
-            "/api/users/email-check",
-            "/api/events/*/timetables",
-            "/api/events/timetables/*",
-            "/api/tickets/info/*",
-            "/api/tickets/door/staff/confirm",
-            "/api/tickets/door/validation/*",
-            "/api/notion/**",
-            "api/guests/**",
-            "/api/events/*/sitemap",
-    };
+        private static final String[] whiteURIList = {
+                "/actuator/health",
+                "/api/users/signup",
+                "/api/users/login",
+                "/api/users/reissue",
+                "/api/events",
+                "/api/events/detail/*",
+                "/api/users/email-check",
+                "/api/events/*/timetables",
+                "/api/events/timetables/*",
+                "/api/tickets/info/*",
+                "/api/tickets/door/staff/confirm",
+                "/api/tickets/door/validation/*",
+                "/api/notion/**",
+                "api/guests/**",
+                "/api/events/*/sitemap",
+        };
 
-    private static final String[] adminURIList = {
-            "/api/admin/**"
-    };
+        private static final String[] adminURIList = {
+                "/api/admin/**"
+        };
 
-    private static final String[] authRequiredURIList = {
-            "/api/users/logout",
-            "/api/users",
-            "/api/reservations/ready",
-            "/api/reservations/ready/*",
-            "/api/payments/confirm",
-            "/api/payments/cancel",
-            "/api/coupons/validate/*",
-            "/api/events/timetables/likes/*",
-            "/api/tickets/user"
-    };
+        private static final String[] authRequiredURIList = {
+                "/api/users/logout",
+                "/api/users",
+                "/api/reservations/ready",
+                "/api/reservations/ready/*",
+                "/api/payments/confirm",
+                "/api/payments/cancel",
+                "/api/coupons/validate/*",
+                "/api/events/timetables/likes/*",
+                "/api/tickets/user"
+        };
 
-    private static final String[] staffURIList = {
-            "/api/staff/**"
-    };
+        private static final String[] staffURIList = {
+                "/api/staff/**"
+        };
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        return httpSecurity
-                .csrf(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
-                .sessionManagement(sessionManagementConfigurer ->
-                        sessionManagementConfigurer
-                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(exceptionHandlingConfigurer ->
-                        exceptionHandlingConfigurer.authenticationEntryPoint(jwtAuthenticationEntryPoint))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(whiteURIList).permitAll() //로그인 상관 X
-                        .requestMatchers(adminURIList).hasRole(UserRole.ADMIN.name())  // ADMIN 권한 필요
-                        .requestMatchers(staffURIList).hasAnyRole(UserRole.STAFF.name(), UserRole.ADMIN.name())
-                        .requestMatchers(authRequiredURIList).authenticated() // 로그인 필수
-                )
-                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, List.of(whiteURIList)), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(exceptionHandlerFilter, JwtAuthenticationFilter.class)
-                .build();
-    }
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+                return httpSecurity
+                        .csrf(AbstractHttpConfigurer::disable)
+                        .formLogin(AbstractHttpConfigurer::disable)
+                        .httpBasic(AbstractHttpConfigurer::disable)
+                        .sessionManagement(sessionManagementConfigurer ->
+                                sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .exceptionHandling(exceptionHandlingConfigurer ->
+                                exceptionHandlingConfigurer.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                        .authorizeHttpRequests(auth -> auth
+                                .requestMatchers(whiteURIList).permitAll() // 로그인 상관 X
+                                .requestMatchers(adminURIList).hasRole(UserRole.ADMIN.name()) // ADMIN 권한 필요
+                                .requestMatchers(staffURIList).hasAnyRole(UserRole.STAFF.name(), UserRole.ADMIN.name()) //staff 권한 이상
+                                .requestMatchers(authRequiredURIList).authenticated() // 로그인 필수
+                        )
+                        .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, List.of(whiteURIList)), UsernamePasswordAuthenticationFilter.class)
+                        .addFilterBefore(exceptionHandlerFilter, JwtAuthenticationFilter.class)
+                        .build();
+        }
 }
-
-
