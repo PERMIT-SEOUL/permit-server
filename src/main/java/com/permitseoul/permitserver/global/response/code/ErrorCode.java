@@ -111,6 +111,8 @@ public enum ErrorCode implements ApiCode {
     CONFLICT_TIMETABLE_USER_LIKE(HttpStatus.CONFLICT, 40905, "이미 존재하는 타임테이블 유저 좋아요입니다."),
     CONFLICT_ALREADY_USED_TICKET(HttpStatus.CONFLICT, 40906, "이미 사용한 티켓입니다."),
     CONFLICT_DUPLICATE_COUPON_ID(HttpStatus.CONFLICT, 40907, "중복된 쿠폰아이디 요청입니다."),
+    CONFLICT_ALREADY_USED_TICKET_CANCEL(HttpStatus.CONFLICT, 40908, "이미 사용한 티켓이 있어서, 환불 불가능 합니다."),
+    CONFLICT_ALREADY_CANCELED_TICKET_CANCEL(HttpStatus.CONFLICT, 40909, "이미 취소한 티켓이 있어서, 환불 불가능 합니다."),
 
 
 
