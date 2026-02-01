@@ -38,7 +38,7 @@ public class UserService {
         } catch (UserNotFoundException e) {
             throw new NotfoundUserException(ErrorCode.NOT_FOUND_USER);
         }
-        return UserInfoResponse.of(user.getName(), user.getAge(), user.getGender(), user.getEmail());
+        return UserInfoResponse.of(user.getName(), user.getAge(), user.getGender(), user.getEmail(), user.getUserRole());
     }
 
     @Transactional
