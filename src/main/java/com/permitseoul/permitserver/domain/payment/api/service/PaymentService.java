@@ -211,6 +211,8 @@ public class PaymentService {
         try {
             final Payment payment = paymentRetriever.findPaymentByOrderId(orderId);
             final List<Ticket> ticketList = ticketRetriever.findAllTicketsByOrderIdAndUserId(payment.getOrderId(), userId);
+            validateTicketStatusForCancel(ticketList);
+
             final Reservation reservation = reservationRetriever.findReservationByIdAndUserId(payment.getReservationId(), userId);
             final List<ReservationTicket> reservationTicketList = reservationTicketRetriever.findAllByOrderId(orderId);
 
@@ -249,6 +251,15 @@ public class PaymentService {
             throw e;
         } catch(DateFormatException e) {
             throw new PaymentBadRequestException(ErrorCode.INTERNAL_ISO_DATE_ERROR);
+        }
+    }
+
+    private void validateTicketStatusForCancel(final List<Ticket> ticketList) {
+        for (final Ticket ticket : ticketList) {
+            switch (ticket.getStatus()) {
+                case USED -> throw new PaymentBadRequestException(ErrorCode.CONFLICT_ALREADY_USED_TICKET_CANCEL);
+                case CANCELED -> throw new PaymentBadRequestException(ErrorCode.CONFLICT_ALREADY_CANCELED_TICKET_CANCEL);
+            }
         }
     }
 
