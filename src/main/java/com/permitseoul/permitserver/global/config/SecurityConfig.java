@@ -40,7 +40,7 @@ public class SecurityConfig {
                 "/api/tickets/door/staff/confirm",
                 "/api/tickets/door/validation/*",
                 "/api/notion/**",
-                "api/guests/**",
+                "/api/guests/**",
                 "/api/events/*/sitemap",
         };
 
