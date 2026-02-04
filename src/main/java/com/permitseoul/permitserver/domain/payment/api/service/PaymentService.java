@@ -264,7 +264,12 @@ public class PaymentService {
     }
 
     private void deleteReservationSessionByOrderId(final String orderId) {
-        reservationSessionRemover.deleteByOrderId(orderId);
+        try {
+            reservationSessionRemover.deleteByOrderId(orderId);
+        } catch (Exception e) {
+            log.error("[Payment] 결제 실패 후, Reservation Session 삭제 실패(중복 redis rollback 가능성) orderId={}", orderId, e);
+        }
+
     }
 
     private void validateTicketStatusForCancel(final List<Ticket> ticketList) {
