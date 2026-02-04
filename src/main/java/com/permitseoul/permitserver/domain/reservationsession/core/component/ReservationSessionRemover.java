@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+import org.springframework.transaction.annotation.Transactional;
+
 @Component
 @RequiredArgsConstructor
 public class ReservationSessionRemover {
@@ -14,5 +16,10 @@ public class ReservationSessionRemover {
 
     public void deleteAllInBatch(final List<ReservationSessionEntity> reservationSessionEntities) {
         reservationSessionRepository.deleteAllInBatch(reservationSessionEntities);
+    }
+
+    @Transactional
+    public void deleteByOrderId(final String orderId) {
+        reservationSessionRepository.deleteByOrderId(orderId);
     }
 }

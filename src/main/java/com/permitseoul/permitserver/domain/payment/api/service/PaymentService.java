@@ -24,6 +24,7 @@ import com.permitseoul.permitserver.domain.reservation.core.component.Reservatio
 import com.permitseoul.permitserver.domain.reservation.core.domain.Reservation;
 import com.permitseoul.permitserver.domain.reservation.core.domain.ReservationStatus;
 import com.permitseoul.permitserver.domain.reservation.core.exception.ReservationNotFoundException;
+import com.permitseoul.permitserver.domain.reservationsession.core.component.ReservationSessionRemover;
 import com.permitseoul.permitserver.domain.reservationsession.core.component.ReservationSessionRetriever;
 import com.permitseoul.permitserver.domain.reservationsession.core.domain.ReservationSession;
 import com.permitseoul.permitserver.domain.reservationsession.core.exception.ReservationSessionBadRequestException;
@@ -83,6 +84,7 @@ public class PaymentService {
     private final TicketReservationPaymentFacade ticketReservationPaymentFacade;
     private final ReservationSessionRetriever reservationSessionRetriever;
     private final RedisManager redisManager;
+    private final ReservationSessionRemover reservationSessionRemover;
 
 
     public PaymentService(
@@ -96,7 +98,7 @@ public class PaymentService {
             TicketRetriever ticketRetriever,
             TicketReservationPaymentFacade ticketReservationPaymentFacade,
             ReservationSessionRetriever reservationSessionRetriever,
-            RedisManager redisManager) {
+            RedisManager redisManager, ReservationSessionRemover reservationSessionRemover) {
         this.reservationTicketRetriever = reservationTicketRetriever;
         this.eventRetriever = eventRetriever;
         this.tossPaymentClient = tossPaymentClient;
@@ -108,6 +110,7 @@ public class PaymentService {
         this.ticketReservationPaymentFacade = ticketReservationPaymentFacade;
         this.reservationSessionRetriever = reservationSessionRetriever;
         this.redisManager = redisManager;
+        this.reservationSessionRemover = reservationSessionRemover;
     }
 
 
@@ -171,26 +174,32 @@ public class PaymentService {
 
         } catch (ReservationNotFoundException e) {
             sessionRedisRollback(reservationTicketList, userId, reservationSessionKey, orderId, totalAmount, paymentKey);
+            deleteReservationSessionByOrderId(orderId);
             throw new NotFoundPaymentException(ErrorCode.NOT_FOUND_RESERVATION);
 
         } catch (EventNotfoundException e) {
             sessionRedisRollback(reservationTicketList, userId, reservationSessionKey, orderId, totalAmount, paymentKey);
+            deleteReservationSessionByOrderId(orderId);
             throw new NotFoundPaymentException(ErrorCode.NOT_FOUND_EVENT);
 
         }  catch (TicketTypeNotfoundException e) {
             sessionRedisRollback(reservationTicketList, userId, reservationSessionKey, orderId, totalAmount, paymentKey);
+            deleteReservationSessionByOrderId(orderId);
             throw new NotFoundPaymentException(ErrorCode.NOT_FOUND_TICKET_TYPE);
 
         } catch (TicketTypeInsufficientCountException e) {
             sessionRedisRollback(reservationTicketList, userId, reservationSessionKey, orderId, totalAmount, paymentKey);
+            deleteReservationSessionByOrderId(orderId);
             throw new ConflictReservationException(ErrorCode.CONFLICT_INSUFFICIENT_TICKET);
 
         } catch (TicketTypeTicketZeroException e) {
             sessionRedisRollback(reservationTicketList, userId, reservationSessionKey, orderId, totalAmount, paymentKey);
+            deleteReservationSessionByOrderId(orderId);
             throw new PaymentBadRequestException(ErrorCode.BAD_REQUEST_TICKET_COUNT_ZERO);
 
         } catch(FeignException e) {
             handleFailedTossPayment(reservation, reservationTicketList, userId, reservationSessionKey, orderId, totalAmount, paymentKey);
+            deleteReservationSessionByOrderId(orderId);
             throw handleFeignException(e, orderId, userId);
 
         } catch (AlgorithmException e) { //todo: 결제는 됐는데, 티켓 발급 과정에서 실패했으므로, 따로 알림 구축해놔야될듯
@@ -252,6 +261,10 @@ public class PaymentService {
         } catch(DateFormatException e) {
             throw new PaymentBadRequestException(ErrorCode.INTERNAL_ISO_DATE_ERROR);
         }
+    }
+
+    private void deleteReservationSessionByOrderId(final String orderId) {
+        reservationSessionRemover.deleteByOrderId(orderId);
     }
 
     private void validateTicketStatusForCancel(final List<Ticket> ticketList) {
