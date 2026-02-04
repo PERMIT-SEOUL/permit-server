@@ -30,4 +30,6 @@ public interface ReservationSessionRepository extends JpaRepository<ReservationS
     List<ReservationSessionEntity> findAllBySuccessfulTrue();
 
     List<ReservationSessionEntity> findAllBySuccessfulFalseAndCreatedAtBefore(final LocalDateTime time);
+
+    void deleteByOrderId(final String orderId);
 }

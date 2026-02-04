@@ -23,9 +23,8 @@ public class DiscordErrorLogAppender extends UnsynchronizedAppenderBase<ILogging
 
     private int readTimeout = 3000;
 
-    private static final DateTimeFormatter KST_FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
-                    .withZone(ZoneId.of("Asia/Seoul"));
+    private static final DateTimeFormatter KST_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
+            .withZone(ZoneId.of("Asia/Seoul"));
 
     public void setUrl(final String url) {
         this.url = url;
@@ -50,16 +49,10 @@ public class DiscordErrorLogAppender extends UnsynchronizedAppenderBase<ILogging
                 return;
             }
 
-            final String content = buildContent(event);
-            if (content == null || content.isBlank()) {
+            final String jsonBody = buildEmbedJson(event);
+            if (jsonBody == null || jsonBody.isBlank()) {
                 return;
             }
-
-            final String jsonBody = """
-                    {
-                      "content": "%s"
-                    }
-                    """.formatted(escapeForJson(content));
 
             send(jsonBody);
 
@@ -68,7 +61,7 @@ public class DiscordErrorLogAppender extends UnsynchronizedAppenderBase<ILogging
         }
     }
 
-    private String buildContent(final ILoggingEvent event) {
+    private String buildEmbedJson(final ILoggingEvent event) {
         final Map<String, String> mdc = event.getMDCPropertyMap();
 
         final String traceId = safe(mdc.get("trace_id"));
@@ -77,49 +70,100 @@ public class DiscordErrorLogAppender extends UnsynchronizedAppenderBase<ILogging
         final String uri = safe(mdc.get("uri"));
         final String method = safe(mdc.get("method"));
         final String status = safe(mdc.get("status"));
+        final String statusText = status.isBlank() ? "-" : status;
 
         final String timestamp = KST_FORMATTER.format(Instant.ofEpochMilli(event.getTimeStamp()));
+        final String loggerShort = getShortLoggerName(event.getLoggerName());
 
-        final StringBuilder sb = new StringBuilder();
+        // 메시지 처리 (최대 1024자)
+        String message = event.getFormattedMessage();
+        if (message.length() > 1024) {
+            message = message.substring(0, 1021) + "...";
+        }
 
-        sb.append("[PERMIT-PROD] ")
-                .append(event.getLevel())
-                .append(" at ")
-                .append(timestamp)
-                .append(" (Asia/Seoul)")
-                .append("\n");
-
-        sb.append("logger=").append(event.getLoggerName())
-                .append(" | thread=").append(event.getThreadName())
-                .append("\n");
-
-        sb.append("user_id=").append(userIdText)
-                .append(" | trace_id=").append(traceId)
-                .append(" | uri=").append(uri)
-                .append(" | method=").append(method)
-                .append(" | status=").append(status)
-                .append("\n\n");
-
-        sb.append("message: ")
-                .append(event.getFormattedMessage());
-
+        // 스택트레이스 처리
+        String stackTraceField = "";
         final IThrowableProxy throwableProxy = event.getThrowableProxy();
         if (throwableProxy != null) {
             String stackTrace = ThrowableProxyUtil.asString(throwableProxy);
-
-            final int maxStackLength = 1700;
+            final int maxStackLength = 1000;
             if (stackTrace.length() > maxStackLength) {
                 stackTrace = stackTrace.substring(0, maxStackLength) + "\n... (truncated)";
             }
-
-            sb.append("\n\n")
-                    .append("```")
-                    .append("\n")
-                    .append(stackTrace)
-                    .append("\n```");
+            stackTraceField = """
+                    ,{
+                      "name": "📋 Stack Trace",
+                      "value": "```%s```",
+                      "inline": false
+                    }""".formatted(escapeForJson(stackTrace));
         }
 
-        return sb.toString();
+        return """
+                {
+                  "embeds": [{
+                    "title": "🚨 PERMIT-PROD ERROR",
+                    "color": 16711680,
+                    "fields": [
+                      {
+                        "name": "🕐 Time",
+                        "value": "`%s`",
+                        "inline": true
+                      },
+                      {
+                        "name": "👤 User ID",
+                        "value": "`%s`",
+                        "inline": true
+                      },
+                      {
+                        "name": "🔗 Trace ID",
+                        "value": "`%s`",
+                        "inline": true
+                      },
+                      {
+                        "name": "📍 Endpoint",
+                        "value": "`%s %s`",
+                        "inline": true
+                      },
+                      {
+                        "name": "📊 Status",
+                        "value": "`%s`",
+                        "inline": true
+                      },
+                      {
+                        "name": "📦 Logger",
+                        "value": "`%s`",
+                        "inline": true
+                      },
+                      {
+                        "name": "💬 Message",
+                        "value": "```%s```",
+                        "inline": false
+                      }%s
+                    ],
+                    "footer": {
+                      "text": "Thread: %s"
+                    }
+                  }]
+                }
+                """.formatted(
+                escapeForJson(timestamp),
+                escapeForJson(userIdText),
+                escapeForJson(traceId),
+                escapeForJson(method),
+                escapeForJson(uri),
+                escapeForJson(statusText),
+                escapeForJson(loggerShort),
+                escapeForJson(message),
+                stackTraceField,
+                escapeForJson(event.getThreadName()));
+    }
+
+    private String getShortLoggerName(final String loggerName) {
+        if (loggerName == null || loggerName.isBlank()) {
+            return "unknown";
+        }
+        final int lastDot = loggerName.lastIndexOf('.');
+        return lastDot >= 0 ? loggerName.substring(lastDot + 1) : loggerName;
     }
 
     private void send(final String body) throws Exception {

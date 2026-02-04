@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ import java.io.PrintWriter;
 
 @RequiredArgsConstructor
 @Component
+@Slf4j
 public class ExceptionHandlerFilter extends OncePerRequestFilter { //필터 내부 전체 예외
     private final ObjectMapper objectMapper;
 
@@ -30,9 +32,17 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter { //필터 내�
         try {
             filterChain.doFilter(request, response);
         } catch (FilterException e) {
+            log.warn("[FilterException] code={}, ua={}",
+                    e.getErrorCode().name(),
+                    request.getHeader("User-Agent")
+            );
             handleUnauthorizedException(response, e);
         }
         catch (Exception e) {
+            log.error("[UnhandledException in FilterChain] ua={}",
+                    request.getHeader("User-Agent"),
+                    e
+            );
             handleException(response);
         }
     }
