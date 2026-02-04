@@ -69,6 +69,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (ServletException | IOException e) {
             throw new FilterException(ErrorCode.INTERNAL_FILTER_ERROR);
         } catch (Exception e) {
+            log.error("[JWT Filter] unexpected error. ua={}",
+                    request.getHeader("User-Agent"),
+                    e
+            );
             throw new FilterException(ErrorCode.INTERNAL_SERVER_ERROR);
         } finally {
             MDC.remove(USER_ID_MDC_KEY);
