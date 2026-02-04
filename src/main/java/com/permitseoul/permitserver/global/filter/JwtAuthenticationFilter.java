@@ -67,6 +67,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (AuthWrongJwtException e) {
             throw new FilterException(ErrorCode.UNAUTHORIZED);
         } catch (ServletException | IOException e) {
+            log.error("[JWT Filter] unexpected error. ua={}",
+                    request.getHeader("User-Agent"),
+                    e
+            );
             throw new FilterException(ErrorCode.INTERNAL_FILTER_ERROR);
         } catch (Exception e) {
             log.error("[JWT Filter] unexpected error. ua={}",
