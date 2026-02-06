@@ -1,14 +1,6 @@
 package com.permitseoul.permitserver.global.util;
 
-import com.permitseoul.permitserver.global.Constants;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.experimental.UtilityClass;
-import net.logstash.logback.argument.StructuredArgument;
-
-import java.math.BigDecimal;
-
-import static net.logstash.logback.argument.StructuredArguments.keyValue;
 
 @UtilityClass
 public final class LogFormUtil {
@@ -21,22 +13,6 @@ public final class LogFormUtil {
     private static final int PAYMENT_KEY_SHORT_SUFFIX = 2;
     private static final int PAYMENT_KEY_LONG_PREFIX = 4;
     private static final int PAYMENT_KEY_LONG_SUFFIX = 5;
-
-    public static StructuredArgument[] paymentLog(
-            final long userId,
-            final String orderId,
-            final String paymentKey,
-            final long reservationId,
-            final BigDecimal totalAmount
-    ) {
-        return new StructuredArgument[] {
-                keyValue(Constants.USER_ID, userId),
-                keyValue(Constants.ORDER_ID, orderId),
-                keyValue(Constants.PAYMENT_KEY, maskPaymentKey(paymentKey)),
-                keyValue(Constants.RESERVATION_ID, reservationId),
-                keyValue(Constants.TOTAL_AMOUNT, totalAmount)
-        };
-    }
 
     public static String maskPaymentKey(final String paymentKey) {
         if (paymentKey == null || paymentKey.isBlank()) {

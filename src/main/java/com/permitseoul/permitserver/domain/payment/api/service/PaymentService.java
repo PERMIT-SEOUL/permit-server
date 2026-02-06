@@ -62,6 +62,7 @@ import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 
+import static com.permitseoul.permitserver.global.util.LogFormUtil.maskPaymentKey;
 import static net.logstash.logback.argument.StructuredArguments.keyValue;
 
 @Slf4j
@@ -130,14 +131,11 @@ public class PaymentService {
 
             final TossPaymentResponse tossPaymentResponse = getTossPaymentConfirm(authorizationHeader, paymentKey, reservation.getOrderId(), reservation.getTotalAmount());
 
-            log.info("토스 결제 승인 완료",
-                    (Object[]) LogFormUtil.paymentLog(
-                            userId,
-                            tossPaymentResponse.orderId(),
-                            tossPaymentResponse.paymentKey(),
-                            reservation.getReservationId(),
-                            tossPaymentResponse.totalAmount()
-                    )
+            log.info("[Payment] 토스 결제 승인 완료 - orderId={}, paymentKey={}, reservationId={}, amount={}",
+                    tossPaymentResponse.orderId(),
+                    LogFormUtil.maskPaymentKey(tossPaymentResponse.paymentKey()),
+                    reservation.getReservationId(),
+                    tossPaymentResponse.totalAmount()
             );
 
             updateReservationStatusAndTossPaymentResponseTime(reservation.getReservationId(), ReservationStatus.PAYMENT_SUCCESS);
@@ -203,15 +201,15 @@ public class PaymentService {
             throw handleFeignException(e, orderId, userId);
 
         } catch (AlgorithmException e) {
-            logPaymentSuccessButTicketIssueFailed(userId, reservationSessionKey, orderId, totalAmount, paymentKey, reservation.getReservationId());
+            logPaymentSuccessButTicketIssueFailed(orderId, totalAmount, paymentKey, reservation.getReservationId());
             throw new TicketAlgorithmException(ErrorCode.INTERNAL_TICKET_ALGORITHM_ERROR);
 
         } catch (IllegalEnumTransitionException e) {
-            logPaymentSuccessButTicketIssueFailed(userId, reservationSessionKey, orderId, totalAmount, paymentKey, reservation.getReservationId());
+            logPaymentSuccessButTicketIssueFailed(orderId, totalAmount, paymentKey, reservation.getReservationId());
             throw new ReservationIllegalException(ErrorCode.INTERNAL_TRANSITION_ENUM_ERROR);
 
         } catch (ReservationSessionNotFoundAfterPaymentSuccessException e) {
-            logPaymentSuccessButTicketIssueFailed(userId, reservationSessionKey, orderId, totalAmount, paymentKey, reservation.getReservationId());
+            logPaymentSuccessButTicketIssueFailed(orderId, totalAmount, paymentKey, reservation.getReservationId());
             throw new NotFoundPaymentException(ErrorCode.NOT_FOUND_RESERVATION_SESSION_AFTER_PAYMENT_SUCCESS);
         }
     }
@@ -302,18 +300,15 @@ public class PaymentService {
         }
     }
 
-    private void logPaymentSuccessButTicketIssueFailed( final long userId,
-                                                        final String sessionKey,
-                                                        final String orderId,
-                                                        final BigDecimal totalAmount,
-                                                        final String paymentKey,
-                                                        final long reservationId) {
-        log.error("토스 결제 승인 완료 -> 티켓 발급 실패",
-                keyValue(Constants.USER_ID, userId),
-                keyValue(Constants.ORDER_ID, orderId),
-                keyValue(Constants.PAYMENT_KEY, LogFormUtil.maskPaymentKey(paymentKey)),
-                keyValue(Constants.RESERVATION_ID, reservationId),
-                keyValue(Constants.TOTAL_AMOUNT, totalAmount)
+    private void logPaymentSuccessButTicketIssueFailed(final String orderId,
+                                                       final BigDecimal totalAmount,
+                                                       final String paymentKey,
+                                                       final long reservationId) {
+        log.error("[Payment] 토스 결제 승인 완료 -> 티켓 발급 실패 - orderId={}, paymentKey={}, reservationId={}, amount={}",
+                orderId,
+                LogFormUtil.maskPaymentKey(paymentKey),
+                reservationId,
+                totalAmount
         );
     }
 
@@ -341,7 +336,7 @@ public class PaymentService {
                                    final BigDecimal totalAmount,
                                    final String paymentKey) {
         log.error("[결제 승인 API - redis Rollback Failed] userId: {}, sessionKey: {}, orderId: {}, totalAmount: {}, paymentKey: {}",
-                userId, sessionKey, orderId, totalAmount, LogFormUtil.maskPaymentKey(paymentKey));
+                userId, sessionKey, orderId, totalAmount, maskPaymentKey(paymentKey));
     }
 
     private void updateReservationStatusAndTossPaymentResponseTime(final long reservationId, final ReservationStatus status) {
