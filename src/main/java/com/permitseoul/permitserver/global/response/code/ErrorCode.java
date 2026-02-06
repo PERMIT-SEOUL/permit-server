@@ -30,6 +30,7 @@ public enum ErrorCode implements ApiCode {
     BAD_REQUEST_MISMATCH_TICKET_TYPE_ROUND(HttpStatus.BAD_REQUEST, 40016, "ticketType의 roundId와 다른 ticketRoundId 입니다."),
     BAD_REQUEST_MISMATCH_LIST_SIZE(HttpStatus.BAD_REQUEST, 40017, "list의 길이가 다릅니다."),
     BAD_REQUEST_REDIS_TICKET_TYPE_MISMATCH(HttpStatus.BAD_REQUEST, 40018, "redis ticket tpye mismatch 에러입니다. "),
+    BAD_REQUEST_CANCEL_PERIOD_EXPIRED(HttpStatus.BAD_REQUEST, 40019, "환불 가능 기간이 아닙니다. 환불은 행사 시작일 기준 3일전까지만 가능합니다.(환불 정책 참고)."),
 
 
 

@@ -58,7 +58,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.List;
 
@@ -217,6 +219,8 @@ public class PaymentService {
     public void cancelPayment(final long userId, final String orderId) {
         try {
             final Payment payment = paymentRetriever.findPaymentByOrderId(orderId);
+            validateCancelAvailablePeriod(payment.getEventId());
+
             final List<Ticket> ticketList = ticketRetriever.findAllTicketsByOrderIdAndUserId(payment.getOrderId(), userId);
             validateTicketStatusForCancel(ticketList);
 
@@ -243,6 +247,8 @@ public class PaymentService {
 
         } catch (PaymentNotFoundException e) {
             throw new NotFoundPaymentException(ErrorCode.NOT_FOUND_PAYMENT);
+        } catch (EventNotfoundException e) {
+            throw new NotFoundPaymentException(ErrorCode.NOT_FOUND_EVENT);
         } catch(FeignException e) {
             throw handleFeignException(e, orderId, userId);
         } catch (TicketNotFoundException e) {
@@ -258,6 +264,23 @@ public class PaymentService {
             throw e;
         } catch(DateFormatException e) {
             throw new PaymentBadRequestException(ErrorCode.INTERNAL_ISO_DATE_ERROR);
+        }
+    }
+
+    private void validateCancelAvailablePeriod(final long eventId) {
+        final Event event = eventRetriever.findEventById(eventId);
+
+        final LocalDate eventDate = event.getStartAt().toLocalDate();
+        final LocalDate today = LocalDate.now();
+
+        // 오늘과 행사일 사이의 일수 계산
+        long daysUntilEvent = ChronoUnit.DAYS.between(today, eventDate);
+
+        // 3일 전까지만 환불 가능
+        if (daysUntilEvent < 3) {
+            log.warn("[Payment Cancel] 취소 기한 초과 - eventId={}, eventDate={}, today={}, daysUntilEvent={}",
+                    eventId, eventDate, today, daysUntilEvent);
+            throw new PaymentBadRequestException(ErrorCode.BAD_REQUEST_CANCEL_PERIOD_EXPIRED);
         }
     }
 
