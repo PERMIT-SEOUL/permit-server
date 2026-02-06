@@ -202,15 +202,15 @@ public class PaymentService {
             deleteReservationSessionByOrderId(orderId);
             throw handleFeignException(e, orderId, userId);
 
-        } catch (AlgorithmException e) { //todo: 결제는 됐는데, 티켓 발급 과정에서 실패했으므로, 따로 알림 구축해놔야될듯
+        } catch (AlgorithmException e) {
             logPaymentSuccessButTicketIssueFailed(userId, reservationSessionKey, orderId, totalAmount, paymentKey, reservation.getReservationId());
             throw new TicketAlgorithmException(ErrorCode.INTERNAL_TICKET_ALGORITHM_ERROR);
 
-        } catch (IllegalEnumTransitionException e) { //todo: 결제는 됐는데, 티켓 발급 과정에서 실패했으므로, 따로 알림 구축해놔야될듯
+        } catch (IllegalEnumTransitionException e) {
             logPaymentSuccessButTicketIssueFailed(userId, reservationSessionKey, orderId, totalAmount, paymentKey, reservation.getReservationId());
             throw new ReservationIllegalException(ErrorCode.INTERNAL_TRANSITION_ENUM_ERROR);
 
-        } catch (ReservationSessionNotFoundAfterPaymentSuccessException e) {  //결제는 됐는데, 티켓 발급 과정에서 실패했으므로, 따로 알림 구축해놔야될듯
+        } catch (ReservationSessionNotFoundAfterPaymentSuccessException e) {
             logPaymentSuccessButTicketIssueFailed(userId, reservationSessionKey, orderId, totalAmount, paymentKey, reservation.getReservationId());
             throw new NotFoundPaymentException(ErrorCode.NOT_FOUND_RESERVATION_SESSION_AFTER_PAYMENT_SUCCESS);
         }
