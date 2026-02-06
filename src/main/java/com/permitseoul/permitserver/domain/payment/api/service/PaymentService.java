@@ -60,6 +60,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.List;
@@ -271,7 +272,7 @@ public class PaymentService {
         final Event event = eventRetriever.findEventById(eventId);
 
         final LocalDate eventDate = event.getStartAt().toLocalDate();
-        final LocalDate today = LocalDate.now();
+        final LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
 
         // 오늘과 행사일 사이의 일수 계산
         long daysUntilEvent = ChronoUnit.DAYS.between(today, eventDate);
