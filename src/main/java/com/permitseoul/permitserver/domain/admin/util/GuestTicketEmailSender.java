@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.domain.admin.util;
 
+import com.permitseoul.permitserver.domain.admin.guestticket.core.exception.GuestEmailSendException;
 import com.permitseoul.permitserver.domain.admin.property.EmailProperties;
 import com.permitseoul.permitserver.domain.admin.util.exception.EmailSendException;
 import com.permitseoul.permitserver.domain.event.core.domain.EventType;
@@ -68,8 +69,10 @@ public class GuestTicketEmailSender {
             mailSender.send(mimeMessage);
             log.info("[Guest Ticket Email] 발송 완료 - 수신자: {} ({}), 이벤트: {}, 티켓 수: {}",
                     guestName, toEmail, eventName, ticketCodes.size());
-        } catch (MessagingException | UnsupportedEncodingException e) {
-            throw new EmailSendException(ErrorCode.INTERNAL_EMAIL_SEND_ERROR);
+        } catch (Exception e) {
+            log.error("[Guest Ticket Email] 발송 실패 - to={}, guestName={}, event={}, ticketCount={}",
+                    toEmail, guestName, eventName, ticketCodes.size(), e);
+            throw new GuestEmailSendException();
         }
     }
 }
