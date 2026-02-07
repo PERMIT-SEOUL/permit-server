@@ -1,5 +1,6 @@
 package com.permitseoul.permitserver.domain.admin.util;
 
+import com.permitseoul.permitserver.domain.admin.guestticket.core.exception.GuestEmailSendException;
 import com.permitseoul.permitserver.domain.admin.property.EmailProperties;
 import com.permitseoul.permitserver.domain.admin.util.exception.EmailSendException;
 import com.permitseoul.permitserver.domain.event.core.domain.EventType;
@@ -9,6 +10,7 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -37,6 +39,7 @@ public class GuestTicketEmailSender {
     private final static String INLINE_CONTENT_ID = "qr-";
     private final static String INLINE_CONTENT_TYPE = "image/png";
 
+
     public void sendGuestTicketsEmail(
             final String toEmail,
             final String guestName,
@@ -53,23 +56,39 @@ public class GuestTicketEmailSender {
             context.setVariable(CONTEXT_TICKET_CODES, ticketCodes);
             final String html = templateEngine.process(TEMPLATE_NAME, context);
 
+
+            final String subject = "[" + eventType.getDisplayName() + "] Guest Ticket Info";
+            final String plain =
+                    subject + "\n" +
+                            "안녕하세요 " + guestName + "님\n" +
+                            "Event: " + eventName + "\n" +
+                            "Ticket Code: " + String.join(", ", ticketCodes) + "\n";
+
+
             final MimeMessage mimeMessage = mailSender.createMimeMessage();
             final MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, StandardCharsets.UTF_8.name()); //multipart:true는 인라인 이미지 추가
             helper.setFrom(emailProperties.sender(), SENDER_NAME);
             helper.setTo(toEmail);
-            helper.setSubject("​[" + eventType.getDisplayName() + "] Guest Ticket Info"); //Gmail thread subject가 맨앞 "[]" 태그를 무시/정규화하는 경우가 있어, Zero-width space(U+200B)로 패턴 인식을 회피
-            helper.setText(html, true);
+            mimeMessage.setSubject(subject, StandardCharsets.UTF_8.name());
+
+//            helper.setSubject("​ [" + eventType.getDisplayName() + "] Guest Ticket Info"); //Gmail thread subject가 맨앞 "[]" 태그를 무시/정규화하는 경우가 있어, Zero-width space(U+200B)로 패턴 인식을 회피
+            helper.setText(plain, html);
 
             for (int i = 0; i < qrPngs.size(); i++) {
                 final InputStreamSource src = new ByteArrayResource(qrPngs.get(i));
                 helper.addInline(INLINE_CONTENT_ID + i, src, INLINE_CONTENT_TYPE);
+
+                String fileName = "guest ticket-" + ticketCodes.get(i) + ".png";
+                helper.addAttachment(fileName, src, "image/png");
             }
 
             mailSender.send(mimeMessage);
             log.info("[Guest Ticket Email] 발송 완료 - 수신자: {} ({}), 이벤트: {}, 티켓 수: {}",
                     guestName, toEmail, eventName, ticketCodes.size());
-        } catch (MessagingException | UnsupportedEncodingException e) {
-            throw new EmailSendException(ErrorCode.INTERNAL_EMAIL_SEND_ERROR);
+        } catch (Exception e) {
+            log.error("[Guest Ticket Email] 발송 실패 - to={}, guestName={}, event={}, ticketCount={}",
+                    toEmail, guestName, eventName, ticketCodes.size(), e);
+            throw new GuestEmailSendException();
         }
     }
 }

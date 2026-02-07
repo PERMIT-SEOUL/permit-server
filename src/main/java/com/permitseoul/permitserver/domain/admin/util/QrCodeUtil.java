@@ -80,7 +80,7 @@ public final class QrCodeUtil {
             g.drawImage(qrImage, 0, TEXT_AREA_HEIGHT, null);
 
             g.setColor(Color.BLACK);
-            g.setFont(new Font("SansSerif", Font.PLAIN, 15));
+            g.setFont(PngFontUtil.size12());
             final FontMetrics fm = g.getFontMetrics();
 
             final String text = ellipsize(label, fm, width - (TEXT_PADDING_X * 2));

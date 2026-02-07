@@ -1,6 +1,5 @@
 package com.permitseoul.permitserver.domain.admin.util;
 
-import com.permitseoul.permitserver.domain.admin.base.AdminBaseException;
 import com.permitseoul.permitserver.domain.admin.timetable.base.core.exception.NotionPublicUrlNotFoundException;
 import com.permitseoul.permitserver.domain.admin.timetable.base.core.exception.NotionUrlMalformedException;
 import com.permitseoul.permitserver.domain.admin.util.exception.PermitListSizeNotMatchException;
@@ -9,9 +8,7 @@ import com.permitseoul.permitserver.domain.eventtimetable.block.core.domain.enti
 import com.permitseoul.permitserver.domain.eventtimetable.blockmedia.domain.entity.TimetableBlockMediaEntity;
 import com.permitseoul.permitserver.domain.eventtimetable.category.core.domain.entity.TimetableCategoryEntity;
 import com.permitseoul.permitserver.domain.eventtimetable.stage.core.domain.entity.TimetableStageEntity;
-import com.permitseoul.permitserver.global.exception.DateFormatException;
 import com.permitseoul.permitserver.global.exception.PermitIllegalStateException;
-import com.permitseoul.permitserver.global.exception.UrlSecureException;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionCategoryDatasourceResponse;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionStageDatasourceResponse;
 import com.permitseoul.permitserver.global.external.notion.dto.NotionTimetableDatasourceResponse;
@@ -21,8 +18,6 @@ import org.jetbrains.annotations.NotNull;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
