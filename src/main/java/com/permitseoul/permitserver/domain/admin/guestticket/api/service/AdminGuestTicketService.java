@@ -18,12 +18,14 @@ import com.permitseoul.permitserver.domain.event.core.domain.EventType;
 import com.permitseoul.permitserver.domain.event.core.exception.EventNotfoundException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AdminGuestTicketService {
     private final AdminGuestRetriever adminGuestRetriever;
     private final GuestTicketEmailSender guestTicketEmailSender;
@@ -53,6 +55,9 @@ public class AdminGuestTicketService {
             throw new AdminGuestTicketApiException(ErrorCode.NOT_FOUND_EVENT);
         } catch (GuestTicketNotFoundException e) {
             throw new AdminGuestTicketApiException(ErrorCode.NOT_FOUND_GUEST_TICKET);
+        } catch (Exception e) {
+            log.error("[Guest Ticket Email] 발송 실패 - 이벤트아이디:{}, 수신자 정보 : {}", eventId, guestTicketList, e);
+            throw new AdminGuestTicketApiException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 

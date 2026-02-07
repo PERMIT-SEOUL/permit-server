@@ -7,6 +7,7 @@ import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -21,6 +22,7 @@ import java.util.List;
 
 @Component("guestTicketEmailSender")
 @RequiredArgsConstructor
+@Slf4j
 public class GuestTicketEmailSender {
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
@@ -64,6 +66,8 @@ public class GuestTicketEmailSender {
             }
 
             mailSender.send(mimeMessage);
+            log.info("[Guest Ticket Email] 발송 완료 - 수신자: {} ({}), 이벤트: {}, 티켓 수: {}",
+                    guestName, toEmail, eventName, ticketCodes.size());
         } catch (MessagingException | UnsupportedEncodingException e) {
             throw new EmailSendException(ErrorCode.INTERNAL_EMAIL_SEND_ERROR);
         }
