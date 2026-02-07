@@ -1,6 +1,7 @@
 package com.permitseoul.permitserver.domain.admin.guestticket.api.service;
 
 import com.permitseoul.permitserver.domain.admin.guestticket.core.domain.GuestTicketStatus;
+import com.permitseoul.permitserver.domain.admin.guestticket.core.exception.GuestEmailSendException;
 import com.permitseoul.permitserver.domain.admin.guestticket.core.exception.GuestTicketNotFoundException;
 import com.permitseoul.permitserver.domain.admin.guestticket.core.facade.AdminGuestTicketFacade;
 import com.permitseoul.permitserver.domain.admin.property.QrCodeProperties;
@@ -55,9 +56,9 @@ public class AdminGuestTicketService {
             throw new AdminGuestTicketApiException(ErrorCode.NOT_FOUND_EVENT);
         } catch (GuestTicketNotFoundException e) {
             throw new AdminGuestTicketApiException(ErrorCode.NOT_FOUND_GUEST_TICKET);
-        } catch (Exception e) {
+        } catch (GuestEmailSendException e) {
             log.error("[Guest Ticket Email] 발송 실패 - 이벤트아이디:{}, 수신자 정보 : {}", eventId, guestTicketList, e);
-            throw new AdminGuestTicketApiException(ErrorCode.INTERNAL_SERVER_ERROR);
+            throw new AdminGuestTicketApiException(ErrorCode.INTERNAL_EMAIL_SEND_ERROR);
         }
     }
 
