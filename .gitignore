@@ -38,6 +38,7 @@ out/
 
 ### Mac ###
 .DS_Store
+.agent
 
 src/main/resources/application.yml
 src/main/resources/application-dev.yml
