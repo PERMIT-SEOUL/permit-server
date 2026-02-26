@@ -18,9 +18,9 @@ import java.util.UUID;
 
 @Component
 @Slf4j
-@Profile("!local")
+//@Profile("!local")
 @Order(Ordered.HIGHEST_PRECEDENCE)
-class MDCLoggingFilter extends OncePerRequestFilter {
+class RequestObservabilityFilter extends OncePerRequestFilter {
     private static final String NGINX_REQUEST_ID = "X-Request-ID";
     private static final String TRACE_ID = "trace_id";
 
@@ -28,16 +28,20 @@ class MDCLoggingFilter extends OncePerRequestFilter {
     private static final String METHOD = "method";
     private static final String STATUS = "status";
 
+    private static final long SLOW_REQUEST_THRESHOLD_MS = 1000L;
+
     @Override
     protected void doFilterInternal(@NonNull final HttpServletRequest request,
-                                    @NonNull final HttpServletResponse response,
-                                    @NonNull final FilterChain filterChain) throws ServletException, IOException {
+            @NonNull final HttpServletResponse response,
+            @NonNull final FilterChain filterChain) throws ServletException, IOException {
         final String uri = request.getRequestURI();
         // 헬스체크는 패스
         if (uri != null && uri.contains(Constants.HEALTH_CHECK_URL)) {
             filterChain.doFilter(request, response);
             return;
         }
+
+        final long start = System.currentTimeMillis();
         try {
             String traceId = request.getHeader(NGINX_REQUEST_ID);
             if (traceId == null || traceId.isBlank()) {
@@ -48,9 +52,17 @@ class MDCLoggingFilter extends OncePerRequestFilter {
             MDC.put(METHOD, request.getMethod());
 
             filterChain.doFilter(request, response);
-
-            MDC.put(STATUS, String.valueOf(response.getStatus()));
         } finally {
+            final long duration = System.currentTimeMillis() - start;
+            final int status = response.getStatus();
+            final String method = request.getMethod();
+
+            if (duration >= SLOW_REQUEST_THRESHOLD_MS) {
+                log.warn("[SLOW] {} {} → {} ({}ms)", method, uri, status, duration);
+            } else {
+                log.info("{} {} → {} ({}ms)", method, uri, status, duration);
+            }
+
             MDC.remove(STATUS);
             MDC.remove(METHOD);
             MDC.remove(URI);
