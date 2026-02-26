@@ -32,10 +32,6 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter { //필터 내�
         try {
             filterChain.doFilter(request, response);
         } catch (FilterException e) {
-            log.warn("[FilterException] code={}, ua={}",
-                    e.getErrorCode().name(),
-                    request.getHeader("User-Agent")
-            );
             handleUnauthorizedException(response, e);
         }
         catch (Exception e) {
