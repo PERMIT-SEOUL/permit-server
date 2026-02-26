@@ -98,12 +98,12 @@ public class AuthService {
     public TokenDto reissue(final String refreshToken) {
         try {
             final long userId = jwtProvider.extractUserIdFromToken(refreshToken);
+            final UserRole userRole = UserRole.valueOf(jwtProvider.extractUserRoleFromToken(refreshToken));
            checkIsSameRefreshToken(userId, refreshToken);
 
-            final User user = userRetriever.findUserById(userId);
-            final Token newToken = getLoginOrReissueJwtToken(user.getUserId(), user.getUserRole());
+            final Token newToken = getLoginOrReissueJwtToken(userId, userRole);
 
-            saveRefreshTokenInRedis(user.getUserId(), newToken.getRefreshToken());
+            saveRefreshTokenInRedis(userId, newToken.getRefreshToken());
 
             return TokenDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
         } catch (AuthWrongJwtException | AuthRTNotFoundException e) {
