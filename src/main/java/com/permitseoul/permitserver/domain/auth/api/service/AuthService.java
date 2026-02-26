@@ -99,16 +99,16 @@ public class AuthService {
         try {
             final long userId = jwtProvider.extractUserIdFromToken(refreshToken);
             final UserRole userRole = UserRole.valueOf(jwtProvider.extractUserRoleFromToken(refreshToken));
-           checkIsSameRefreshToken(userId, refreshToken);
+            checkIsSameRefreshToken(userId, refreshToken);
 
             final Token newToken = getLoginOrReissueJwtToken(userId, userRole);
 
             saveRefreshTokenInRedis(userId, newToken.getRefreshToken());
 
             return TokenDto.of(newToken.getAccessToken(), newToken.getRefreshToken());
-        } catch (AuthWrongJwtException | AuthRTNotFoundException e) {
+        } catch (AuthWrongJwtException e) {
             throw new AuthUnAuthorizedException(ErrorCode.UNAUTHORIZED_WRONG_RT);
-        } catch (AuthExpiredJwtException e) {
+        } catch (AuthExpiredJwtException |AuthRTNotFoundException e) {
             throw new AuthUnAuthorizedException(ErrorCode.UNAUTHORIZED_RT_EXPIRED);
         } catch (AuthRTException e) {
             throw new AuthUnAuthorizedException(ErrorCode.INTERNAL_RT_REDIS_ERROR);
@@ -125,7 +125,6 @@ public class AuthService {
         } catch (DataAccessException e) {
             throw new AuthRedisException(ErrorCode.INTERNAL_RT_REDIS_ERROR);
         }
-
     }
 
     private void checkIsSameRefreshToken(final long userId, final String refreshToken) {

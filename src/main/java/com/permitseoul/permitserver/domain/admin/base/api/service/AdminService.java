@@ -3,6 +3,7 @@ package com.permitseoul.permitserver.domain.admin.base.api.service;
 import com.permitseoul.permitserver.domain.admin.base.api.AdminProperties;
 import com.permitseoul.permitserver.domain.admin.base.api.dto.res.UserAuthorityGetResponse;
 import com.permitseoul.permitserver.domain.admin.base.api.exception.AdminAuthorizationException;
+import com.permitseoul.permitserver.domain.auth.core.jwt.RefreshTokenManager;
 import com.permitseoul.permitserver.domain.user.core.component.UserRetriever;
 import com.permitseoul.permitserver.domain.user.core.component.UserUpdater;
 import com.permitseoul.permitserver.domain.user.core.domain.User;
@@ -20,6 +21,7 @@ public class AdminService {
     private final AdminProperties adminProperties;
     private final UserRetriever userRetriever;
     private final UserUpdater userUpdater;
+    private final RefreshTokenManager refreshTokenManager;
 
     public void validateAdminCode(final String adminCode) {
         if(!(adminProperties.accessCode().equals(adminCode))){
@@ -44,6 +46,7 @@ public class AdminService {
         try {
             userEntity = userRetriever.findUserEntityById(userId);
             userUpdater.updateUserRole(userEntity, userRole);
+            refreshTokenManager.deleteRefreshToken(userEntity.getUserId());
         } catch (UserNotFoundException e) {
             throw new AdminAuthorizationException(ErrorCode.NOT_FOUND_USER);
         }
