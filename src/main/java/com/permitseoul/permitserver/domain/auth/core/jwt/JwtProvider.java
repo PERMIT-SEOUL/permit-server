@@ -48,7 +48,11 @@ public class JwtProvider {
 
     public String extractUserRoleFromToken(final String token) {
         final Jws<Claims> claims = parseToken(token);
-        return claims.getBody().get(Constants.USER_ROLE, String.class);
+        final String role = claims.getBody().get(Constants.USER_ROLE, String.class);
+        if(role == null) {
+            throw new AuthWrongJwtException();
+        }
+        return role;
     }
 
     //토큰 파싱
