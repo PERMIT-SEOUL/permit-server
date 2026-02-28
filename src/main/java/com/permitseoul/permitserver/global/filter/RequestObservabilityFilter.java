@@ -18,7 +18,7 @@ import java.util.UUID;
 
 @Component
 @Slf4j
-//@Profile("!local")
+@Profile("!local")
 @Order(Ordered.HIGHEST_PRECEDENCE)
 class RequestObservabilityFilter extends OncePerRequestFilter {
     private static final String NGINX_REQUEST_ID = "X-Request-ID";

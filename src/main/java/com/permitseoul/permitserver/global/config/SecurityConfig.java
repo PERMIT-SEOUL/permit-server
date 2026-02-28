@@ -26,7 +26,7 @@ public class SecurityConfig {
         private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
         private final ExceptionHandlerFilter exceptionHandlerFilter;
 
-        private static final String[] whiteURIList = {
+        private static final String[] whiteURIListNotUsingToken = {
                 "/actuator/health",
                 "/api/users/signup",
                 "/api/users/login",
@@ -34,14 +34,17 @@ public class SecurityConfig {
                 "/api/events",
                 "/api/events/detail/*",
                 "/api/users/email-check",
-                "/api/events/*/timetables",
-                "/api/events/timetables/*",
                 "/api/tickets/info/*",
                 "/api/tickets/door/staff/confirm",
                 "/api/tickets/door/validation/*",
                 "/api/notion/**",
                 "/api/guests/**",
                 "/api/events/*/sitemap",
+        };
+
+        private static final String[] whiteURIListUsingToken = {
+                "/api/events/*/timetables", // userId 있으면 개인화
+                "/api/events/timetables/*", // userId 있으면 개인화
         };
 
         private static final String[] adminURIList = {
@@ -70,17 +73,16 @@ public class SecurityConfig {
                         .csrf(AbstractHttpConfigurer::disable)
                         .formLogin(AbstractHttpConfigurer::disable)
                         .httpBasic(AbstractHttpConfigurer::disable)
-                        .sessionManagement(sessionManagementConfigurer ->
-                                sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                        .exceptionHandling(exceptionHandlingConfigurer ->
-                                exceptionHandlingConfigurer.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                        .sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .exceptionHandling(exceptionHandlingConfigurer -> exceptionHandlingConfigurer.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                         .authorizeHttpRequests(auth -> auth
-                                .requestMatchers(whiteURIList).permitAll() // 로그인 상관 X
-                                .requestMatchers(adminURIList).hasRole(UserRole.ADMIN.name()) // ADMIN 권한 필요
-                                .requestMatchers(staffURIList).hasAnyRole(UserRole.STAFF.name(), UserRole.ADMIN.name()) //staff 권한 이상
+                                .requestMatchers(adminURIList).hasRole(UserRole.ADMIN.name()) // ADMIN// 권한 필요
+                                .requestMatchers(staffURIList).hasAnyRole(UserRole.STAFF.name(), UserRole.ADMIN.name()) // staff 권한 이상
                                 .requestMatchers(authRequiredURIList).authenticated() // 로그인 필수
-                        )
-                        .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, List.of(whiteURIList)), UsernamePasswordAuthenticationFilter.class)
+                                .requestMatchers(whiteURIListNotUsingToken).permitAll() // 로그인 상관 X + AccessToken 사용X
+                                .requestMatchers(whiteURIListUsingToken).permitAll() // 로그인 상관 X + AccessToken 있으면 사용
+                                .anyRequest().denyAll())
+                        .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, List.of(whiteURIListNotUsingToken), List.of(whiteURIListUsingToken)), UsernamePasswordAuthenticationFilter.class)
                         .addFilterBefore(exceptionHandlerFilter, JwtAuthenticationFilter.class)
                         .build();
         }

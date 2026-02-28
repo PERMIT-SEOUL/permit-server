@@ -5,13 +5,11 @@ import com.permitseoul.permitserver.domain.auth.core.exception.AuthExpiredJwtExc
 import com.permitseoul.permitserver.domain.auth.core.exception.AuthWrongJwtException;
 import com.permitseoul.permitserver.domain.auth.core.jwt.CookieExtractor;
 import com.permitseoul.permitserver.domain.auth.core.jwt.JwtProvider;
-import com.permitseoul.permitserver.global.Constants;
 import com.permitseoul.permitserver.global.domain.CookieType;
 import com.permitseoul.permitserver.global.exception.FilterException;
 import com.permitseoul.permitserver.global.response.code.ErrorCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
@@ -26,38 +24,38 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.List;
-
 
 @RequiredArgsConstructor
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtProvider jwtProvider;
-    private final List<String> whiteURIList;
+    private final List<String> whiteURIListNotUsingToken;
+    private final List<String> whiteURIListUsingToken;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
-    private static final String REISSUE_URI = "/api/users/reissue";
-    private static final String LOGIN_URI   = "/api/users/login";
     private static final String USER_ID_MDC_KEY = "user_id";
     private static final String ANONYMOUS_USER_ID = "anonymous";
 
     @Override
+    protected boolean shouldNotFilter(@NonNull final HttpServletRequest request) {
+        return whiteURIListNotUsingToken.stream()
+                .anyMatch(pattern -> pathMatcher.match(pattern, request.getRequestURI()));
+    }
+
+    @Override
     protected void doFilterInternal(@NonNull final HttpServletRequest request,
-                                    @NonNull final HttpServletResponse response,
-                                    @NonNull final FilterChain filterChain) throws ServletException, IOException {
+            @NonNull final HttpServletResponse response,
+            @NonNull final FilterChain filterChain) throws ServletException, IOException {
         final String uri = request.getRequestURI();
         try {
             MDC.put(USER_ID_MDC_KEY, ANONYMOUS_USER_ID);
 
-            if(isHealthCheckUri(uri) || isLoginOrReissue(uri)) {
-                filterChain.doFilter(request, response);
-                return;
-            }
             setAuthentication(request);
             filterChain.doFilter(request, response);
         } catch (AuthCookieException e) {
-            if(isWhiteListUrl(uri)) {
-                SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(null, null, null));
+            if (isUsingTokenUrl(uri)) {
+                SecurityContextHolder.getContext().setAuthentication(
+                        new UsernamePasswordAuthenticationToken(null, null, null));
                 filterChain.doFilter(request, response);
             } else {
                 throw new FilterException(ErrorCode.NOT_FOUND_AT_COOKIE);
@@ -69,14 +67,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (ServletException | IOException e) {
             log.error("[JWT Filter] unexpected error. ua={}",
                     request.getHeader("User-Agent"),
-                    e
-            );
+                    e);
             throw new FilterException(ErrorCode.INTERNAL_FILTER_ERROR);
         } catch (Exception e) {
             log.error("[JWT Filter] unexpected error. ua={}",
                     request.getHeader("User-Agent"),
-                    e
-            );
+                    e);
             throw new FilterException(ErrorCode.INTERNAL_SERVER_ERROR);
         } finally {
             MDC.remove(USER_ID_MDC_KEY);
@@ -93,16 +89,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 new UsernamePasswordAuthenticationToken(userId, null, authorities));
     }
 
-    private boolean isWhiteListUrl(final String requestURI) {
-        return whiteURIList.stream().anyMatch(pattern -> pathMatcher.match(pattern, requestURI));
-    }
-
-    private boolean isHealthCheckUri(final String uri) {
-        return pathMatcher.match(Constants.HEALTH_CHECK_URL, uri);
-    }
-
-    private boolean isLoginOrReissue(final String uri) {
-        return pathMatcher.match(LOGIN_URI, uri)
-                || pathMatcher.match(REISSUE_URI, uri);
+    private boolean isUsingTokenUrl(final String requestURI) {
+        return whiteURIListUsingToken.stream().anyMatch(pattern -> pathMatcher.match(pattern, requestURI));
     }
 }
